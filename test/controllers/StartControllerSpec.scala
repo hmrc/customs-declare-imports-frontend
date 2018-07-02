@@ -16,35 +16,27 @@
 
 package controllers
 
-import config.AppConfig
 import play.api.http.Status
-import play.api.i18n.MessagesApi
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.ControllerSpec
 
 class StartControllerSpec extends ControllerSpec {
 
-  val req = FakeRequest("GET", "/")
-  val messages = app.injector.instanceOf[MessagesApi]
-  val config = app.injector.instanceOf[AppConfig]
-  val controller = new StartController(messages, config)
+  val method = "GET"
+  val uri = uriWithContextPath("/hello-world")
 
-  "GET /" should {
-    "return 200" in {
-      val result = call(controller.displayStartPage, req)
-      status(result) must be (Status.OK)
+  s"$method $uri" should {
+    "return 200" in requestScenario(method, uri) { resp =>
+      status(resp) must be (Status.OK)
     }
 
-    "return HTML" in {
-      val result = call(controller.displayStartPage, req)
-      contentType(result) must be (Some("text/html"))
-      charset(result) must be (Some("utf-8"))
+    "return HTML" in requestScenario(method, uri) { resp =>
+      contentType(resp) must be (Some("text/html"))
+      charset(resp) must be (Some("utf-8"))
     }
 
-    "display 'hello world' message" in {
-      val result = call(controller.displayStartPage, req)
-      contentAsString(result).asBodyFragment should include element withName("h1").withValue("Hello from customs-declare-imports-frontend !")
+    "display 'hello world' message" in requestScenario(method, uri) { resp =>
+      contentAsString(resp).asBodyFragment should include element withName("h1").withValue("Hello from customs-declare-imports-frontend !")
     }
 
   }
