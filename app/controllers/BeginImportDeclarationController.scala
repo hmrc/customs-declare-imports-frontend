@@ -19,16 +19,16 @@ package controllers
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc._
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.Future
 
 @Singleton
-class StartController @Inject()(val messagesApi: MessagesApi, implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
+class BeginImportDeclarationController @Inject()(val messagesApi: MessagesApi, implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  val displayStartPage: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.start()))
+  def displayStepOne: Action[AnyContent] = Action.async { implicit req =>
+    Future.successful(Ok(views.html.step_one()))
   }
 
 }

@@ -1,3 +1,4 @@
 # microservice specific routes
 
 GET        /                        controllers.StartController.displayStartPage
+GET        /begin                   controllers.BeginImportDeclarationController.displayStepOne
