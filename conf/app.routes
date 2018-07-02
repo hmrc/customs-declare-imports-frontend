@@ -1,4 +1,3 @@
 # microservice specific routes
 
 GET        /                        controllers.StartController.displayStartPage
-GET        /hello-world             controllers.StartController.displayStartPage

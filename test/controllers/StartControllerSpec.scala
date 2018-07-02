@@ -23,8 +23,7 @@ import uk.gov.hmrc.customs.test.ControllerSpec
 class StartControllerSpec extends ControllerSpec {
 
   val method = "GET"
-  val uri = uriWithContextPath("/hello-world")
-  val root = uriWithContextPath("/")
+  val uri = uriWithContextPath("/")
 
   s"$method $uri" should {
 
@@ -38,23 +37,6 @@ class StartControllerSpec extends ControllerSpec {
     }
 
     "display 'hello world' message" in requestScenario(method, uri) { resp =>
-      contentAsString(resp).asBodyFragment should include element withName("h1").withValue("Hello from customs-declare-imports-frontend !")
-    }
-
-  }
-
-  s"$method $root" should {
-
-    "return 200" in requestScenario(method, root) { resp =>
-      status(resp) must be (Status.OK)
-    }
-
-    "return HTML" in requestScenario(method, root) { resp =>
-      contentType(resp) must be (Some("text/html"))
-      charset(resp) must be (Some("utf-8"))
-    }
-
-    "display 'hello world' message" in requestScenario(method, root) { resp =>
       contentAsString(resp).asBodyFragment should include element withName("h1").withValue("Hello from customs-declare-imports-frontend !")
     }
 
