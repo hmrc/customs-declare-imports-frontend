@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customsdeclareimportsfrontend.controllers
+package controllers
 
+import config.AppConfig
 import play.api.http.Status
 import play.api.i18n.{DefaultLangs, DefaultMessagesApi}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import uk.gov.hmrc.customsdeclareimportsfrontend.config.AppConfig
 
 class HelloWorldControllerSpec extends UnitSpec with WithFakeApplication {
   val fakeRequest = FakeRequest("GET", "/")
