@@ -23,21 +23,21 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.ControllerSpec
 
-class HelloWorldControllerSpec extends ControllerSpec {
+class StartControllerSpec extends ControllerSpec {
 
   val req = FakeRequest("GET", "/")
   val messages = app.injector.instanceOf[MessagesApi]
   val config = app.injector.instanceOf[AppConfig]
-  val controller = new HelloWorld(messages, config)
+  val controller = new StartController(messages, config)
 
   "GET /" should {
     "return 200" in {
-      val result = call(controller.helloWorld, req)
+      val result = call(controller.displayStartPage, req)
       status(result) must be (Status.OK)
     }
 
     "return HTML" in {
-      val result = call(controller.helloWorld, req)
+      val result = call(controller.displayStartPage, req)
       contentType(result) must be (Some("text/html"))
       charset(result) must be (Some("utf-8"))
     }
