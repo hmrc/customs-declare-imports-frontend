@@ -24,8 +24,10 @@ class StartControllerSpec extends ControllerSpec {
 
   val method = "GET"
   val uri = uriWithContextPath("/hello-world")
+  val root = uriWithContextPath("/")
 
   s"$method $uri" should {
+
     "return 200" in requestScenario(method, uri) { resp =>
       status(resp) must be (Status.OK)
     }
@@ -40,4 +42,22 @@ class StartControllerSpec extends ControllerSpec {
     }
 
   }
+
+  s"$method $root" should {
+
+    "return 200" in requestScenario(method, root) { resp =>
+      status(resp) must be (Status.OK)
+    }
+
+    "return HTML" in requestScenario(method, root) { resp =>
+      contentType(resp) must be (Some("text/html"))
+      charset(resp) must be (Some("utf-8"))
+    }
+
+    "display 'hello world' message" in requestScenario(method, root) { resp =>
+      contentAsString(resp).asBodyFragment should include element withName("h1").withValue("Hello from customs-declare-imports-frontend !")
+    }
+
+  }
+
 }
