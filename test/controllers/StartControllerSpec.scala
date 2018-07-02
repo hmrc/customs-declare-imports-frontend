@@ -42,5 +42,10 @@ class StartControllerSpec extends ControllerSpec {
       charset(result) must be (Some("utf-8"))
     }
 
+    "display 'hello world' message" in {
+      val result = call(controller.displayStartPage, req)
+      contentAsString(result).asBodyFragment should include element withName("h1").withValue("Hello from customs-declare-imports-frontend !")
+    }
+
   }
 }
