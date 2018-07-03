@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-trait ControllerSpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatchers {
+trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatchers {
 
   implicit val mat = app.materializer
 

@@ -18,9 +18,9 @@ package controllers
 
 import play.api.http.Status
 import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.ControllerSpec
+import uk.gov.hmrc.customs.test.CustomsPlaySpec
 
-class StartControllerSpec extends ControllerSpec {
+class StartControllerSpec extends CustomsPlaySpec {
 
   val method = "GET"
   val uri = uriWithContextPath("/")

@@ -16,16 +16,16 @@
 
 package config
 
+import domain.Feature.Feature
+import domain.{Feature, FeatureStatus}
+import domain.FeatureStatus.FeatureStatus
 import javax.inject.{Inject, Singleton}
 import play.api.Mode.Mode
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 
 @Singleton
-class AppConfig @Inject()(val runModeConfiguration: Configuration, environment: Environment) extends ServicesConfig {
-  override protected def mode: Mode = environment.mode
-
-  private def loadConfig(key: String) = runModeConfiguration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
+class AppConfig @Inject()(val runModeConfiguration: Configuration, environment: Environment) extends ServicesConfig with AppName {
 
   private val contactHost = runModeConfiguration.getString(s"contact-frontend.host").getOrElse("")
   private val contactFormServiceIdentifier = "MyService"
@@ -35,4 +35,24 @@ class AppConfig @Inject()(val runModeConfiguration: Configuration, environment: 
   lazy val analyticsHost = loadConfig(s"google-analytics.host")
   lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+  lazy val defaultFeatureStatus = FeatureStatus.withName(loadConfig(feature2Key(Feature.default)))
+
+  def featureStatus(feature: Feature): FeatureStatus = sys.props.get(feature2Key(feature)).map(str2FeatureStatus _).getOrElse(
+    runModeConfiguration.getString(feature2Key(feature)).map(str2FeatureStatus _).getOrElse(
+      defaultFeatureStatus
+    )
+  )
+
+  def setFeatureStatus(feature: Feature, status: FeatureStatus): Unit = sys.props += (feature2Key(feature) -> status.toString)
+
+  override protected def mode: Mode = environment.mode
+
+  override protected def appNameConfiguration: Configuration = runModeConfiguration
+
+  private def loadConfig(key: String): String = runModeConfiguration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
+
+  private def feature2Key(feature: Feature): String = s"microservice.services.${appName}.features.${feature}"
+
+  private def str2FeatureStatus(str: String): FeatureStatus = FeatureStatus.withName(str)
+
 }
