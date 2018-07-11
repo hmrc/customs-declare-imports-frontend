@@ -16,9 +16,9 @@
 
 package config
 
-import domain.Feature.Feature
-import domain.{Feature, FeatureStatus}
-import domain.FeatureStatus.FeatureStatus
+import domain.features.Feature.Feature
+import domain.features.FeatureStatus.FeatureStatus
+import domain.features.{Feature, FeatureStatus}
 import javax.inject.{Inject, Singleton}
 import play.api.Mode.Mode
 import play.api.{Configuration, Environment}

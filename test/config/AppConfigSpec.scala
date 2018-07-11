@@ -16,7 +16,7 @@
 
 package config
 
-import domain.{Feature, FeatureStatus}
+import domain.features.{Feature, FeatureStatus}
 import uk.gov.hmrc.customs.test.CustomsPlaySpec
 
 class AppConfigSpec extends CustomsPlaySpec {

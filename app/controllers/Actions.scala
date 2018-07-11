@@ -17,8 +17,8 @@
 package controllers
 
 import config.{AppConfig, ErrorHandler}
-import domain.Feature.Feature
-import domain.FeatureStatus
+import domain.features.Feature.Feature
+import domain.features.FeatureStatus
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.Results._
 import play.api.mvc.{ActionBuilder, ActionFilter, Request, Result}

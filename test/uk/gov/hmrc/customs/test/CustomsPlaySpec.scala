@@ -16,10 +16,13 @@
 
 package uk.gov.hmrc.customs.test
 
+import akka.stream.Materializer
+import akka.util.Timeout
 import com.gu.scalatest.JsoupShouldMatchers
+import org.jsoup.nodes.Element
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.mvc.Result
-import play.api.test.FakeRequest
+import play.api.test.{FakeRequest, NoMaterializer}
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
@@ -33,6 +36,8 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
   class RequestScenario(method: String = "GET", uri: String = s"/${contextPath}/", headers: Map[String, String] = Map.empty) {
     val req = FakeRequest(method, uri).withHeaders(headers.toSeq:_*)
   }
+
+  protected def contentAsHtml(of: Future[Result])(implicit timeout: Timeout): Element = contentAsString(of)(timeout, mat).asBodyFragment
 
   protected def requestScenario(method: String = "GET", uri: String = s"/${contextPath}/", headers: Map[String, String] = Map.empty)(test: (Future[Result]) => Unit): Unit = {
     new RequestScenario(method, uri, headers) {

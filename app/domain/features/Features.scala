@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package domain
+package domain.features
 
 import play.api.mvc.PathBindable
 

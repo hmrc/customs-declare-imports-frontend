@@ -17,8 +17,8 @@
 package test.controllers
 
 import config.AppConfig
-import domain.Feature.Feature
-import domain.FeatureStatus.FeatureStatus
+import domain.features.Feature.Feature
+import domain.features.FeatureStatus.FeatureStatus
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.BaseController

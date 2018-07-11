@@ -37,7 +37,7 @@ class StartControllerSpec extends CustomsPlaySpec {
     }
 
     "display 'hello world' message" in requestScenario(method, uri) { resp =>
-      contentAsString(resp).asBodyFragment should include element withName("h1").withValue("Hello from customs-declare-imports-frontend !")
+      contentAsHtml(resp) should include element withName("h1").withValue("Hello from customs-declare-imports-frontend !")
     }
 
   }

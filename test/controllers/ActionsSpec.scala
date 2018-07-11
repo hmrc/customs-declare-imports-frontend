@@ -17,15 +17,15 @@
 package controllers
 
 import config.{AppConfig, ErrorHandler}
-import domain.{Feature, FeatureStatus}
-import domain.Feature.Feature
-import domain.FeatureStatus.FeatureStatus
+import domain.features.Feature.Feature
+import domain.features.FeatureStatus.FeatureStatus
+import domain.features.{Feature, FeatureStatus}
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.CustomsPlaySpec
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
-import play.api.test.Helpers._
 
 import scala.concurrent.Future
 

@@ -37,7 +37,7 @@ class BeginImportDeclarationControllerSpec extends CustomsPlaySpec {
     }
 
     "display message" in requestScenario(method, uri) { resp =>
-      contentAsString(resp).asBodyFragment should include element withClass("message").withValue("Well done. You have begun your first step on a long journey.")
+      contentAsHtml(resp) should include element withClass("message").withValue("Well done. You have begun your first step on a long journey.")
     }
 
   }
