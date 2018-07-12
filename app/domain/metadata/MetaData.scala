@@ -16,4 +16,5 @@
 
 package domain.metadata
 
-case class MetaData(wcoDataModelVersionCode: Option[String] = None)
+case class MetaData(wcoDataModelVersionCode: Option[String] = None,
+                    wcoTypeName: Option[String] = None)

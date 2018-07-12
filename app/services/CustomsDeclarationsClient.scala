@@ -27,12 +27,19 @@ class CustomsDeclarationsClient {
                                                                                                    xmlns:clm63055="urn:un:unece:uncefact:codelist:standard:UNECE:AgencyIdentificationCode:D12B"
                                                                                                    xmlns:ds="urn:wco:datamodel:WCO:MetaData_DS-DMS:2" xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
     {wcoDataModelVersionCode(metaData)}
+    {wcoTypeName(metaData)}
   </md:MetaData>
 
-  private def wcoDataModelVersionCode(metaData: MetaData): Elem = metaData.wcoDataModelVersionCode.map { version =>
+  private def wcoDataModelVersionCode(metaData: MetaData): Elem = metaData.wcoDataModelVersionCode.map { version: String =>
     <md:WCODataModelVersionCode>
       {version}
     </md:WCODataModelVersionCode>
+  }.orNull
+
+  private def wcoTypeName(metaData: MetaData): Elem = metaData.wcoTypeName.map { name: String =>
+    <md:WCOTypeName>
+      {name}
+    </md:WCOTypeName>
   }.orNull
 
 }

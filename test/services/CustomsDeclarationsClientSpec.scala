@@ -42,6 +42,23 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       (xml \ "WCODataModelVersionCode").size must be (0)
     }
 
+    "include WCOTypeName" in {
+      val name = "DEC"
+      val meta = new MetaData(
+        wcoTypeName = Some(name)
+      )
+      val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
+      (xml \ "WCOTypeName").text.trim must be (name)
+    }
+
+    "not include WCOTypeName" in {
+      val meta = new MetaData(
+        wcoTypeName = None
+      )
+      val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
+      (xml \ "WCOTypeName").size must be (0)
+    }
+
   }
 
 }
