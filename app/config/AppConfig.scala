@@ -25,7 +25,7 @@ import play.api.{Configuration, Environment}
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 
 @Singleton
-class AppConfig @Inject()(val runModeConfiguration: Configuration, environment: Environment) extends ServicesConfig with AppName {
+class AppConfig @Inject()(val runModeConfiguration: Configuration, val environment: Environment) extends ServicesConfig with AppName {
 
   private val contactHost = runModeConfiguration.getString(s"contact-frontend.host").getOrElse("")
   private val contactFormServiceIdentifier = "MyService"

@@ -17,6 +17,7 @@
 package config
 
 import domain.features.{Feature, FeatureStatus}
+import play.api.Environment
 import uk.gov.hmrc.customs.test.CustomsPlaySpec
 
 class AppConfigSpec extends CustomsPlaySpec {
@@ -47,6 +48,10 @@ class AppConfigSpec extends CustomsPlaySpec {
 
     "have default feature status" in {
       cfg.defaultFeatureStatus must be (FeatureStatus.disabled)
+    }
+
+    "expose the environment" in {
+      cfg.environment must be (app.injector.instanceOf[Environment])
     }
 
   }

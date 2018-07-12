@@ -17,16 +17,27 @@
 package controllers
 
 import config.{AppConfig, ErrorHandler}
+import domain.auth.{AuthenticatedRequest, SignedInUser}
 import domain.features.Feature.Feature
 import domain.features.FeatureStatus
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.Results._
-import play.api.mvc.{ActionBuilder, ActionFilter, Request, Result}
+import play.api.mvc._
+import play.api.{Configuration, Environment}
+import uk.gov.hmrc.auth.core.authorise.Predicate
+import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, Enrolment}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Actions @Inject()(errorHandler: ErrorHandler, implicit val appConfig: AppConfig) {
+class Actions @Inject()(authConnector: AuthConnector, errorHandler: ErrorHandler)(implicit val appConfig: AppConfig, ec: ExecutionContext) {
+
+  def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] = AuthAction(authConnector)
 
   def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request] = new ActionBuilder[Request] with ActionFilter[Request] {
 
@@ -38,6 +49,28 @@ class Actions @Inject()(errorHandler: ErrorHandler, implicit val appConfig: AppC
       }
     )
 
+  }
+
+}
+
+case class AuthAction(auth: AuthConnector)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] with AuthorisedFunctions with AuthRedirects {
+
+  override def authConnector: AuthConnector = auth
+
+  override def config: Configuration = appConfig.runModeConfiguration
+
+  override def env: Environment = appConfig.environment
+
+  val authorisationPredicate: Predicate = Enrolment("HMRC-CUS-ORG")
+
+  override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    authorised(authorisationPredicate)
+      .retrieve(credentials and name and email and affinityGroup and internalId and allEnrolments) {
+        case credentials ~ name ~ email ~ affinityGroup ~ internalId ~ allEnrolments => Future.successful(Right(AuthenticatedRequest(
+          request, SignedInUser(credentials, name, email, affinityGroup, internalId, allEnrolments)
+        )))
+      }
   }
 
 }

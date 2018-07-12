@@ -9,7 +9,8 @@ object AppDependencies {
     "uk.gov.hmrc" %% "govuk-template" % "5.22.0",
     "uk.gov.hmrc" %% "play-ui" % "7.17.0",
     ws,
-    "uk.gov.hmrc" %% "bootstrap-play-25" % "1.7.0"
+    "uk.gov.hmrc" %% "bootstrap-play-25" % "1.7.0",
+    "uk.gov.hmrc" %% "auth-client" % "2.6.0"
   )
 
   def test(scope: String = "test") = Seq(
@@ -17,7 +18,8 @@ object AppDependencies {
     "org.pegdown" % "pegdown" % "1.6.0" % scope,
     "org.jsoup" % "jsoup" % "1.10.2" % scope,
     "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % scope
+    "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % scope,
+    "org.mockito" % "mockito-core" % "2.13.0" % scope
   )
 
 }

@@ -18,12 +18,25 @@ package config
 
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
-import play.api.mvc.Request
+import play.api.mvc.{Request, RequestHeader, Result}
+import play.api.{Configuration, Environment}
 import play.twirl.api.Html
+import uk.gov.hmrc.auth.core.NoActiveSession
+import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 
 @Singleton
-class ErrorHandler @Inject()(val messagesApi: MessagesApi, implicit val appConfig: AppConfig) extends FrontendErrorHandler {
+class ErrorHandler @Inject()(val messagesApi: MessagesApi)(implicit val appConfig: AppConfig) extends FrontendErrorHandler with AuthRedirects {
+
+  override def config: Configuration = appConfig.runModeConfiguration
+
+  override def env: Environment = appConfig.environment
+
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
     views.html.error_template(pageTitle, heading, message)
+
+  override def resolveError(rh: RequestHeader, ex: Throwable): Result = ex match {
+    case notLoggedIn: NoActiveSession => toGGLogin(rh.uri)
+    case _ => super.resolveError(rh, ex)
+  }
 }
