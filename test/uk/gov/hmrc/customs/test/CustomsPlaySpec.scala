@@ -20,6 +20,7 @@ import akka.util.Timeout
 import com.gu.scalatest.JsoupShouldMatchers
 import config.AppConfig
 import domain.auth.SignedInUser
+import domain.declaration.Declaration
 import org.jsoup.nodes.Element
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
@@ -86,6 +87,8 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
   protected def randomInt(limit: Int): Int = Random.nextInt(limit)
 
   protected def randomString(length: Int): String = Random.alphanumeric.take(length).mkString
+
+  protected def randomValidDeclaration: Declaration = Declaration()
 
   private val firstNames: Seq[String] = Seq("Oliver", "Jack", "Harry", "Jacob", "Charlie", "Thomas", "George", "Oscar", "James", "William", "Amelia", "Olivia", "Isla", "Emily", "Poppy", "Ava", "Isabella", "Jessica", "Lily", "Sophie")
 

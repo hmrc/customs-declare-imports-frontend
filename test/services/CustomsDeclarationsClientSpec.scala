@@ -16,10 +16,32 @@
 
 package services
 
+import domain.metadata.MetaData
 import uk.gov.hmrc.customs.test.CustomsPlaySpec
 
 class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
 
-  // placeholder for customs declarations API client specs
+  val client = new CustomsDeclarationsClient
+
+  "produce declaration message" should {
+
+    "include WCODataModelVersionCode" in {
+      val version = "3.6"
+      val meta = new MetaData(
+        wcoDataModelVersionCode = Some(version)
+      )
+      val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
+      (xml \ "WCODataModelVersionCode").text.trim must be (version)
+    }
+
+    "not include WCODataModelVersionCode" in {
+      val meta = new MetaData(
+        wcoDataModelVersionCode = None
+      )
+      val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
+      (xml \ "WCODataModelVersionCode").size must be (0)
+    }
+
+  }
 
 }
