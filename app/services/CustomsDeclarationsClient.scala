@@ -28,6 +28,7 @@ class CustomsDeclarationsClient {
                                                                                                    xmlns:ds="urn:wco:datamodel:WCO:MetaData_DS-DMS:2" xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
     {wcoDataModelVersionCode(metaData)}
     {wcoTypeName(metaData)}
+    {responsibleCountryCode(metaData)}
   </md:MetaData>
 
   private def wcoDataModelVersionCode(metaData: MetaData): Elem = metaData.wcoDataModelVersionCode.map { version: String =>
@@ -40,6 +41,12 @@ class CustomsDeclarationsClient {
     <md:WCOTypeName>
       {name}
     </md:WCOTypeName>
+  }.orNull
+
+  private def responsibleCountryCode(metaData: MetaData): Elem = metaData.responsibleCountryCode.map { code: String =>
+    <md:ResponsibleCountryCode>
+      {code}
+    </md:ResponsibleCountryCode>
   }.orNull
 
 }

@@ -59,6 +59,23 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       (xml \ "WCOTypeName").size must be (0)
     }
 
+    "include ResponsibleCountryCode" in {
+      val code = "GB"
+      val meta = new MetaData(
+        responsibleCountryCode = Some(code)
+      )
+      val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
+      (xml \ "ResponsibleCountryCode").text.trim must be (code)
+    }
+
+    "not include ResponsibleCountryCode" in {
+      val meta = new MetaData(
+        responsibleCountryCode = None
+      )
+      val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
+      (xml \ "ResponsibleCountryCode").size must be (0)
+    }
+
   }
 
 }
