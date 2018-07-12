@@ -29,6 +29,7 @@ class CustomsDeclarationsClient {
     {wcoDataModelVersionCode(metaData)}
     {wcoTypeName(metaData)}
     {responsibleCountryCode(metaData)}
+    {responsibleAgencyName(metaData)}
   </md:MetaData>
 
   private def wcoDataModelVersionCode(metaData: MetaData): Elem = metaData.wcoDataModelVersionCode.map { version: String =>
@@ -47,6 +48,12 @@ class CustomsDeclarationsClient {
     <md:ResponsibleCountryCode>
       {code}
     </md:ResponsibleCountryCode>
+  }.orNull
+
+  private def responsibleAgencyName(metaData: MetaData): Elem = metaData.responsibleAgencyName.map { name: String =>
+    <md:ResponsibleAgencyName>
+      {name}
+    </md:ResponsibleAgencyName>
   }.orNull
 
 }

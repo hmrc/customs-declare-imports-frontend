@@ -27,7 +27,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
 
     "include WCODataModelVersionCode" in {
       val version = "3.6"
-      val meta = new MetaData(
+      val meta = MetaData(
         wcoDataModelVersionCode = Some(version)
       )
       val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
@@ -35,7 +35,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
     }
 
     "not include WCODataModelVersionCode" in {
-      val meta = new MetaData(
+      val meta = MetaData(
         wcoDataModelVersionCode = None
       )
       val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
@@ -44,7 +44,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
 
     "include WCOTypeName" in {
       val name = "DEC"
-      val meta = new MetaData(
+      val meta = MetaData(
         wcoTypeName = Some(name)
       )
       val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
@@ -52,7 +52,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
     }
 
     "not include WCOTypeName" in {
-      val meta = new MetaData(
+      val meta = MetaData(
         wcoTypeName = None
       )
       val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
@@ -61,7 +61,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
 
     "include ResponsibleCountryCode" in {
       val code = "GB"
-      val meta = new MetaData(
+      val meta = MetaData(
         responsibleCountryCode = Some(code)
       )
       val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
@@ -69,11 +69,28 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
     }
 
     "not include ResponsibleCountryCode" in {
-      val meta = new MetaData(
+      val meta = MetaData(
         responsibleCountryCode = None
       )
       val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
       (xml \ "ResponsibleCountryCode").size must be (0)
+    }
+
+    "include ResponsibleAgencyName" in {
+      val agency = "HMRC"
+      val meta = MetaData(
+        responsibleAgencyName = Some(agency)
+      )
+      val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
+      (xml \ "ResponsibleAgencyName").text.trim must be (agency)
+    }
+
+    "not include ResponsibleAgencyName" in {
+      val meta = MetaData(
+        responsibleAgencyName = None
+      )
+      val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
+      (xml \ "ResponsibleAgencyName").size must be (0)
     }
 
   }

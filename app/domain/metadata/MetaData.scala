@@ -18,4 +18,5 @@ package domain.metadata
 
 case class MetaData(wcoDataModelVersionCode: Option[String] = None,
                     wcoTypeName: Option[String] = None,
-                    responsibleCountryCode: Option[String] = None)
+                    responsibleCountryCode: Option[String] = None,
+                    responsibleAgencyName: Option[String] = None)
