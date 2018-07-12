@@ -20,4 +20,5 @@ case class MetaData(wcoDataModelVersionCode: Option[String] = None,
                     wcoTypeName: Option[String] = None,
                     responsibleCountryCode: Option[String] = None,
                     responsibleAgencyName: Option[String] = None,
-                    agencyAssignedCustomizationCode: Option[String] = None)
+                    agencyAssignedCustomizationCode: Option[String] = None,
+                    agencyAssignedCustomizationVersionCode: Option[String] = None)

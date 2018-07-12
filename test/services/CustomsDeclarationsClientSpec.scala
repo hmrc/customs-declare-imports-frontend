@@ -94,7 +94,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
     }
 
     "include AgencyAssignedCustomizationCode" in {
-      val code = "v2.1"
+      val code = "foo"
       val meta = MetaData(
         agencyAssignedCustomizationCode = Some(code)
       )
@@ -108,6 +108,23 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
       (xml \ "AgencyAssignedCustomizationCode").size must be (0)
+    }
+
+    "include AgencyAssignedCustomizationVersionCode" in {
+      val code = "v2.1"
+      val meta = MetaData(
+        agencyAssignedCustomizationVersionCode = Some(code)
+      )
+      val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
+      (xml \ "AgencyAssignedCustomizationVersionCode").text.trim must be (code)
+    }
+
+    "not include AgencyAssignedCustomizationVersionCode" in {
+      val meta = MetaData(
+        agencyAssignedCustomizationVersionCode = None
+      )
+      val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
+      (xml \ "AgencyAssignedCustomizationVersionCode").size must be (0)
     }
 
   }
