@@ -93,6 +93,23 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       (xml \ "ResponsibleAgencyName").size must be (0)
     }
 
+    "include AgencyAssignedCustomizationCode" in {
+      val code = "v2.1"
+      val meta = MetaData(
+        agencyAssignedCustomizationCode = Some(code)
+      )
+      val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
+      (xml \ "AgencyAssignedCustomizationCode").text.trim must be (code)
+    }
+
+    "not include AgencyAssignedCustomizationCode" in {
+      val meta = MetaData(
+        agencyAssignedCustomizationCode = None
+      )
+      val xml = client.produceDeclarationMessage(meta, randomValidDeclaration)
+      (xml \ "AgencyAssignedCustomizationCode").size must be (0)
+    }
+
   }
 
 }
