@@ -16,4 +16,12 @@
 
 package domain.declaration
 
+case class MetaData(declaration: Declaration,
+                    wcoDataModelVersionCode: Option[String] = None,
+                    wcoTypeName: Option[String] = None,
+                    responsibleCountryCode: Option[String] = None,
+                    responsibleAgencyName: Option[String] = None,
+                    agencyAssignedCustomizationCode: Option[String] = None,
+                    agencyAssignedCustomizationVersionCode: Option[String] = None)
+
 case class Declaration()
