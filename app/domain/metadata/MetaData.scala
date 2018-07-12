@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package domain.declaration
+package domain.metadata
 
-case class Declaration()
+case class MetaData()

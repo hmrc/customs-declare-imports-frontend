@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
-package domain.declaration
+package services
 
-case class Declaration()
+import domain.declaration.Declaration
+import domain.metadata.MetaData
+
+import scala.xml.Elem
+
+class CustomsDeclarationsClient {
+
+  def produceDeclarationMessage(metaData: MetaData, declaration: Declaration): Elem = ???
+
+}

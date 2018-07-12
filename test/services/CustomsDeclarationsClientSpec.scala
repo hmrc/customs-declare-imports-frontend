@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-package domain.declaration
+package services
 
-case class Declaration()
+import uk.gov.hmrc.customs.test.CustomsPlaySpec
+
+class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
+
+  // placeholder for customs declarations API client specs
+
+}
