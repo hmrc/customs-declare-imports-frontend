@@ -27,7 +27,7 @@ class AppConfigSpec extends CustomsPlaySpec {
   "the config" should {
 
     "have assets prefix" in {
-      cfg.assetsPrefix must be ("http://localhost:9032/assets/2.149.0")
+      cfg.assetsPrefix must be ("http://localhost:9032/assets/4.3.2")
     }
 
     "have analytics token" in {
