@@ -23,7 +23,7 @@ import uk.gov.hmrc.customs.test.CustomsPlaySpec
 class StartControllerSpec extends CustomsPlaySpec {
 
   val method = "GET"
-  val uri = uriWithContextPath("/")
+  val uri = uriWithContextPath("/start")
 
   s"$method $uri" should {
 

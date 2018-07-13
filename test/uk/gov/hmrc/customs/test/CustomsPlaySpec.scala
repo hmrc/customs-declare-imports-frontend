@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.customs.test
 
+import java.util.UUID
+
 import akka.util.Timeout
 import com.gu.scalatest.JsoupShouldMatchers
 import config.AppConfig
@@ -25,12 +27,15 @@ import org.jsoup.nodes.Element
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.libs.concurrent.Execution.Implicits
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.filters.csrf.CSRF.Token
+import play.filters.csrf.{CSRFConfigProvider, CSRFFilter}
 import uk.gov.hmrc.auth.core.AffinityGroup.Individual
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
+import uk.gov.hmrc.http.SessionKeys
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
@@ -43,14 +48,37 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
 
   protected val contextPath: String = "/customs-declare-imports"
 
-  class RequestScenario(method: String = "GET", uri: String = s"/${contextPath}/", headers: Map[String, String] = Map.empty) {
-    val req = FakeRequest(method, uri).withHeaders(headers.toSeq:_*)
+  class RequestScenario(method: String = "GET", uri: String = s"/${contextPath}/", headers: Map[String, String] = Map.empty, user: Option[SignedInUser] = None) {
+    val req = user.map { u =>
+      userRequest(method, uri, u, headers)
+    }.getOrElse(basicRequest(method, uri, headers))
+  }
+
+  protected def basicRequest(method: String, uri: String, headers: Map[String, String] = Map.empty): FakeRequest[AnyContentAsEmpty.type] = FakeRequest(method, uri).withHeaders(headers.toSeq: _*)
+
+  protected def userRequest(method: String, uri: String, user: SignedInUser, headers: Map[String, String] = Map.empty): FakeRequest[AnyContentAsEmpty.type] = {
+    val session: Map[String, String] = Map(
+      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+      SessionKeys.userId -> user.internalId.getOrElse(randomString(8))
+    )
+    val cfg = app.injector.instanceOf[CSRFConfigProvider].get
+    val token = app.injector.instanceOf[CSRFFilter].tokenProvider.generateToken
+    val tags = Map(
+      Token.NameRequestTag -> cfg.tokenName,
+      Token.RequestTag -> token
+    )
+    FakeRequest(method, uri).
+      withHeaders((Map(cfg.headerName -> token) ++ headers).toSeq: _*).
+      withSession(session.toSeq: _*).copyFakeRequest(tags = tags)
   }
 
   protected def contentAsHtml(of: Future[Result])(implicit timeout: Timeout): Element = contentAsString(of)(timeout, mat).asBodyFragment
 
-  protected def requestScenario(method: String = "GET", uri: String = s"/${contextPath}/", headers: Map[String, String] = Map.empty)(test: (Future[Result]) => Unit): Unit = {
-    new RequestScenario(method, uri, headers) {
+  protected def requestScenario(method: String = "GET",
+                                uri: String = s"/${contextPath}/",
+                                headers: Map[String, String] = Map.empty,
+                                user: Option[SignedInUser] = None)(test: (Future[Result]) => Unit): Unit = {
+    new RequestScenario(method, uri, headers, user) {
       test(route(app, req).get)
     }
   }

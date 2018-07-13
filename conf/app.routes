@@ -1,4 +1,5 @@
 # microservice specific routes
 
-GET        /                        controllers.StartController.displayStartPage
-GET        /begin                   controllers.BeginImportDeclarationController.displayStepOne
+GET        /                             controllers.BeginController.displayStepOne
+GET        /start                        controllers.StartController.displayStartPage
+GET        /enrol                        controllers.UnauthorisedController.enrol

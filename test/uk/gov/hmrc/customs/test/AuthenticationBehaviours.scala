@@ -19,9 +19,12 @@ package uk.gov.hmrc.customs.test
 import domain.auth.SignedInUser
 import org.mockito.Mockito.when
 import org.mockito.{ArgumentMatcher, ArgumentMatchers}
+import play.api.Application
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.Retrievals.{credentials, _}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -32,7 +35,13 @@ trait AuthenticationBehaviours {
 
   val signedInUser = userFixture()
 
-  val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  val notLoggedInException = new NoActiveSession("A user is not logged in") {}
+
+  lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
+
+  override lazy val app: Application = GuiceApplicationBuilder()
+    .overrides(bind[AuthConnector].to(mockAuthConnector))
+    .build()
 
   //noinspection ConvertExpressionToSAM
   val noBearerTokenMatcher: ArgumentMatcher[HeaderCarrier] = new ArgumentMatcher[HeaderCarrier] {
@@ -65,7 +74,7 @@ trait AuthenticationBehaviours {
           ArgumentMatchers.any[Retrieval[_]])(ArgumentMatchers.argThat(noBearerTokenMatcher), ArgumentMatchers.any()
         )
     ).thenReturn(
-      Future.failed(new NoActiveSession("A user is not logged in") {})
+      Future.failed(notLoggedInException)
     )
     test
   }
