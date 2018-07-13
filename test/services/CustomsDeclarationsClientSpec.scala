@@ -17,15 +17,15 @@
 package services
 
 import domain.declaration.MetaData
-import uk.gov.hmrc.customs.test.CustomsPlaySpec
+import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
 
-class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
+class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
 
   val client = new CustomsDeclarationsClient
 
   "produce declaration message" should {
 
-    "include WCODataModelVersionCode" in {
+    "include WCODataModelVersionCode" in validDeclarationXmlScenario() {
       val version = "3.6"
       val meta = MetaData(
         randomValidDeclaration,
@@ -33,18 +33,20 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "WCODataModelVersionCode").text.trim must be(version)
+      xml
     }
 
-    "not include WCODataModelVersionCode" in {
+    "not include WCODataModelVersionCode" in validDeclarationXmlScenario() {
       val meta = MetaData(
         randomValidDeclaration,
         wcoDataModelVersionCode = None
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "WCODataModelVersionCode").size must be(0)
+      xml
     }
 
-    "include WCOTypeName" in {
+    "include WCOTypeName" in validDeclarationXmlScenario() {
       val name = "DEC"
       val meta = MetaData(
         randomValidDeclaration,
@@ -52,18 +54,20 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "WCOTypeName").text.trim must be(name)
+      xml
     }
 
-    "not include WCOTypeName" in {
+    "not include WCOTypeName" in validDeclarationXmlScenario() {
       val meta = MetaData(
         randomValidDeclaration,
         wcoTypeName = None
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "WCOTypeName").size must be(0)
+      xml
     }
 
-    "include ResponsibleCountryCode" in {
+    "include ResponsibleCountryCode" in validDeclarationXmlScenario() {
       val code = "GB"
       val meta = MetaData(
         randomValidDeclaration,
@@ -71,18 +75,20 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "ResponsibleCountryCode").text.trim must be(code)
+      xml
     }
 
-    "not include ResponsibleCountryCode" in {
+    "not include ResponsibleCountryCode" in validDeclarationXmlScenario() {
       val meta = MetaData(
         randomValidDeclaration,
         responsibleCountryCode = None
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "ResponsibleCountryCode").size must be(0)
+      xml
     }
 
-    "include ResponsibleAgencyName" in {
+    "include ResponsibleAgencyName" in validDeclarationXmlScenario() {
       val agency = "HMRC"
       val meta = MetaData(
         randomValidDeclaration,
@@ -90,18 +96,20 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "ResponsibleAgencyName").text.trim must be(agency)
+      xml
     }
 
-    "not include ResponsibleAgencyName" in {
+    "not include ResponsibleAgencyName" in validDeclarationXmlScenario() {
       val meta = MetaData(
         randomValidDeclaration,
         responsibleAgencyName = None
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "ResponsibleAgencyName").size must be(0)
+      xml
     }
 
-    "include AgencyAssignedCustomizationCode" in {
+    "include AgencyAssignedCustomizationCode" in validDeclarationXmlScenario() {
       val code = "foo"
       val meta = MetaData(
         randomValidDeclaration,
@@ -109,18 +117,20 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationCode").text.trim must be(code)
+      xml
     }
 
-    "not include AgencyAssignedCustomizationCode" in {
+    "not include AgencyAssignedCustomizationCode" in validDeclarationXmlScenario() {
       val meta = MetaData(
         randomValidDeclaration,
         agencyAssignedCustomizationCode = None
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationCode").size must be(0)
+      xml
     }
 
-    "include AgencyAssignedCustomizationVersionCode" in {
+    "include AgencyAssignedCustomizationVersionCode" in validDeclarationXmlScenario() {
       val code = "v2.1"
       val meta = MetaData(
         randomValidDeclaration,
@@ -128,15 +138,26 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationVersionCode").text.trim must be(code)
+      xml
     }
 
-    "not include AgencyAssignedCustomizationVersionCode" in {
+    "not include AgencyAssignedCustomizationVersionCode" in validDeclarationXmlScenario() {
       val meta = MetaData(
         randomValidDeclaration,
         agencyAssignedCustomizationVersionCode = None
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationVersionCode").size must be(0)
+      xml
+    }
+
+    "always include Declaration" in validDeclarationXmlScenario() {
+      val meta = MetaData(
+        randomValidDeclaration
+      )
+      val xml = client.produceDeclarationMessage(meta)
+      (xml \ "Declaration").size must be(1)
+      xml
     }
 
   }

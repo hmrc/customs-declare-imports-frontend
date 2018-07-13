@@ -31,6 +31,7 @@ class CustomsDeclarationsClient {
     {responsibleAgencyName(metaData)}
     {agencyAssignedCustomizationCode(metaData)}
     {agencyAssignedCustomizationVersionCode(metaData)}
+    {declaration(metaData)}
   </md:MetaData>
 
   private def wcoDataModelVersionCode(metaData: MetaData): Elem = metaData.wcoDataModelVersionCode.map { version: String =>
@@ -68,5 +69,7 @@ class CustomsDeclarationsClient {
       {code}
     </md:AgencyAssignedCustomizationVersionCode>
   }.orNull
+
+  private def declaration(metaData: MetaData): Elem = <Declaration></Declaration>
 
 }
