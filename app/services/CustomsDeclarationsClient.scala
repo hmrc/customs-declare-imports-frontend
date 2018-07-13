@@ -22,16 +22,10 @@ import scala.xml.Elem
 
 class CustomsDeclarationsClient {
 
-  def produceDeclarationMessage(metaData: MetaData): Elem = <md:MetaData xmlns="urn:wco:datamodel:WCO:DEC-DMS:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                                                                                   xmlns:clm63055="urn:un:unece:uncefact:codelist:standard:UNECE:AgencyIdentificationCode:D12B"
-                                                                                                   xmlns:ds="urn:wco:datamodel:WCO:MetaData_DS-DMS:2" xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
-    {wcoDataModelVersionCode(metaData)}
-    {wcoTypeName(metaData)}
-    {responsibleCountryCode(metaData)}
-    {responsibleAgencyName(metaData)}
-    {agencyAssignedCustomizationCode(metaData)}
-    {agencyAssignedCustomizationVersionCode(metaData)}
-    {declaration(metaData)}
+  private[services] def produceDeclarationMessage(metaData: MetaData): Elem = <md:MetaData xmlns="urn:wco:datamodel:WCO:DEC-DMS:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                                                                           xmlns:clm63055="urn:un:unece:uncefact:codelist:standard:UNECE:AgencyIdentificationCode:D12B"
+                                                                                           xmlns:ds="urn:wco:datamodel:WCO:MetaData_DS-DMS:2" xmlns:md="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2">
+    {wcoDataModelVersionCode(metaData)}{wcoTypeName(metaData)}{responsibleCountryCode(metaData)}{responsibleAgencyName(metaData)}{agencyAssignedCustomizationCode(metaData)}{agencyAssignedCustomizationVersionCode(metaData)}{declaration(metaData)}
   </md:MetaData>
 
   private def wcoDataModelVersionCode(metaData: MetaData): Elem = metaData.wcoDataModelVersionCode.map { version: String =>
