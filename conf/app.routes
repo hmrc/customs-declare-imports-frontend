@@ -3,3 +3,4 @@
 GET        /                             controllers.BeginController.displayBeginPage
 GET        /start                        controllers.StartController.displayStartPage
 GET        /enrol                        controllers.UnauthorisedController.enrol
+GET        /declaration                  controllers.DeclarationController.showDeclarationForm

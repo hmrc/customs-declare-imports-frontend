@@ -22,6 +22,7 @@ import domain.auth.SignedInUser
 import org.mockito.Mockito.when
 import org.mockito.{ArgumentMatcher, ArgumentMatchers}
 import play.api.Application
+import play.api.http.{HeaderNames, Status}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.{AnyContentAsEmpty, Result}
@@ -40,9 +41,9 @@ import scala.concurrent.Future
 trait AuthenticationBehaviours {
   this: CustomsPlaySpec =>
 
-  lazy val signedInUser = userFixture()
+  lazy val signedInUser: SignedInUser = userFixture()
 
-  lazy val notLoggedInException = new NoActiveSession("A user is not logged in") {}
+  lazy val notLoggedInException: NoActiveSession = new NoActiveSession("A user is not logged in") {}
 
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
@@ -50,8 +51,8 @@ trait AuthenticationBehaviours {
     .overrides(bind[AuthConnector].to(mockAuthConnector))
     .build()
 
-  class UserRequestScenario(method: String = "GET", uri: String = s"/${contextPath}/", headers: Map[String, String] = Map.empty, user: SignedInUser = signedInUser) {
-    val req = userRequest(method, uri, user, headers)
+  class UserRequestScenario(method: String = "GET", uri: String = s"/$contextPath/", headers: Map[String, String] = Map.empty, user: SignedInUser = signedInUser) {
+    val req: FakeRequest[AnyContentAsEmpty.type] = userRequest(method, uri, user, headers)
   }
 
   //noinspection ConvertExpressionToSAM
@@ -91,12 +92,27 @@ trait AuthenticationBehaviours {
   }
 
   protected def userRequestScenario(method: String = "GET",
-                                uri: String = s"/${contextPath}/",
-                                user: SignedInUser = signedInUser,
-                                headers: Map[String, String] = Map.empty)(test: (Future[Result]) => Unit): Unit = {
+                                    uri: String = s"/$contextPath/",
+                                    user: SignedInUser = signedInUser,
+                                    headers: Map[String, String] = Map.empty)(test: Future[Result] => Unit): Unit = {
     new UserRequestScenario(method, uri, headers, user) {
       test(route(app, req).get)
     }
+  }
+
+  // can't think of a better way to test this right now
+  // the assertion here is fairly meaningless: just says we got the one thrown by notSignedInScenaro(), which is a mock
+  // sadly, Play's route() test helper doesn't incorporate the ErrorHandler which would handle this
+  // therefore, there is little we can assert on other than "the expected exception was thrown"
+  // at least this *will* fail if the auth action is removed
+  def accessDeniedRequestScenarioTest(method: String, uri: String): Unit = {
+    val ex = intercept[NoActiveSession] {
+      requestScenario(method, uri) { resp =>
+        status(resp) must be (Status.SEE_OTHER)
+        header(HeaderNames.LOCATION, resp) must be(Some(s"/gg/sign-in?continue=$uri&origin=customs-declare-imports-frontend"))
+      }
+    }
+    ex must be theSameInstanceAs notLoggedInException
   }
 
   protected def userRequest(method: String, uri: String, user: SignedInUser, headers: Map[String, String] = Map.empty): FakeRequest[AnyContentAsEmpty.type] = {

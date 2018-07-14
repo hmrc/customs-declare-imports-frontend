@@ -18,26 +18,26 @@ package controllers
 
 import domain.features.{Feature, FeatureStatus}
 import play.api.http.Status
-import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours}
+import play.api.test.Helpers._
 
-class BeginControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours {
+class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours {
 
   val method = "GET"
-  val uri = uriWithContextPath("/")
+  val uri = uriWithContextPath("/declaration")
 
   s"$method $uri" should {
 
-    "return 200" in featureScenario(Feature.begin, FeatureStatus.enabled) {
-      signedInScenario() {
+    "return 200" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario(signedInUser) {
         userRequestScenario(method, uri, signedInUser) { resp =>
           status(resp) must be (Status.OK)
         }
       }
     }
 
-    "return HTML" in featureScenario(Feature.begin, FeatureStatus.enabled) {
-      signedInScenario() {
+    "return HTML" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario(signedInUser) {
         userRequestScenario(method, uri, signedInUser) { resp =>
           contentType(resp) must be (Some("text/html"))
           charset(resp) must be (Some("utf-8"))
@@ -45,23 +45,15 @@ class BeginControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours 
       }
     }
 
-    "display message" in featureScenario(Feature.begin, FeatureStatus.enabled) {
-      signedInScenario() {
-        userRequestScenario(method, uri, signedInUser) { resp =>
-          contentAsHtml(resp) should include element withClass("message").withValue("Well done. You have begun your first step on a long journey.")
-        }
-      }
-    }
-
-    "require authentication" in featureScenario(Feature.begin, FeatureStatus.enabled) {
+    "require authentication" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       notSignedInScenario() {
         accessDeniedRequestScenarioTest(method, uri)
       }
     }
 
-    "be behind feature switch" in featureScenario(Feature.begin, FeatureStatus.disabled) {
-      signedInScenario() {
-        userRequestScenario(method, uri) { resp =>
+    "be behind a feature switch" in featureScenario(Feature.declaration, FeatureStatus.disabled) {
+      signedInScenario(signedInUser) {
+        userRequestScenario(method, uri, signedInUser) { resp =>
           wasNotFound(resp)
         }
       }
