@@ -40,10 +40,16 @@ In order to facilitate continuous integration, A/B testing, and live support, th
 [feature toggles](https://martinfowler.com/articles/feature-toggles.html). In the provided implementation, "features" have
 one of three potential states:
 
-* `enabled` - the feature is "on". Endpoints behind a switch with this status will return as expected.
-* `disabled` - the feature is "off". Endpoints behind a switch with this status will return a `404 Not Found` status.
-* `suspended` - the feature is temporarily "unavailable". Endpoints behind a switch with this status will return a 
-`503 Service Unavailable` status.
+* `enabled` - the feature is "on".
+* `disabled` - the feature is "off".
+* `suspended` - the feature is "currently unavailable" (should only be used on a temporary basis for the purposes of live support).
+
+Features can be "switched" on a per-endpoint basis using the [switch action](https://github.com/hmrc/customs-declare-imports-frontend/blob/master/app/controllers/Actions.scala).
+Via this mechanism, `enabled` actions will return as expected, those that are `disabled` will return a `404 Not Found` status, and
+those that are `suspended` will return `503 Service Unavailable`.
+
+Features can also be "switched" on a more granular basis using conditional checks in code that utilise the feature status 
+check support provided in [AppConfig](https://github.com/hmrc/customs-declare-imports-frontend/blob/master/app/config/AppConfig.scala).
 
 In order to determine the status of any given feature, the following locations are checked, in order:
 
