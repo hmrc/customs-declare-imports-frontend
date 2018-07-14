@@ -29,20 +29,20 @@ class BeginControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours 
   s"$method $uri" should {
 
     "return 200" in signedInScenario() {
-      requestScenario(method, uri, user = Some(signedInUser)) { resp =>
+      userRequestScenario(method, uri, signedInUser) { resp =>
         status(resp) must be (Status.OK)
       }
     }
 
     "return HTML" in signedInScenario() {
-      requestScenario(method, uri, user = Some(signedInUser)) { resp =>
+      userRequestScenario(method, uri, signedInUser) { resp =>
         contentType(resp) must be (Some("text/html"))
         charset(resp) must be (Some("utf-8"))
       }
     }
 
     "display message" in signedInScenario() {
-      requestScenario(method, uri, user = Some(signedInUser)) { resp =>
+      userRequestScenario(method, uri, signedInUser) { resp =>
         contentAsHtml(resp) should include element withClass("message").withValue("Well done. You have begun your first step on a long journey.")
       }
     }

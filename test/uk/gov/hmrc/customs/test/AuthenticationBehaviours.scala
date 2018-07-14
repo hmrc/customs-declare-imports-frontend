@@ -16,32 +16,43 @@
 
 package uk.gov.hmrc.customs.test
 
+import java.util.UUID
+
 import domain.auth.SignedInUser
 import org.mockito.Mockito.when
 import org.mockito.{ArgumentMatcher, ArgumentMatchers}
 import play.api.Application
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import play.filters.csrf.CSRF.Token
+import play.filters.csrf.{CSRFConfigProvider, CSRFFilter}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrievals.{credentials, _}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 
 import scala.concurrent.Future
 
 trait AuthenticationBehaviours {
   this: CustomsPlaySpec =>
 
-  val signedInUser = userFixture()
+  lazy val signedInUser = userFixture()
 
-  val notLoggedInException = new NoActiveSession("A user is not logged in") {}
+  lazy val notLoggedInException = new NoActiveSession("A user is not logged in") {}
 
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
   override lazy val app: Application = GuiceApplicationBuilder()
     .overrides(bind[AuthConnector].to(mockAuthConnector))
     .build()
+
+  class UserRequestScenario(method: String = "GET", uri: String = s"/${contextPath}/", headers: Map[String, String] = Map.empty, user: SignedInUser = signedInUser) {
+    val req = userRequest(method, uri, user, headers)
+  }
 
   //noinspection ConvertExpressionToSAM
   val noBearerTokenMatcher: ArgumentMatcher[HeaderCarrier] = new ArgumentMatcher[HeaderCarrier] {
@@ -77,6 +88,31 @@ trait AuthenticationBehaviours {
       Future.failed(notLoggedInException)
     )
     test
+  }
+
+  protected def userRequestScenario(method: String = "GET",
+                                uri: String = s"/${contextPath}/",
+                                user: SignedInUser = signedInUser,
+                                headers: Map[String, String] = Map.empty)(test: (Future[Result]) => Unit): Unit = {
+    new UserRequestScenario(method, uri, headers, user) {
+      test(route(app, req).get)
+    }
+  }
+
+  protected def userRequest(method: String, uri: String, user: SignedInUser, headers: Map[String, String] = Map.empty): FakeRequest[AnyContentAsEmpty.type] = {
+    val session: Map[String, String] = Map(
+      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+      SessionKeys.userId -> user.internalId.getOrElse(randomString(8))
+    )
+    val cfg = app.injector.instanceOf[CSRFConfigProvider].get
+    val token = app.injector.instanceOf[CSRFFilter].tokenProvider.generateToken
+    val tags = Map(
+      Token.NameRequestTag -> cfg.tokenName,
+      Token.RequestTag -> token
+    )
+    FakeRequest(method, uri).
+      withHeaders((Map(cfg.headerName -> token) ++ headers).toSeq: _*).
+      withSession(session.toSeq: _*).copyFakeRequest(tags = tags)
   }
 
 }
