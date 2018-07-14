@@ -73,7 +73,7 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
     affinityGroup,
     internalId,
     Enrolments(
-      if (eori.isDefined) Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", eori.get)), "activated"))
+      if (eori.isDefined) Set(Enrolment(SignedInUser.cdsEnrolmentName, Seq(EnrolmentIdentifier(SignedInUser.eoriIdentifierKey, eori.get)), "activated"))
       else Set.empty
     )
   )

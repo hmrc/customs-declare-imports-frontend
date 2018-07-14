@@ -61,11 +61,9 @@ case class AuthAction(auth: AuthConnector)(implicit val appConfig: AppConfig, ec
 
   override def env: Environment = appConfig.environment
 
-  val authorisationPredicate: Predicate = Enrolment("HMRC-CUS-ORG")
-
   override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
-    authorised(authorisationPredicate)
+    authorised(SignedInUser.authorisationPredicate)
       .retrieve(credentials and name and email and affinityGroup and internalId and allEnrolments) {
         case credentials ~ name ~ email ~ affinityGroup ~ internalId ~ allEnrolments => Future.successful(Right(AuthenticatedRequest(
           request, SignedInUser(credentials, name, email, affinityGroup, internalId, allEnrolments)

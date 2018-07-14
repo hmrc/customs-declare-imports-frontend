@@ -61,7 +61,7 @@ trait AuthenticationBehaviours {
 
   //noinspection ConvertExpressionToSAM
   def cdsEnrollmentMatcher(user: SignedInUser): ArgumentMatcher[Predicate] = new ArgumentMatcher[Predicate] {
-    override def matches(p: Predicate): Boolean = p == Enrolment("HMRC-CUS-ORG") && user.enrolments.getEnrolment("HMRC-CUS-ORG").isDefined
+    override def matches(p: Predicate): Boolean = p == SignedInUser.authorisationPredicate && user.enrolments.getEnrolment(SignedInUser.cdsEnrolmentName).isDefined
   }
 
   def signedInScenario(user: SignedInUser = signedInUser)(test: => Unit): Unit = {

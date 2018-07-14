@@ -17,6 +17,7 @@
 package config
 
 import controllers.routes
+import domain.auth.SignedInUser
 import play.api.http.{HeaderNames, Status}
 import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
@@ -37,7 +38,7 @@ class ErrorHandlerSpec extends CustomsPlaySpec {
     }
 
     "handle insufficient enrolments authorisation exception" in {
-      val res = handler.resolveError(req, new InsufficientEnrolments("HMRC-CUS-ORG"))
+      val res = handler.resolveError(req, new InsufficientEnrolments(SignedInUser.cdsEnrolmentName))
       res.header.status must be(Status.SEE_OTHER)
       res.header.headers.get(HeaderNames.LOCATION) must be(Some(routes.UnauthorisedController.enrol().url))
     }
