@@ -85,4 +85,29 @@ class AppConfigSpec extends CustomsPlaySpec {
 
   }
 
+  "is feature on" should {
+
+    "return true for enabled feature" in {
+      val currentStatus = cfg.featureStatus(Feature.start)
+      cfg.setFeatureStatus(Feature.start, FeatureStatus.enabled)
+      cfg.isFeatureOn(Feature.start) must be (true)
+      cfg.setFeatureStatus(Feature.start, currentStatus)
+    }
+
+    "return false for disabled feature" in {
+      val currentStatus = cfg.featureStatus(Feature.start)
+      cfg.setFeatureStatus(Feature.start, FeatureStatus.disabled)
+      cfg.isFeatureOn(Feature.start) must be (false)
+      cfg.setFeatureStatus(Feature.start, currentStatus)
+    }
+
+    "return false for suspended feature" in {
+      val currentStatus = cfg.featureStatus(Feature.start)
+      cfg.setFeatureStatus(Feature.start, FeatureStatus.suspended)
+      cfg.isFeatureOn(Feature.start) must be (false)
+      cfg.setFeatureStatus(Feature.start, currentStatus)
+    }
+
+  }
+
 }

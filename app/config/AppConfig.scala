@@ -16,6 +16,7 @@
 
 package config
 
+import domain.features
 import domain.features.Feature.Feature
 import domain.features.FeatureStatus.FeatureStatus
 import domain.features.{Feature, FeatureStatus}
@@ -42,6 +43,8 @@ class AppConfig @Inject()(val runModeConfiguration: Configuration, val environme
       defaultFeatureStatus
     )
   )
+
+  def isFeatureOn(feature: Feature): Boolean = featureStatus(feature) == FeatureStatus.enabled
 
   def setFeatureStatus(feature: Feature, status: FeatureStatus): Unit = sys.props += (feature2Key(feature) -> status.toString)
 
