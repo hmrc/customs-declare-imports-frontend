@@ -52,22 +52,22 @@ class ActionsSpec extends CustomsPlaySpec with AuthenticationBehaviours {
 
   "switch action" should {
 
-    "return as normal for enabled feature" in new SwitchScenario(Feature.all, FeatureStatus.enabled) {
+    "return as normal for enabled feature" in new SwitchScenario(Feature.start, FeatureStatus.enabled) {
       val res = call(controller.action, r)
       status(res) must be(Status.OK)
-      appConfig.setFeatureStatus(Feature.all, previousStatus)
+      appConfig.setFeatureStatus(Feature.start, previousStatus)
     }
 
-    "return not found for disabled feature" in new SwitchScenario(Feature.all, FeatureStatus.disabled) {
+    "return not found for disabled feature" in new SwitchScenario(Feature.start, FeatureStatus.disabled) {
       val res = call(controller.action, r)
       status(res) must be(Status.NOT_FOUND)
-      appConfig.setFeatureStatus(Feature.all, previousStatus)
+      appConfig.setFeatureStatus(Feature.start, previousStatus)
     }
 
-    "return service unavailable for suspended feature" in new SwitchScenario(Feature.all, FeatureStatus.suspended) {
+    "return service unavailable for suspended feature" in new SwitchScenario(Feature.start, FeatureStatus.suspended) {
       val res = call(controller.action, r)
       status(res) must be(Status.SERVICE_UNAVAILABLE)
-      appConfig.setFeatureStatus(Feature.all, previousStatus)
+      appConfig.setFeatureStatus(Feature.start, previousStatus)
     }
 
   }

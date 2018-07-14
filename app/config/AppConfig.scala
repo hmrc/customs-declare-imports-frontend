@@ -16,7 +16,6 @@
 
 package config
 
-import domain.features
 import domain.features.Feature.Feature
 import domain.features.FeatureStatus.FeatureStatus
 import domain.features.{Feature, FeatureStatus}
