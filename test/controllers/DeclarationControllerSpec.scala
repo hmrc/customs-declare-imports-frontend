@@ -17,9 +17,7 @@
 package controllers
 
 import domain.features.{Feature, FeatureStatus}
-import play.api.http.Status
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours}
-import play.api.test.Helpers._
 
 class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours {
 
@@ -30,18 +28,13 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
 
     "return 200" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(method, uri, signedInUser) { resp =>
-          status(resp) must be (Status.OK)
-        }
+        userRequestScenario(method, uri, signedInUser) { wasOk }
       }
     }
 
     "return HTML" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(method, uri, signedInUser) { resp =>
-          contentType(resp) must be (Some("text/html"))
-          charset(resp) must be (Some("utf-8"))
-        }
+        userRequestScenario(method, uri, signedInUser) { wasHtml }
       }
     }
 
@@ -53,9 +46,7 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
 
     "be behind a feature switch" in featureScenario(Feature.declaration, FeatureStatus.disabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(method, uri, signedInUser) { resp =>
-          wasNotFound(resp)
-        }
+        userRequestScenario(method, uri, signedInUser) { wasNotFound }
       }
     }
 

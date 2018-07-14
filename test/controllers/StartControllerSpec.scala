@@ -17,7 +17,6 @@
 package controllers
 
 import domain.features.{Feature, FeatureStatus}
-import play.api.http.Status
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, FeatureSwitchBehaviours}
 
@@ -29,16 +28,11 @@ class StartControllerSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
   s"$method $uri" should {
 
     "return 200" in featureScenario(Feature.start, FeatureStatus.enabled) {
-      requestScenario(method, uri) { resp =>
-        status(resp) must be (Status.OK)
-      }
+      requestScenario(method, uri) { wasOk }
     }
 
     "return HTML" in featureScenario(Feature.start, FeatureStatus.enabled) {
-      requestScenario(method, uri) { resp =>
-        contentType(resp) must be (Some("text/html"))
-        charset(resp) must be (Some("utf-8"))
-      }
+      requestScenario(method, uri) { wasHtml }
     }
 
     "display 'hello world' message" in featureScenario(Feature.start, FeatureStatus.enabled) {
@@ -54,9 +48,7 @@ class StartControllerSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
     }
 
     "be behind feature switch" in featureScenario(Feature.start, FeatureStatus.disabled) {
-      requestScenario(method, uri) { resp =>
-        status(resp) must be (Status.NOT_FOUND)
-      }
+      requestScenario(method, uri) { wasNotFound }
     }
 
     "include a message when begin page is not on" in featureScenario(Map(Feature.start -> FeatureStatus.enabled, Feature.begin -> FeatureStatus.disabled)) {

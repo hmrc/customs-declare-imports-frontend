@@ -62,7 +62,14 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
     }
   }
 
+  protected def wasOk(resp: Future[Result]): Unit = status(resp) must be (Status.OK)
+
   protected def wasNotFound(resp: Future[Result]): Unit = status(resp) must be (Status.NOT_FOUND)
+
+  protected def wasHtml(resp: Future[Result]): Unit = {
+    contentType(resp) must be (Some("text/html"))
+    charset(resp) must be (Some("utf-8"))
+  }
 
   protected def uriWithContextPath(path: String): String = s"$contextPath$path"
 
