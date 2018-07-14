@@ -16,34 +16,41 @@
 
 package controllers
 
+import domain.features.{Feature, FeatureStatus}
 import play.api.http.{HeaderNames, Status}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.NoActiveSession
-import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec}
+import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours}
 
-class BeginControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours {
+class BeginControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours {
 
   val method = "GET"
   val uri = uriWithContextPath("/")
 
   s"$method $uri" should {
 
-    "return 200" in signedInScenario() {
-      userRequestScenario(method, uri, signedInUser) { resp =>
-        status(resp) must be (Status.OK)
+    "return 200" in featureScenario(Feature.begin, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri, signedInUser) { resp =>
+          status(resp) must be (Status.OK)
+        }
       }
     }
 
-    "return HTML" in signedInScenario() {
-      userRequestScenario(method, uri, signedInUser) { resp =>
-        contentType(resp) must be (Some("text/html"))
-        charset(resp) must be (Some("utf-8"))
+    "return HTML" in featureScenario(Feature.begin, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri, signedInUser) { resp =>
+          contentType(resp) must be (Some("text/html"))
+          charset(resp) must be (Some("utf-8"))
+        }
       }
     }
 
-    "display message" in signedInScenario() {
-      userRequestScenario(method, uri, signedInUser) { resp =>
-        contentAsHtml(resp) should include element withClass("message").withValue("Well done. You have begun your first step on a long journey.")
+    "display message" in featureScenario(Feature.begin, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri, signedInUser) { resp =>
+          contentAsHtml(resp) should include element withClass("message").withValue("Well done. You have begun your first step on a long journey.")
+        }
       }
     }
 
@@ -52,14 +59,24 @@ class BeginControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours 
     // sadly, Play's route() test helper doesn't incorporate the ErrorHandler which would handle this
     // therefore, there is little we can assert on other than "the expected exception was thrown"
     // at least this *will* fail if the auth action is removed
-    "require authentication" in notSignedInScenario() {
-      val ex = intercept[NoActiveSession] {
-        requestScenario(method, uri) { resp =>
-          status(resp) must be (Status.SEE_OTHER)
-          header(HeaderNames.LOCATION, resp) must be(Some(s"/gg/sign-in?continue=${uri}&origin=customs-declare-imports-frontend"))
+    "require authentication" in featureScenario(Feature.begin, FeatureStatus.enabled) {
+      notSignedInScenario() {
+        val ex = intercept[NoActiveSession] {
+          requestScenario(method, uri) { resp =>
+            status(resp) must be (Status.SEE_OTHER)
+            header(HeaderNames.LOCATION, resp) must be(Some(s"/gg/sign-in?continue=${uri}&origin=customs-declare-imports-frontend"))
+          }
+        }
+        ex must be theSameInstanceAs(notLoggedInException)
+      }
+    }
+
+    "be behind feature switch" in featureScenario(Feature.begin, FeatureStatus.disabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          status(resp) must be (Status.NOT_FOUND)
         }
       }
-      ex must be theSameInstanceAs(notLoggedInException)
     }
 
   }

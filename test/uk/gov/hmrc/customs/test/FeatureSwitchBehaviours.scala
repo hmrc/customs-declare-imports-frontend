@@ -23,12 +23,18 @@ import domain.features.FeatureStatus.FeatureStatus
 trait FeatureSwitchBehaviours {
   this: CustomsPlaySpec =>
 
-  def featureScenario(feature: Feature, status: FeatureStatus = FeatureStatus.enabled)(test: => Unit): Unit = {
-    sys.props += (s"microservice.services.customs-declare-imports-frontend.features.${feature}" -> status.toString)
+  def featureScenario(feature: Feature, status: FeatureStatus = FeatureStatus.enabled)(test: => Unit): Unit = featureScenario(Map(feature -> status))(test)
+
+  def featureScenario(features: Seq[Feature], status: FeatureStatus)(test: => Unit): Unit = featureScenario(features.map { feature =>
+    (feature, status)
+  }.toMap)(test)
+
+  def featureScenario(features: Map[Feature, FeatureStatus])(test: => Unit): Unit = {
+    features.foreach(entry => sys.props += (s"microservice.services.customs-declare-imports-frontend.features.${entry._1}" -> entry._2.toString))
     try {
       test
     } finally {
-      System.clearProperty(s"microservice.services.customs-declare-imports-frontend.features.${feature}")
+      features.foreach(entry => System.clearProperty(s"microservice.services.customs-declare-imports-frontend.features.${entry._1}"))
     }
   }
 
