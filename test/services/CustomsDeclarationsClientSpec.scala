@@ -16,12 +16,30 @@
 
 package services
 
-import domain.declaration.MetaData
+import domain.declaration.{Declaration, MetaData}
+import play.api.http.{ContentTypes, HeaderNames}
+import play.api.libs.json.Writes
+import play.api.mvc.Codec
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.hooks.HttpHook
+import uk.gov.hmrc.http.logging.Authorization
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.play.http.ws._
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
 
-  val client = new CustomsDeclarationsClient
+  val client = new CustomsDeclarationsClient(appConfig, app.injector.instanceOf[HttpClient])
+
+  "submit import declaration" should {
+
+    "POST metadata to Customs Declarations" in submitDeclarationScenario(MetaData(Declaration())) { resp =>
+      resp.futureValue must be(true)
+    }
+
+  }
 
   "produce declaration message" should {
 
@@ -158,6 +176,55 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "Declaration").size must be(1)
       xml
+    }
+
+  }
+
+  def submitDeclarationScenario(metaData: MetaData,
+                                badgeIdentifier: Option[String] = None,
+                                forceServerError: Boolean = false,
+                                hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
+                               (test: Future[Boolean] => Unit): Unit = {
+    val messageProducer = new CustomsDeclarationsMessageProducer {}
+    val expectedUrl: String = appConfig.submitImportDeclarationEndpoint
+    val expectedBody: String = messageProducer.produceDeclarationMessage(metaData).mkString
+    val expectedHeaders: Map[String, String] = Map(
+      HeaderNames.ACCEPT -> "application/vnd.hmrc.1.0+xml",
+      HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
+    ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id) ++ hc.authorization.map(auth => HeaderNames.AUTHORIZATION -> s"Bearer [${auth.value}]")
+    val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError)
+    val client = new CustomsDeclarationsClient(appConfig, http)
+    test(client.submitImportDeclaration(metaData, badgeIdentifier)(hc, ec))
+  }
+
+  class MockHttpClient(expectedUrl: String, expectedBody: String, expectedHeaders: Map[String, String], forceServerError: Boolean = false) extends HttpClient with WSGet with WSPut with WSPost with WSDelete with WSPatch {
+    override val hooks: Seq[HttpHook] = Seq.empty
+
+    override def POST[I, O](url: String,
+                            body: I,
+                            headers: Seq[(String, String)])
+                           (implicit wts: Writes[I],
+                            rds: HttpReads[O],
+                            hc: HeaderCarrier,
+                            ec: ExecutionContext): Future[O] = (url, body, headers) match {
+      case _ if !isValidImportDeclarationXml(body.asInstanceOf[String]) => throw new BadRequestException(s"Expected: valid XML: $expectedBody. \nGot: invalid XML: $body")
+      case _ if !isAuthenticated(headers.toMap, hc) => throw new UnauthorizedException("Submission declaration request was not authenticated")
+      case _ if forceServerError => throw new InternalServerException("Customs Declarations has gone bad.")
+      case _ if url == expectedUrl && body == expectedBody && headers.toMap == expectedHeaders => Future.successful("".asInstanceOf[O])
+      case _ => throw new BadRequestException(s"Expected: \nurl = '$expectedUrl', \nbody = '$expectedBody', \nheaders = '$expectedHeaders'.\nGot: \nurl = '$url', \nbody = '$body', \nheaders = '$headers'.")
+    }
+
+    private val bearerToken = "^Bearer \\[(.+)\\]$".r
+
+    private def isAuthenticated(headers: Map[String, String], hc: HeaderCarrier): Boolean = {
+      hc.authorization.isDefined &&
+        headers.get(HeaderNames.AUTHORIZATION).isDefined &&
+        hc.authorization.get.value == bearer(headers(HeaderNames.AUTHORIZATION))
+    }
+
+    private def bearer(bearer: String) = {
+      val bearerToken(token) = bearer
+      token
     }
 
   }

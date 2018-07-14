@@ -37,6 +37,8 @@ class AppConfig @Inject()(val runModeConfiguration: Configuration, val environme
   lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   lazy val defaultFeatureStatus = FeatureStatus.withName(loadConfig(feature2Key(Feature.default)))
 
+  lazy val submitImportDeclarationEndpoint: String = baseUrl("customs-declarations") + getConfString("customs-declarations.submit-uri", throw new IllegalStateException("Missing configuration for Customs Declarations submission URI"))
+
   def featureStatus(feature: Feature): FeatureStatus = sys.props.get(feature2Key(feature)).map(str2FeatureStatus _).getOrElse(
     runModeConfiguration.getString(feature2Key(feature)).map(str2FeatureStatus _).getOrElse(
       defaultFeatureStatus

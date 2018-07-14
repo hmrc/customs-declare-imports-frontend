@@ -23,21 +23,36 @@ import javax.xml.transform.Source
 import javax.xml.transform.stream.StreamSource
 import javax.xml.validation.{Schema, SchemaFactory}
 
-import scala.xml.Elem
+import scala.xml.{Elem, SAXException}
 
 trait XmlBehaviours {
   this: CustomsPlaySpec =>
 
+  val importDeclarationSchemaResources = Seq("/DocumentMetaData_2_DMS.xsd", "/WCO_DEC_2_DMS.xsd")
+
   def validXmlScenario(schemas: Seq[String] = Seq.empty)(test: => Elem): Unit = {
-    val xml = test
+    validateAgainstSchemaResources(test.mkString, schemas)
+  }
+  def validDeclarationXmlScenario()(test: => Elem): Unit = {
+    validXmlScenario(importDeclarationSchemaResources)(test)
+  }
+
+  protected def isValidImportDeclarationXml(xml: String): Boolean = {
+    try {
+      validateAgainstSchemaResources(xml, importDeclarationSchemaResources)
+      true
+    } catch {
+      case _: SAXException => false
+    }
+  }
+
+  private def validateAgainstSchemaResources(xml: String, schemas: Seq[String]): Unit = {
     val schema: Schema = {
       val sources = schemas.map(res => getClass.getResource(res).toString).map(systemId => new StreamSource(systemId)).toArray[Source]
       SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(sources)
     }
     val validator = schema.newValidator()
-    validator.validate(new StreamSource(new StringReader(xml.toString)))
+    validator.validate(new StreamSource(new StringReader(xml)))
   }
-
-  def validDeclarationXmlScenario()(test: => Elem): Unit = validXmlScenario(Seq("/DocumentMetaData_2_DMS.xsd", "/WCO_DEC_2_DMS.xsd"))(test)
 
 }

@@ -16,11 +16,33 @@
 
 package services
 
+import config.AppConfig
 import domain.declaration.MetaData
+import play.api.http.{ContentTypes, HeaderNames}
+import play.api.mvc.Codec
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
+import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.Elem
 
-class CustomsDeclarationsClient {
+class CustomsDeclarationsClient(appConfig: AppConfig, httpClient: HttpClient) extends CustomsDeclarationsMessageProducer {
+
+  def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    val url: String = appConfig.submitImportDeclarationEndpoint
+    val body: String = produceDeclarationMessage(metaData).mkString
+    val headers: Seq[(String, String)] = Seq(
+      HeaderNames.ACCEPT -> "application/vnd.hmrc.1.0+xml",
+      HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
+    ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id) ++ hc.authorization.map(auth => HeaderNames.AUTHORIZATION -> s"Bearer [${auth.value}]")
+    httpClient.POST[String, String](url, body, headers).map { _: String =>
+      // if we get any kind of 2xx response, then can we assume that it was successful?
+      true
+    }
+  }
+}
+
+trait CustomsDeclarationsMessageProducer {
 
   private[services] def produceDeclarationMessage(metaData: MetaData): Elem = <md:MetaData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                                                                            xmlns="urn:wco:datamodel:WCO:DEC-DMS:2"

@@ -54,6 +54,10 @@ class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
       cfg.environment must be (app.injector.instanceOf[Environment])
     }
 
+    "have a submit import declarations endpoint" in {
+      cfg.submitImportDeclarationEndpoint must be ("http://localhost:9820/")
+    }
+
   }
 
   "feature status" should {

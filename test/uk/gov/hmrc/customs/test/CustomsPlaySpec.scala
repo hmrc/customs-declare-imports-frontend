@@ -22,6 +22,7 @@ import config.AppConfig
 import domain.auth.SignedInUser
 import domain.declaration.Declaration
 import org.jsoup.nodes.Element
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.libs.concurrent.Execution.Implicits
@@ -35,7 +36,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enr
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
-trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatchers with MockitoSugar {
+trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatchers with MockitoSugar with ScalaFutures {
 
   implicit val mat = app.materializer
   implicit val ec: ExecutionContext = Implicits.defaultContext
