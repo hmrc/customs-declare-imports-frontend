@@ -18,9 +18,9 @@ package config
 
 import domain.features.{Feature, FeatureStatus}
 import play.api.Environment
-import uk.gov.hmrc.customs.test.CustomsPlaySpec
+import uk.gov.hmrc.customs.test.{CustomsPlaySpec, FeatureSwitchBehaviours}
 
-class AppConfigSpec extends CustomsPlaySpec {
+class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
 
   val cfg = app.injector.instanceOf[AppConfig]
 
@@ -62,16 +62,15 @@ class AppConfigSpec extends CustomsPlaySpec {
       cfg.featureStatus(Feature.start) must be (cfg.defaultFeatureStatus)
     }
 
-    "fall back to system properties for unconfigured feature" in {
-      sys.props += ("microservice.services.customs-declare-imports-frontend.features.start" -> FeatureStatus.enabled.toString)
+    "fall back to system properties for unconfigured feature" in featureScenario(Feature.start, FeatureStatus.enabled) {
       cfg.featureStatus(Feature.start) must be (FeatureStatus.enabled)
-      System.clearProperty("microservice.services.customs-declare-imports-frontend.features.start")
     }
 
   }
 
   "set feature status" should {
 
+    // for the sake of explicitness and thoroughness, don't use featureScenario test harness for this one
     "override app config" in {
       val newStatus = cfg.defaultFeatureStatus match {
         case FeatureStatus.enabled => FeatureStatus.disabled
@@ -87,25 +86,16 @@ class AppConfigSpec extends CustomsPlaySpec {
 
   "is feature on" should {
 
-    "return true for enabled feature" in {
-      val currentStatus = cfg.featureStatus(Feature.start)
-      cfg.setFeatureStatus(Feature.start, FeatureStatus.enabled)
+    "return true for enabled feature" in featureScenario(Feature.start, FeatureStatus.enabled) {
       cfg.isFeatureOn(Feature.start) must be (true)
-      cfg.setFeatureStatus(Feature.start, currentStatus)
     }
 
-    "return false for disabled feature" in {
-      val currentStatus = cfg.featureStatus(Feature.start)
-      cfg.setFeatureStatus(Feature.start, FeatureStatus.disabled)
+    "return false for disabled feature" in featureScenario(Feature.start, FeatureStatus.disabled) {
       cfg.isFeatureOn(Feature.start) must be (false)
-      cfg.setFeatureStatus(Feature.start, currentStatus)
     }
 
-    "return false for suspended feature" in {
-      val currentStatus = cfg.featureStatus(Feature.start)
-      cfg.setFeatureStatus(Feature.start, FeatureStatus.suspended)
+    "return false for suspended feature" in featureScenario(Feature.start, FeatureStatus.suspended) {
       cfg.isFeatureOn(Feature.start) must be (false)
-      cfg.setFeatureStatus(Feature.start, currentStatus)
     }
 
   }

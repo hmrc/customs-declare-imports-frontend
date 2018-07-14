@@ -47,7 +47,7 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
     val req = basicRequest(method, uri, headers)
   }
 
-  protected def basicRequest(method: String, uri: String, headers: Map[String, String] = Map.empty): FakeRequest[AnyContentAsEmpty.type] = FakeRequest(method, uri).withHeaders(headers.toSeq: _*)
+  protected def basicRequest(method: String = "GET", uri: String = "/", headers: Map[String, String] = Map.empty): FakeRequest[AnyContentAsEmpty.type] = FakeRequest(method, uri).withHeaders(headers.toSeq: _*)
 
   protected def contentAsHtml(of: Future[Result])(implicit timeout: Timeout): Element = contentAsString(of)(timeout, mat).asBodyFragment
 
