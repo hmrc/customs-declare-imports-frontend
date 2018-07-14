@@ -1,5 +1,5 @@
 # microservice specific routes
 
-GET        /                             controllers.BeginController.displayStepOne
+GET        /                             controllers.BeginController.displayBeginPage
 GET        /start                        controllers.StartController.displayStartPage
 GET        /enrol                        controllers.UnauthorisedController.enrol

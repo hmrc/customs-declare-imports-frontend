@@ -27,7 +27,7 @@ import scala.concurrent.Future
 @Singleton
 class StartController @Inject()(val messagesApi: MessagesApi)(implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  val displayStartPage: Action[AnyContent] = Action.async { implicit request =>
+  def displayStartPage: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(views.html.start()))
   }
 

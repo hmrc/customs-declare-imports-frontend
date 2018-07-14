@@ -27,7 +27,7 @@ import scala.concurrent.Future
 @Singleton
 class BeginController @Inject()(actions: Actions, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  def displayStepOne: Action[AnyContent] = actions.auth.async { implicit req =>
+  def displayBeginPage: Action[AnyContent] = actions.auth.async { implicit req =>
     Future.successful(Ok(views.html.begin()))
   }
 

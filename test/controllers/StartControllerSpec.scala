@@ -40,6 +40,10 @@ class StartControllerSpec extends CustomsPlaySpec {
       contentAsHtml(resp) should include element withName("h1").withValue("Hello from customs-declare-imports-frontend !")
     }
 
+    "include link to begin page" in requestScenario(method, uri) { resp =>
+      contentAsHtml(resp) should include element withName("a").withClass("button-start").withAttrValue("href", routes.BeginController.displayBeginPage().url)
+    }
+
   }
 
 }
