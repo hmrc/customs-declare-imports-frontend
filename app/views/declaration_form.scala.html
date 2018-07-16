@@ -15,9 +15,37 @@
  *@
 
 @import config.AppConfig
+@import controllers.routes
 @import domain.auth.AuthenticatedRequest
+@import uk.gov.hmrc.play.views.html.helpers
 
-@()(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[DeclarationForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(title = "Declare an Import", bodyClasses = None) {
+    @helpers.form(routes.DeclarationController.handleDeclarationForm) {
+        <fieldset class="form-field-group">
+            <legend>Metadata</legend>
+            <div class="form-field">
+                @helpers.input(form("wcoDataModelVersionCode"), '_label -> "WCO Data Model Version Code", '_inputClass -> "form-control--block")
+            </div>
+            <div class="form-field">
+                @helpers.input(form("wcoTypeName"), '_label -> "WCO Type Name", '_inputClass -> "form-control--block")
+            </div>
+            <div class="form-field">
+                @helpers.input(form("responsibleCountryCode"), '_label -> "Responsible Country Code", '_inputClass -> "form-control--block")
+            </div>
+            <div class="form-field">
+                @helpers.input(form("responsibleAgencyName"), '_label -> "Responsible Agency Name", '_inputClass -> "form-control--block")
+            </div>
+            <div class="form-field">
+                @helpers.input(form("agencyAssignedCustomizationCode"), '_label -> "Agency Assigned Customization Code", '_inputClass -> "form-control--block")
+            </div>
+            <div class="form-field">
+                @helpers.input(form("agencyAssignedCustomizationVersionCode"), '_label -> "Agency Assigned Customization Version Code", '_inputClass -> "form-control--block")
+            </div>
+            <div class="form-field">
+                <button class="button" type="submit">Submit</button>
+            </div>
+        </fieldset>
+    }
 }
