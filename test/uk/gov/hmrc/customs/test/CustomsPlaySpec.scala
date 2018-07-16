@@ -54,6 +54,8 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
 
   protected def contentAsHtml(of: Future[Result])(implicit timeout: Timeout): Element = contentAsString(of)(timeout, mat).asBodyFragment
 
+  protected def includesHtmlInput(in: Future[Result], `type`: String, name: String)(implicit timeout: Timeout): Unit = contentAsHtml(in)(timeout) should include element withName("input").withAttrValue("type", `type`).withAttrValue("name", name)
+
   protected def requestScenario(method: String = "GET",
                                 uri: String = s"/$contextPath/",
                                 headers: Map[String, String] = Map.empty)(test: Future[Result] => Unit): Unit = {
