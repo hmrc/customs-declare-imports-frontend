@@ -16,28 +16,22 @@
 
 package controllers
 
-import play.api.http.Status
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.CustomsPlaySpec
 
-class BeginImportDeclarationControllerSpec extends CustomsPlaySpec {
+class UnauthorisedControllerSpec extends CustomsPlaySpec {
 
   val method = "GET"
-  val uri = uriWithContextPath("/begin")
+  val uri = uriWithContextPath("/enrol")
 
   s"$method $uri" should {
 
-    "return 200" in requestScenario(method, uri) { resp =>
-      status(resp) must be (Status.OK)
-    }
+    "return 200" in requestScenario(method, uri) { wasOk }
 
-    "return HTML" in requestScenario(method, uri) { resp =>
-      contentType(resp) must be (Some("text/html"))
-      charset(resp) must be (Some("utf-8"))
-    }
+    "return HTML" in requestScenario(method, uri) { wasHtml }
 
     "display message" in requestScenario(method, uri) { resp =>
-      contentAsHtml(resp) should include element withClass("message").withValue("Well done. You have begun your first step on a long journey.")
+      contentAsHtml(resp) should include element withClass("message").withValue("You need to enrol with CDS.")
     }
 
   }

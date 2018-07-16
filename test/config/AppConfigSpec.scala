@@ -18,16 +18,16 @@ package config
 
 import domain.features.{Feature, FeatureStatus}
 import play.api.Environment
-import uk.gov.hmrc.customs.test.CustomsPlaySpec
+import uk.gov.hmrc.customs.test.{CustomsPlaySpec, FeatureSwitchBehaviours}
 
-class AppConfigSpec extends CustomsPlaySpec {
+class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
 
   val cfg = app.injector.instanceOf[AppConfig]
 
   "the config" should {
 
     "have assets prefix" in {
-      cfg.assetsPrefix must be ("http://localhost:9032/assets/2.149.0")
+      cfg.assetsPrefix must be ("http://localhost:9032/assets/4.3.2")
     }
 
     "have analytics token" in {
@@ -54,6 +54,10 @@ class AppConfigSpec extends CustomsPlaySpec {
       cfg.environment must be (app.injector.instanceOf[Environment])
     }
 
+    "have a submit import declarations endpoint" in {
+      cfg.submitImportDeclarationEndpoint must be ("http://localhost:9820/")
+    }
+
   }
 
   "feature status" should {
@@ -62,16 +66,15 @@ class AppConfigSpec extends CustomsPlaySpec {
       cfg.featureStatus(Feature.start) must be (cfg.defaultFeatureStatus)
     }
 
-    "fall back to system properties for unconfigured feature" in {
-      sys.props += ("microservice.services.customs-declare-imports-frontend.features.start" -> FeatureStatus.enabled.toString)
+    "fall back to system properties for unconfigured feature" in featureScenario(Feature.start, FeatureStatus.enabled) {
       cfg.featureStatus(Feature.start) must be (FeatureStatus.enabled)
-      System.clearProperty("microservice.services.customs-declare-imports-frontend.features.start")
     }
 
   }
 
   "set feature status" should {
 
+    // for the sake of explicitness and thoroughness, don't use featureScenario test harness for this one
     "override app config" in {
       val newStatus = cfg.defaultFeatureStatus match {
         case FeatureStatus.enabled => FeatureStatus.disabled
@@ -81,6 +84,22 @@ class AppConfigSpec extends CustomsPlaySpec {
       cfg.featureStatus(Feature.default) must be (newStatus)
       System.clearProperty("microservice.services.customs-declare-imports-frontend.features.default")
       cfg.featureStatus(Feature.default) must be (cfg.defaultFeatureStatus)
+    }
+
+  }
+
+  "is feature on" should {
+
+    "return true for enabled feature" in featureScenario(Feature.start, FeatureStatus.enabled) {
+      cfg.isFeatureOn(Feature.start) must be (true)
+    }
+
+    "return false for disabled feature" in featureScenario(Feature.start, FeatureStatus.disabled) {
+      cfg.isFeatureOn(Feature.start) must be (false)
+    }
+
+    "return false for suspended feature" in featureScenario(Feature.start, FeatureStatus.suspended) {
+      cfg.isFeatureOn(Feature.start) must be (false)
     }
 
   }

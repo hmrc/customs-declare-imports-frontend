@@ -16,28 +16,45 @@
 
 package controllers
 
-import play.api.http.Status
+import domain.features.{Feature, FeatureStatus}
 import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.CustomsPlaySpec
+import uk.gov.hmrc.customs.test.{CustomsPlaySpec, FeatureSwitchBehaviours}
 
-class StartControllerSpec extends CustomsPlaySpec {
+class StartControllerSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
 
   val method = "GET"
-  val uri = uriWithContextPath("/")
+  val uri = uriWithContextPath("/start")
 
   s"$method $uri" should {
 
-    "return 200" in requestScenario(method, uri) { resp =>
-      status(resp) must be (Status.OK)
+    "return 200" in featureScenario(Feature.start, FeatureStatus.enabled) {
+      requestScenario(method, uri) { wasOk }
     }
 
-    "return HTML" in requestScenario(method, uri) { resp =>
-      contentType(resp) must be (Some("text/html"))
-      charset(resp) must be (Some("utf-8"))
+    "return HTML" in featureScenario(Feature.start, FeatureStatus.enabled) {
+      requestScenario(method, uri) { wasHtml }
     }
 
-    "display 'hello world' message" in requestScenario(method, uri) { resp =>
-      contentAsHtml(resp) should include element withName("h1").withValue("Hello from customs-declare-imports-frontend !")
+    "display 'hello world' message" in featureScenario(Feature.start, FeatureStatus.enabled) {
+      requestScenario(method, uri) { resp =>
+        contentAsHtml(resp) should include element withName("h1").withValue("Hello from customs-declare-imports-frontend !")
+      }
+    }
+
+    "include link to begin page" in featureScenario(Seq(Feature.start, Feature.begin), FeatureStatus.enabled) {
+      requestScenario(method, uri) { resp =>
+        contentAsHtml(resp) should include element withName("a").withClass("button-start").withAttrValue("href", routes.BeginController.displayBeginPage().url)
+      }
+    }
+
+    "be behind feature switch" in featureScenario(Feature.start, FeatureStatus.disabled) {
+      requestScenario(method, uri) { wasNotFound }
+    }
+
+    "include a message when begin page is not on" in featureScenario(Map(Feature.start -> FeatureStatus.enabled, Feature.begin -> FeatureStatus.disabled)) {
+      requestScenario(method, uri) { resp =>
+        contentAsHtml(resp) should include element withClass("message").withValue("Sorry, you cannot begin today.")
+      }
     }
 
   }

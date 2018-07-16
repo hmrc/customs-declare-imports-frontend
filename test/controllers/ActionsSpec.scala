@@ -18,56 +18,39 @@ package controllers
 
 import config.ErrorHandler
 import domain.features.Feature.Feature
-import domain.features.FeatureStatus.FeatureStatus
 import domain.features.{Feature, FeatureStatus}
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
-import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec}
+import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours}
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 
 import scala.concurrent.Future
 
-class ActionsSpec extends CustomsPlaySpec with AuthenticationBehaviours {
+class ActionsSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours {
 
   val actions = new Actions(mockAuthConnector, app.injector.instanceOf[ErrorHandler])
 
+  val switchedController = new MySwitchedController(actions, Feature.start)
+
   val authenticatedController = new MyAuthedController(actions)
-
-  val userWithNoCdsEnrolment = signedInUser.copy(enrolments = Enrolments(Set.empty))
-
-  val userWithNoEORI = signedInUser.copy(enrolments = Enrolments(Set(Enrolment("HMRC-CUS-ORG", identifiers = Seq.empty, "activated"))))
-
-  val userWithInactiveCdsEnrolment = signedInUser.copy(enrolments = Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", randomString(8))), "inactive"))))
-
-  val r = FakeRequest()
-
-  class SwitchScenario(feature: Feature, status: FeatureStatus) {
-    val previousStatus = appConfig.featureStatus(feature)
-    appConfig.setFeatureStatus(feature, status)
-    val controller = new MySwitchedController(actions, feature)
-  }
 
   "switch action" should {
 
-    "return as normal for enabled feature" in new SwitchScenario(Feature.all, FeatureStatus.enabled) {
-      val res = call(controller.action, r)
+    "return as normal for enabled feature" in featureScenario(switchedController.feature, FeatureStatus.enabled) {
+      val res = call(switchedController.action, basicRequest())
       status(res) must be(Status.OK)
-      appConfig.setFeatureStatus(Feature.all, previousStatus)
+      contentAsString(res) must be (s"${switchedController.feature} is enabled")
     }
 
-    "return not found for disabled feature" in new SwitchScenario(Feature.all, FeatureStatus.disabled) {
-      val res = call(controller.action, r)
+    "return not found for disabled feature" in featureScenario(switchedController.feature, FeatureStatus.disabled) {
+      val res = call(switchedController.action, basicRequest())
       status(res) must be(Status.NOT_FOUND)
-      appConfig.setFeatureStatus(Feature.all, previousStatus)
     }
 
-    "return service unavailable for suspended feature" in new SwitchScenario(Feature.all, FeatureStatus.suspended) {
-      val res = call(controller.action, r)
+    "return service unavailable for suspended feature" in featureScenario(switchedController.feature, FeatureStatus.suspended) {
+      val res = call(switchedController.action, basicRequest())
       status(res) must be(Status.SERVICE_UNAVAILABLE)
-      appConfig.setFeatureStatus(Feature.all, previousStatus)
     }
 
   }
@@ -75,7 +58,7 @@ class ActionsSpec extends CustomsPlaySpec with AuthenticationBehaviours {
   "auth action" should {
 
     "return as normal when user signed in with sufficient enrolments" in signedInScenario() {
-      val res = call(authenticatedController.action, r)
+      val res = call(authenticatedController.action, basicRequest())
       status(res) must be(Status.OK)
       contentAsString(res) must be(signedInUser.toString)
     }
@@ -84,7 +67,7 @@ class ActionsSpec extends CustomsPlaySpec with AuthenticationBehaviours {
 
 }
 
-class MySwitchedController(actions: Actions, feature: Feature) extends BaseController {
+class MySwitchedController(actions: Actions, val feature: Feature) extends BaseController {
 
   def action: Action[AnyContent] = actions.switch(feature).async { implicit req =>
     Future.successful(Ok(s"${feature} is enabled"))

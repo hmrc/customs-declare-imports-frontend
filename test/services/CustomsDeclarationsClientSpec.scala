@@ -16,16 +16,34 @@
 
 package services
 
-import domain.declaration.MetaData
-import uk.gov.hmrc.customs.test.CustomsPlaySpec
+import domain.declaration.{Declaration, MetaData}
+import play.api.http.{ContentTypes, HeaderNames}
+import play.api.libs.json.Writes
+import play.api.mvc.Codec
+import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.hooks.HttpHook
+import uk.gov.hmrc.http.logging.Authorization
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.play.http.ws._
 
-class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
+import scala.concurrent.{ExecutionContext, Future}
 
-  val client = new CustomsDeclarationsClient
+class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
+
+  val client = new CustomsDeclarationsClient(appConfig, app.injector.instanceOf[HttpClient])
+
+  "submit import declaration" should {
+
+    "POST metadata to Customs Declarations" in submitDeclarationScenario(MetaData(Declaration())) { resp =>
+      resp.futureValue must be(true)
+    }
+
+  }
 
   "produce declaration message" should {
 
-    "include WCODataModelVersionCode" in {
+    "include WCODataModelVersionCode" in validDeclarationXmlScenario() {
       val version = "3.6"
       val meta = MetaData(
         randomValidDeclaration,
@@ -33,18 +51,20 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "WCODataModelVersionCode").text.trim must be(version)
+      xml
     }
 
-    "not include WCODataModelVersionCode" in {
+    "not include WCODataModelVersionCode" in validDeclarationXmlScenario() {
       val meta = MetaData(
         randomValidDeclaration,
         wcoDataModelVersionCode = None
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "WCODataModelVersionCode").size must be(0)
+      xml
     }
 
-    "include WCOTypeName" in {
+    "include WCOTypeName" in validDeclarationXmlScenario() {
       val name = "DEC"
       val meta = MetaData(
         randomValidDeclaration,
@@ -52,18 +72,20 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "WCOTypeName").text.trim must be(name)
+      xml
     }
 
-    "not include WCOTypeName" in {
+    "not include WCOTypeName" in validDeclarationXmlScenario() {
       val meta = MetaData(
         randomValidDeclaration,
         wcoTypeName = None
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "WCOTypeName").size must be(0)
+      xml
     }
 
-    "include ResponsibleCountryCode" in {
+    "include ResponsibleCountryCode" in validDeclarationXmlScenario() {
       val code = "GB"
       val meta = MetaData(
         randomValidDeclaration,
@@ -71,18 +93,20 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "ResponsibleCountryCode").text.trim must be(code)
+      xml
     }
 
-    "not include ResponsibleCountryCode" in {
+    "not include ResponsibleCountryCode" in validDeclarationXmlScenario() {
       val meta = MetaData(
         randomValidDeclaration,
         responsibleCountryCode = None
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "ResponsibleCountryCode").size must be(0)
+      xml
     }
 
-    "include ResponsibleAgencyName" in {
+    "include ResponsibleAgencyName" in validDeclarationXmlScenario() {
       val agency = "HMRC"
       val meta = MetaData(
         randomValidDeclaration,
@@ -90,18 +114,20 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "ResponsibleAgencyName").text.trim must be(agency)
+      xml
     }
 
-    "not include ResponsibleAgencyName" in {
+    "not include ResponsibleAgencyName" in validDeclarationXmlScenario() {
       val meta = MetaData(
         randomValidDeclaration,
         responsibleAgencyName = None
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "ResponsibleAgencyName").size must be(0)
+      xml
     }
 
-    "include AgencyAssignedCustomizationCode" in {
+    "include AgencyAssignedCustomizationCode" in validDeclarationXmlScenario() {
       val code = "foo"
       val meta = MetaData(
         randomValidDeclaration,
@@ -109,18 +135,20 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationCode").text.trim must be(code)
+      xml
     }
 
-    "not include AgencyAssignedCustomizationCode" in {
+    "not include AgencyAssignedCustomizationCode" in validDeclarationXmlScenario() {
       val meta = MetaData(
         randomValidDeclaration,
         agencyAssignedCustomizationCode = None
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationCode").size must be(0)
+      xml
     }
 
-    "include AgencyAssignedCustomizationVersionCode" in {
+    "include AgencyAssignedCustomizationVersionCode" in validDeclarationXmlScenario() {
       val code = "v2.1"
       val meta = MetaData(
         randomValidDeclaration,
@@ -128,15 +156,75 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec {
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationVersionCode").text.trim must be(code)
+      xml
     }
 
-    "not include AgencyAssignedCustomizationVersionCode" in {
+    "not include AgencyAssignedCustomizationVersionCode" in validDeclarationXmlScenario() {
       val meta = MetaData(
         randomValidDeclaration,
         agencyAssignedCustomizationVersionCode = None
       )
       val xml = client.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationVersionCode").size must be(0)
+      xml
+    }
+
+    "always include Declaration" in validDeclarationXmlScenario() {
+      val meta = MetaData(
+        randomValidDeclaration
+      )
+      val xml = client.produceDeclarationMessage(meta)
+      (xml \ "Declaration").size must be(1)
+      xml
+    }
+
+  }
+
+  def submitDeclarationScenario(metaData: MetaData,
+                                badgeIdentifier: Option[String] = None,
+                                forceServerError: Boolean = false,
+                                hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
+                               (test: Future[Boolean] => Unit): Unit = {
+    val messageProducer = new CustomsDeclarationsMessageProducer {}
+    val expectedUrl: String = appConfig.submitImportDeclarationEndpoint
+    val expectedBody: String = messageProducer.produceDeclarationMessage(metaData).mkString
+    val expectedHeaders: Map[String, String] = Map(
+      HeaderNames.ACCEPT -> "application/vnd.hmrc.1.0+xml",
+      HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
+    ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id) ++ hc.authorization.map(auth => HeaderNames.AUTHORIZATION -> s"Bearer [${auth.value}]")
+    val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError)
+    val client = new CustomsDeclarationsClient(appConfig, http)
+    test(client.submitImportDeclaration(metaData, badgeIdentifier)(hc, ec))
+  }
+
+  class MockHttpClient(expectedUrl: String, expectedBody: String, expectedHeaders: Map[String, String], forceServerError: Boolean = false) extends HttpClient with WSGet with WSPut with WSPost with WSDelete with WSPatch {
+    override val hooks: Seq[HttpHook] = Seq.empty
+
+    override def POST[I, O](url: String,
+                            body: I,
+                            headers: Seq[(String, String)])
+                           (implicit wts: Writes[I],
+                            rds: HttpReads[O],
+                            hc: HeaderCarrier,
+                            ec: ExecutionContext): Future[O] = (url, body, headers) match {
+      case _ if !isValidImportDeclarationXml(body.asInstanceOf[String]) => throw new BadRequestException(s"Expected: valid XML: $expectedBody. \nGot: invalid XML: $body")
+      case _ if !isAuthenticated(headers.toMap, hc) => throw new UnauthorizedException("Submission declaration request was not authenticated")
+      case _ if forceServerError => throw new InternalServerException("Customs Declarations has gone bad.")
+      case _ if url == expectedUrl && body == expectedBody && headers.toMap == expectedHeaders => Future.successful("".asInstanceOf[O])
+      case _ => throw new BadRequestException(s"Expected: \nurl = '$expectedUrl', \nbody = '$expectedBody', \nheaders = '$expectedHeaders'.\nGot: \nurl = '$url', \nbody = '$body', \nheaders = '$headers'.")
+    }
+
+    private val bearerToken = "^Bearer \\[(.+)\\]$".r
+
+    private def isAuthenticated(headers: Map[String, String], hc: HeaderCarrier): Boolean = {
+      hc.authorization.isDefined &&
+        headers.get(HeaderNames.AUTHORIZATION).isDefined &&
+        hc.authorization.get.value == bearer(headers(HeaderNames.AUTHORIZATION))
+    }
+
+    private def bearer(bearer: String) = {
+      val bearerToken(token) = bearer
+      token
     }
 
   }

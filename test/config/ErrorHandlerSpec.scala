@@ -16,10 +16,12 @@
 
 package config
 
+import controllers.routes
+import domain.auth.SignedInUser
 import play.api.http.{HeaderNames, Status}
 import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
-import uk.gov.hmrc.auth.core.NoActiveSession
+import uk.gov.hmrc.auth.core.{InsufficientEnrolments, NoActiveSession}
 import uk.gov.hmrc.customs.test.CustomsPlaySpec
 
 class ErrorHandlerSpec extends CustomsPlaySpec {
@@ -31,12 +33,14 @@ class ErrorHandlerSpec extends CustomsPlaySpec {
 
     "handle no active session authorisation exception" in {
       val res = handler.resolveError(req, new NoActiveSession("A user is not logged in") {})
-      res.header.status must be (Status.SEE_OTHER)
+      res.header.status must be(Status.SEE_OTHER)
       res.header.headers.get(HeaderNames.LOCATION) must be(Some("/gg/sign-in?continue=%2Ffoo&origin=customs-declare-imports-frontend"))
     }
 
     "handle insufficient enrolments authorisation exception" in {
-      // TODO handle InsufficientEnrolments exception
+      val res = handler.resolveError(req, new InsufficientEnrolments(SignedInUser.cdsEnrolmentName))
+      res.header.status must be(Status.SEE_OTHER)
+      res.header.headers.get(HeaderNames.LOCATION) must be(Some(routes.UnauthorisedController.enrol().url))
     }
 
   }

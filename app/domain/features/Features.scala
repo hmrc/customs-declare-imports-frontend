@@ -21,7 +21,7 @@ import play.api.mvc.PathBindable
 // TODO features should probably be modeled as a tree so that dependent features can also be switched without multiple calls
 object Feature extends Enumeration {
   type Feature = Value
-  val all, default, start, step_one = Value
+  val default, start, begin, declaration = Value
 
   implicit object featurePathStringBinder extends PathBindable.Parsing[Feature.Feature](
     withName(_),

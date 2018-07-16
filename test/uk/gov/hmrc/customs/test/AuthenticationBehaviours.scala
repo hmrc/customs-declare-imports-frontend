@@ -16,23 +16,44 @@
 
 package uk.gov.hmrc.customs.test
 
+import java.util.UUID
+
 import domain.auth.SignedInUser
 import org.mockito.Mockito.when
 import org.mockito.{ArgumentMatcher, ArgumentMatchers}
+import play.api.Application
+import play.api.http.{HeaderNames, Status}
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import play.filters.csrf.CSRF.Token
+import play.filters.csrf.{CSRFConfigProvider, CSRFFilter}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.Retrievals.{credentials, _}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 
 import scala.concurrent.Future
 
 trait AuthenticationBehaviours {
   this: CustomsPlaySpec =>
 
-  val signedInUser = userFixture()
+  lazy val signedInUser: SignedInUser = userFixture()
 
-  val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  lazy val notLoggedInException: NoActiveSession = new NoActiveSession("A user is not logged in") {}
+
+  lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
+
+  override lazy val app: Application = GuiceApplicationBuilder()
+    .overrides(bind[AuthConnector].to(mockAuthConnector))
+    .build()
+
+  class UserRequestScenario(method: String = "GET", uri: String = s"/$contextPath/", headers: Map[String, String] = Map.empty, user: SignedInUser = signedInUser) {
+    val req: FakeRequest[AnyContentAsEmpty.type] = userRequest(method, uri, user, headers)
+  }
 
   //noinspection ConvertExpressionToSAM
   val noBearerTokenMatcher: ArgumentMatcher[HeaderCarrier] = new ArgumentMatcher[HeaderCarrier] {
@@ -41,7 +62,7 @@ trait AuthenticationBehaviours {
 
   //noinspection ConvertExpressionToSAM
   def cdsEnrollmentMatcher(user: SignedInUser): ArgumentMatcher[Predicate] = new ArgumentMatcher[Predicate] {
-    override def matches(p: Predicate): Boolean = p == Enrolment("HMRC-CUS-ORG") && user.enrolments.getEnrolment("HMRC-CUS-ORG").isDefined
+    override def matches(p: Predicate): Boolean = p == SignedInUser.authorisationPredicate && user.enrolments.getEnrolment(SignedInUser.cdsEnrolmentName).isDefined
   }
 
   def signedInScenario(user: SignedInUser = signedInUser)(test: => Unit): Unit = {
@@ -65,9 +86,49 @@ trait AuthenticationBehaviours {
           ArgumentMatchers.any[Retrieval[_]])(ArgumentMatchers.argThat(noBearerTokenMatcher), ArgumentMatchers.any()
         )
     ).thenReturn(
-      Future.failed(new NoActiveSession("A user is not logged in") {})
+      Future.failed(notLoggedInException)
     )
     test
+  }
+
+  protected def userRequestScenario(method: String = "GET",
+                                    uri: String = s"/$contextPath/",
+                                    user: SignedInUser = signedInUser,
+                                    headers: Map[String, String] = Map.empty)(test: Future[Result] => Unit): Unit = {
+    new UserRequestScenario(method, uri, headers, user) {
+      test(route(app, req).get)
+    }
+  }
+
+  // can't think of a better way to test this right now
+  // the assertion here is fairly meaningless: just says we got the one thrown by notSignedInScenaro(), which is a mock
+  // sadly, Play's route() test helper doesn't incorporate the ErrorHandler which would handle this
+  // therefore, there is little we can assert on other than "the expected exception was thrown"
+  // at least this *will* fail if the auth action is removed
+  def accessDeniedRequestScenarioTest(method: String, uri: String): Unit = {
+    val ex = intercept[NoActiveSession] {
+      requestScenario(method, uri) { resp =>
+        status(resp) must be (Status.SEE_OTHER)
+        header(HeaderNames.LOCATION, resp) must be(Some(s"/gg/sign-in?continue=$uri&origin=customs-declare-imports-frontend"))
+      }
+    }
+    ex must be theSameInstanceAs notLoggedInException
+  }
+
+  protected def userRequest(method: String, uri: String, user: SignedInUser, headers: Map[String, String] = Map.empty): FakeRequest[AnyContentAsEmpty.type] = {
+    val session: Map[String, String] = Map(
+      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+      SessionKeys.userId -> user.internalId.getOrElse(randomString(8))
+    )
+    val cfg = app.injector.instanceOf[CSRFConfigProvider].get
+    val token = app.injector.instanceOf[CSRFFilter].tokenProvider.generateToken
+    val tags = Map(
+      Token.NameRequestTag -> cfg.tokenName,
+      Token.RequestTag -> token
+    )
+    FakeRequest(method, uri).
+      withHeaders((Map(cfg.headerName -> token) ++ headers).toSeq: _*).
+      withSession(session.toSeq: _*).copyFakeRequest(tags = tags)
   }
 
 }

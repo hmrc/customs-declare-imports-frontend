@@ -20,16 +20,16 @@ import config.AppConfig
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc._
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class StartController @Inject()(actions: Actions, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
+class DeclarationController @Inject()(actions: Actions, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport {
 
-  def displayStartPage: Action[AnyContent] = actions.switch(Feature.start).async { implicit request =>
-    Future.successful(Ok(views.html.start()))
+  def showDeclarationForm: Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
+    Future.successful(Ok(views.html.declaration_form()))
   }
 
 }

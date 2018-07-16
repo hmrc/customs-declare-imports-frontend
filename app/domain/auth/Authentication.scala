@@ -17,8 +17,9 @@
 package domain.auth
 
 import play.api.mvc.{Request, WrappedRequest}
+import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments}
 
 case class SignedInUser(credentials: Credentials,
                         name: Name,
@@ -27,7 +28,17 @@ case class SignedInUser(credentials: Credentials,
                         internalId: Option[String],
                         enrolments: Enrolments) {
 
-  lazy val eori: Option[String] = enrolments.getEnrolment("HMRC-CUS-ORG").flatMap(_.getIdentifier("EORINumber")).map(_.value)
+  lazy val eori: Option[String] = enrolments.getEnrolment(SignedInUser.cdsEnrolmentName).flatMap(_.getIdentifier(SignedInUser.eoriIdentifierKey)).map(_.value)
+
+}
+
+object SignedInUser {
+
+  val cdsEnrolmentName: String = "HMRC-CUS-ORG"
+
+  val eoriIdentifierKey: String = "EORINumber"
+
+  val authorisationPredicate: Predicate = Enrolment(cdsEnrolmentName)
 
 }
 

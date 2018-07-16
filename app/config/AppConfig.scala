@@ -41,11 +41,15 @@ class AppConfig @Inject()(val runModeConfiguration: Configuration, val environme
   lazy val declarationEndpointURl = s"$customsDeclarationHost/"
   lazy val cancelDeclarationEndpointURl = s"$customsDeclarationHost/cancellation-requests"
 
+  lazy val submitImportDeclarationEndpoint: String = baseUrl("customs-declarations") + getConfString("customs-declarations.submit-uri", throw new IllegalStateException("Missing configuration for Customs Declarations submission URI"))
+
   def featureStatus(feature: Feature): FeatureStatus = sys.props.get(feature2Key(feature)).map(str2FeatureStatus _).getOrElse(
     runModeConfiguration.getString(feature2Key(feature)).map(str2FeatureStatus _).getOrElse(
       defaultFeatureStatus
     )
   )
+
+  def isFeatureOn(feature: Feature): Boolean = featureStatus(feature) == FeatureStatus.enabled
 
   def setFeatureStatus(feature: Feature, status: FeatureStatus): Unit = sys.props += (feature2Key(feature) -> status.toString)
 
