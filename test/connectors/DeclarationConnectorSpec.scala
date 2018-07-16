@@ -32,28 +32,45 @@ class DeclarationConnectorSpec extends CustomsPlaySpec {
 
   private val mockClient = mock[HttpClient]
 
-  val connector = new DeclarationConnector(mockClient)
+  val connector = new DeclarationConnector(appConfig,mockClient)
   implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255))))
-  private val badrequest = new BadRequestException("Bad Request")
+  private val badRequest = new BadRequestException("Bad Request")
   private val internalServerError = new InternalServerException("Internal Server Error")
 
   "DeclarationsConnector"  should {
 
-    "submit request with a successful response" in {
+    "send a valid declaration request" in {
       mockRequest(Future.successful(HttpResponse(202)))
+      val xml = <declaration><consignor><name>my name</name><age>42</age></consignor></declaration>
+      val res = Await.result(connector.submitDeclaration(xml,"badge-1"),Duration.Inf)
+      res.isRight mustBe true
+    }
+
+    "send a valid cancellation request" in {
+      mockRequest(Future.successful(HttpResponse(202)))
+      val xml = <declaration><consignor><name>my name</name><age>42</age></consignor></declaration>
+      val res = Await.result(connector.submitDeclaration(xml,"badge-2",true),Duration.Inf)
+      res.isRight mustBe true
+    }
+
+
+    "submit request with a successful response" in {
+      mockRequest(Future.successful(HttpResponse(responseStatus=202,responseHeaders =
+        Map("X-Conversation-ID"-> Seq("conversationId1")))))
        val res = Await.result(connector.post("customs-declarations/cancel","",CustomRequestHeaders("","")),Duration.Inf)
-      res mustBe true
+      res.isRight mustBe true
+      res.right.get mustBe "conversationId1"
 
     }
     "handle badrequest response from api" in {
-      mockRequest(Future.failed(badrequest))
+      mockRequest(Future.failed(badRequest))
       val res = Await.result(connector.post("customs-declarations/cancel","",CustomRequestHeaders("","")),Duration.Inf)
-      res mustBe false
+      res.isLeft mustBe true
     }
     "handle other error response from api" in {
       mockRequest(Future.failed(internalServerError))
       val res = Await.result(connector.post("customs-declarations/cancel","",CustomRequestHeaders("","")),Duration.Inf)
-      res mustBe false
+      res.isLeft mustBe true
     }
 
   }
