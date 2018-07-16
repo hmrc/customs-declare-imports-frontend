@@ -16,8 +16,10 @@
 
 package services
 
+import com.google.inject.Inject
 import config.AppConfig
 import domain.declaration.MetaData
+import javax.inject.Singleton
 import play.api.http.{ContentTypes, HeaderNames}
 import play.api.mvc.Codec
 import uk.gov.hmrc.http.HeaderCarrier
@@ -26,7 +28,8 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.Elem
 
-class CustomsDeclarationsClient(appConfig: AppConfig, httpClient: HttpClient) extends CustomsDeclarationsMessageProducer {
+@Singleton
+class CustomsDeclarationsClient @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends CustomsDeclarationsMessageProducer {
 
   def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val url: String = appConfig.submitImportDeclarationEndpoint
