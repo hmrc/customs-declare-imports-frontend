@@ -1,0 +1,44 @@
+/*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package domain
+
+import play.api.http.HeaderNames._
+import play.api.http.MimeTypes
+
+/**
+ * Created by raghu on 13/07/18.
+ */
+case class CustomRequestHeaders(clientId: String, badgeIdentifier: String) {
+  val xConversationIdName: String = "X-Conversation-ID"
+  val xClientIdName = "X-Client-ID"
+  val xBadgeIdentifierName: String = "X-Badge-Identifier"
+  val hmrcXmlAcceptHedaer = "application/vnd.hmrc.3.0+xml"
+
+  val contentHeader: (String, String) = CONTENT_TYPE -> MimeTypes.XML
+  val contentCharSetValue: String = s"${MimeTypes.XML}; charset=UTF-8"
+  val contentTypeHeaderCharSet: (String, String) = CONTENT_TYPE -> contentCharSetValue
+  val acceptHeader: (String, String) = ACCEPT -> hmrcXmlAcceptHedaer
+  val apiVersion: ApiVersion = ApiVersion()
+
+  def cdsExtraHeaders() = Seq(contentHeader,
+    contentTypeHeaderCharSet, acceptHeader,
+    xClientIdName -> clientId,
+   xBadgeIdentifierName-> badgeIdentifier)
+}
+
+case class ApiVersion(value: String = "3.0", configPrefix: String = "v3.")
+

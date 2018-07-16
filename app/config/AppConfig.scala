@@ -36,6 +36,10 @@ class AppConfig @Inject()(val runModeConfiguration: Configuration, val environme
   lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   lazy val defaultFeatureStatus = FeatureStatus.withName(loadConfig(feature2Key(Feature.default)))
+  private val customsDeclarationHost = runModeConfiguration.getString(s"customs-declaration.host").getOrElse("")
+
+  lazy val declarationEndpointURl = s"$customsDeclarationHost/"
+  lazy val cancelDeclarationEndpointURl = s"$customsDeclarationHost/cancellation-requests"
 
   def featureStatus(feature: Feature): FeatureStatus = sys.props.get(feature2Key(feature)).map(str2FeatureStatus _).getOrElse(
     runModeConfiguration.getString(feature2Key(feature)).map(str2FeatureStatus _).getOrElse(
