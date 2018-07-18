@@ -189,9 +189,10 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
     val expectedUrl: String = appConfig.submitImportDeclarationEndpoint
     val expectedBody: String = messageProducer.produceDeclarationMessage(metaData).mkString
     val expectedHeaders: Map[String, String] = Map(
-      HeaderNames.ACCEPT -> "application/vnd.hmrc.1.0+xml",
+      "X-Client-ID" -> appConfig.appName,
+      HeaderNames.ACCEPT -> "application/vnd.hmrc.2.0+xml",
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
-    ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id) ++ hc.authorization.map(auth => HeaderNames.AUTHORIZATION -> s"Bearer [${auth.value}]")
+    ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
     val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError)
     val client = new CustomsDeclarationsClient(appConfig, http)
     test(client.submitImportDeclaration(metaData, badgeIdentifier)(hc, ec))
@@ -200,32 +201,20 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
   class MockHttpClient(expectedUrl: String, expectedBody: String, expectedHeaders: Map[String, String], forceServerError: Boolean = false) extends HttpClient with WSGet with WSPut with WSPost with WSDelete with WSPatch {
     override val hooks: Seq[HttpHook] = Seq.empty
 
-    override def POST[I, O](url: String,
-                            body: I,
+    override def POSTString[O](url: String,
+                            body: String,
                             headers: Seq[(String, String)])
-                           (implicit wts: Writes[I],
-                            rds: HttpReads[O],
+                           (implicit rds: HttpReads[O],
                             hc: HeaderCarrier,
                             ec: ExecutionContext): Future[O] = (url, body, headers) match {
       case _ if !isValidImportDeclarationXml(body.asInstanceOf[String]) => throw new BadRequestException(s"Expected: valid XML: $expectedBody. \nGot: invalid XML: $body")
       case _ if !isAuthenticated(headers.toMap, hc) => throw new UnauthorizedException("Submission declaration request was not authenticated")
       case _ if forceServerError => throw new InternalServerException("Customs Declarations has gone bad.")
-      case _ if url == expectedUrl && body == expectedBody && headers.toMap == expectedHeaders => Future.successful("".asInstanceOf[O])
+      case _ if url == expectedUrl && body == expectedBody && headers.toMap == expectedHeaders => Future.successful(true.asInstanceOf[O])
       case _ => throw new BadRequestException(s"Expected: \nurl = '$expectedUrl', \nbody = '$expectedBody', \nheaders = '$expectedHeaders'.\nGot: \nurl = '$url', \nbody = '$body', \nheaders = '$headers'.")
     }
 
-    private val bearerToken = "^Bearer \\[(.+)\\]$".r
-
-    private def isAuthenticated(headers: Map[String, String], hc: HeaderCarrier): Boolean = {
-      hc.authorization.isDefined &&
-        headers.get(HeaderNames.AUTHORIZATION).isDefined &&
-        hc.authorization.get.value == bearer(headers(HeaderNames.AUTHORIZATION))
-    }
-
-    private def bearer(bearer: String) = {
-      val bearerToken(token) = bearer
-      token
-    }
+    private def isAuthenticated(headers: Map[String, String], hc: HeaderCarrier): Boolean = hc.authorization.isDefined
 
   }
 

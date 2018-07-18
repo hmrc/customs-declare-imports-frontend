@@ -20,9 +20,9 @@ import com.google.inject.Inject
 import config.AppConfig
 import domain.declaration.MetaData
 import javax.inject.Singleton
-import play.api.http.{ContentTypes, HeaderNames}
+import play.api.http.{ContentTypes, HeaderNames, Status}
 import play.api.mvc.Codec
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,17 +31,20 @@ import scala.xml.Elem
 @Singleton
 class CustomsDeclarationsClient @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends CustomsDeclarationsMessageProducer {
 
+  //noinspection ConvertExpressionToSAM
+  implicit val booleanReads: HttpReads[Boolean] = new HttpReads[Boolean] {
+    override def read(method: String, url: String, response: HttpResponse): Boolean = response.status == Status.ACCEPTED
+  }
+
   def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val url: String = appConfig.submitImportDeclarationEndpoint
     val body: String = produceDeclarationMessage(metaData).mkString
     val headers: Seq[(String, String)] = Seq(
-      HeaderNames.ACCEPT -> "application/vnd.hmrc.1.0+xml",
+      "X-Client-ID" -> appConfig.appName,
+      HeaderNames.ACCEPT -> "application/vnd.hmrc.2.0+xml",
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
-    ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id) ++ hc.authorization.map(auth => HeaderNames.AUTHORIZATION -> s"Bearer [${auth.value}]")
-    httpClient.POST[String, String](url, body, headers).map { _: String =>
-      // if we get any kind of 2xx response, then can we assume that it was successful?
-      true
-    }
+    ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
+    httpClient.POSTString[Boolean](url, body, headers)
   }
 }
 
