@@ -190,7 +190,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
     val expectedBody: String = messageProducer.produceDeclarationMessage(metaData).mkString
     val expectedHeaders: Map[String, String] = Map(
       "X-Client-ID" -> appConfig.developerHubClientId,
-      HeaderNames.ACCEPT -> "application/vnd.hmrc.2.0+xml",
+      HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
     ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
     val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError)
