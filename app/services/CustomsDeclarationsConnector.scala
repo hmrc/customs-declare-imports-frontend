@@ -29,8 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.Elem
 
 @Singleton
-class CustomsDeclarationsClient @Inject()(val appConfig: AppConfig, val httpClient: HttpClient)
-  extends CustomsDeclarationsConnector with SubmitImportDeclarationMessageProducer {
+class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends SubmitImportDeclarationMessageProducer {
 
   def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     post(appConfig.submitImportDeclarationUri, produceDeclarationMessage(metaData), badgeIdentifier).map(_.status == Status.ACCEPTED)
@@ -38,13 +37,6 @@ class CustomsDeclarationsClient @Inject()(val appConfig: AppConfig, val httpClie
 
   // TODO implement cancel import declaration in CustomsDeclarationClient
 //  def cancelImportDeclaration(someType: SomeType, badgeIdentifier: Option[String] = None): Future[Boolean or CustomsDeclarationsResponse] = ???
-
-}
-
-trait CustomsDeclarationsConnector {
-
-  val appConfig: AppConfig
-  val httpClient: HttpClient
 
   //noinspection ConvertExpressionToSAM
   private implicit val responseReader: HttpReads[CustomsDeclarationsResponse] = new HttpReads[CustomsDeclarationsResponse] {

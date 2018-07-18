@@ -29,9 +29,9 @@ import uk.gov.hmrc.play.http.ws._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
+class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviours {
 
-  val client = new CustomsDeclarationsClient(appConfig, app.injector.instanceOf[HttpClient])
+  val connector = new CustomsDeclarationsConnector(appConfig, app.injector.instanceOf[HttpClient])
 
   "submit import declaration" should {
 
@@ -49,7 +49,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
         randomValidDeclaration,
         wcoDataModelVersionCode = Some(version)
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "WCODataModelVersionCode").text.trim must be(version)
       xml
     }
@@ -59,7 +59,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
         randomValidDeclaration,
         wcoDataModelVersionCode = None
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "WCODataModelVersionCode").size must be(0)
       xml
     }
@@ -70,7 +70,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
         randomValidDeclaration,
         wcoTypeName = Some(name)
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "WCOTypeName").text.trim must be(name)
       xml
     }
@@ -80,7 +80,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
         randomValidDeclaration,
         wcoTypeName = None
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "WCOTypeName").size must be(0)
       xml
     }
@@ -91,7 +91,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
         randomValidDeclaration,
         responsibleCountryCode = Some(code)
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "ResponsibleCountryCode").text.trim must be(code)
       xml
     }
@@ -101,7 +101,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
         randomValidDeclaration,
         responsibleCountryCode = None
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "ResponsibleCountryCode").size must be(0)
       xml
     }
@@ -112,7 +112,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
         randomValidDeclaration,
         responsibleAgencyName = Some(agency)
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "ResponsibleAgencyName").text.trim must be(agency)
       xml
     }
@@ -122,7 +122,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
         randomValidDeclaration,
         responsibleAgencyName = None
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "ResponsibleAgencyName").size must be(0)
       xml
     }
@@ -133,7 +133,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
         randomValidDeclaration,
         agencyAssignedCustomizationCode = Some(code)
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationCode").text.trim must be(code)
       xml
     }
@@ -143,7 +143,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
         randomValidDeclaration,
         agencyAssignedCustomizationCode = None
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationCode").size must be(0)
       xml
     }
@@ -154,7 +154,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
         randomValidDeclaration,
         agencyAssignedCustomizationVersionCode = Some(code)
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationVersionCode").text.trim must be(code)
       xml
     }
@@ -164,7 +164,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
         randomValidDeclaration,
         agencyAssignedCustomizationVersionCode = None
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationVersionCode").size must be(0)
       xml
     }
@@ -173,7 +173,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
       val meta = MetaData(
         randomValidDeclaration
       )
-      val xml = client.produceDeclarationMessage(meta)
+      val xml = connector.produceDeclarationMessage(meta)
       (xml \ "Declaration").size must be(1)
       xml
     }
@@ -194,7 +194,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
     ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
     val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError)
-    val client = new CustomsDeclarationsClient(appConfig, http)
+    val client = new CustomsDeclarationsConnector(appConfig, http)
     test(client.submitImportDeclaration(metaData, badgeIdentifier)(hc, ec))
   }
 
