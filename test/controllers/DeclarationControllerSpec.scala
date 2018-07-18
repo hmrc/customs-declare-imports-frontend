@@ -18,9 +18,13 @@ package controllers
 
 import domain.features.{Feature, FeatureStatus}
 import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours}
+import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours, WiremockBehaviours}
 
-class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours {
+class DeclarationControllerSpec
+  extends CustomsPlaySpec
+    with AuthenticationBehaviours
+    with FeatureSwitchBehaviours
+    with WiremockBehaviours {
 
   val method = "GET"
   val handleMethod = "POST"
@@ -30,13 +34,17 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
 
     "return 200" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(method, uri, signedInUser) { wasOk }
+        userRequestScenario(method, uri, signedInUser) {
+          wasOk
+        }
       }
     }
 
     "return HTML" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(method, uri, signedInUser) { wasHtml }
+        userRequestScenario(method, uri, signedInUser) {
+          wasHtml
+        }
       }
     }
 
@@ -48,7 +56,9 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
 
     "be behind a feature switch" in featureScenario(Feature.declaration, FeatureStatus.disabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(method, uri, signedInUser) { wasNotFound }
+        userRequestScenario(method, uri, signedInUser) {
+          wasNotFound
+        }
       }
     }
 
@@ -105,14 +115,22 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
   s"$handleMethod $uri" should {
 
     "return 200" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(handleMethod, uri, signedInUser) { wasOk }
+      withDeclarationSubmissionApi() {
+        signedInScenario(signedInUser) {
+          userRequestScenario(handleMethod, uri, signedInUser) {
+            wasOk
+          }
+        }
       }
     }
 
     "return HTML" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(handleMethod, uri, signedInUser) { wasHtml }
+      withDeclarationSubmissionApi() {
+        signedInScenario(signedInUser) {
+          userRequestScenario(handleMethod, uri, signedInUser) {
+            wasHtml
+          }
+        }
       }
     }
 
@@ -125,7 +143,19 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
 
     "be behind a feature switch" in featureScenario(Feature.declaration, FeatureStatus.disabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(handleMethod, uri, signedInUser) { wasNotFound }
+        userRequestScenario(handleMethod, uri, signedInUser) {
+          wasNotFound
+        }
+      }
+    }
+
+    "submit declaration" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      withDeclarationSubmissionApi() {
+        signedInScenario(signedInUser) {
+          userRequestScenario(handleMethod, uri, signedInUser) { resp =>
+            // TODO
+          }
+        }
       }
     }
 
@@ -137,42 +167,42 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
       val code = randomString(8)
       DeclarationForm(
         wcoDataModelVersionCode = Some(code)
-      ).toMetaData.wcoDataModelVersionCode.get must be (code)
+      ).toMetaData.wcoDataModelVersionCode.get must be(code)
     }
 
     "map WCO type name" in {
       val name = randomString(8)
       DeclarationForm(
         wcoTypeName = Some(name)
-      ).toMetaData.wcoTypeName.get must be (name)
+      ).toMetaData.wcoTypeName.get must be(name)
     }
 
     "map responsible country code" in {
       val code = randomString(2)
       DeclarationForm(
         responsibleCountryCode = Some(code)
-      ).toMetaData.responsibleCountryCode.get must be (code)
+      ).toMetaData.responsibleCountryCode.get must be(code)
     }
 
     "map responsible agency name" in {
       val name = randomString(16)
       DeclarationForm(
         responsibleAgencyName = Some(name)
-      ).toMetaData.responsibleAgencyName.get must be (name)
+      ).toMetaData.responsibleAgencyName.get must be(name)
     }
 
     "map agency assigned customization code" in {
       val code = randomString(8)
       DeclarationForm(
         agencyAssignedCustomizationCode = Some(code)
-      ).toMetaData.agencyAssignedCustomizationCode.get must be (code)
+      ).toMetaData.agencyAssignedCustomizationCode.get must be(code)
     }
 
     "map agency assigned customisation version code" in {
       val code = randomString(8)
       DeclarationForm(
         agencyAssignedCustomizationVersionCode = Some(code)
-      ).toMetaData.agencyAssignedCustomizationVersionCode.get must be (code)
+      ).toMetaData.agencyAssignedCustomizationVersionCode.get must be(code)
     }
 
   }

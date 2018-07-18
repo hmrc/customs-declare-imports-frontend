@@ -24,12 +24,13 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
+import services.CustomsDeclarationsClient
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeclarationController @Inject()(actions: Actions, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport {
+class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsClient, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   val declarationForm: Form[DeclarationForm] = Form(
     mapping(
@@ -47,7 +48,15 @@ class DeclarationController @Inject()(actions: Actions, val messagesApi: Message
   }
 
   def handleDeclarationForm: Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
-    Future.successful(Ok(views.html.declaration_acknowledgement()))
+    val bound = declarationForm.bindFromRequest()
+    bound.fold(
+      errors => Future.successful(BadRequest(views.html.declaration_form(errors))),
+      success => {
+        client.submitImportDeclaration(success.toMetaData).map { b =>
+          Ok(views.html.declaration_acknowledgement(b))
+        }
+      }
+    )
   }
 
 }
