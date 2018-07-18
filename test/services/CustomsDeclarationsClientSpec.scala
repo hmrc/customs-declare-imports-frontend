@@ -185,11 +185,11 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
                                 forceServerError: Boolean = false,
                                 hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
                                (test: Future[Boolean] => Unit): Unit = {
-    val messageProducer = new CustomsDeclarationsMessageProducer {}
-    val expectedUrl: String = appConfig.submitImportDeclarationEndpoint
+    val messageProducer = new SubmitImportDeclarationMessageProducer {}
+    val expectedUrl: String = s"${appConfig.customsDeclarationsEndpoint}${appConfig.submitImportDeclarationUri}"
     val expectedBody: String = messageProducer.produceDeclarationMessage(metaData).mkString
     val expectedHeaders: Map[String, String] = Map(
-      "X-Client-ID" -> appConfig.appName,
+      "X-Client-ID" -> appConfig.developerHubClientId,
       HeaderNames.ACCEPT -> "application/vnd.hmrc.2.0+xml",
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
     ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
@@ -210,7 +210,7 @@ class CustomsDeclarationsClientSpec extends CustomsPlaySpec with XmlBehaviours {
       case _ if !isValidImportDeclarationXml(body.asInstanceOf[String]) => throw new BadRequestException(s"Expected: valid XML: $expectedBody. \nGot: invalid XML: $body")
       case _ if !isAuthenticated(headers.toMap, hc) => throw new UnauthorizedException("Submission declaration request was not authenticated")
       case _ if forceServerError => throw new InternalServerException("Customs Declarations has gone bad.")
-      case _ if url == expectedUrl && body == expectedBody && headers.toMap == expectedHeaders => Future.successful(true.asInstanceOf[O])
+      case _ if url == expectedUrl && body == expectedBody && headers.toMap == expectedHeaders => Future.successful(CustomsDeclarationsResponse(202, Some(randomString(16))).asInstanceOf[O])
       case _ => throw new BadRequestException(s"Expected: \nurl = '$expectedUrl', \nbody = '$expectedBody', \nheaders = '$expectedHeaders'.\nGot: \nurl = '$url', \nbody = '$body', \nheaders = '$headers'.")
     }
 

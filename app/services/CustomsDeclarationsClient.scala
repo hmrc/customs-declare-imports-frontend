@@ -29,26 +29,45 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.Elem
 
 @Singleton
-class CustomsDeclarationsClient @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends CustomsDeclarationsMessageProducer {
-
-  //noinspection ConvertExpressionToSAM
-  implicit val booleanReads: HttpReads[Boolean] = new HttpReads[Boolean] {
-    override def read(method: String, url: String, response: HttpResponse): Boolean = response.status == Status.ACCEPTED
-  }
+class CustomsDeclarationsClient @Inject()(val appConfig: AppConfig, val httpClient: HttpClient)
+  extends CustomsDeclarationsConnector with SubmitImportDeclarationMessageProducer {
 
   def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    val url: String = appConfig.submitImportDeclarationEndpoint
-    val body: String = produceDeclarationMessage(metaData).mkString
-    val headers: Seq[(String, String)] = Seq(
-      "X-Client-ID" -> appConfig.appName,
-      HeaderNames.ACCEPT -> "application/vnd.hmrc.2.0+xml",
-      HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
-    ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
-    httpClient.POSTString[Boolean](url, body, headers)
+    post(appConfig.submitImportDeclarationUri, produceDeclarationMessage(metaData), badgeIdentifier).map(_.status == Status.ACCEPTED)
   }
+
+  // TODO implement cancel import declaration in CustomsDeclarationClient
+//  def cancelImportDeclaration(someType: SomeType, badgeIdentifier: Option[String] = None): Future[Boolean or CustomsDeclarationsResponse] = ???
+
 }
 
-trait CustomsDeclarationsMessageProducer {
+trait CustomsDeclarationsConnector {
+
+  val appConfig: AppConfig
+  val httpClient: HttpClient
+
+  //noinspection ConvertExpressionToSAM
+  private implicit val responseReader: HttpReads[CustomsDeclarationsResponse] = new HttpReads[CustomsDeclarationsResponse] {
+    override def read(method: String, url: String, response: HttpResponse): CustomsDeclarationsResponse = CustomsDeclarationsResponse(
+      response.status,
+      response.header("X-Conversation-ID")
+    )
+  }
+
+  private[services] def post(uri: String, body: Elem, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
+    val headers: Seq[(String, String)] = Seq(
+      "X-Client-ID" -> appConfig.developerHubClientId,
+      HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
+      HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
+    ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
+    httpClient.POSTString[CustomsDeclarationsResponse](s"${appConfig.customsDeclarationsEndpoint}$uri", body.mkString, headers)(responseReader, hc, ec)
+  }
+
+}
+
+case class CustomsDeclarationsResponse(status: Int, conversationId: Option[String])
+
+trait SubmitImportDeclarationMessageProducer {
 
   private[services] def produceDeclarationMessage(metaData: MetaData): Elem = <md:MetaData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                                                                            xmlns="urn:wco:datamodel:WCO:DEC-DMS:2"

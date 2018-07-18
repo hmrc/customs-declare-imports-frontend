@@ -16,6 +16,7 @@
 
 package config
 
+import domain.features
 import domain.features.Feature.Feature
 import domain.features.FeatureStatus.FeatureStatus
 import domain.features.{Feature, FeatureStatus}
@@ -30,20 +31,22 @@ class AppConfig @Inject()(val runModeConfiguration: Configuration, val environme
   private val contactHost = runModeConfiguration.getString(s"contact-frontend.host").getOrElse("")
   private val contactFormServiceIdentifier = "MyService"
 
-  lazy val assetsPrefix = loadConfig(s"assets.url") + loadConfig(s"assets.version")
-  lazy val analyticsToken = loadConfig(s"google-analytics.token")
-  lazy val analyticsHost = loadConfig(s"google-analytics.host")
-  lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  lazy val defaultFeatureStatus = FeatureStatus.withName(loadConfig(feature2Key(Feature.default)))
-  private val customsDeclarationHost = runModeConfiguration.getString(s"customs-declaration.host").getOrElse("")
+  lazy val assetsPrefix: String = loadConfig(s"assets.url") + loadConfig(s"assets.version")
+  lazy val analyticsToken: String = loadConfig(s"google-analytics.token")
+  lazy val analyticsHost: String = loadConfig(s"google-analytics.host")
+  lazy val reportAProblemPartialUrl: String = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
+  lazy val reportAProblemNonJSUrl: String = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
 
-  lazy val cancelDeclarationEndpointURl = s"$customsDeclarationHost/cancellation-requests"
+  lazy val customsDeclarationsEndpoint: String = baseUrl("customs-declarations")
+  lazy val customsDeclarationsApiVersion: String = getConfString("customs-declarations.api-version", throw new IllegalStateException("Missing configuration for Customs Declarations API version"))
+  lazy val cancelImportDeclarationUri: String = getConfString("customs-declarations.cancel-uri", throw new IllegalStateException("Missing configuration for Customs Declarations cancel URI"))
+  lazy val submitImportDeclarationUri: String = getConfString("customs-declarations.submit-uri", throw new IllegalStateException("Missing configuration for Customs Declarations submission URI"))
+  lazy val developerHubClientId: String = appName
 
-  lazy val submitImportDeclarationEndpoint: String = baseUrl("customs-declarations") + getConfString("customs-declarations.submit-uri", throw new IllegalStateException("Missing configuration for Customs Declarations submission URI"))
-  lazy val devHubClientId:String = loadConfig("hmrc-developers-hub.client-id")
-  def featureStatus(feature: Feature): FeatureStatus = sys.props.get(feature2Key(feature)).map(str2FeatureStatus _).getOrElse(
-    runModeConfiguration.getString(feature2Key(feature)).map(str2FeatureStatus _).getOrElse(
+  lazy val defaultFeatureStatus: features.FeatureStatus.Value = FeatureStatus.withName(loadConfig(feature2Key(Feature.default)))
+
+  def featureStatus(feature: Feature): FeatureStatus = sys.props.get(feature2Key(feature)).map(str2FeatureStatus).getOrElse(
+    runModeConfiguration.getString(feature2Key(feature)).map(str2FeatureStatus).getOrElse(
       defaultFeatureStatus
     )
   )
@@ -58,7 +61,7 @@ class AppConfig @Inject()(val runModeConfiguration: Configuration, val environme
 
   private def loadConfig(key: String): String = runModeConfiguration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
 
-  private def feature2Key(feature: Feature): String = s"microservice.services.${appName}.features.${feature}"
+  private def feature2Key(feature: Feature): String = s"microservice.services.$appName.features.$feature"
 
   private def str2FeatureStatus(str: String): FeatureStatus = FeatureStatus.withName(str)
 
