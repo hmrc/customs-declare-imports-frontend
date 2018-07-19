@@ -104,14 +104,32 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
 
   protected def randomInt(limit: Int): Int = Random.nextInt(limit)
 
+  protected def random0To9: Int = randomInt(10)
+
   protected def randomString(length: Int): String = Random.alphanumeric.take(length).mkString
 
   protected def randomValidDeclaration: Declaration = Declaration()
 
-  private val firstNames: Seq[String] = Seq("Oliver", "Jack", "Harry", "Jacob", "Charlie", "Thomas", "George", "Oscar", "James", "William", "Amelia", "Olivia", "Isla", "Emily", "Poppy", "Ava", "Isabella", "Jessica", "Lily", "Sophie")
+  protected def randomBoolean: Boolean = if(Random.nextInt() % 2 == 0) true else false
 
-  private val lastNames: Seq[String] = Seq("Smith", "Jones", "Williams", "Brown", "Taylor", "Davies", "Wilson", "Evans", "Thomas", "Roberts")
+  protected def randomDeclarationFunctionCode: String = declarationFunctionCodes(randomInt(declarationFunctionCodes.length))
 
-  private val tlds: Seq[String] = Seq(".com", ".org", ".net", ".co.uk", ".org.uk")
+  protected def randomDateTimeFormatCode: String = dateTimeFormatCodes(randomInt(dateTimeFormatCodes.length))
+
+  protected def randomDateTimeString: String = s"20$random0To9$random0To9$random0To9$random0To9$random0To9$random0To9$random0To9$random0To9$random0To9$random0To9$random0To9$random0To9$randomZ$random0To9$random0To9"
+
+  private val randomZ: String = z(randomInt(z.length))
+
+  private lazy val z: Seq[String] = Seq("+", "-")
+
+  private lazy val declarationFunctionCodes: Seq[String] = Seq("9", "13", "14")
+
+  private lazy val dateTimeFormatCodes: Seq[String] = Seq("102", "304")
+
+  private lazy val firstNames: Seq[String] = Seq("Oliver", "Jack", "Harry", "Jacob", "Charlie", "Thomas", "George", "Oscar", "James", "William", "Amelia", "Olivia", "Isla", "Emily", "Poppy", "Ava", "Isabella", "Jessica", "Lily", "Sophie")
+
+  private lazy val lastNames: Seq[String] = Seq("Smith", "Jones", "Williams", "Brown", "Taylor", "Davies", "Wilson", "Evans", "Thomas", "Roberts")
+
+  private lazy val tlds: Seq[String] = Seq(".com", ".org", ".net", ".co.uk", ".org.uk")
 
 }
