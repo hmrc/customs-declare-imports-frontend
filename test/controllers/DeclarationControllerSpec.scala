@@ -16,6 +16,7 @@
 
 package controllers
 
+import domain.declaration.InvoiceAmount
 import domain.features.{Feature, FeatureStatus}
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours, WiremockBehaviours}
@@ -110,6 +111,142 @@ class DeclarationControllerSpec
       }
     }
 
+    "include a text input for Badge ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "badgeId")
+        }
+      }
+    }
+
+    "include a text input for Acceptance Date Time" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "acceptanceDateTime")
+        }
+      }
+    }
+
+    "include a text input for Acceptance Date Time format code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "acceptanceDateTimeFormatCode")
+        }
+      }
+    }
+
+    "include a text input for Function Code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "functionCode")
+        }
+      }
+    }
+
+    "include a text input for Functional Reference ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "functionalReferenceId")
+        }
+      }
+    }
+
+    "include a text input for ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "id")
+        }
+      }
+    }
+
+    "include a text input for Issue Date Time" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "issueDateTime")
+        }
+      }
+    }
+
+    "include a text input for Issue Date Time format code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "issueDateTimeFormatCode")
+        }
+      }
+    }
+
+    "include a text input for Issue Location ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "issueLocationId")
+        }
+      }
+    }
+
+    "include a text input for Type Code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "typeCode")
+        }
+      }
+    }
+
+    "include a text input for Goods Item Quantity" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "goodsItemQuantity")
+        }
+      }
+    }
+
+    "include a text input for Declaration Office ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "declarationOfficeId")
+        }
+      }
+    }
+
+    "include a text input for Invoice Amount" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "invoiceAmount")
+        }
+      }
+    }
+
+    "include a text input for Invoice Amount currency ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "invoiceAmountCurrencyId")
+        }
+      }
+    }
+
+    "include a text input for Loading List Quantity" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "loadingListQuantity")
+        }
+      }
+    }
+
+    "include a text input for Total Gross Mass Measure" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "totalGrossMassMeasure")
+        }
+      }
+    }
+
+    "include a text input for Total Gross Mass Measure unit code" ignore featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "totalGrossMassMeasureUnitCode")
+        }
+      }
+    }
+
   }
 
   s"$handleMethod $uri" should {
@@ -153,7 +290,7 @@ class DeclarationControllerSpec
       withDeclarationSubmissionApi() {
         signedInScenario(signedInUser) {
           userRequestScenario(handleMethod, uri, signedInUser) { resp =>
-            // TODO
+            // TODO unigration test for declaration submission
           }
         }
       }
@@ -203,6 +340,108 @@ class DeclarationControllerSpec
       DeclarationForm(
         agencyAssignedCustomizationVersionCode = Some(code)
       ).toMetaData.agencyAssignedCustomizationVersionCode.get must be(code)
+    }
+
+    "map acceptance date time" in {
+      val date = randomString(35)
+      DeclarationForm(
+        acceptanceDateTime = Some(date)
+      ).toMetaData.declaration.acceptanceDateTime.get.dateTimeString.value must be(date)
+    }
+
+    "map acceptance date time format code when acceptance date time is provided" in {
+      val code = randomString(3)
+      DeclarationForm(
+        acceptanceDateTime = Some(randomString(16)),
+        acceptanceDateTimeFormatCode = Some(code)
+      ).toMetaData.declaration.acceptanceDateTime.get.dateTimeString.formatCode must be(code)
+    }
+
+    "map function code" in {
+      val code = randomString(2)
+      DeclarationForm(
+        functionCode = Some(code)
+      ).toMetaData.declaration.functionCode.get must be(code)
+    }
+
+    "map functional reference ID" in {
+      val id = randomString(35)
+      DeclarationForm(
+        functionalReferenceId = Some(id)
+      ).toMetaData.declaration.functionalReferenceId.get must be(id)
+    }
+
+    "map id" in {
+      val id = randomString(70)
+      DeclarationForm(
+        id = Some(id)
+      ).toMetaData.declaration.id.get must be(id)
+    }
+
+    "map issue date time" in {
+      val date = randomString(35)
+      DeclarationForm(
+        issueDateTime = Some(date)
+      ).toMetaData.declaration.issueDateTime.get.dateTimeString.value must be(date)
+    }
+
+    "map issue date time format code when issue date time is provided" in {
+      val code = randomString(3)
+      DeclarationForm(
+        issueDateTime = Some(randomString(16)),
+        issueDateTimeFormatCode = Some(code)
+      ).toMetaData.declaration.issueDateTime.get.dateTimeString.formatCode must be(code)
+    }
+
+    "map issue location ID" in {
+      val id = randomString(5)
+      DeclarationForm(
+        issueLocationId = Some(id)
+      ).toMetaData.declaration.issueLocationId.get must be(id)
+    }
+
+    "map type code" in {
+      val code = randomString(3)
+      DeclarationForm(
+        typeCode = Some(code)
+      ).toMetaData.declaration.typeCode.get must be(code)
+    }
+
+    "map goods item quantity" in {
+      val quantity = randomInt(100000)
+      DeclarationForm(
+        goodsItemQuantity = Some(quantity)
+      ).toMetaData.declaration.goodsItemQuantity.get must be(quantity)
+    }
+
+    "map declaration office id" in {
+      val id = randomString(17)
+      DeclarationForm(
+        declarationOfficeId = Some(id)
+      ).toMetaData.declaration.declarationOfficeId.get must be(id)
+    }
+
+    "map invoice amount and currency ID" in {
+      val amount = randomBigDecimal
+      val currency = Some(randomISO4217CurrencyCode)
+      DeclarationForm(
+        invoiceAmount = Some(amount),
+        invoiceAmountCurrencyId = currency
+      ).toMetaData.declaration.invoiceAmount.get must be(InvoiceAmount(amount, currency))
+    }
+
+    "map loading list quantity" in {
+      val quantity = randomInt(100000)
+      DeclarationForm(
+        loadingListQuantity = Some(quantity)
+      ).toMetaData.declaration.loadingListQuantity.get must be(quantity)
+    }
+
+    "map total gross mass measure" in {
+      val total = randomBigDecimal
+      DeclarationForm(
+        totalGrossMassMeasure = Some(total)
+      ).toMetaData.declaration.totalGrossMassMeasure.get.value must be(total)
     }
 
   }

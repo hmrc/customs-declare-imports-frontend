@@ -16,9 +16,8 @@
 
 package services
 
-import domain.declaration.{Declaration, MetaData}
+import domain.declaration._
 import play.api.http.{ContentTypes, HeaderNames}
-import play.api.libs.json.Writes
 import play.api.mvc.Codec
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
 import uk.gov.hmrc.http._
@@ -175,6 +174,169 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
       )
       val xml = connector.produceDeclarationMessage(meta)
       (xml \ "Declaration").size must be(1)
+      xml
+    }
+
+    "include AcceptanceDateTime" in validDeclarationXmlScenario() {
+      val formatCode = randomDateTimeFormatCode
+      val dateTime = randomDateTimeString
+      val meta = MetaData(
+        Declaration(
+          acceptanceDateTime = Some(AcceptanceDateTime(DateTimeString(formatCode, dateTime)))
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "AcceptanceDateTime" \ "DateTimeString").text.trim must be(dateTime)
+      (xml \ "Declaration" \ "AcceptanceDateTime" \ "DateTimeString" \ "@formatCode").text.trim must be(formatCode)
+      xml
+    }
+
+    "include FunctionCode" in validDeclarationXmlScenario() {
+      val code = randomDeclarationFunctionCode
+      val meta = MetaData(
+        Declaration(
+          functionCode = Some(code)
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "FunctionCode").text.trim must be(code)
+      xml
+    }
+
+    "include FunctionalReferenceID" in validDeclarationXmlScenario() {
+      val id = randomString(35)
+      val meta = MetaData(
+        Declaration(
+          functionalReferenceId = Some(id)
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "FunctionalReferenceID").text.trim must be(id)
+      xml
+    }
+
+    "include ID" in validDeclarationXmlScenario() {
+      val id = randomString(70)
+      val meta = MetaData(
+        Declaration(
+          id = Some(id)
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "ID").text.trim must be(id)
+      xml
+    }
+
+    "include IssueDateTime" in validDeclarationXmlScenario() {
+      val formatCode = randomDateTimeFormatCode
+      val dateTime = randomDateTimeString
+      val meta = MetaData(
+        Declaration(
+          issueDateTime = Some(IssueDateTime(DateTimeString(formatCode, dateTime)))
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "IssueDateTime" \ "DateTimeString").text.trim must be(dateTime)
+      (xml \ "Declaration" \ "IssueDateTime" \ "DateTimeString" \ "@formatCode").text.trim must be(formatCode)
+      xml
+    }
+
+    "include IssueLocationID" in validDeclarationXmlScenario() {
+      val id = randomString(5)
+      val meta = MetaData(
+        Declaration(
+          issueLocationId = Some(id)
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "IssueLocationID").text.trim must be(id)
+      xml
+    }
+
+    "include TypeCode" in validDeclarationXmlScenario() {
+      val code = randomString(3)
+      val meta = MetaData(
+        Declaration(
+          typeCode = Some(code)
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "TypeCode").text.trim must be(code)
+      xml
+    }
+
+    "include GoodsItemQuantity" in validDeclarationXmlScenario() {
+      val quantity = randomInt(100000)
+      val meta = MetaData(
+        Declaration(
+          goodsItemQuantity = Some(quantity)
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "GoodsItemQuantity").text.trim.toInt must be(quantity)
+      xml
+    }
+
+    "include DeclarationOfficeID" in validDeclarationXmlScenario() {
+      val id = randomString(17)
+      val meta = MetaData(
+        Declaration(
+          declarationOfficeId = Some(id)
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "DeclarationOfficeID").text.trim must be(id)
+      xml
+    }
+
+    "include InvoiceAmount without currencyID attribute" in validDeclarationXmlScenario() {
+      val amount = randomBigDecimal
+      val meta = MetaData(
+        Declaration(
+          invoiceAmount = Some(InvoiceAmount(amount))
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "InvoiceAmount").text.trim must be(amount.toString)
+      (xml \ "Declaration" \ "InvoiceAmount" \ "@currencyID").size must be(0)
+      xml
+    }
+
+    "include InvoiceAmount with currencyID attribute" in validDeclarationXmlScenario() {
+      val amount = randomBigDecimal
+      val currency = randomISO4217CurrencyCode
+      val meta = MetaData(
+        Declaration(
+          invoiceAmount = Some(InvoiceAmount(amount, Some(currency)))
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "InvoiceAmount").text.trim must be(amount.toString)
+      (xml \ "Declaration" \ "InvoiceAmount" \ "@currencyID").text.trim must be(currency)
+      xml
+    }
+
+    "include LoadingListQuantiy" in validDeclarationXmlScenario() {
+      val quantity = randomInt(100000)
+      val meta = MetaData(
+        Declaration(
+          loadingListQuantity = Some(quantity)
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "LoadingListQuantity").text.trim.toInt must be(quantity)
+      xml
+    }
+
+    "include TotalGrossMassMeasure" in validDeclarationXmlScenario() {
+      val total = randomBigDecimal
+      val meta = MetaData(
+        Declaration(
+          totalGrossMassMeasure = Some(MassMeasure(total))
+        )
+      )
+      val xml = connector.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "TotalGrossMassMeasure").text.trim must be(total.toString)
       xml
     }
 
