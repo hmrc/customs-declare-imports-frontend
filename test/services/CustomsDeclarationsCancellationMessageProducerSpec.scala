@@ -31,7 +31,6 @@ class CustomsDeclarationsCancellationMessageProducerSpec extends CustomsPlaySpec
       val version = "3.6"
       val meta = metadata
       val xml = service.produceDeclarationCancellationMessage(meta)
-    //  println(xml)
     // values mustBe  List("listID-Vcode","AgencyId-Vcode","Agencyname-Vcode","listname-raghu","versionID-Vcode","langid-Vcode","schemeuri-Vcode")
       //(xml \ "WCODataModelVersionCode" ).map(_.text)  mustBe Seq("listID-VcodeAgencyId-VcodeAgencyname-Vcodelistname-raghuversionID-Vcodelangid-Vcodeschemeuri-Vcode")
       xml
