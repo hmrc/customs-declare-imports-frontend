@@ -19,7 +19,7 @@
 @import domain.auth.AuthenticatedRequest
 @import uk.gov.hmrc.play.views.html.helpers
 
-@(form: Form[DeclarationForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[AllInOneForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(title = "Declare an Import", bodyClasses = None) {
     @helpers.form(routes.DeclarationController.handleDeclarationForm) {
@@ -35,37 +35,37 @@
         <fieldset class="form-field-group">
             <legend>Metadata</legend>
             <div class="form-field">
-            @helpers.input(form("wcoDataModelVersionCode"),
+            @helpers.input(form("metaData.wcoDataModelVersionCode"),
                 '_label -> "WCO Data Model Version Code",
                 '_inputHint -> "/MetaData/WCODataModelVersionCode in XML (0..1)",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("wcoTypeName"),
+            @helpers.input(form("metaData.wcoTypeName"),
                 '_label -> "WCO Type Name",
                 '_inputHint -> "/MetaData/WCOTypeName in XML (0..1)",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("responsibleCountryCode"),
+            @helpers.input(form("metaData.responsibleCountryCode"),
                 '_label -> "Responsible Country Code",
                 '_inputHint -> "/MetaData/ResponsibleCountryCode in XML (0..1)",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("responsibleAgencyName"),
+            @helpers.input(form("metaData.responsibleAgencyName"),
                 '_label -> "Responsible Agency Name",
                 '_inputHint -> "/MetaData/ResponsibleAgencyName in XML (0..1)",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("agencyAssignedCustomizationCode"),
+            @helpers.input(form("metaData.agencyAssignedCustomizationCode"),
                 '_label -> "Agency Assigned Customization Code",
                 '_inputHint -> "/MetaData/AgencyAssignedCustomizationCode in XML (0..1)",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("agencyAssignedCustomizationVersionCode"),
+            @helpers.input(form("metaData.agencyAssignedCustomizationVersionCode"),
                 '_label -> "Agency Assigned Customization Version Code",
                 '_inputHint -> "/MetaData/AgencyAssignedCustomizationVersionCode in XML (0..1)",
                 '_inputClass -> "form-control--block")
@@ -74,91 +74,91 @@
         <fieldset>
             <legend>Declaration</legend>
             <div class="form-field">
-            @helpers.input(form("acceptanceDateTime"),
+            @helpers.input(form("metaData.declaration.acceptanceDateTime"),
                 '_label -> "Acceptance Date-Time",
                 '_inputHint -> "/MetaData/Declaration/AcceptanceDateTime/DateTimeString/text() in XML (0..1). Max 35 chars. Must conform to regex '(20\\d{6})(\\d{6}(Z|[-+]\\d\\d))?'",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("acceptanceDateTimeFormatCode"),
+            @helpers.input(form("metaData.declaration.acceptanceDateTimeFormatCode"),
                 '_label -> "Acceptance Date-Time Format Code",
                 '_inputHint -> "/MetaData/Declaration/AcceptanceDateTime/DateTimeString[@formatCode] in XML (required when AcceptanceDateTime is specified - must be either '102' or '304')",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("functionCode"),
+            @helpers.input(form("metaData.declaration.functionCode"),
                 '_label -> "Function Code",
                 '_inputHint -> "/MetaData/Declaration/FunctionCode in XML (0..1). Max 2 chars. Must be one of '9', '13', or '14'",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("functionalReferenceId"),
+            @helpers.input(form("metaData.declaration.functionalReferenceId"),
                 '_label -> "Functional Reference ID",
                 '_inputHint -> "/MetaData/Declaration/FunctionalReferenceID in XML (0..1). Max 35 chars.",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("id"),
+            @helpers.input(form("metaData.declaration.id"),
                 '_label -> "ID",
                 '_inputHint -> "/MetaData/Declaration/ID in XML (0..1). Max 70 chars.",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("issueDateTime"),
+            @helpers.input(form("metaData.declaration.issueDateTime"),
                 '_label -> "Issue Date-Time",
                 '_inputHint -> "/MetaData/Declaration/IssueDateTime/DateTimeString/text() in XML (0..1). Max 35 chars. Must conform to regex '(20\\d{6})(\\d{6}(Z|[-+]\\d\\d))?'",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("issueDateTimeFormatCode"),
+            @helpers.input(form("metaData.declaration.issueDateTimeFormatCode"),
                 '_label -> "Issue Date-Time Format Code",
                 '_inputHint -> "/MetaData/Declaration/IssueDateTime/DateTimeString[@formatCode] in XML (required when IssueDateTime is specified - must be either '102' or '304')",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("issueLocationId"),
+            @helpers.input(form("metaData.declaration.issueLocationId"),
                 '_label -> "Issue Location ID",
                 '_inputHint -> "/MetaData/Declaration/IssueLocationID in XML (0..1). Max 5 chars.",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("typeCode"),
+            @helpers.input(form("metaData.declaration.typeCode"),
                 '_label -> "Type Code",
                 '_inputHint -> "/MetaData/Declaration/TypeCode in XML (0..1). Max 3 chars.",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("goodsItemQuantity"),
+            @helpers.input(form("metaData.declaration.goodsItemQuantity"),
                 '_label -> "Goods Item Quantity",
                 '_inputHint -> "/MetaData/Declaration/GoodsItemQuantity in XML (0..1). Unsigned integer. Max 5 digits (i.e. 0-99999).",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("declarationOfficeId"),
+            @helpers.input(form("metaData.declaration.declarationOfficeId"),
                 '_label -> "Declaration Office ID",
                 '_inputHint -> "/MetaData/Declaration/DeclarationOfficeID in XML (0..1). Max 17 chars.",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("invoiceAmount"),
+            @helpers.input(form("metaData.declaration.invoiceAmount"),
                 '_label -> "Invoice Amount",
                 '_inputHint -> "/MetaData/Declaration/InvoiceAmount in XML (0..1). Decimal with precision of 16 and scale of 3.",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("invoiceAmountCurrencyId"),
+            @helpers.input(form("metaData.declaration.invoiceAmountCurrencyId"),
                 '_label -> "Invoice Amount Currency ID",
                 '_inputHint -> "/MetaData/Declaration/InvoiceAmount[@currencyID] in XML (0..1). Max 3 chars (ISO 4217 Alpha3 currency code). The schema validates this via regex '[A-Z]{3}' rather than as an enumeration of permitted values",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("loadingListQuantity"),
+            @helpers.input(form("metaData.declaration.loadingListQuantity"),
                 '_label -> "Loading List Quantity",
                 '_inputHint -> "/MetaData/Declaration/LoadingListQuantity in XML (0..1). Unsigned integer. Max 5 digits (i.e. 0-99999).",
                 '_inputClass -> "form-control--block")
             </div>
             <div class="form-field">
-            @helpers.input(form("totalGrossMassMeasure"),
+            @helpers.input(form("metaData.declaration.totalGrossMassMeasure"),
                 '_label -> "Total Gross Mass Measure",
                 '_inputHint -> "/MetaData/Declaration/TotalGrossMassMeasure in XML (0..1). Decimal with precision of 16 and scale of 6.",
                 '_inputClass -> "form-control--block")
