@@ -24,7 +24,7 @@ import scala.xml.NodeSeq
 
 class CustomsDeclarationsCancellationMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours with CancellationData{
 
-    val service = new CustomsDeclarationsCancellationService()
+    val service = new CustomsDeclarationsCancellationMessageProducer {}
 
   "CancellationService" should {
     "include WCODataModelVersionCode" in validCancellationDeclarationXml() {
@@ -99,7 +99,7 @@ trait CancellationData extends CustomsPlaySpec{
   val expectedSubmitter = <Submitter><Name>submitter-1</Name><ID>1111</ID></Submitter>
   val expAmendmentXml = <Amendment><ChangeReasonCode>{amendment.changeReasonCode}</ChangeReasonCode></Amendment>
 
-  val metadata = MetaData("versionCode1","wCOTypeName1","agencyVersionCode1","textType1",
+  val metadata:MetaData = MetaData("versionCode1","wCOTypeName1","agencyVersionCode1","textType1",
     "agencyAssignedCustomizationVersionCode1",declaration)
 
 }

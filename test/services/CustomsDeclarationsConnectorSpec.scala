@@ -28,316 +28,18 @@ import uk.gov.hmrc.play.http.ws._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviours {
+class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviours  with CancellationData{
 
   val connector = new CustomsDeclarationsConnector(appConfig, app.injector.instanceOf[HttpClient])
 
-  "submit import declaration" should {
+  "CustomsDeclarationsConnector " should {
 
     "POST metadata to Customs Declarations" in submitDeclarationScenario(MetaData(Declaration())) { resp =>
       resp.futureValue must be(true)
     }
 
-  }
-
-  "produce declaration message" should {
-
-    "include WCODataModelVersionCode" in validDeclarationXmlScenario() {
-      val version = "3.6"
-      val meta = MetaData(
-        randomValidDeclaration,
-        wcoDataModelVersionCode = Some(version)
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "WCODataModelVersionCode").text.trim must be(version)
-      xml
-    }
-
-    "not include WCODataModelVersionCode" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration,
-        wcoDataModelVersionCode = None
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "WCODataModelVersionCode").size must be(0)
-      xml
-    }
-
-    "include WCOTypeName" in validDeclarationXmlScenario() {
-      val name = "DEC"
-      val meta = MetaData(
-        randomValidDeclaration,
-        wcoTypeName = Some(name)
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "WCOTypeName").text.trim must be(name)
-      xml
-    }
-
-    "not include WCOTypeName" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration,
-        wcoTypeName = None
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "WCOTypeName").size must be(0)
-      xml
-    }
-
-    "include ResponsibleCountryCode" in validDeclarationXmlScenario() {
-      val code = "GB"
-      val meta = MetaData(
-        randomValidDeclaration,
-        responsibleCountryCode = Some(code)
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "ResponsibleCountryCode").text.trim must be(code)
-      xml
-    }
-
-    "not include ResponsibleCountryCode" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration,
-        responsibleCountryCode = None
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "ResponsibleCountryCode").size must be(0)
-      xml
-    }
-
-    "include ResponsibleAgencyName" in validDeclarationXmlScenario() {
-      val agency = "HMRC"
-      val meta = MetaData(
-        randomValidDeclaration,
-        responsibleAgencyName = Some(agency)
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "ResponsibleAgencyName").text.trim must be(agency)
-      xml
-    }
-
-    "not include ResponsibleAgencyName" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration,
-        responsibleAgencyName = None
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "ResponsibleAgencyName").size must be(0)
-      xml
-    }
-
-    "include AgencyAssignedCustomizationCode" in validDeclarationXmlScenario() {
-      val code = "foo"
-      val meta = MetaData(
-        randomValidDeclaration,
-        agencyAssignedCustomizationCode = Some(code)
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "AgencyAssignedCustomizationCode").text.trim must be(code)
-      xml
-    }
-
-    "not include AgencyAssignedCustomizationCode" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration,
-        agencyAssignedCustomizationCode = None
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "AgencyAssignedCustomizationCode").size must be(0)
-      xml
-    }
-
-    "include AgencyAssignedCustomizationVersionCode" in validDeclarationXmlScenario() {
-      val code = "v2.1"
-      val meta = MetaData(
-        randomValidDeclaration,
-        agencyAssignedCustomizationVersionCode = Some(code)
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "AgencyAssignedCustomizationVersionCode").text.trim must be(code)
-      xml
-    }
-
-    "not include AgencyAssignedCustomizationVersionCode" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration,
-        agencyAssignedCustomizationVersionCode = None
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "AgencyAssignedCustomizationVersionCode").size must be(0)
-      xml
-    }
-
-    "always include Declaration" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration").size must be(1)
-      xml
-    }
-
-    "include AcceptanceDateTime" in validDeclarationXmlScenario() {
-      val formatCode = randomDateTimeFormatCode
-      val dateTime = randomDateTimeString
-      val meta = MetaData(
-        Declaration(
-          acceptanceDateTime = Some(AcceptanceDateTime(DateTimeString(formatCode, dateTime)))
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "AcceptanceDateTime" \ "DateTimeString").text.trim must be(dateTime)
-      (xml \ "Declaration" \ "AcceptanceDateTime" \ "DateTimeString" \ "@formatCode").text.trim must be(formatCode)
-      xml
-    }
-
-    "include FunctionCode" in validDeclarationXmlScenario() {
-      val code = randomDeclarationFunctionCode
-      val meta = MetaData(
-        Declaration(
-          functionCode = Some(code)
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "FunctionCode").text.trim must be(code)
-      xml
-    }
-
-    "include FunctionalReferenceID" in validDeclarationXmlScenario() {
-      val id = randomString(35)
-      val meta = MetaData(
-        Declaration(
-          functionalReferenceId = Some(id)
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "FunctionalReferenceID").text.trim must be(id)
-      xml
-    }
-
-    "include ID" in validDeclarationXmlScenario() {
-      val id = randomString(70)
-      val meta = MetaData(
-        Declaration(
-          id = Some(id)
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "ID").text.trim must be(id)
-      xml
-    }
-
-    "include IssueDateTime" in validDeclarationXmlScenario() {
-      val formatCode = randomDateTimeFormatCode
-      val dateTime = randomDateTimeString
-      val meta = MetaData(
-        Declaration(
-          issueDateTime = Some(IssueDateTime(DateTimeString(formatCode, dateTime)))
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "IssueDateTime" \ "DateTimeString").text.trim must be(dateTime)
-      (xml \ "Declaration" \ "IssueDateTime" \ "DateTimeString" \ "@formatCode").text.trim must be(formatCode)
-      xml
-    }
-
-    "include IssueLocationID" in validDeclarationXmlScenario() {
-      val id = randomString(5)
-      val meta = MetaData(
-        Declaration(
-          issueLocationId = Some(id)
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "IssueLocationID").text.trim must be(id)
-      xml
-    }
-
-    "include TypeCode" in validDeclarationXmlScenario() {
-      val code = randomString(3)
-      val meta = MetaData(
-        Declaration(
-          typeCode = Some(code)
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "TypeCode").text.trim must be(code)
-      xml
-    }
-
-    "include GoodsItemQuantity" in validDeclarationXmlScenario() {
-      val quantity = randomInt(100000)
-      val meta = MetaData(
-        Declaration(
-          goodsItemQuantity = Some(quantity)
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "GoodsItemQuantity").text.trim.toInt must be(quantity)
-      xml
-    }
-
-    "include DeclarationOfficeID" in validDeclarationXmlScenario() {
-      val id = randomString(17)
-      val meta = MetaData(
-        Declaration(
-          declarationOfficeId = Some(id)
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "DeclarationOfficeID").text.trim must be(id)
-      xml
-    }
-
-    "include InvoiceAmount without currencyID attribute" in validDeclarationXmlScenario() {
-      val amount = randomBigDecimal
-      val meta = MetaData(
-        Declaration(
-          invoiceAmount = Some(InvoiceAmount(amount))
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "InvoiceAmount").text.trim must be(amount.toString)
-      (xml \ "Declaration" \ "InvoiceAmount" \ "@currencyID").size must be(0)
-      xml
-    }
-
-    "include InvoiceAmount with currencyID attribute" in validDeclarationXmlScenario() {
-      val amount = randomBigDecimal
-      val currency = randomISO4217CurrencyCode
-      val meta = MetaData(
-        Declaration(
-          invoiceAmount = Some(InvoiceAmount(amount, Some(currency)))
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "InvoiceAmount").text.trim must be(amount.toString)
-      (xml \ "Declaration" \ "InvoiceAmount" \ "@currencyID").text.trim must be(currency)
-      xml
-    }
-
-    "include LoadingListQuantiy" in validDeclarationXmlScenario() {
-      val quantity = randomInt(100000)
-      val meta = MetaData(
-        Declaration(
-          loadingListQuantity = Some(quantity)
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "LoadingListQuantity").text.trim.toInt must be(quantity)
-      xml
-    }
-
-    "include TotalGrossMassMeasure" in validDeclarationXmlScenario() {
-      val total = randomBigDecimal
-      val meta = MetaData(
-        Declaration(
-          totalGrossMassMeasure = Some(MassMeasure(total))
-        )
-      )
-      val xml = connector.produceDeclarationMessage(meta)
-      (xml \ "Declaration" \ "TotalGrossMassMeasure").text.trim must be(total.toString)
-      xml
+      "POST declaration cancellation payload successfully" in submitDeclarationCancellationScenario(metadata) { resp =>
+        resp.futureValue must be(true)
     }
 
   }
@@ -358,6 +60,24 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
     val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError)
     val client = new CustomsDeclarationsConnector(appConfig, http)
     test(client.submitImportDeclaration(metaData, badgeIdentifier)(hc, ec))
+  }
+
+  def submitDeclarationCancellationScenario(metaData: domain.cancellation.MetaData,
+                                badgeIdentifier: Option[String] = None,
+                                forceServerError: Boolean = false,
+                                hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
+                               (test: Future[Boolean] => Unit): Unit = {
+    val messageProducer = new CustomsDeclarationsCancellationMessageProducer {}
+    val expectedUrl: String = s"${appConfig.customsDeclarationsEndpoint}${appConfig.cancelImportDeclarationUri}"
+    val expectedBody: String = messageProducer.produceDeclarationCancellationMessage(metaData).mkString
+    val expectedHeaders: Map[String, String] = Map(
+      "X-Client-ID" -> appConfig.developerHubClientId,
+      HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
+      HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
+    ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
+    val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError)
+    val client = new CustomsDeclarationsConnector(appConfig, http)
+    test(client.cancelImportDeclaration(metaData, badgeIdentifier)(hc, ec))
   }
 
   class MockHttpClient(expectedUrl: String, expectedBody: String, expectedHeaders: Map[String, String], forceServerError: Boolean = false) extends HttpClient with WSGet with WSPut with WSPost with WSDelete with WSPatch {

@@ -21,8 +21,6 @@ import domain.cancellation._
 import scala.xml.{NodeSeq, Elem}
 
 
-class CustomsDeclarationsCancellationService extends CustomsDeclarationsCancellationMessageProducer
-
 trait CustomsDeclarationsCancellationMessageProducer {
   private[services] def produceDeclarationCancellationMessage(metaData: MetaData): Elem = <md:MetaData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                                                                            xmlns="urn:wco:datamodel:WCO:DEC-DMS:2"
