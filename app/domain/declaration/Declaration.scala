@@ -39,8 +39,8 @@ case class Declaration(acceptanceDateTime: Option[AcceptanceDateTime] = None, //
                        totalGrossMassMeasure: Option[MassMeasure] = None, // name="TotalGrossMassMeasure" type="ds:DeclarationTotalGrossMassMeasureType" minOccurs="0"
                        totalPackageQuantity: Option[Int] = None, // name="TotalPackageQuantity" type="ds:DeclarationTotalPackageQuantityType" minOccurs="0"
                        specificCircumstancesCodeCode: Option[String] = None, // name="SpecificCircumstancesCodeCode" type="ds:DeclarationSpecificCircumstancesCodeCodeType" minOccurs="0"
-                       authentication: Option[String] = None, // name="Authentication" minOccurs="0" maxOccurs="1"
-                       submitter: Option[String] = None, // name="Submitter" minOccurs="0" maxOccurs="1"
+                       authentication: Option[Authentication] = None, // name="Authentication" minOccurs="0" maxOccurs="1"
+                       submitter: Option[Submitter] = None, // name="Submitter" minOccurs="0" maxOccurs="1"
                        additionalDocuments: Seq[AdditionalDocument] = Seq.empty, // name="AdditionalDocument" minOccurs="0" maxOccurs="unbounded"
                        additionalInformations: Seq[AdditionalInformation] = Seq.empty, // name="AdditionalInformation" minOccurs="0" maxOccurs="unbounded"
                        agent: Option[String] = None, // name="Agent" minOccurs="0" maxOccurs="1"
@@ -56,6 +56,14 @@ case class Declaration(acceptanceDateTime: Option[AcceptanceDateTime] = None, //
                        presentationOffice: Option[String] = None, // name="PresentationOffice" minOccurs="0" maxOccurs="1"
                        supervisingOffice: Option[SupervisingOffice] = None) // name="SupervisingOffice" minOccurs="0" maxOccurs="1"
 
+case class Submitter(name: Option[String] = None, // max length 70
+                     id: Option[String] = None, // max length 17
+                     address: Option[Address] = None)
+
+case class Authentication(authentication: Option[String] = None, authenticator: Option[Authenticator] = None)
+
+case class Authenticator(name: Option[String] = None)
+
 case class AcceptanceDateTime(dateTimeString: DateTimeString)
 
 case class IssueDateTime(dateTimeString: DateTimeString)
@@ -67,9 +75,9 @@ case class InvoiceAmount(value: BigDecimal, currencyId: Option[String] = None)
 
 case class MassMeasure(value: BigDecimal, unitCode: Option[String] = None)
 
-case class AdditionalDocument(id: String,
-                              categoryCode: Option[String],
-                              typeCode: Option[String],
+case class AdditionalDocument(id: Option[String] = None, // max 70 chars
+                              categoryCode: Option[String] = None, // max 3 chars
+                              typeCode: Option[String] = None, // max 3 chars
                               name: Option[String] = None,
                               lpcoExemptionCode: Option[String] = None)
 
@@ -82,12 +90,14 @@ case class BorderTransportMeans(registrationNationalityCode: String,
 case class Declarant(id: String)
 
 case class Exporter(name: String,
-                    address: ExporterAddress)
+                    address: Address)
 
-case class ExporterAddress(cityName: String,
-                           countryCode: String,
-                           line: String,
-                           postcodeId: String)
+case class Address(cityName: Option[String] = None, // max length 35
+                   countryCode: Option[String] = None, // 2 chars [a-zA-Z] ISO 3166-1 2-alpha
+                   countrySubDivisionCode: Option[String] = None, // max 9 chars
+                   countrySubDivisionName: Option[String] = None, // max 35 chars
+                   line: Option[String] = None, // max 70 chars
+                   postcodeId: Option[String] = None) // max 9 chars
 
 case class GoodsShipment(transactionNatureCode: String,
                          consignment: Consignment,

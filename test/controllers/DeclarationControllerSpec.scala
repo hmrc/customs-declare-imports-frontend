@@ -239,11 +239,26 @@ class DeclarationControllerSpec
       }
     }
 
-    // TODO map gross mass measure unit code and unigonre this test
-    "include a text input for Total Gross Mass Measure unit code" ignore featureScenario(Feature.declaration, FeatureStatus.enabled) {
+    "include a text input for Total Gross Mass Measure unit code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri) { resp =>
           includesHtmlInput(resp, "text", "metaData.declaration.totalGrossMassMeasureUnitCode")
+        }
+      }
+    }
+
+    "include a text input for Total Package Quantity" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.totalPackageQuantity")
+        }
+      }
+    }
+
+    "include a text input for Specific Circumstances Code Code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.specificCircumstancesCodeCode")
         }
       }
     }
@@ -511,6 +526,41 @@ class DeclarationControllerSpec
           )
         )
       ).toMetaData.declaration.totalGrossMassMeasure.get.value must be(total)
+    }
+
+    "map total gross mass measure unit code" in {
+      val total = randomBigDecimal
+      val code = randomString(5)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            totalGrossMassMeasure = Some(total),
+            totalGrossMassMeasureUnitCode = Some(code)
+          )
+        )
+      ).toMetaData.declaration.totalGrossMassMeasure.get.unitCode.get must be(code)
+    }
+
+    "map total package quantity" in {
+      val quantity = randomInt(100000000)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            totalPackageQuantity = Some(quantity)
+          )
+        )
+      ).toMetaData.declaration.totalPackageQuantity.get must be(quantity)
+    }
+
+    "map specific circumstances code code" in {
+      val code = randomString(3)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            specificCircumstancesCodeCode = Some(code)
+          )
+        )
+      ).toMetaData.declaration.specificCircumstancesCodeCode.get must be(code)
     }
 
   }
