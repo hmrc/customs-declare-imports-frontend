@@ -86,11 +86,11 @@ case class Declaration(functionCode: String,
                        amendment: Amendment)
 
 
-case class MetaData(wCODataModelVersionCode: CodeType,
-                    wCOTypeName: TextType,
-                    responsibleCountryCode: CodeType,
-                    responsibleAgencyName: TextType,
-                    agencyAssignedCustomizationVersionCode: CodeType,
+case class MetaData(wCODataModelVersionCode: String,
+                    wCOTypeName: String,
+                    responsibleCountryCode: String,
+                    responsibleAgencyName: String,
+                    agencyAssignedCustomizationVersionCode: String,
                     declaration: Declaration)
 
 

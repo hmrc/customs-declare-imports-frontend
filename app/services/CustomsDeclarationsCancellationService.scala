@@ -38,31 +38,26 @@ trait CustomsDeclarationsCancellationMessageProducer {
   </md:MetaData>
 
   private def wcoDataModelVersionCode(metaData: MetaData):NodeSeq =
-    <md:WCODataModelVersionCode>{createCodeTypeElements(metaData.wCODataModelVersionCode)}</md:WCODataModelVersionCode>
+    <md:WCODataModelVersionCode>{metaData.wCODataModelVersionCode}</md:WCODataModelVersionCode>
 
   private def wCOTypeName(metaData: MetaData): Elem =
-    <md:WCOTypeName>{metaData.wCOTypeName.languageID.map{langId => <languageID>{langId}</languageID>}.orNull}</md:WCOTypeName>
+    <md:WCOTypeName>{metaData.wCOTypeName}</md:WCOTypeName>
 
 
   private def responsibleCountryCode(metaData: MetaData) :Elem =
-    <md:ResponsibleCountryCode>{createCodeTypeElements(metaData.responsibleCountryCode)}</md:ResponsibleCountryCode>
+    <md:ResponsibleCountryCode>{metaData.responsibleCountryCode}</md:ResponsibleCountryCode>
 
   private def responsibleAgencyName(metaData: MetaData) :Elem =
-    <md:ResponsibleAgencyName>{metaData.responsibleAgencyName.languageID.map{langId =>
-      <languageID>{langId}</languageID>}.orNull}</md:ResponsibleAgencyName>
+    <md:ResponsibleAgencyName>{metaData.responsibleAgencyName}</md:ResponsibleAgencyName>
 
   private def agencyAssignedCustomizationVersionCode(metaData: MetaData) :Elem =
-    <md:AgencyAssignedCustomizationVersionCode>{ createCodeTypeElements(metaData.agencyAssignedCustomizationVersionCode)}
-    </md:AgencyAssignedCustomizationVersionCode>
+    <md:AgencyAssignedCustomizationVersionCode>{ metaData.agencyAssignedCustomizationVersionCode}</md:AgencyAssignedCustomizationVersionCode>
 
 
   private def additionalInformation(aditionalInfo:AdditionalInformation):NodeSeq = {
     <AdditionalInformation>
-      <StatementDescription>
-        {aditionalInfo.statementDescription}
-      </StatementDescription>{aditionalInfo.statementTypeCode.map { code =>
-      <StatementTypeCode>{code}</StatementTypeCode>
-    }.getOrElse("")}
+      <StatementDescription>{aditionalInfo.statementDescription}</StatementDescription>
+      {aditionalInfo.statementTypeCode.map{code => <StatementTypeCode>{code}</StatementTypeCode>}.getOrElse("")}
       {aditionalInfo.pointer.map { pointer =>
       <Pointer>
         {pointer.documentSectionCode.map { code => <DocumentSectionCode>{code}</DocumentSectionCode>
@@ -72,19 +67,8 @@ trait CustomsDeclarationsCancellationMessageProducer {
     </AdditionalInformation>
   }
 
-  private def amendment(amendment: Amendment):Elem = <amendment><changeReason>{amendment.changeReasonCode}</changeReason></amendment>
-
-  private def createCodeTypeElements(codeType:CodeType) =
-
-    codeType.listID.map{listId=> <listID>{listId}</listID>} ++
-    codeType.listAgencyID.map{listAgencyID => <listAgencyID>{listAgencyID}</listAgencyID>} ++
-    codeType.listAgencyName.map{listAgencyName => <listAgencyName>{listAgencyName}</listAgencyName>} ++
-    codeType.listName.map{listName => <listName>{listName}</listName>} ++
-    codeType.listVersionID.map{listVersionID => <listVersionID>{listVersionID}</listVersionID>} ++
-    codeType.name.map{name => <name>{name}</name>} ++
-    codeType.languageID.map{languageID => <languageID>{languageID}</languageID>} ++
-    codeType.listURI.map{listURI => <listURI>{listURI}</listURI>} ++
-    codeType.listSchemeURI.map{listSchemeURI => <listSchemeURI>{listSchemeURI}</listSchemeURI>}
+  private def amendment(amendment: Amendment):Elem =
+    <Amendment><ChangeReasonCode>{amendment.changeReasonCode}</ChangeReasonCode></Amendment>
 
 
   private def declaration(declaration: Declaration) = {
@@ -93,8 +77,7 @@ trait CustomsDeclarationsCancellationMessageProducer {
       <ID>{declaration.id}</ID> ++
       <TypeCode>{declaration.typeCode}</TypeCode> ++
       declaration.submitter.map (
-      res => <Submitter>{res.name.map(name => <name>{name}</name>).getOrElse("")}<ID>{res.ID}</ID>
-      </Submitter>) ++
+      res => <Submitter>{res.name.map(name => <Name>{name}</Name>).getOrElse("")}<ID>{res.ID}</ID></Submitter>) ++
       {additionalInformation(declaration.additionalInformation)} ++ {amendment(declaration.amendment)}
   }
 

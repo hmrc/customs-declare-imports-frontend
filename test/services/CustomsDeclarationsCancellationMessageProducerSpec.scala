@@ -28,36 +28,79 @@ class CustomsDeclarationsCancellationMessageProducerSpec extends CustomsPlaySpec
 
   "CancellationService" should {
     "include WCODataModelVersionCode" in validCancellationDeclarationXml() {
-      val version = "3.6"
       val meta = metadata
       val xml = service.produceDeclarationCancellationMessage(meta)
-    // values mustBe  List("listID-Vcode","AgencyId-Vcode","Agencyname-Vcode","listname-raghu","versionID-Vcode","langid-Vcode","schemeuri-Vcode")
-      //(xml \ "WCODataModelVersionCode" ).map(_.text)  mustBe Seq("listID-VcodeAgencyId-VcodeAgencyname-Vcodelistname-raghuversionID-Vcodelangid-Vcodeschemeuri-Vcode")
+      (xml \ "WCODataModelVersionCode" ).text  mustBe "versionCode1"
+      xml
+    }
+    "include WCOTypeName" in validCancellationDeclarationXml() {
+      val meta = metadata
+      val xml = service.produceDeclarationCancellationMessage(meta)
+      (xml \ "WCOTypeName" ).text  mustBe "wCOTypeName1"
+      xml
+    }
+    "include AgencyAssignedCustomizationVersionCode" in validCancellationDeclarationXml() {
+      val meta = metadata
+      val xml = service.produceDeclarationCancellationMessage(meta)
+      (xml \ "AgencyAssignedCustomizationVersionCode" ).text  mustBe "agencyAssignedCustomizationVersionCode1"
+      xml
+    }
+    "include Declaration"  in validCancellationDeclarationXml() {
+      val meta = metadata
+      val xml = service.produceDeclarationCancellationMessage(meta)
+      (xml \\ "FunctionCode" ).text  mustBe "13"
+      (xml \\ "FunctionalReferenceID" ).text  mustBe "refId-1"
+      (xml \\ "ID" ).head.text  mustBe "ID-111"
+
+      xml
+    }
+    "include Submitter in Declaration"  in validCancellationDeclarationXml() {
+      val meta = metadata
+      val xml = service.produceDeclarationCancellationMessage(meta)
+      (xml \\ "Submitter").xml_sameElements(expectedSubmitter) mustBe true
+
+      xml
+    }
+    "include Amendment in Declaration"  in validCancellationDeclarationXml() {
+      val meta = metadata
+      val xml = service.produceDeclarationCancellationMessage(meta)
+      (xml \\ "Amendment").xml_sameElements(expAmendmentXml) mustBe true
+      xml
+    }
+    "include AdditionalInformation tags in Declaration"  in validCancellationDeclarationXml() {
+      val meta = metadata
+      val xml = service.produceDeclarationCancellationMessage(meta)
+      val declaration = (xml \ "Declaration")
+      (declaration \\ "StatementDescription").text mustBe statementDesc
+      (declaration \\ "StatementTypeCode").text mustBe statementTypeCode.get
+      (declaration \\ "DocumentSectionCode").text mustBe documentSectionCode
       xml
     }
   }
 
 }
 
-trait CancellationData {
-  val wcoDataModelVersionCode = CodeType(Some("listID-Vcode"),Some("AgencyId-Vcode"),Some("Agencyname-Vcode"),
-    Some("listname-raghu"),Some("versionID-Vcode"),None,Some("langid-Vcode"),None,Some("schemeuri-Vcode"))
-  val responsibleCountryCode = CodeType(Some("listID-CCode"),Some("AgencyId-CCode"),Some("Agencyname-CCode"),
-    Some("listname-raghu"),Some("versionID-CCode"),None,Some("langid-CCode"),None,Some("schemeuri-CCode"))
-  val agencyAssignedCustomizationVersionCode = CodeType(Some("listID-ACode"),Some("AgencyId-ACode"),Some("Agencyname-ACode"),
-    Some("listname-raghu"),Some("versionID-ACode"),None,Some("langid-ACode"),None,Some("schemeuri-ACode"))
-
-  val additionalInfo = AdditionalInformation("statementDesc-1",Some("typecode-1"),Some(Pointer(Some("section_code1234"))))
+trait CancellationData extends CustomsPlaySpec{
+//statement desc restriction .*[^\s].*
+  val statementDesc = randomString(50)
+  val documentSectionCode = randomString(3)
+  val changeReasonCode = randomString(3)
+  val statementTypeCode = Some(randomString(3))
+  val additionalInfo = AdditionalInformation(statementDesc,statementTypeCode,Some(Pointer(Some(documentSectionCode))))
   val submitter = Some(Submitter(Some("submitter-1"),"1111"))
   val pointer = Pointer(Some("sectionCode-1"))
-  val amendment = Amendment("resoncode-1")
-  val declaration = Declaration("functionCode-1",Some("refId-1"),"ID-111",submitter = submitter,additionalInformation =
+  val amendment = Amendment(changeReasonCode)
+  //Functioanl code can only be  13, for cancellation
+  val declaration = Declaration("13",Some("refId-1"),"ID-111",submitter = submitter,additionalInformation =
     additionalInfo,amendment = amendment)
 
   val textType = TextType(Some("languageID-wCOTypeName"))
 
-  val metadata = MetaData(wcoDataModelVersionCode,textType,responsibleCountryCode,textType,
-    agencyAssignedCustomizationVersionCode,declaration)
+  val expectedSubmitter = <Submitter><Name>submitter-1</Name><ID>1111</ID></Submitter>
+  val expAmendmentXml = <Amendment><ChangeReasonCode>{amendment.changeReasonCode}</ChangeReasonCode></Amendment>
+
+  val metadata = MetaData("versionCode1","wCOTypeName1","agencyVersionCode1","textType1",
+    "agencyAssignedCustomizationVersionCode1",declaration)
 
 }
 

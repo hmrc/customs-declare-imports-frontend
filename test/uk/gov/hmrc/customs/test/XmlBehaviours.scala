@@ -40,8 +40,7 @@ trait XmlBehaviours {
   }
 
   def validCancellationDeclarationXml()(test: => Elem): Unit = {
-  //  validXmlScenario(importDeclarationCancellationSchemas)(test)
-    validXmlScenario(importDeclarationSchemaResources)(test)
+    validXmlScenario(importDeclarationCancellationSchemas)(test)
 
   }
   protected def isValidImportDeclarationXml(xml: String): Boolean = {

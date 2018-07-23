@@ -5,7 +5,7 @@
     targetNamespace="urn:wco:datamodel:WCO:DocumentMetaData-DMS:2"
     elementFormDefault="qualified"
     version="2.1">
-  <xs:import namespace="urn:wco:datamodel:WCO:MetaData_DS-DMS:2" schemaLocation="WCO_DS/WCO_METADATA_2_DMS.xsd"/>
+  <xs:import namespace="urn:wco:datamodel:WCO:MetaData_DS-DMS:2" schemaLocation="WCO_METADATA_2_DMS.xsd"/>
   <xs:element name="MetaData">
     <xs:annotation>
       <xs:documentation>
