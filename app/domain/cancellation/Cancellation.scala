@@ -16,37 +16,7 @@
 
 package domain.cancellation
 
-import java.lang.reflect.Field
-
-import play.api.Logger
-
-import scala.xml.{NodeSeq, XML}
-
-
-sealed trait XmlTransform {
-  def toXml(isCapitalise: Boolean = true): NodeSeq = {
-    getClass.getDeclaredFields.map(field => {
-      field setAccessible true
-      val fieldName = if (isCapitalise) field.getName.capitalize else field.getName
-      if(fieldName.endsWith("outer"))
-      Logger.debug("fieldName -> " + fieldName)
-      val xmltag = s"<md:${fieldName}>${getValue(field: Field)}</md:${fieldName}>"
-      Logger.debug("xml tag String " + xmltag)
-      val xmlElem = XML.loadString(xmltag)
-      Logger.debug("xml Element " + xmlElem)
-      xmlElem
-    }).toSeq
-
-  }
-
-  private def getValue(field: Field) =
-    if (field.get(this).isInstanceOf[Option[Any]]) {
-      field.get(this).asInstanceOf[Option[Any]].getOrElse("")
-    } else field.get(this)
-
-}
-
-case class TextType(languageID: Option[String]) extends XmlTransform
+case class TextType(languageID: Option[String])
 
 
 case class CodeType(listID: Option[String],
@@ -57,11 +27,9 @@ case class CodeType(listID: Option[String],
                     name: Option[String],
                     languageID: Option[String],
                     listURI: Option[String],
-                    listSchemeURI: Option[String]) extends XmlTransform {
-  override def toXml(isCapitalise: Boolean = false): NodeSeq = super.toXml(false)
-}
+                    listSchemeURI: Option[String])
 
-case class Submitter(name: Option[String], ID: String) extends XmlTransform
+case class Submitter(name: Option[String], ID: String)
 
 /*
 Submitter name
@@ -75,7 +43,7 @@ Submitter name
 <xs:pattern value=".*[^\s].*"/>
 </xs:restriction>
 */
-case class Pointer(documentSectionCode: Option[String]) extends XmlTransform
+case class Pointer(documentSectionCode: Option[String])
 
 /*
 DocumentSectionCode
@@ -85,14 +53,8 @@ DocumentSectionCode
   </xs:restriction>
 */
 
-case class XmlAdditionalInformation(statementDescription: String, statementTypeCode: Option[String]) extends XmlTransform
 
-
-case class AdditionalInformation(statementDescription: String, statementTypeCode: Option[String], pointer: Option[Pointer]) {
-
-  def toXml(): NodeSeq = XmlAdditionalInformation(statementDescription, statementTypeCode).toXml() ++ <md:Pointer>{
-                                                      pointer.get.toXml()}</md:Pointer>
-}
+case class AdditionalInformation(statementDescription: String, statementTypeCode: Option[String], pointer: Option[Pointer])
 
 /* StatementDescription
     <xs:restriction base="udt:IDType">
@@ -106,7 +68,7 @@ case class AdditionalInformation(statementDescription: String, statementTypeCode
       </xs:restriction>
 
 */
-case class Amendment(changeReasonCode: String) extends XmlTransform
+case class Amendment(changeReasonCode: String)
 
 /*ChangeReasonCode
        <xs:restriction base="udt:CodeType">
@@ -114,31 +76,22 @@ case class Amendment(changeReasonCode: String) extends XmlTransform
         <xs:pattern value=".*[^\s].*"/>
       </xs:restriction>
 * */
-case class XmlDeclaration(functionCode: String,
-                                   functionalReferenceID: Option[String],
-                                   id: String,
-                                   typeCode: String = "INV",
-                                   submitter: Submitter)
 
 case class Declaration(functionCode: String,
                        functionalReferenceID: Option[String],
                        id: String,
                        typeCode: String = "INV",
-                       submitter: Submitter,
+                       submitter: Option[Submitter],
                        additionalInformation: AdditionalInformation,
-                       amendment: Amendment) extends XmlTransform
-{
-  def toXml() = {
+                       amendment: Amendment)
 
-  }
-}
 
-case class MetaData(wCODataModelVersionCode: Option[CodeType],
-                    wCOTypeName: Option[CodeType],
-                    responsibleCountryCode: Option[CodeType],
-                    responsibleAgencyName: Option[CodeType],
-                    agencyAssignedCustomizationVersionCode: Option[CodeType],
-                    declaration: Declaration) extends XmlTransform
+case class MetaData(wCODataModelVersionCode: String,
+                    wCOTypeName: String,
+                    responsibleCountryCode: String,
+                    responsibleAgencyName: String,
+                    agencyAssignedCustomizationVersionCode: String,
+                    declaration: Declaration)
 
 
 /*
