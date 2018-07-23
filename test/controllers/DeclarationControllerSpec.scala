@@ -16,11 +16,16 @@
 
 package controllers
 
+import domain.declaration.InvoiceAmount
 import domain.features.{Feature, FeatureStatus}
 import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours}
+import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours, WiremockBehaviours}
 
-class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours {
+class DeclarationControllerSpec
+  extends CustomsPlaySpec
+    with AuthenticationBehaviours
+    with FeatureSwitchBehaviours
+    with WiremockBehaviours {
 
   val method = "GET"
   val handleMethod = "POST"
@@ -30,13 +35,17 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
 
     "return 200" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(method, uri, signedInUser) { wasOk }
+        userRequestScenario(method, uri, signedInUser) {
+          wasOk
+        }
       }
     }
 
     "return HTML" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(method, uri, signedInUser) { wasHtml }
+        userRequestScenario(method, uri, signedInUser) {
+          wasHtml
+        }
       }
     }
 
@@ -48,14 +57,16 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
 
     "be behind a feature switch" in featureScenario(Feature.declaration, FeatureStatus.disabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(method, uri, signedInUser) { wasNotFound }
+        userRequestScenario(method, uri, signedInUser) {
+          wasNotFound
+        }
       }
     }
 
     "include a text input for WCO data model version code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri) { resp =>
-          includesHtmlInput(resp, "text", "wcoDataModelVersionCode")
+          includesHtmlInput(resp, "text", "metaData.wcoDataModelVersionCode")
         }
       }
     }
@@ -63,7 +74,7 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
     "include a text input for WCO type name" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri) { resp =>
-          includesHtmlInput(resp, "text", "wcoTypeName")
+          includesHtmlInput(resp, "text", "metaData.wcoTypeName")
         }
       }
     }
@@ -71,7 +82,7 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
     "include a text input for Responsible Country Code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri) { resp =>
-          includesHtmlInput(resp, "text", "responsibleCountryCode")
+          includesHtmlInput(resp, "text", "metaData.responsibleCountryCode")
         }
       }
     }
@@ -79,7 +90,7 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
     "include a text input for Responsible Agency Name" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri) { resp =>
-          includesHtmlInput(resp, "text", "responsibleAgencyName")
+          includesHtmlInput(resp, "text", "metaData.responsibleAgencyName")
         }
       }
     }
@@ -87,7 +98,7 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
     "include a text input for Agency Assigned Customization Code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri) { resp =>
-          includesHtmlInput(resp, "text", "agencyAssignedCustomizationCode")
+          includesHtmlInput(resp, "text", "metaData.agencyAssignedCustomizationCode")
         }
       }
     }
@@ -95,7 +106,144 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
     "include a text input for Agency Assigned Customization Version Code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri) { resp =>
-          includesHtmlInput(resp, "text", "agencyAssignedCustomizationVersionCode")
+          includesHtmlInput(resp, "text", "metaData.agencyAssignedCustomizationVersionCode")
+        }
+      }
+    }
+
+    "include a text input for Badge ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "badgeId")
+        }
+      }
+    }
+
+    "include a text input for Acceptance Date Time" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.acceptanceDateTime")
+        }
+      }
+    }
+
+    "include a text input for Acceptance Date Time format code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.acceptanceDateTimeFormatCode")
+        }
+      }
+    }
+
+    "include a text input for Function Code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.functionCode")
+        }
+      }
+    }
+
+    "include a text input for Functional Reference ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.functionalReferenceId")
+        }
+      }
+    }
+
+    "include a text input for ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.id")
+        }
+      }
+    }
+
+    "include a text input for Issue Date Time" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.issueDateTime")
+        }
+      }
+    }
+
+    "include a text input for Issue Date Time format code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.issueDateTimeFormatCode")
+        }
+      }
+    }
+
+    "include a text input for Issue Location ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.issueLocationId")
+        }
+      }
+    }
+
+    "include a text input for Type Code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.typeCode")
+        }
+      }
+    }
+
+    "include a text input for Goods Item Quantity" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.goodsItemQuantity")
+        }
+      }
+    }
+
+    "include a text input for Declaration Office ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.declarationOfficeId")
+        }
+      }
+    }
+
+    "include a text input for Invoice Amount" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.invoiceAmount")
+        }
+      }
+    }
+
+    "include a text input for Invoice Amount currency ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.invoiceAmountCurrencyId")
+        }
+      }
+    }
+
+    "include a text input for Loading List Quantity" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.loadingListQuantity")
+        }
+      }
+    }
+
+    "include a text input for Total Gross Mass Measure" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.totalGrossMassMeasure")
+        }
+      }
+    }
+
+    // TODO map gross mass measure unit code and unigonre this test
+    "include a text input for Total Gross Mass Measure unit code" ignore featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.declaration.totalGrossMassMeasureUnitCode")
         }
       }
     }
@@ -105,14 +253,22 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
   s"$handleMethod $uri" should {
 
     "return 200" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(handleMethod, uri, signedInUser) { wasOk }
+      withDeclarationSubmissionApi() {
+        signedInScenario(signedInUser) {
+          userRequestScenario(handleMethod, uri, signedInUser) {
+            wasOk
+          }
+        }
       }
     }
 
     "return HTML" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(handleMethod, uri, signedInUser) { wasHtml }
+      withDeclarationSubmissionApi() {
+        signedInScenario(signedInUser) {
+          userRequestScenario(handleMethod, uri, signedInUser) {
+            wasHtml
+          }
+        }
       }
     }
 
@@ -125,7 +281,19 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
 
     "be behind a feature switch" in featureScenario(Feature.declaration, FeatureStatus.disabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(handleMethod, uri, signedInUser) { wasNotFound }
+        userRequestScenario(handleMethod, uri, signedInUser) {
+          wasNotFound
+        }
+      }
+    }
+
+    "submit declaration" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      withDeclarationSubmissionApi() {
+        signedInScenario(signedInUser) {
+          userRequestScenario(handleMethod, uri, signedInUser) { resp =>
+            // TODO unigration test for declaration submission
+          }
+        }
       }
     }
 
@@ -135,44 +303,214 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
 
     "map WCO data model version code" in {
       val code = randomString(8)
-      DeclarationForm(
-        wcoDataModelVersionCode = Some(code)
-      ).toMetaData.wcoDataModelVersionCode.get must be (code)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          wcoDataModelVersionCode = Some(code)
+        )
+      ).toMetaData.wcoDataModelVersionCode.get must be(code)
     }
 
     "map WCO type name" in {
       val name = randomString(8)
-      DeclarationForm(
-        wcoTypeName = Some(name)
-      ).toMetaData.wcoTypeName.get must be (name)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          wcoTypeName = Some(name)
+        )
+      ).toMetaData.wcoTypeName.get must be(name)
     }
 
     "map responsible country code" in {
       val code = randomString(2)
-      DeclarationForm(
-        responsibleCountryCode = Some(code)
-      ).toMetaData.responsibleCountryCode.get must be (code)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          responsibleCountryCode = Some(code)
+        )
+      ).toMetaData.responsibleCountryCode.get must be(code)
     }
 
     "map responsible agency name" in {
       val name = randomString(16)
-      DeclarationForm(
-        responsibleAgencyName = Some(name)
-      ).toMetaData.responsibleAgencyName.get must be (name)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          responsibleAgencyName = Some(name)
+        )
+      ).toMetaData.responsibleAgencyName.get must be(name)
     }
 
     "map agency assigned customization code" in {
       val code = randomString(8)
-      DeclarationForm(
-        agencyAssignedCustomizationCode = Some(code)
-      ).toMetaData.agencyAssignedCustomizationCode.get must be (code)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          agencyAssignedCustomizationCode = Some(code)
+        )
+      ).toMetaData.agencyAssignedCustomizationCode.get must be(code)
     }
 
     "map agency assigned customisation version code" in {
       val code = randomString(8)
-      DeclarationForm(
-        agencyAssignedCustomizationVersionCode = Some(code)
-      ).toMetaData.agencyAssignedCustomizationVersionCode.get must be (code)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          agencyAssignedCustomizationVersionCode = Some(code)
+        )
+      ).toMetaData.agencyAssignedCustomizationVersionCode.get must be(code)
+    }
+
+    "map acceptance date time" in {
+      val date = randomString(35)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            acceptanceDateTime = Some(date)
+          )
+        )
+      ).toMetaData.declaration.acceptanceDateTime.get.dateTimeString.value must be(date)
+    }
+
+    "map acceptance date time format code when acceptance date time is provided" in {
+      val code = randomString(3)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            acceptanceDateTime = Some(randomString(16)),
+            acceptanceDateTimeFormatCode = Some(code)
+          )
+        )
+      ).toMetaData.declaration.acceptanceDateTime.get.dateTimeString.formatCode must be(code)
+    }
+
+    "map function code" in {
+      val code = randomString(2)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            functionCode = Some(code)
+          )
+        )
+      ).toMetaData.declaration.functionCode.get must be(code)
+    }
+
+    "map functional reference ID" in {
+      val id = randomString(35)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            functionalReferenceId = Some(id)
+          )
+        )
+      ).toMetaData.declaration.functionalReferenceId.get must be(id)
+    }
+
+    "map id" in {
+      val id = randomString(70)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            id = Some(id)
+          )
+        )
+      ).toMetaData.declaration.id.get must be(id)
+    }
+
+    "map issue date time" in {
+      val date = randomString(35)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            issueDateTime = Some(date)
+          )
+        )
+      ).toMetaData.declaration.issueDateTime.get.dateTimeString.value must be(date)
+    }
+
+    "map issue date time format code when issue date time is provided" in {
+      val code = randomString(3)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            issueDateTime = Some(randomString(16)),
+            issueDateTimeFormatCode = Some(code)
+          )
+        )
+      ).toMetaData.declaration.issueDateTime.get.dateTimeString.formatCode must be(code)
+    }
+
+    "map issue location ID" in {
+      val id = randomString(5)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            issueLocationId = Some(id)
+          )
+        )
+      ).toMetaData.declaration.issueLocationId.get must be(id)
+    }
+
+    "map type code" in {
+      val code = randomString(3)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            typeCode = Some(code)
+          )
+        )
+      ).toMetaData.declaration.typeCode.get must be(code)
+    }
+
+    "map goods item quantity" in {
+      val quantity = randomInt(100000)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            goodsItemQuantity = Some(quantity)
+          )
+        )
+      ).toMetaData.declaration.goodsItemQuantity.get must be(quantity)
+    }
+
+    "map declaration office id" in {
+      val id = randomString(17)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            declarationOfficeId = Some(id)
+          )
+        )
+      ).toMetaData.declaration.declarationOfficeId.get must be(id)
+    }
+
+    "map invoice amount and currency ID" in {
+      val amount = randomBigDecimal
+      val currency = Some(randomISO4217CurrencyCode)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            invoiceAmount = Some(amount),
+            invoiceAmountCurrencyId = currency
+          )
+        )
+      ).toMetaData.declaration.invoiceAmount.get must be(InvoiceAmount(amount, currency))
+    }
+
+    "map loading list quantity" in {
+      val quantity = randomInt(100000)
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            loadingListQuantity = Some(quantity)
+          )
+        )
+      ).toMetaData.declaration.loadingListQuantity.get must be(quantity)
+    }
+
+    "map total gross mass measure" in {
+      val total = randomBigDecimal
+      AllInOneForm(
+        metaData = MetaDataForm(
+          declaration = DeclarationForm(
+            totalGrossMassMeasure = Some(total)
+          )
+        )
+      ).toMetaData.declaration.totalGrossMassMeasure.get.value must be(total)
     }
 
   }

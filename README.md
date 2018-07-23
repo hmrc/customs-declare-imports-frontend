@@ -13,6 +13,9 @@ In order to deliver required functionality, this frontend interacts with a numbe
 
 * Declaration submission:
     * [Customs Declarations](https://github.com/hmrc/customs-declarations) - required to process an import declaration submission
+    * [Customs Notifications Gateway](https://github.com/hmrc/customs-notification-gateway/) - a transitive dependency from [Customs Declarations](https://github.com/hmrc/customs-declarations)
+    * [API Subscription Fields](https://github.com/hmrc/api-subscription-fields) - a transitive dependency from [Customs Declarations](https://github.com/hmrc/customs-declarations)
+    which is used by them to verify access permissions for this application to their API 
 * Authentication:
     * [Auth](https://github.com/hmrc/auth) - to provide sign in support via Government Gateway
     * [Auth Login API](https://github.com/hmrc/auth-login-api) - transitive dependency required as a backend for the above
@@ -25,6 +28,8 @@ In order to deliver required functionality, this frontend interacts with a numbe
     * [Datastream](https://github.com/hmrc/datastream) - sink endpoint for audit logs and messages 
 * Testing and running in development:
     * [Auth Login Stub](https://github.com/hmrc/auth-login-stub) - to simulate Government Gateway login
+    * [Customs API Hods Stubs](https://github.com/hmrc/customs-api-hods-stubs) - a transitive dependency which is used by [Customs Declarations](https://github.com/hmrc/customs-declarations)
+    when running locally to authenticate API requests 
 
 If you are using HMRC's [service manager](https://github.com/hmrc/service-manager), then you can start all of the above
 dependencies using [a pre-configured profile](https://github.com/hmrc/service-manager-config):
@@ -33,6 +38,14 @@ dependencies using [a pre-configured profile](https://github.com/hmrc/service-ma
  * `sm --start CDS_IMPORTS_DEPS -f` will start all the dependent services; i.e. excluding this frontend itself
  * `sm --start GG_AUTH_SERVICES -f` will start only the dependencies required to satisfy authentication, which is often
  sufficient for the purposes of ongoing development work
+
+When running locally for the purposes of development, you will additionally need to ensure that you have created an API subscription
+which grants permission for this application to access the Customs Declarations API. To achieve this, execute the following
+CURL command:
+
+```bash
+curl -v -X PUT "http://localhost:9650/field/application/customs-declare-imports-frontend/context/customs%2Fdeclarations/version/2.0" -H "Cache-Control: no-cache" -H "Content-Type: application/json" -d '{ "fields" : { "callback-url" : "http://localhost:6789/customs-declare-imports", "token" : "abc59609za2q" } }'
+```
 
 ### Feature Switching
 

@@ -19,8 +19,12 @@
 @import domain.auth.AuthenticatedRequest
 @import uk.gov.hmrc.play.views.html.helpers
 
-@()(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
+@(success: Boolean)(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(title = "Import declaration submitted", bodyClasses = None) {
-    <p class="message">Yay. It worked.</p>
+    <p class="message">@if(success) {
+     Yay. It worked.
+    } else {
+     Boo. It didn't work.
+    }</p>
 }

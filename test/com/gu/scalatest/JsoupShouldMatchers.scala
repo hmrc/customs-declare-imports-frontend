@@ -85,7 +85,7 @@ trait JsoupShouldMatchers extends MustMatchers with ElementSelectorBuilders with
     val temp = new RuntimeException
     val stackDepth = temp.getStackTrace.takeWhile(sTraceElem =>
       fileNames.exists(_ == sTraceElem.getFileName) || sTraceElem.getMethodName == "testFailedException").length
-    // TODO as far as my current understanding goes, stackDepth + 1 is just voodoo which appears to work
+    // as far as my current understanding goes, stackDepth + 1 is just voodoo which appears to work
     new TestFailedException(message, stackDepth + 1)
   }
 

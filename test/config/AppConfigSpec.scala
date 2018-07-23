@@ -27,7 +27,7 @@ class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
   "the config" should {
 
     "have assets prefix" in {
-      cfg.assetsPrefix must be ("http://localhost:9032/assets/4.3.2")
+      cfg.assetsPrefix must be ("http://localhost:9032/assets/4.3.1")
     }
 
     "have analytics token" in {
@@ -54,8 +54,24 @@ class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
       cfg.environment must be (app.injector.instanceOf[Environment])
     }
 
-    "have a submit import declarations endpoint" in {
-      cfg.submitImportDeclarationEndpoint must be ("http://localhost:9820/")
+    "have a submit import declarations uri" in {
+      cfg.submitImportDeclarationUri must be ("/")
+    }
+
+    "have a cancel import declarations uri" in {
+      cfg.cancelImportDeclarationUri must be ("/cancellation-requests")
+    }
+
+    "have customs declarations endpoint" in {
+      cfg.customsDeclarationsEndpoint must be ("http://localhost:9820")
+    }
+
+    "have customs declarations API version" in {
+      cfg.customsDeclarationsApiVersion must be ("2.0")
+    }
+
+    "have HMRC Developer Hub Client ID" in {
+      cfg.developerHubClientId must be (cfg.appName)
     }
 
   }

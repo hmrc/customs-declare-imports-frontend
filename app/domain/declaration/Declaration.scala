@@ -33,10 +33,10 @@ case class Declaration(acceptanceDateTime: Option[AcceptanceDateTime] = None, //
                        issueLocationId: Option[String] = None, // name="IssueLocationID" type="ds:DeclarationIssueLocationIdentificationIDType" minOccurs="0"
                        typeCode: Option[String] = None, // name="TypeCode" type="ds:DeclarationTypeCodeType" minOccurs="0"
                        goodsItemQuantity: Option[Int] = None, // name="GoodsItemQuantity" type="ds:DeclarationGoodsItemQuantityType" minOccurs="0"
-                       declarationOfficeid: Option[String] = None, // name="DeclarationOfficeID" type="ds:DeclarationDeclarationOfficeIDType" minOccurs="0"
-                       invoiceAmount: Option[String] = None, // name="InvoiceAmount" type="ds:DeclarationInvoiceAmountType" minOccurs="0"
-                       loadingListQuantity: Option[String] = None, // name="LoadingListQuantity" type="ds:DeclarationLoadingListQuantityType" minOccurs="0"
-                       totalGrossMassMeasure: Option[String] = None, // name="TotalGrossMassMeasure" type="ds:DeclarationTotalGrossMassMeasureType" minOccurs="0"
+                       declarationOfficeId: Option[String] = None, // name="DeclarationOfficeID" type="ds:DeclarationDeclarationOfficeIDType" minOccurs="0"
+                       invoiceAmount: Option[InvoiceAmount] = None, // name="InvoiceAmount" type="ds:DeclarationInvoiceAmountType" minOccurs="0"
+                       loadingListQuantity: Option[Int] = None, // name="LoadingListQuantity" type="ds:DeclarationLoadingListQuantityType" minOccurs="0"
+                       totalGrossMassMeasure: Option[MassMeasure] = None, // name="TotalGrossMassMeasure" type="ds:DeclarationTotalGrossMassMeasureType" minOccurs="0"
                        totalPackageQuantity: Option[Int] = None, // name="TotalPackageQuantity" type="ds:DeclarationTotalPackageQuantityType" minOccurs="0"
                        specificCircumstancesCodeCode: Option[String] = None, // name="SpecificCircumstancesCodeCode" type="ds:DeclarationSpecificCircumstancesCodeCodeType" minOccurs="0"
                        authentication: Option[String] = None, // name="Authentication" minOccurs="0" maxOccurs="1"
@@ -62,6 +62,10 @@ case class IssueDateTime(dateTimeString: DateTimeString)
 
 case class DateTimeString(formatCode: String,
                           value: String)
+
+case class InvoiceAmount(value: BigDecimal, currencyId: Option[String] = None)
+
+case class MassMeasure(value: BigDecimal, unitCode: Option[String] = None)
 
 case class AdditionalDocument(id: String,
                               categoryCode: Option[String],
