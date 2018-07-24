@@ -5,3 +5,5 @@ GET        /start                        controllers.StartController.displayStar
 GET        /enrol                        controllers.UnauthorisedController.enrol
 GET        /declaration                  controllers.DeclarationController.showDeclarationForm
 POST       /declaration                  controllers.DeclarationController.handleDeclarationForm
+GET        /cancel-declaration          controllers.CancelController.showCancelForm
+POST       /cancel-declaration          controllers.CancelController.submitCancelForm

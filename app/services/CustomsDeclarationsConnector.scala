@@ -39,7 +39,11 @@ SubmitImportDeclarationMessageProducer with CustomsDeclarationsCancellationMessa
 
   def cancelImportDeclaration(metaData: domain.cancellation.MetaData, badgeIdentifier: Option[String] = None)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    post(appConfig.cancelImportDeclarationUri,produceDeclarationCancellationMessage(metaData),badgeIdentifier).map(
+    Logger.debug("cancel Import declaration client" + appConfig.submitImportDeclarationUri)
+    val payload = produceDeclarationCancellationMessage(metaData)
+    Logger.debug("import declaration url is")
+    Logger.debug("URL and payload ------>>>> " + appConfig.cancelImportDeclarationUri + payload)
+    post(appConfig.cancelImportDeclarationUri,payload,badgeIdentifier).map(
       _.status == Status.ACCEPTED).recover{
       case error: Throwable =>
         Logger.error(s"Error in submitting declaratoin cancellation to API  with the error ${error.getMessage}" ); false
@@ -60,6 +64,7 @@ SubmitImportDeclarationMessageProducer with CustomsDeclarationsCancellationMessa
       HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
     ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
+    Logger.debug("URL is " + s"${appConfig.customsDeclarationsEndpoint}$uri")
     httpClient.POSTString[CustomsDeclarationsResponse](s"${appConfig.customsDeclarationsEndpoint}$uri", body.mkString, headers)(responseReader, hc, ec)
   }
 

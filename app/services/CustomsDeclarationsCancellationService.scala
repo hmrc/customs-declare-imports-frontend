@@ -74,8 +74,7 @@ trait CustomsDeclarationsCancellationMessageProducer {
      declaration.functionalReferenceID.map(refId => <FunctionalReferenceID>{refId}</FunctionalReferenceID>) ++
       <ID>{declaration.id}</ID> ++
       <TypeCode>{declaration.typeCode}</TypeCode> ++
-      declaration.submitter.map (
-      res => <Submitter>{res.name.map(name => <Name>{name}</Name>).getOrElse("")}<ID>{res.ID}</ID></Submitter>) ++
+      <Submitter>{declaration.submitter.name.map(name=> <Name>{name}</Name>).getOrElse("")}{ <ID>{declaration.submitter.ID}</ID>}</Submitter> ++
       {additionalInformation(declaration.additionalInformation)} ++ {amendment(declaration.amendment)}
   }
 

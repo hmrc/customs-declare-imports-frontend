@@ -81,7 +81,7 @@ case class Declaration(functionCode: String,
                        functionalReferenceID: Option[String],
                        id: String,
                        typeCode: String = "INV",
-                       submitter: Option[Submitter],
+                       submitter: Submitter,
                        additionalInformation: AdditionalInformation,
                        amendment: Amendment)
 
