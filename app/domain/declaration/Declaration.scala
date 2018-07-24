@@ -166,7 +166,14 @@ case class Packaging(sequenceNumeric: Int,
 case class StatisticalValueAmount(currencyId: String,
                                   value: BigDecimal)
 
-case class AdditionalInformation(statementCode: String)
+case class AdditionalInformation(statementCode: Option[String] = None, // max 17 chars
+                                statementDescription: Option[String] = None, // max 512 chars
+                                statementTypeCode: Option[String] = None, // max 3 chars
+                                pointers: Seq[Pointer] = Seq.empty)
+
+case class Pointer(sequenceNumeric: Option[Int] = None, // min 0 max 99999
+                  documentSectionCode: Option[String] = None, // max 3 chars
+                  tagId: Option[String] = None) // max 4 chars
 
 case class Commodity(description: String,
                      classifications: List[Classification],

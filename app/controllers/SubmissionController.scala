@@ -30,7 +30,7 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport {
+class SubmissionController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   private val dateTimePattern = "(20\\d{6})(\\d{6}(Z|[-+]\\d\\d))?"
   private val dateTimePatternErrorMessage = "Date time string does not match required pattern"
@@ -86,7 +86,19 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
             "id" -> optional(text(maxLength = 70)),
             "categoryCode" -> optional(text(maxLength = 3)),
             "typeCode" -> optional(text(maxLength = 3))
-          )(DeclarationAdditionalDocumentForm.apply)(DeclarationAdditionalDocumentForm.unapply)
+          )(DeclarationAdditionalDocumentForm.apply)(DeclarationAdditionalDocumentForm.unapply),
+          "hack" -> mapping(
+            "additionalInformation" -> mapping(
+              "statementCode" -> optional(text(maxLength = 17)),
+              "statementDescription" -> optional(text(maxLength = 512)),
+              "statementTypeCode" -> optional(text(maxLength = 3)),
+              "pointer" -> mapping(
+                "sequenceNumeric" -> optional(number(min = 0, max = 99999)),
+                "documentSectionCode" -> optional(text(maxLength = 3)),
+                "tagId" -> optional(text(maxLength = 4))
+              )(PointerForm.apply)(PointerForm.unapply)
+            )(AdditionalInformationForm.apply)(AdditionalInformationForm.unapply)
+          )(MassiveHackToCreateHugeForm.apply)(MassiveHackToCreateHugeForm.unapply)
         )(DeclarationForm.apply)(DeclarationForm.unapply).verifying("Acceptance Date Time Format Code must be specified when Acceptance Date Time is provided", form => {
           form.acceptanceDateTime.isEmpty || (form.acceptanceDateTime.isDefined && form.acceptanceDateTimeFormatCode.isDefined)
         }).verifying("Issue Date Time Format Code must be specified when Issue Date Time is provided", form => {
@@ -163,7 +175,8 @@ case class DeclarationForm(acceptanceDateTime: Option[String] = None,
                            specificCircumstancesCodeCode: Option[String] = None,
                            authentication: AuthenticationForm = AuthenticationForm(),
                            submitter: SubmitterForm = SubmitterForm(),
-                           additionalDocument: DeclarationAdditionalDocumentForm = DeclarationAdditionalDocumentForm()) {
+                           additionalDocument: DeclarationAdditionalDocumentForm = DeclarationAdditionalDocumentForm(),
+                           hack: MassiveHackToCreateHugeForm = MassiveHackToCreateHugeForm()) {
 
   private val defaultDateTimeFormatCode = "304"
 
@@ -183,7 +196,8 @@ case class DeclarationForm(acceptanceDateTime: Option[String] = None,
     totalPackageQuantity = totalPackageQuantity,
     specificCircumstancesCodeCode = specificCircumstancesCodeCode,
     authentication = authentication.toAuthentication,
-    additionalDocuments = additionalDocument.toAdditionalDocument.toSeq
+    additionalDocuments = additionalDocument.toAdditionalDocument.toSeq,
+    additionalInformations = hack.additionalInformation.toAdditionalInformation.toSeq
   )
 
 }
@@ -243,5 +257,37 @@ case class DeclarationAdditionalDocumentForm(id: Option[String] = None, // max 7
   private def anyDefined: Boolean = id.isDefined ||
     categoryCode.isDefined ||
     typeCode.isDefined
+
+}
+
+case class MassiveHackToCreateHugeForm(additionalInformation: AdditionalInformationForm = AdditionalInformationForm())
+
+case class AdditionalInformationForm(statementCode: Option[String] = None,
+                                     statementDescription: Option[String] = None,
+                                     statementTypeCode: Option[String] = None,
+                                     pointer: PointerForm = PointerForm()) {
+
+  def toAdditionalInformation: Option[AdditionalInformation] = if (anyDefined) Some(AdditionalInformation(
+    statementCode, statementDescription, statementTypeCode, pointer.toPointer.toSeq
+  )) else None
+
+  private def anyDefined: Boolean = statementCode.isDefined ||
+    statementDescription.isDefined ||
+    statementTypeCode.isDefined ||
+    pointer.toPointer.isDefined
+
+}
+
+case class PointerForm(sequenceNumeric: Option[Int] = None,
+                       documentSectionCode: Option[String] = None,
+                       tagId: Option[String] = None) {
+
+  def toPointer: Option[Pointer] = if (anyDefined) Some(Pointer(
+    sequenceNumeric, documentSectionCode, tagId
+  )) else None
+
+  private def anyDefined: Boolean = sequenceNumeric.isDefined ||
+    documentSectionCode.isDefined ||
+    tagId.isDefined
 
 }

@@ -38,6 +38,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enr
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
+// TODO override configured ports from application.conf with random available ports
 trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatchers with MockitoSugar with ScalaFutures {
 
   implicit val mat: Materializer = app.materializer

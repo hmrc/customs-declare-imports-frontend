@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.Elem
 
 @Singleton
-class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends SubmitImportDeclarationMessageProducer {
+class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends SubmissionMessageProducer {
 
   def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     post(appConfig.submitImportDeclarationUri, produceDeclarationMessage(metaData), badgeIdentifier).map(_.status == Status.ACCEPTED)

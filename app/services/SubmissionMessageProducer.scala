@@ -16,11 +16,11 @@
 
 package services
 
-import domain.declaration.{AdditionalDocument, Address, MetaData}
+import domain.declaration._
 
 import scala.xml.Elem
 
-trait SubmitImportDeclarationMessageProducer {
+trait SubmissionMessageProducer {
 
   private[services] def produceDeclarationMessage(metaData: MetaData): Elem = <md:MetaData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                                                                            xmlns="urn:wco:datamodel:WCO:DEC-DMS:2"
@@ -77,6 +77,7 @@ trait SubmitImportDeclarationMessageProducer {
     {authentication(metaData)}
     {submitter(metaData)}
     {metaData.declaration.additionalDocuments.map(additionalDocument)}
+    {metaData.declaration.additionalInformations.map(additionalInformation)}
   </Declaration>
 
   private def acceptanceDateTime(metaData: MetaData): Elem = metaData.declaration.acceptanceDateTime.map { dateTime =>
@@ -177,5 +178,18 @@ trait SubmitImportDeclarationMessageProducer {
     {additionalDocument.categoryCode.map(code => <CategoryCode>{code}</CategoryCode>).orNull}
     {additionalDocument.typeCode.map(code => <TypeCode>{code}</TypeCode>).orNull}
   </AdditionalDocument>
+
+  private def additionalInformation(additionalInformation: AdditionalInformation): Elem = <AdditionalInformation>
+    {additionalInformation.statementCode.map(code => <StatementCode>{code}</StatementCode>).orNull}
+    {additionalInformation.statementDescription.map(desc => <StatementDescription>{desc}</StatementDescription>).orNull}
+    {additionalInformation.statementTypeCode.map(code => <StatementTypeCode>{code}</StatementTypeCode>).orNull}
+    {additionalInformation.pointers.map(pointer)}
+  </AdditionalInformation>
+
+  private def pointer(pointer: Pointer): Elem = <Pointer>
+    {pointer.sequenceNumeric.map(num => <SequenceNumeric>{num}</SequenceNumeric>).orNull}
+    {pointer.documentSectionCode.map(code => <DocumentSectionCode>{code}</DocumentSectionCode>).orNull}
+    {pointer.tagId.map(id => <TagID>{id}</TagID>).orNull}
+  </Pointer>
 
 }
