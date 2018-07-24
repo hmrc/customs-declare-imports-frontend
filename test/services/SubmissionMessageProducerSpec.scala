@@ -813,6 +813,76 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       xml
     }
 
+    "include Border Transport Means name" in validDeclarationXmlScenario() {
+      val name = randomString(35)
+      val meta = MetaData(
+        Declaration(
+          borderTransportMeans = Some(BorderTransportMeans(
+            name = Some(name)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "BorderTransportMeans" \ "Name").text.trim must be(name)
+      xml
+    }
+
+    "include Border Transport Means id" in validDeclarationXmlScenario() {
+      val id = randomString(35)
+      val meta = MetaData(
+        Declaration(
+          borderTransportMeans = Some(BorderTransportMeans(
+            id = Some(id)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "BorderTransportMeans" \ "ID").text.trim must be(id)
+      xml
+    }
+
+    "include Border Transport Means identification type code" in validDeclarationXmlScenario() {
+      val code = randomString(17)
+      val meta = MetaData(
+        Declaration(
+          borderTransportMeans = Some(BorderTransportMeans(
+            identificationTypeCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "BorderTransportMeans" \ "IdentificationTypeCode").text.trim must be(code)
+      xml
+    }
+
+    "include Border Transport Means registration nationality code" in validDeclarationXmlScenario() {
+      val code = randomISO3166Alpha2CountryCode
+      val meta = MetaData(
+        Declaration(
+          borderTransportMeans = Some(BorderTransportMeans(
+            registrationNationalityCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "BorderTransportMeans" \ "RegistrationNationalityCode").text.trim must be(code)
+      xml
+    }
+
+    "include Border Transport Means mode code" in validDeclarationXmlScenario() {
+      val code = random0To9
+      val meta = MetaData(
+        Declaration(
+          borderTransportMeans = Some(BorderTransportMeans(
+            modeCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "BorderTransportMeans" \ "ModeCode").text.trim.toInt must be(code)
+      xml
+    }
+
   }
 
 }

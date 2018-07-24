@@ -114,7 +114,15 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
             "authorisationHolder" -> mapping(
               "id" -> optional(text(maxLength = 17)),
               "categoryCode" -> optional(text(maxLength = 4))
-            )(AuthorisationHolderForm.apply)(AuthorisationHolderForm.unapply)
+            )(AuthorisationHolderForm.apply)(AuthorisationHolderForm.unapply),
+            "borderTransportMeans" -> mapping(
+              "name" -> optional(text(maxLength = 35)),
+              "id" -> optional(text(maxLength = 35)),
+              "identificationTypeCode" -> optional(text(maxLength = 17)),
+              "typeCode" -> optional(text(maxLength = 4)),
+              "registrationNationalityCode" -> optional(text(maxLength = 2)),
+              "modeCode" -> optional(number(min = 0, max = 9))
+            )(BorderTransportMeansForm.apply)(BorderTransportMeansForm.unapply)
           )(MassiveHackToCreateHugeForm.apply)(MassiveHackToCreateHugeForm.unapply)
         )(DeclarationForm.apply)(DeclarationForm.unapply).verifying("Acceptance Date Time Format Code must be specified when Acceptance Date Time is provided", form => {
           form.acceptanceDateTime.isEmpty || (form.acceptanceDateTime.isDefined && form.acceptanceDateTimeFormatCode.isDefined)
@@ -140,6 +148,26 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
       }
     )
   }
+
+}
+
+case class BorderTransportMeansForm(name: Option[String] = None,
+                                    id: Option[String] = None,
+                                    identificationTypeCode: Option[String] = None,
+                                    typeCode: Option[String] = None,
+                                    registrationNationalityCode: Option[String] = None,
+                                    modeCode: Option[Int] = None) {
+
+  def toBorderTransportMeans: Option[BorderTransportMeans] = if (anyDefined) Some(BorderTransportMeans(
+    name, id, identificationTypeCode, typeCode, registrationNationalityCode, modeCode
+  )) else None
+
+  private def anyDefined: Boolean = name.isDefined ||
+    id.isDefined ||
+    identificationTypeCode.isDefined ||
+    typeCode.isDefined ||
+    registrationNationalityCode.isDefined ||
+    modeCode.isDefined
 
 }
 
@@ -227,7 +255,8 @@ case class DeclarationForm(acceptanceDateTime: Option[String] = None,
     additionalDocuments = additionalDocument.toAdditionalDocument.toSeq,
     additionalInformations = hack.additionalInformation.toAdditionalInformation.toSeq,
     agent = hack.agent.toAgent,
-    authorisationHolders = hack.authorisationHolder.toAuthorisationHolder.toSeq
+    authorisationHolders = hack.authorisationHolder.toAuthorisationHolder.toSeq,
+    borderTransportMeans = hack.borderTransportMeans.toBorderTransportMeans
   )
 
 }
@@ -292,7 +321,8 @@ case class DeclarationAdditionalDocumentForm(id: Option[String] = None, // max 7
 
 case class MassiveHackToCreateHugeForm(additionalInformation: AdditionalInformationForm = AdditionalInformationForm(),
                                        agent: AgentForm = AgentForm(),
-                                       authorisationHolder: AuthorisationHolderForm = AuthorisationHolderForm())
+                                       authorisationHolder: AuthorisationHolderForm = AuthorisationHolderForm(),
+                                       borderTransportMeans: BorderTransportMeansForm = BorderTransportMeansForm())
 
 case class AdditionalInformationForm(statementCode: Option[String] = None,
                                      statementDescription: Option[String] = None,

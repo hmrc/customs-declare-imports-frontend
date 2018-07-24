@@ -399,6 +399,48 @@
                     '_inputClass -> "form-control")
                 </div>
             </fieldset>
+
+            <fieldset class="form-section" style="border: 1px dotted black;
+                padding: 1em">
+                <legend class="form-label-bold">Border Transport means</legend>
+                <p>0..1 BorderTransportMeans element as child of a Declaration element</p>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.borderTransportMeans.name"),
+                    '_label -> "Border Transport Means Name",
+                    '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/Name in XML (0..1). Max 35 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.borderTransportMeans.id"),
+                    '_label -> "Border Transport Means ID",
+                    '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/ID in XML (0..1). Max 35 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.borderTransportMeans.identificationTypeCode"),
+                    '_label -> "Border Transport Means Identification Type Code",
+                    '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/IdentificationTypeCode in XML (0..1). Max 17 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.borderTransportMeans.typeCode"),
+                    '_label -> "Border Transport Means Type Code",
+                    '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/TypeCode in XML (0..1). Max 4 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.borderTransportMeans.registrationNationalityCode"),
+                    '_label -> "Border Transport Means Registration Nationality Code",
+                    '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/RegistrationNationalityCode in XML (0..1). 2 chars when defined in pattern [a-zA-Z]{2}. Presumably expecting an ISO 3166-1 Alpha2 code.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.borderTransportMeans.modeCode"),
+                    '_label -> "Border Transport Means Mode Code",
+                    '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/ModeCode in XML (0..1). An unsigned integer in range 0-9 inclusive.",
+                    '_inputClass -> "form-control")
+                </div>
+            </fieldset>
         </fieldset>
         <fieldset class="form-section">
             <div class="form-field">

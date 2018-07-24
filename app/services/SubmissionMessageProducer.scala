@@ -80,6 +80,7 @@ trait SubmissionMessageProducer {
     {metaData.declaration.additionalInformations.map(additionalInformation)}
     {agent(metaData)}
     {metaData.declaration.authorisationHolders.map(authorisationHolder)}
+    {borderTransportMeans(metaData)}
   </Declaration>
 
   private def acceptanceDateTime(metaData: MetaData): Elem = metaData.declaration.acceptanceDateTime.map { dateTime =>
@@ -207,5 +208,16 @@ trait SubmissionMessageProducer {
     {authorisationHolder.id.map(id => <ID>{id}</ID>).orNull}
     {authorisationHolder.categoryCode.map(code => <CategoryCode>{code}</CategoryCode>).orNull}
   </AuthorisationHolder>
+
+  private def borderTransportMeans(metaData: MetaData): Elem = metaData.declaration.borderTransportMeans.map { means =>
+    <BorderTransportMeans>
+      {means.name.map(name => <Name>{name}</Name>).orNull}
+      {means.id.map(id => <ID>{id}</ID>).orNull}
+      {means.typeCode.map(code => <TypeCode>{code}</TypeCode>).orNull}
+      {means.identificationTypeCode.map(code => <IdentificationTypeCode>{code}</IdentificationTypeCode>).orNull}
+      {means.registrationNationalityCode.map(code => <RegistrationNationalityCode>{code}</RegistrationNationalityCode>).orNull}
+      {means.modeCode.map(code => <ModeCode>{code}</ModeCode>).orNull}
+    </BorderTransportMeans>
+  }.orNull
 
 }
