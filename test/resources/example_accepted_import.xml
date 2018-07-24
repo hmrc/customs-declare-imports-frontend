@@ -67,21 +67,6 @@
         <AdditionalDocument>
             <ID>GBDPO7777777</ID>
         </AdditionalDocument>
-        <AdditionalInformation>
-            <StatementCode>jkjl</StatementCode>
-            <StatementDescription>jkjl</StatementDescription>
-            <StatementTypeCode>kds</StatementTypeCode>
-            <Pointer>
-                <SequenceNumeric>65</SequenceNumeric>
-                <DocumentSectionCode>jkl</DocumentSectionCode>
-                <TagID>jkl</TagID>
-            </Pointer>
-            <Pointer>
-                <SequenceNumeric>42</SequenceNumeric>
-                <DocumentSectionCode>jk</DocumentSectionCode>
-                <TagID>jkjk</TagID>
-            </Pointer>
-        </AdditionalInformation>
         <!-- DE 2/6: Deferment Account No. - see also DE 8/3 -->
         <AuthorisationHolder>
             <ID>INSERTEORI</ID>

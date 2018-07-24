@@ -78,6 +78,7 @@ trait SubmissionMessageProducer {
     {submitter(metaData)}
     {metaData.declaration.additionalDocuments.map(additionalDocument)}
     {metaData.declaration.additionalInformations.map(additionalInformation)}
+    {agent(metaData)}
   </Declaration>
 
   private def acceptanceDateTime(metaData: MetaData): Elem = metaData.declaration.acceptanceDateTime.map { dateTime =>
@@ -191,5 +192,14 @@ trait SubmissionMessageProducer {
     {pointer.documentSectionCode.map(code => <DocumentSectionCode>{code}</DocumentSectionCode>).orNull}
     {pointer.tagId.map(id => <TagID>{id}</TagID>).orNull}
   </Pointer>
+
+  private def agent(metaData: MetaData): Elem = metaData.declaration.agent.map { agent =>
+    <Agent>
+      {agent.name.map(name => <Name>{name}</Name>).orNull}
+      {agent.id.map(id => <ID>{id}</ID>).orNull}
+      {agent.functionCode.map(code => <FunctionCode>{code}</FunctionCode>).orNull}
+      {address(agent.address)}
+    </Agent>
+  }.orNull
 
 }

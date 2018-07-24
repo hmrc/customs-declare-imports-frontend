@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
-  val producer = new CustomsDeclarationsConnector(appConfig, app.injector.instanceOf[HttpClient])
+  val producer = new SubmissionMessageProducer {}
 
   "produce declaration message" should {
 
@@ -644,6 +644,144 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       )
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalInformation" \ "Pointer" \ "TagID").text.trim must be(id)
+      xml
+    }
+
+    "include Agent name" in validDeclarationXmlScenario() {
+      val name = randomString(70)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            name = Some(name)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Name").text.trim must be(name)
+      xml
+    }
+
+    "include Agent id" in validDeclarationXmlScenario() {
+      val id = randomString(17)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            id = Some(id)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "ID").text.trim must be(id)
+      xml
+    }
+
+    "include Agent function code" in validDeclarationXmlScenario() {
+      val code = randomString(3)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            functionCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "FunctionCode").text.trim must be(code)
+      xml
+    }
+
+    "include Agent Address CityName" in validDeclarationXmlScenario() {
+      val name = randomString(35)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            address = Some(Address(
+              cityName = Some(name)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Address" \ "CityName").text.trim must be(name)
+      xml
+    }
+
+    "include Agent Address CountryCode" in validDeclarationXmlScenario() {
+      val code = randomISO3166Alpha2CountryCode
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            address = Some(Address(
+              countryCode = Some(code)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Address" \ "CountryCode").text.trim must be(code)
+      xml
+    }
+
+    "include Agent Address CountrySubDivisionCode" in validDeclarationXmlScenario() {
+      val code = randomString(9)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            address = Some(Address(
+              countrySubDivisionCode = Some(code)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Address" \ "CountrySubDivisionCode").text.trim must be(code)
+      xml
+    }
+
+    "include Agent Address CountrySubDivisionName" in validDeclarationXmlScenario() {
+      val name = randomString(35)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            address = Some(Address(
+              countrySubDivisionName = Some(name)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Address" \ "CountrySubDivisionName").text.trim must be(name)
+      xml
+    }
+
+    "include Agent Address Line" in validDeclarationXmlScenario() {
+      val line = randomString(35)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            address = Some(Address(
+              line = Some(line)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Address" \ "Line").text.trim must be(line)
+      xml
+    }
+
+    "include Agent Address PostcodeID" in validDeclarationXmlScenario() {
+      val id = randomString(9)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            address = Some(Address(
+              postcodeId = Some(id)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Address" \ "PostcodeID").text.trim must be(id)
       xml
     }
 

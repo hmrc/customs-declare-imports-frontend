@@ -80,7 +80,7 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
               "countrySubDivisionName" -> optional(text(maxLength = 35)),
               "line" -> optional(text(maxLength = 70)),
               "postcodeId" -> optional(text(maxLength = 9))
-            )(SubmitterAddressForm.apply)(SubmitterAddressForm.unapply)
+            )(AddressForm.apply)(AddressForm.unapply)
           )(SubmitterForm.apply)(SubmitterForm.unapply),
           "additionalDocument" -> mapping(
             "id" -> optional(text(maxLength = 70)),
@@ -97,7 +97,20 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
                 "documentSectionCode" -> optional(text(maxLength = 3)),
                 "tagId" -> optional(text(maxLength = 4))
               )(PointerForm.apply)(PointerForm.unapply)
-            )(AdditionalInformationForm.apply)(AdditionalInformationForm.unapply)
+            )(AdditionalInformationForm.apply)(AdditionalInformationForm.unapply),
+            "agent" -> mapping(
+              "name" -> optional(text(maxLength = 70)),
+              "id" -> optional(text(maxLength = 17)),
+              "functionCode" -> optional(text(maxLength = 3)),
+              "address" -> mapping(
+                "cityName" -> optional(text(maxLength = 35)),
+                "countryCode" -> optional(text(minLength = 2, maxLength = 2)),
+                "countrySubDivisionCode" -> optional(text(maxLength = 9)),
+                "countrySubDivisionName" -> optional(text(maxLength = 35)),
+                "line" -> optional(text(maxLength = 70)),
+                "postcodeId" -> optional(text(maxLength = 9))
+              )(AddressForm.apply)(AddressForm.unapply)
+            )(AgentForm.apply)(AgentForm.unapply)
           )(MassiveHackToCreateHugeForm.apply)(MassiveHackToCreateHugeForm.unapply)
         )(DeclarationForm.apply)(DeclarationForm.unapply).verifying("Acceptance Date Time Format Code must be specified when Acceptance Date Time is provided", form => {
           form.acceptanceDateTime.isEmpty || (form.acceptanceDateTime.isDefined && form.acceptanceDateTimeFormatCode.isDefined)
@@ -197,7 +210,8 @@ case class DeclarationForm(acceptanceDateTime: Option[String] = None,
     specificCircumstancesCodeCode = specificCircumstancesCodeCode,
     authentication = authentication.toAuthentication,
     additionalDocuments = additionalDocument.toAdditionalDocument.toSeq,
-    additionalInformations = hack.additionalInformation.toAdditionalInformation.toSeq
+    additionalInformations = hack.additionalInformation.toAdditionalInformation.toSeq,
+    agent = hack.agent.toAgent
   )
 
 }
@@ -216,7 +230,7 @@ case class AuthenticationForm(authentication: Option[String] = None,
 
 case class SubmitterForm(name: Option[String] = None,
                          id: Option[String] = None,
-                         address: SubmitterAddressForm = SubmitterAddressForm()) {
+                         address: AddressForm = AddressForm()) {
 
   def toSubmitter: Submitter = Submitter(
     name = name,
@@ -226,12 +240,12 @@ case class SubmitterForm(name: Option[String] = None,
 
 }
 
-case class SubmitterAddressForm(cityName: Option[String] = None,
-                                countryCode: Option[String] = None,
-                                countrySubDivisionCode: Option[String] = None,
-                                countrySubDivisionName: Option[String] = None,
-                                line: Option[String] = None,
-                                postcodeId: Option[String] = None) {
+case class AddressForm(cityName: Option[String] = None,
+                       countryCode: Option[String] = None,
+                       countrySubDivisionCode: Option[String] = None,
+                       countrySubDivisionName: Option[String] = None,
+                       line: Option[String] = None,
+                       postcodeId: Option[String] = None) {
 
   def toAddress: Option[Address] = if (anyDefined) Some(Address(
     cityName, countryCode, countrySubDivisionCode, countrySubDivisionName, line, postcodeId
@@ -260,7 +274,8 @@ case class DeclarationAdditionalDocumentForm(id: Option[String] = None, // max 7
 
 }
 
-case class MassiveHackToCreateHugeForm(additionalInformation: AdditionalInformationForm = AdditionalInformationForm())
+case class MassiveHackToCreateHugeForm(additionalInformation: AdditionalInformationForm = AdditionalInformationForm(),
+                                       agent: AgentForm = AgentForm())
 
 case class AdditionalInformationForm(statementCode: Option[String] = None,
                                      statementDescription: Option[String] = None,
@@ -289,5 +304,21 @@ case class PointerForm(sequenceNumeric: Option[Int] = None,
   private def anyDefined: Boolean = sequenceNumeric.isDefined ||
     documentSectionCode.isDefined ||
     tagId.isDefined
+
+}
+
+case class AgentForm(name: Option[String] = None,
+                     id: Option[String] = None,
+                     functionCode: Option[String] = None,
+                     address: AddressForm = AddressForm()) {
+
+  def toAgent: Option[Agent] = if (anyDefined) Some(Agent(
+    name, id, functionCode, address.toAddress
+  )) else None
+
+  private def anyDefined: Boolean = name.isDefined ||
+    id.isDefined ||
+    functionCode.isDefined ||
+    address.toAddress.isDefined
 
 }
