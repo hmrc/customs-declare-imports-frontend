@@ -110,7 +110,11 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
                 "line" -> optional(text(maxLength = 70)),
                 "postcodeId" -> optional(text(maxLength = 9))
               )(AddressForm.apply)(AddressForm.unapply)
-            )(AgentForm.apply)(AgentForm.unapply)
+            )(AgentForm.apply)(AgentForm.unapply),
+            "authorisationHolder" -> mapping(
+              "id" -> optional(text(maxLength = 17)),
+              "categoryCode" -> optional(text(maxLength = 4))
+            )(AuthorisationHolderForm.apply)(AuthorisationHolderForm.unapply)
           )(MassiveHackToCreateHugeForm.apply)(MassiveHackToCreateHugeForm.unapply)
         )(DeclarationForm.apply)(DeclarationForm.unapply).verifying("Acceptance Date Time Format Code must be specified when Acceptance Date Time is provided", form => {
           form.acceptanceDateTime.isEmpty || (form.acceptanceDateTime.isDefined && form.acceptanceDateTimeFormatCode.isDefined)
@@ -136,6 +140,17 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
       }
     )
   }
+
+}
+
+case class AuthorisationHolderForm(id: Option[String] = None,
+                                   categoryCode: Option[String] = None) {
+
+  def toAuthorisationHolder: Option[AuthorisationHolder] = if (anyDefined) Some(AuthorisationHolder(
+    id, categoryCode
+  )) else None
+
+  private def anyDefined: Boolean = id.isDefined || categoryCode.isDefined
 
 }
 
@@ -211,7 +226,8 @@ case class DeclarationForm(acceptanceDateTime: Option[String] = None,
     authentication = authentication.toAuthentication,
     additionalDocuments = additionalDocument.toAdditionalDocument.toSeq,
     additionalInformations = hack.additionalInformation.toAdditionalInformation.toSeq,
-    agent = hack.agent.toAgent
+    agent = hack.agent.toAgent,
+    authorisationHolders = hack.authorisationHolder.toAuthorisationHolder.toSeq
   )
 
 }
@@ -275,7 +291,8 @@ case class DeclarationAdditionalDocumentForm(id: Option[String] = None, // max 7
 }
 
 case class MassiveHackToCreateHugeForm(additionalInformation: AdditionalInformationForm = AdditionalInformationForm(),
-                                       agent: AgentForm = AgentForm())
+                                       agent: AgentForm = AgentForm(),
+                                       authorisationHolder: AuthorisationHolderForm = AuthorisationHolderForm())
 
 case class AdditionalInformationForm(statementCode: Option[String] = None,
                                      statementDescription: Option[String] = None,

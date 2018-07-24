@@ -79,6 +79,7 @@ trait SubmissionMessageProducer {
     {metaData.declaration.additionalDocuments.map(additionalDocument)}
     {metaData.declaration.additionalInformations.map(additionalInformation)}
     {agent(metaData)}
+    {metaData.declaration.authorisationHolders.map(authorisationHolder)}
   </Declaration>
 
   private def acceptanceDateTime(metaData: MetaData): Elem = metaData.declaration.acceptanceDateTime.map { dateTime =>
@@ -201,5 +202,10 @@ trait SubmissionMessageProducer {
       {address(agent.address)}
     </Agent>
   }.orNull
+
+  private def authorisationHolder(authorisationHolder: AuthorisationHolder): Elem = <AuthorisationHolder>
+    {authorisationHolder.id.map(id => <ID>{id}</ID>).orNull}
+    {authorisationHolder.categoryCode.map(code => <CategoryCode>{code}</CategoryCode>).orNull}
+  </AuthorisationHolder>
 
 }

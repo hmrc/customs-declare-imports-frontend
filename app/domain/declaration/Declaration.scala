@@ -44,6 +44,7 @@ case class Declaration(acceptanceDateTime: Option[AcceptanceDateTime] = None, //
                        additionalDocuments: Seq[AdditionalDocument] = Seq.empty, // name="AdditionalDocument" minOccurs="0" maxOccurs="unbounded"
                        additionalInformations: Seq[AdditionalInformation] = Seq.empty, // name="AdditionalInformation" minOccurs="0" maxOccurs="unbounded"
                        agent: Option[Agent] = None, // name="Agent" minOccurs="0" maxOccurs="1"
+                       // TODO model amendment XML
                        amendments: Seq[String] = Seq.empty, //  name="Amendment" minOccurs="0" maxOccurs="unbounded"
                        authorisationHolders: Seq[AuthorisationHolder] = Seq.empty, // name="AuthorisationHolder" minOccurs="0" maxOccurs="unbounded"
                        borderTransportMeans: Option[BorderTransportMeans] = None, // name="BorderTransportMeans" minOccurs="0" maxOccurs="1"
@@ -86,8 +87,8 @@ case class AdditionalDocument(id: Option[String] = None, // max 70 chars
                               name: Option[String] = None,
                               lpcoExemptionCode: Option[String] = None)
 
-case class AuthorisationHolder(id: String,
-                               categoryCode: String)
+case class AuthorisationHolder(id: Option[String] = None, // max 17 chars
+                               categoryCode: Option[String] = None) // max 4 chars
 
 case class BorderTransportMeans(registrationNationalityCode: String,
                                 modeCode: String)

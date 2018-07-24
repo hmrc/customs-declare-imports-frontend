@@ -785,6 +785,34 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       xml
     }
 
+    "include Authorisation Holder ID" in validDeclarationXmlScenario() {
+      val id = randomString(17)
+      val meta = MetaData(
+        Declaration(
+          authorisationHolders = Seq(AuthorisationHolder(
+            id = Some(id)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "AuthorisationHolder" \ "ID").text.trim must be(id)
+      xml
+    }
+
+    "include Authorisation Holder category code" in validDeclarationXmlScenario() {
+      val code = randomString(4)
+      val meta = MetaData(
+        Declaration(
+          authorisationHolders = Seq(AuthorisationHolder(
+            categoryCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "AuthorisationHolder" \ "CategoryCode").text.trim must be(code)
+      xml
+    }
+
   }
 
 }

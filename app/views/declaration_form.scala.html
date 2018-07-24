@@ -325,7 +325,7 @@
             </fieldset>
             <fieldset class="form-section" style="border: 1px dotted black;
                 padding: 1em">
-                <legend>Agent</legend>
+                <legend class="form-label-bold">Agent</legend>
                 <p>0..1 Agent element per Declaration element</p>
                 <div class="form-field">
                 @helpers.input(form("metaData.declaration.hack.agent.name"),
@@ -379,6 +379,23 @@
                 @helpers.input(form("metaData.declaration.hack.agent.address.postcodeId"),
                     '_label -> "Agent Address Postcode ID",
                     '_inputHint -> "/MetaData/Declaration/Agent/Address/PostcodeID in XML (0..1). Max 9 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+            </fieldset>
+            <fieldset class="form-section" style="border: 1px dotted black;
+                padding: 1em">
+                <legend class="form-label-bold">Authorisation Holder</legend>
+                <p>There can be 0..* AuthorisationHolder elements as children of a Declaration element</p>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.authorisationHolder.id"),
+                    '_label -> "Authorisation Holder ID",
+                    '_inputHint -> "/MetaData/Declaration/AuthorisationHolder/ID in XML (0..1). Max 17 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.authorisationHolder.categoryCode"),
+                    '_label -> "Authorisation Holder Category Code",
+                    '_inputHint -> "/MetaData/Declaration/AuthorisationHolder/CategoryCode in XML (0..1). Max 4 chars.",
                     '_inputClass -> "form-control")
                 </div>
             </fieldset>
