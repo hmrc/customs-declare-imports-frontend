@@ -81,6 +81,7 @@ trait SubmissionMessageProducer {
     {agent(metaData)}
     {metaData.declaration.authorisationHolders.map(authorisationHolder)}
     {borderTransportMeans(metaData)}
+    {metaData.declaration.currencyExchanges.map(currencyExchange)}
   </Declaration>
 
   private def acceptanceDateTime(metaData: MetaData): Elem = metaData.declaration.acceptanceDateTime.map { dateTime =>
@@ -219,5 +220,10 @@ trait SubmissionMessageProducer {
       {means.modeCode.map(code => <ModeCode>{code}</ModeCode>).orNull}
     </BorderTransportMeans>
   }.orNull
+
+  private def currencyExchange(currencyExchange: CurrencyExchange): Elem = <CurrencyExchange>
+    {currencyExchange.currencyTypeCode.map(code => <CurrencyTypeCode>{code}</CurrencyTypeCode>).orNull}
+    {currencyExchange.rateNumeric.map(rate => <RateNumeric>{rate}</RateNumeric>).orNull}
+  </CurrencyExchange>
 
 }

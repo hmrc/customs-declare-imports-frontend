@@ -883,6 +883,34 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       xml
     }
 
+    "include Currency Exchange currency type code" in validDeclarationXmlScenario() {
+      val code = randomISO4217CurrencyCode
+      val meta = MetaData(
+        Declaration(
+          currencyExchanges = Seq(CurrencyExchange(
+            currencyTypeCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "CurrencyExchange" \ "CurrencyTypeCode").text.trim must be(code)
+      xml
+    }
+
+    "include Currency Exchange rate numeric" in validDeclarationXmlScenario() {
+      val rate = randomBigDecimal
+      val meta = MetaData(
+        Declaration(
+          currencyExchanges = Seq(CurrencyExchange(
+            rateNumeric = Some(rate)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "CurrencyExchange" \ "RateNumeric").text.trim must be(rate.toString)
+      xml
+    }
+
   }
 
 }

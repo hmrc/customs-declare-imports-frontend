@@ -95,6 +95,10 @@
             <ModeCode>1</ModeCode>
             <!-- DE 7/4: Mode of Transport at the Border - 1 = Maritime Box 25 -->
         </BorderTransportMeans>
+        <CurrencyExchange>
+            <CurrencyTypeCode>GBP</CurrencyTypeCode>
+            <RateNumeric>12345.678</RateNumeric>
+        </CurrencyExchange>
         <Declarant>
             <ID>INSERTEORI</ID>
             <!-- DE 3/18: Declarant unique Id (EORI) - same as Importer Id (3/16) Box 14 -->

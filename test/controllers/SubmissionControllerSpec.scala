@@ -318,8 +318,8 @@ class SubmissionControllerSpec
 
     "map WCO data model version code" in {
       val code = randomString(8)
-      AllInOneForm(
-        metaData = MetaDataForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
           wcoDataModelVersionCode = Some(code)
         )
       ).toMetaData.wcoDataModelVersionCode.get must be(code)
@@ -327,8 +327,8 @@ class SubmissionControllerSpec
 
     "map WCO type name" in {
       val name = randomString(8)
-      AllInOneForm(
-        metaData = MetaDataForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
           wcoTypeName = Some(name)
         )
       ).toMetaData.wcoTypeName.get must be(name)
@@ -336,8 +336,8 @@ class SubmissionControllerSpec
 
     "map responsible country code" in {
       val code = randomString(2)
-      AllInOneForm(
-        metaData = MetaDataForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
           responsibleCountryCode = Some(code)
         )
       ).toMetaData.responsibleCountryCode.get must be(code)
@@ -345,8 +345,8 @@ class SubmissionControllerSpec
 
     "map responsible agency name" in {
       val name = randomString(16)
-      AllInOneForm(
-        metaData = MetaDataForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
           responsibleAgencyName = Some(name)
         )
       ).toMetaData.responsibleAgencyName.get must be(name)
@@ -354,8 +354,8 @@ class SubmissionControllerSpec
 
     "map agency assigned customization code" in {
       val code = randomString(8)
-      AllInOneForm(
-        metaData = MetaDataForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
           agencyAssignedCustomizationCode = Some(code)
         )
       ).toMetaData.agencyAssignedCustomizationCode.get must be(code)
@@ -363,8 +363,8 @@ class SubmissionControllerSpec
 
     "map agency assigned customisation version code" in {
       val code = randomString(8)
-      AllInOneForm(
-        metaData = MetaDataForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
           agencyAssignedCustomizationVersionCode = Some(code)
         )
       ).toMetaData.agencyAssignedCustomizationVersionCode.get must be(code)
@@ -372,9 +372,9 @@ class SubmissionControllerSpec
 
     "map acceptance date time" in {
       val date = randomString(35)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             acceptanceDateTime = Some(date)
           )
         )
@@ -383,9 +383,9 @@ class SubmissionControllerSpec
 
     "map acceptance date time format code when acceptance date time is provided" in {
       val code = randomString(3)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             acceptanceDateTime = Some(randomString(16)),
             acceptanceDateTimeFormatCode = Some(code)
           )
@@ -395,9 +395,9 @@ class SubmissionControllerSpec
 
     "map function code" in {
       val code = randomString(2)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             functionCode = Some(code)
           )
         )
@@ -406,9 +406,9 @@ class SubmissionControllerSpec
 
     "map functional reference ID" in {
       val id = randomString(35)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             functionalReferenceId = Some(id)
           )
         )
@@ -417,9 +417,9 @@ class SubmissionControllerSpec
 
     "map id" in {
       val id = randomString(70)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             id = Some(id)
           )
         )
@@ -428,9 +428,9 @@ class SubmissionControllerSpec
 
     "map issue date time" in {
       val date = randomString(35)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             issueDateTime = Some(date)
           )
         )
@@ -439,9 +439,9 @@ class SubmissionControllerSpec
 
     "map issue date time format code when issue date time is provided" in {
       val code = randomString(3)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             issueDateTime = Some(randomString(16)),
             issueDateTimeFormatCode = Some(code)
           )
@@ -451,9 +451,9 @@ class SubmissionControllerSpec
 
     "map issue location ID" in {
       val id = randomString(5)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             issueLocationId = Some(id)
           )
         )
@@ -462,9 +462,9 @@ class SubmissionControllerSpec
 
     "map type code" in {
       val code = randomString(3)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             typeCode = Some(code)
           )
         )
@@ -473,9 +473,9 @@ class SubmissionControllerSpec
 
     "map goods item quantity" in {
       val quantity = randomInt(100000)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             goodsItemQuantity = Some(quantity)
           )
         )
@@ -484,9 +484,9 @@ class SubmissionControllerSpec
 
     "map declaration office id" in {
       val id = randomString(17)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             declarationOfficeId = Some(id)
           )
         )
@@ -496,9 +496,9 @@ class SubmissionControllerSpec
     "map invoice amount and currency ID" in {
       val amount = randomBigDecimal
       val currency = Some(randomISO4217CurrencyCode)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             invoiceAmount = Some(amount),
             invoiceAmountCurrencyId = currency
           )
@@ -508,9 +508,9 @@ class SubmissionControllerSpec
 
     "map loading list quantity" in {
       val quantity = randomInt(100000)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             loadingListQuantity = Some(quantity)
           )
         )
@@ -519,9 +519,9 @@ class SubmissionControllerSpec
 
     "map total gross mass measure" in {
       val total = randomBigDecimal
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             totalGrossMassMeasure = Some(total)
           )
         )
@@ -531,9 +531,9 @@ class SubmissionControllerSpec
     "map total gross mass measure unit code" in {
       val total = randomBigDecimal
       val code = randomString(5)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             totalGrossMassMeasure = Some(total),
             totalGrossMassMeasureUnitCode = Some(code)
           )
@@ -543,9 +543,9 @@ class SubmissionControllerSpec
 
     "map total package quantity" in {
       val quantity = randomInt(100000000)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             totalPackageQuantity = Some(quantity)
           )
         )
@@ -554,9 +554,9 @@ class SubmissionControllerSpec
 
     "map specific circumstances code code" in {
       val code = randomString(3)
-      AllInOneForm(
-        metaData = MetaDataForm(
-          declaration = DeclarationForm(
+      SubmissionAllInOneForm(
+        metaData = SubmissionMetaDataForm(
+          declaration = SubmissionDeclarationForm(
             specificCircumstancesCodeCode = Some(code)
           )
         )
