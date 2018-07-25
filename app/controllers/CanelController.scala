@@ -58,8 +58,8 @@ class CancelController @Inject()(actions: Actions, client: CustomsDeclarationsCo
             "statementTypeCode" -> optional(text(maxLength = 3)),
             "pointer" -> mapping(
             "documentSectionCode" -> optional(text(maxLength = 3))
-            )(PointerForm.apply)(PointerForm.unapply)
-          )(AdditionalInformationForm.apply)(AdditionalInformationForm.unapply),
+            )(CancelPointerForm.apply)(CancelPointerForm.unapply)
+          )(CancelAdditionalInformationForm.apply)(CancelAdditionalInformationForm.unapply),
           "amendment" -> mapping(
           "changeReasonCode" -> nonEmptyText
           )(AmendmentForm.apply)(AmendmentForm.unapply)
@@ -118,7 +118,7 @@ case class CancelDeclarationForm(functionCode: String,
                            functionalReferenceId: Option[String] = None,
                            id: String,
                            submitter: CancelSubmitterForm,
-                           additionalInformation: AdditionalInformationForm,
+                           additionalInformation: CancelAdditionalInformationForm,
                            amendment:AmendmentForm) {
 
 
@@ -132,11 +132,11 @@ case class CancelDeclarationForm(functionCode: String,
 
 }
 
-case class PointerForm(documentSectionCode: Option[String])  {
+case class CancelPointerForm(documentSectionCode: Option[String])  {
   def toPointer() = if(documentSectionCode.isDefined) Some(Pointer(documentSectionCode)) else None
 }
 
-case class AdditionalInformationForm(statementDescription: String, statementTypeCode: Option[String], pointer: PointerForm)
+case class CancelAdditionalInformationForm(statementDescription: String, statementTypeCode: Option[String], pointer: CancelPointerForm)
 {
   def toAdditionalInformation() = AdditionalInformation(statementDescription, statementTypeCode, pointer.toPointer())
 }
