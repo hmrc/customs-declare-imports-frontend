@@ -37,7 +37,7 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
   private val dateTimeFormatCodes = Set("102", "304")
   private val dateTimeFormatCodeErrorMessage = "Unknown format code. Must be either '102' or '304'"
 
-  val declarationForm: Form[AllInOneForm] = Form(
+  val declarationForm: Form[SubmissionAllInOneForm] = Form(
     mapping(
       "badgeId" -> optional(text),
       "metaData" -> mapping(
@@ -69,7 +69,7 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
           "authentication" -> mapping(
             "authentication" -> optional(text(maxLength = 256)),
             "authenticatorName" -> optional(text(maxLength = 70))
-          )(AuthenticationForm.apply)(AuthenticationForm.unapply),
+          )(SubmissionAuthenticationForm.apply)(SubmissionAuthenticationForm.unapply),
           "submitter" -> mapping(
             "name" -> optional(text(maxLength = 70)),
             "id" -> optional(text(maxLength = 17)),
@@ -80,13 +80,13 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
               "countrySubDivisionName" -> optional(text(maxLength = 35)),
               "line" -> optional(text(maxLength = 70)),
               "postcodeId" -> optional(text(maxLength = 9))
-            )(AddressForm.apply)(AddressForm.unapply)
-          )(SubmitterForm.apply)(SubmitterForm.unapply),
+            )(SubmissionAddressForm.apply)(SubmissionAddressForm.unapply)
+          )(SubmissionSubmitterForm.apply)(SubmissionSubmitterForm.unapply),
           "additionalDocument" -> mapping(
             "id" -> optional(text(maxLength = 70)),
             "categoryCode" -> optional(text(maxLength = 3)),
             "typeCode" -> optional(text(maxLength = 3))
-          )(DeclarationAdditionalDocumentForm.apply)(DeclarationAdditionalDocumentForm.unapply),
+          )(SubmissionAdditionalDocumentForm.apply)(SubmissionAdditionalDocumentForm.unapply),
           "hack" -> mapping(
             "additionalInformation" -> mapping(
               "statementCode" -> optional(text(maxLength = 17)),
@@ -96,8 +96,8 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
                 "sequenceNumeric" -> optional(number(min = 0, max = 99999)),
                 "documentSectionCode" -> optional(text(maxLength = 3)),
                 "tagId" -> optional(text(maxLength = 4))
-              )(PointerForm.apply)(PointerForm.unapply)
-            )(AdditionalInformationForm.apply)(AdditionalInformationForm.unapply),
+              )(SubmissionPointerForm.apply)(SubmissionPointerForm.unapply)
+            )(SubmissionAdditionalInformationForm.apply)(SubmissionAdditionalInformationForm.unapply),
             "agent" -> mapping(
               "name" -> optional(text(maxLength = 70)),
               "id" -> optional(text(maxLength = 17)),
@@ -109,12 +109,12 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
                 "countrySubDivisionName" -> optional(text(maxLength = 35)),
                 "line" -> optional(text(maxLength = 70)),
                 "postcodeId" -> optional(text(maxLength = 9))
-              )(AddressForm.apply)(AddressForm.unapply)
-            )(AgentForm.apply)(AgentForm.unapply),
+              )(SubmissionAddressForm.apply)(SubmissionAddressForm.unapply)
+            )(SubmissionAgentForm.apply)(SubmissionAgentForm.unapply),
             "authorisationHolder" -> mapping(
               "id" -> optional(text(maxLength = 17)),
               "categoryCode" -> optional(text(maxLength = 4))
-            )(AuthorisationHolderForm.apply)(AuthorisationHolderForm.unapply),
+            )(SubmissionAuthorisationHolderForm.apply)(SubmissionAuthorisationHolderForm.unapply),
             "borderTransportMeans" -> mapping(
               "name" -> optional(text(maxLength = 35)),
               "id" -> optional(text(maxLength = 35)),
@@ -122,19 +122,19 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
               "typeCode" -> optional(text(maxLength = 4)),
               "registrationNationalityCode" -> optional(text(maxLength = 2)),
               "modeCode" -> optional(number(min = 0, max = 9))
-            )(BorderTransportMeansForm.apply)(BorderTransportMeansForm.unapply),
+            )(SubmissionBorderTransportMeansForm.apply)(SubmissionBorderTransportMeansForm.unapply),
             "currencyExchange" -> mapping(
               "currencyTypeCode" -> optional(text(maxLength = 3)),
               "rateNumeric" -> optional(bigDecimal(precision = 12, scale = 5))
-            )(CurrencyExchangeForm.apply)(CurrencyExchangeForm.unapply)
-          )(MassiveHackToCreateHugeForm.apply)(MassiveHackToCreateHugeForm.unapply)
-        )(DeclarationForm.apply)(DeclarationForm.unapply).verifying("Acceptance Date Time Format Code must be specified when Acceptance Date Time is provided", form => {
+            )(SubmissionCurrencyExchangeForm.apply)(SubmissionCurrencyExchangeForm.unapply)
+          )(SubmissionMassiveHackToCreateHugeForm.apply)(SubmissionMassiveHackToCreateHugeForm.unapply)
+        )(SubmissionDeclarationForm.apply)(SubmissionDeclarationForm.unapply).verifying("Acceptance Date Time Format Code must be specified when Acceptance Date Time is provided", form => {
           form.acceptanceDateTime.isEmpty || (form.acceptanceDateTime.isDefined && form.acceptanceDateTimeFormatCode.isDefined)
         }).verifying("Issue Date Time Format Code must be specified when Issue Date Time is provided", form => {
           form.issueDateTime.isEmpty || (form.issueDateTime.isDefined && form.issueDateTimeFormatCode.isDefined)
         })
-      )(MetaDataForm.apply)(MetaDataForm.unapply)
-    )(AllInOneForm.apply)(AllInOneForm.unapply)
+      )(SubmissionMetaDataForm.apply)(SubmissionMetaDataForm.unapply)
+    )(SubmissionAllInOneForm.apply)(SubmissionAllInOneForm.unapply)
   )
 
   def showDeclarationForm: Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
@@ -155,7 +155,7 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
 
 }
 
-case class CurrencyExchangeForm(currencyTypeCode: Option[String] = None,
+case class SubmissionCurrencyExchangeForm(currencyTypeCode: Option[String] = None,
                                 rateNumeric: Option[BigDecimal] = None) {
 
   def toCurrencyExchange: Option[CurrencyExchange] = if (anyDefined) Some(CurrencyExchange(
@@ -166,7 +166,7 @@ case class CurrencyExchangeForm(currencyTypeCode: Option[String] = None,
 
 }
 
-case class BorderTransportMeansForm(name: Option[String] = None,
+case class SubmissionBorderTransportMeansForm(name: Option[String] = None,
                                     id: Option[String] = None,
                                     identificationTypeCode: Option[String] = None,
                                     typeCode: Option[String] = None,
@@ -186,7 +186,7 @@ case class BorderTransportMeansForm(name: Option[String] = None,
 
 }
 
-case class AuthorisationHolderForm(id: Option[String] = None,
+case class SubmissionAuthorisationHolderForm(id: Option[String] = None,
                                    categoryCode: Option[String] = None) {
 
   def toAuthorisationHolder: Option[AuthorisationHolder] = if (anyDefined) Some(AuthorisationHolder(
@@ -197,20 +197,20 @@ case class AuthorisationHolderForm(id: Option[String] = None,
 
 }
 
-case class AllInOneForm(badgeId: Option[String] = None,
-                        metaData: MetaDataForm = MetaDataForm()) {
+case class SubmissionAllInOneForm(badgeId: Option[String] = None,
+                        metaData: SubmissionMetaDataForm = SubmissionMetaDataForm()) {
 
   def toMetaData: MetaData = metaData.toMetaData
 
 }
 
-case class MetaDataForm(wcoDataModelVersionCode: Option[String] = None,
+case class SubmissionMetaDataForm(wcoDataModelVersionCode: Option[String] = None,
                         wcoTypeName: Option[String] = None,
                         responsibleCountryCode: Option[String] = None,
                         responsibleAgencyName: Option[String] = None,
                         agencyAssignedCustomizationCode: Option[String] = None,
                         agencyAssignedCustomizationVersionCode: Option[String] = None,
-                        declaration: DeclarationForm = DeclarationForm()) {
+                        declaration: SubmissionDeclarationForm = SubmissionDeclarationForm()) {
 
   def toMetaData: MetaData = MetaData(
     declaration.toDeclaration,
@@ -226,7 +226,7 @@ case class MetaDataForm(wcoDataModelVersionCode: Option[String] = None,
 
 // At present, our form mirrors the declaration XML exactly. Later this may change. Therefore, it is probably useful
 // to retain a distinction between view model class and XML model class and map the former to the latter
-case class DeclarationForm(acceptanceDateTime: Option[String] = None,
+case class SubmissionDeclarationForm(acceptanceDateTime: Option[String] = None,
                            acceptanceDateTimeFormatCode: Option[String] = None,
                            functionCode: Option[String] = None,
                            functionalReferenceId: Option[String] = None,
@@ -244,10 +244,10 @@ case class DeclarationForm(acceptanceDateTime: Option[String] = None,
                            totalGrossMassMeasureUnitCode: Option[String] = None,
                            totalPackageQuantity: Option[Int] = None,
                            specificCircumstancesCodeCode: Option[String] = None,
-                           authentication: AuthenticationForm = AuthenticationForm(),
-                           submitter: SubmitterForm = SubmitterForm(),
-                           additionalDocument: DeclarationAdditionalDocumentForm = DeclarationAdditionalDocumentForm(),
-                           hack: MassiveHackToCreateHugeForm = MassiveHackToCreateHugeForm()) {
+                           authentication: SubmissionAuthenticationForm = SubmissionAuthenticationForm(),
+                           submitter: SubmissionSubmitterForm = SubmissionSubmitterForm(),
+                           additionalDocument: SubmissionAdditionalDocumentForm = SubmissionAdditionalDocumentForm(),
+                           hack: SubmissionMassiveHackToCreateHugeForm = SubmissionMassiveHackToCreateHugeForm()) {
 
   private val defaultDateTimeFormatCode = "304"
 
@@ -277,7 +277,7 @@ case class DeclarationForm(acceptanceDateTime: Option[String] = None,
 
 }
 
-case class AuthenticationForm(authentication: Option[String] = None,
+case class SubmissionAuthenticationForm(authentication: Option[String] = None,
                               authenticatorName: Option[String] = None) {
 
   def toAuthentication: Option[Authentication] = (authentication, authenticatorName) match {
@@ -289,9 +289,9 @@ case class AuthenticationForm(authentication: Option[String] = None,
 
 }
 
-case class SubmitterForm(name: Option[String] = None,
+case class SubmissionSubmitterForm(name: Option[String] = None,
                          id: Option[String] = None,
-                         address: AddressForm = AddressForm()) {
+                         address: SubmissionAddressForm = SubmissionAddressForm()) {
 
   def toSubmitter: Submitter = Submitter(
     name = name,
@@ -301,7 +301,7 @@ case class SubmitterForm(name: Option[String] = None,
 
 }
 
-case class AddressForm(cityName: Option[String] = None,
+case class SubmissionAddressForm(cityName: Option[String] = None,
                        countryCode: Option[String] = None,
                        countrySubDivisionCode: Option[String] = None,
                        countrySubDivisionName: Option[String] = None,
@@ -321,7 +321,7 @@ case class AddressForm(cityName: Option[String] = None,
 
 }
 
-case class DeclarationAdditionalDocumentForm(id: Option[String] = None, // max 70 chars
+case class SubmissionAdditionalDocumentForm(id: Option[String] = None, // max 70 chars
                                              categoryCode: Option[String] = None, // max 3 chars
                                              typeCode: Option[String] = None) { // max 3 chars
 
@@ -335,16 +335,16 @@ case class DeclarationAdditionalDocumentForm(id: Option[String] = None, // max 7
 
 }
 
-case class MassiveHackToCreateHugeForm(additionalInformation: AdditionalInformationForm = AdditionalInformationForm(),
-                                       agent: AgentForm = AgentForm(),
-                                       authorisationHolder: AuthorisationHolderForm = AuthorisationHolderForm(),
-                                       borderTransportMeans: BorderTransportMeansForm = BorderTransportMeansForm(),
-                                       currencyExchange: CurrencyExchangeForm = CurrencyExchangeForm())
+case class SubmissionMassiveHackToCreateHugeForm(additionalInformation: SubmissionAdditionalInformationForm = SubmissionAdditionalInformationForm(),
+                                       agent: SubmissionAgentForm = SubmissionAgentForm(),
+                                       authorisationHolder: SubmissionAuthorisationHolderForm = SubmissionAuthorisationHolderForm(),
+                                       borderTransportMeans: SubmissionBorderTransportMeansForm = SubmissionBorderTransportMeansForm(),
+                                       currencyExchange: SubmissionCurrencyExchangeForm = SubmissionCurrencyExchangeForm())
 
-case class AdditionalInformationForm(statementCode: Option[String] = None,
+case class SubmissionAdditionalInformationForm(statementCode: Option[String] = None,
                                      statementDescription: Option[String] = None,
                                      statementTypeCode: Option[String] = None,
-                                     pointer: PointerForm = PointerForm()) {
+                                     pointer: SubmissionPointerForm = SubmissionPointerForm()) {
 
   def toAdditionalInformation: Option[AdditionalInformation] = if (anyDefined) Some(AdditionalInformation(
     statementCode, statementDescription, statementTypeCode, pointer.toPointer.toSeq
@@ -357,7 +357,7 @@ case class AdditionalInformationForm(statementCode: Option[String] = None,
 
 }
 
-case class PointerForm(sequenceNumeric: Option[Int] = None,
+case class SubmissionPointerForm(sequenceNumeric: Option[Int] = None,
                        documentSectionCode: Option[String] = None,
                        tagId: Option[String] = None) {
 
@@ -371,10 +371,10 @@ case class PointerForm(sequenceNumeric: Option[Int] = None,
 
 }
 
-case class AgentForm(name: Option[String] = None,
+case class SubmissionAgentForm(name: Option[String] = None,
                      id: Option[String] = None,
                      functionCode: Option[String] = None,
-                     address: AddressForm = AddressForm()) {
+                     address: SubmissionAddressForm = SubmissionAddressForm()) {
 
   def toAgent: Option[Agent] = if (anyDefined) Some(Agent(
     name, id, functionCode, address.toAddress

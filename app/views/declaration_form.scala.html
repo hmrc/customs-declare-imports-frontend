@@ -19,7 +19,7 @@
 @import domain.auth.AuthenticatedRequest
 @import uk.gov.hmrc.play.views.html.helpers
 
-@(form: Form[AllInOneForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[SubmissionAllInOneForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(title = "Declare an Import", bodyClasses = None) {
     @helpers.form(routes.SubmissionController.handleDeclarationForm) {
