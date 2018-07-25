@@ -16,11 +16,11 @@
 
 package services
 
-import domain.declaration.{AdditionalDocument, Address, MetaData}
+import domain.declaration._
 
 import scala.xml.Elem
 
-trait SubmitImportDeclarationMessageProducer {
+trait SubmissionMessageProducer {
 
   private[services] def produceDeclarationMessage(metaData: MetaData): Elem = <md:MetaData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                                                                            xmlns="urn:wco:datamodel:WCO:DEC-DMS:2"
@@ -77,6 +77,10 @@ trait SubmitImportDeclarationMessageProducer {
     {authentication(metaData)}
     {submitter(metaData)}
     {metaData.declaration.additionalDocuments.map(additionalDocument)}
+    {metaData.declaration.additionalInformations.map(additionalInformation)}
+    {agent(metaData)}
+    {metaData.declaration.authorisationHolders.map(authorisationHolder)}
+    {borderTransportMeans(metaData)}
   </Declaration>
 
   private def acceptanceDateTime(metaData: MetaData): Elem = metaData.declaration.acceptanceDateTime.map { dateTime =>
@@ -177,5 +181,43 @@ trait SubmitImportDeclarationMessageProducer {
     {additionalDocument.categoryCode.map(code => <CategoryCode>{code}</CategoryCode>).orNull}
     {additionalDocument.typeCode.map(code => <TypeCode>{code}</TypeCode>).orNull}
   </AdditionalDocument>
+
+  private def additionalInformation(additionalInformation: AdditionalInformation): Elem = <AdditionalInformation>
+    {additionalInformation.statementCode.map(code => <StatementCode>{code}</StatementCode>).orNull}
+    {additionalInformation.statementDescription.map(desc => <StatementDescription>{desc}</StatementDescription>).orNull}
+    {additionalInformation.statementTypeCode.map(code => <StatementTypeCode>{code}</StatementTypeCode>).orNull}
+    {additionalInformation.pointers.map(pointer)}
+  </AdditionalInformation>
+
+  private def pointer(pointer: Pointer): Elem = <Pointer>
+    {pointer.sequenceNumeric.map(num => <SequenceNumeric>{num}</SequenceNumeric>).orNull}
+    {pointer.documentSectionCode.map(code => <DocumentSectionCode>{code}</DocumentSectionCode>).orNull}
+    {pointer.tagId.map(id => <TagID>{id}</TagID>).orNull}
+  </Pointer>
+
+  private def agent(metaData: MetaData): Elem = metaData.declaration.agent.map { agent =>
+    <Agent>
+      {agent.name.map(name => <Name>{name}</Name>).orNull}
+      {agent.id.map(id => <ID>{id}</ID>).orNull}
+      {agent.functionCode.map(code => <FunctionCode>{code}</FunctionCode>).orNull}
+      {address(agent.address)}
+    </Agent>
+  }.orNull
+
+  private def authorisationHolder(authorisationHolder: AuthorisationHolder): Elem = <AuthorisationHolder>
+    {authorisationHolder.id.map(id => <ID>{id}</ID>).orNull}
+    {authorisationHolder.categoryCode.map(code => <CategoryCode>{code}</CategoryCode>).orNull}
+  </AuthorisationHolder>
+
+  private def borderTransportMeans(metaData: MetaData): Elem = metaData.declaration.borderTransportMeans.map { means =>
+    <BorderTransportMeans>
+      {means.name.map(name => <Name>{name}</Name>).orNull}
+      {means.id.map(id => <ID>{id}</ID>).orNull}
+      {means.typeCode.map(code => <TypeCode>{code}</TypeCode>).orNull}
+      {means.identificationTypeCode.map(code => <IdentificationTypeCode>{code}</IdentificationTypeCode>).orNull}
+      {means.registrationNationalityCode.map(code => <RegistrationNationalityCode>{code}</RegistrationNationalityCode>).orNull}
+      {means.modeCode.map(code => <ModeCode>{code}</ModeCode>).orNull}
+    </BorderTransportMeans>
+  }.orNull
 
 }

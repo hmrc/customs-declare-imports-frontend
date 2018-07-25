@@ -22,249 +22,427 @@
 @(form: Form[AllInOneForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(title = "Declare an Import", bodyClasses = None) {
-    @helpers.form(routes.DeclarationController.handleDeclarationForm) {
-        <fieldset class="form-field-group">
-            <legend>Miscellaneous</legend>
+    @helpers.form(routes.SubmissionController.handleDeclarationForm) {
+        <fieldset class="form-section" style="border: 1px dotted black;
+            padding: 1em">
+            <legend class="form-label-bold">Miscellaneous</legend>
             <div class="form-field">
             @helpers.input(form("badgeId"),
                 '_label -> "CSP Badge ID",
                 '_inputHint -> "Passed via header to declarations API (optional)",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
         </fieldset>
-        <fieldset class="form-field-group">
-            <legend>Metadata</legend>
+        <fieldset class="form-section" style="border: 1px dotted black;
+            padding: 1em">
+            <legend class="form-label-bold">Metadata</legend>
             <div class="form-field">
             @helpers.input(form("metaData.wcoDataModelVersionCode"),
                 '_label -> "WCO Data Model Version Code",
                 '_inputHint -> "/MetaData/WCODataModelVersionCode in XML (0..1)",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.wcoTypeName"),
                 '_label -> "WCO Type Name",
                 '_inputHint -> "/MetaData/WCOTypeName in XML (0..1)",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.responsibleCountryCode"),
                 '_label -> "Responsible Country Code",
                 '_inputHint -> "/MetaData/ResponsibleCountryCode in XML (0..1)",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.responsibleAgencyName"),
                 '_label -> "Responsible Agency Name",
                 '_inputHint -> "/MetaData/ResponsibleAgencyName in XML (0..1)",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.agencyAssignedCustomizationCode"),
                 '_label -> "Agency Assigned Customization Code",
                 '_inputHint -> "/MetaData/AgencyAssignedCustomizationCode in XML (0..1)",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.agencyAssignedCustomizationVersionCode"),
                 '_label -> "Agency Assigned Customization Version Code",
                 '_inputHint -> "/MetaData/AgencyAssignedCustomizationVersionCode in XML (0..1)",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
         </fieldset>
-        <fieldset>
-            <legend>Declaration</legend>
+        <fieldset class="form-section" style="border: 1px dotted black;
+            padding: 1em">
+            <legend class="form-label-bold">Declaration</legend>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.acceptanceDateTime"),
                 '_label -> "Acceptance Date-Time",
                 '_inputHint -> "/MetaData/Declaration/AcceptanceDateTime/DateTimeString/text() in XML (0..1). Max 35 chars. Must conform to regex '(20\\d{6})(\\d{6}(Z|[-+]\\d\\d))?'",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.acceptanceDateTimeFormatCode"),
                 '_label -> "Acceptance Date-Time Format Code",
                 '_inputHint -> "/MetaData/Declaration/AcceptanceDateTime/DateTimeString[@formatCode] in XML (required when AcceptanceDateTime is specified - must be either '102' or '304')",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.functionCode"),
                 '_label -> "Function Code",
                 '_inputHint -> "/MetaData/Declaration/FunctionCode in XML (0..1). Max 2 chars. Must be one of '9', '13', or '14'",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.functionalReferenceId"),
                 '_label -> "Functional Reference ID",
                 '_inputHint -> "/MetaData/Declaration/FunctionalReferenceID in XML (0..1). Max 35 chars.",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.id"),
                 '_label -> "ID",
                 '_inputHint -> "/MetaData/Declaration/ID in XML (0..1). Max 70 chars.",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.issueDateTime"),
                 '_label -> "Issue Date-Time",
                 '_inputHint -> "/MetaData/Declaration/IssueDateTime/DateTimeString/text() in XML (0..1). Max 35 chars. Must conform to regex '(20\\d{6})(\\d{6}(Z|[-+]\\d\\d))?'",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.issueDateTimeFormatCode"),
                 '_label -> "Issue Date-Time Format Code",
                 '_inputHint -> "/MetaData/Declaration/IssueDateTime/DateTimeString[@formatCode] in XML (required when IssueDateTime is specified - must be either '102' or '304')",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.issueLocationId"),
                 '_label -> "Issue Location ID",
                 '_inputHint -> "/MetaData/Declaration/IssueLocationID in XML (0..1). Max 5 chars.",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.typeCode"),
                 '_label -> "Type Code",
                 '_inputHint -> "/MetaData/Declaration/TypeCode in XML (0..1). Max 3 chars.",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.goodsItemQuantity"),
                 '_label -> "Goods Item Quantity",
                 '_inputHint -> "/MetaData/Declaration/GoodsItemQuantity in XML (0..1). Unsigned integer. Max 5 digits (i.e. 0-99999).",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.declarationOfficeId"),
                 '_label -> "Declaration Office ID",
                 '_inputHint -> "/MetaData/Declaration/DeclarationOfficeID in XML (0..1). Max 17 chars.",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.invoiceAmount"),
                 '_label -> "Invoice Amount",
                 '_inputHint -> "/MetaData/Declaration/InvoiceAmount in XML (0..1). Decimal with precision of 16 and scale of 3.",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.invoiceAmountCurrencyId"),
                 '_label -> "Invoice Amount Currency ID",
                 '_inputHint -> "/MetaData/Declaration/InvoiceAmount[@currencyID] in XML (0..1). Max 3 chars (ISO 4217 Alpha3 currency code). The schema validates this via regex '[A-Z]{3}' rather than as an enumeration of permitted values",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.loadingListQuantity"),
                 '_label -> "Loading List Quantity",
                 '_inputHint -> "/MetaData/Declaration/LoadingListQuantity in XML (0..1). Unsigned integer. Max 5 digits (i.e. 0-99999).",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.totalGrossMassMeasure"),
                 '_label -> "Total Gross Mass Measure",
                 '_inputHint -> "/MetaData/Declaration/TotalGrossMassMeasure in XML (0..1). Decimal with precision of 16 and scale of 6.",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.totalGrossMassMeasureUnitCode"),
                 '_label -> "Total Gross Mass Measure Unit Code",
                 '_inputHint -> "/MetaData/Declaration/TotalGrossMassMeasure[@unitCode] in XML (0..1). Max 5 chars. Min 1 char if present.",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.totalPackageQuantity"),
                 '_label -> "Total Package Quantity",
                 '_inputHint -> "/MetaData/Declaration/TotalPackageQuantity in XML (0..1). Unsigned integer. Max 8 digits (i.e. 0 - 99999999).",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.specificCircumstancesCodeCode"),
                 '_label -> "Specific Circumstances Code Code",
                 '_inputHint -> "/MetaData/Declaration/SpecificCircumstancesCodeCode in XML (0..1). Max 3 chars.",
-                '_inputClass -> "form-control--block")
+                '_inputClass -> "form-control")
             </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.authentication.authentication"),
-                '_label -> "Authentication",
-                '_inputHint -> "/MetaData/Declaration/Authentication/Authentication in XML (0..1). Max 255 chars.",
-                '_inputClass -> "form-control--block")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.authentication.authenticatorName"),
-                '_label -> "Authenticator Name",
-                '_inputHint -> "/MetaData/Declaration/Authentication/Authenticator/Name in XML (0..1). Max 70 chars.",
-                '_inputClass -> "form-control--block")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.submitter.name"),
-                '_label -> "Submitter Name",
-                '_inputHint -> "/MetaData/Declaration/Submitter/Name in XML (0..1). Max 70 chars.",
-                '_inputClass -> "form-control--block")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.submitter.id"),
-                '_label -> "Submitter ID",
-                '_inputHint -> "/MetaData/Declaration/Submitter/ID in XML (0..1). Max 17 chars.",
-                '_inputClass -> "form-control--block")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.submitter.address.cityName"),
-                '_label -> "Submitter Address City Name",
-                '_inputHint -> "/MetaData/Declaration/Submitter/Address/CityName in XML (0..1). Max 35 chars.",
-                '_inputClass -> "form-control--block")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.submitter.address.countryCode"),
-                '_label -> "Submitter Address Country Code",
-                '_inputHint -> "/MetaData/Declaration/Submitter/Address/CountryCode in XML (0..1). Exactly 2 chars when defined. Expected ISO-3166-1 Alpha2 code.",
-                '_inputClass -> "form-control--block")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.submitter.address.countrySubDivisionCode"),
-                '_label -> "Submitter Address Country Sub-Division Code",
-                '_inputHint -> "/MetaData/Declaration/Submitter/Address/CountrySubDivisionCode in XML (0..1). Max 9 chars.",
-                '_inputClass -> "form-control--block")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.submitter.address.countrySubDivisionName"),
-                '_label -> "Submitter Address Country Sub-Division Name",
-                '_inputHint -> "/MetaData/Declaration/Submitter/Address/CountrySubDivisionName in XML (0..1). Max 35 chars.",
-                '_inputClass -> "form-control--block")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.submitter.address.line"),
-                '_label -> "Submitter Address Line",
-                '_inputHint -> "/MetaData/Declaration/Submitter/Address/Line in XML (0..1). Max 70 chars.",
-                '_inputClass -> "form-control--block")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.submitter.address.postcodeId"),
-                '_label -> "Submitter Address Postcode ID",
-                '_inputHint -> "/MetaData/Declaration/Submitter/Address/PostcodeID in XML (0..1). Max 9 chars.",
-                '_inputClass -> "form-control--block")
-            </div>
-            <fieldset>
-                <legend>Additional Documents</legend>
-                <p>There can be 0..* AdditionalDocuments as child elements of a Declaration element</p>
+            <fieldset class="form-section" style="border: 1px dotted black;
+                padding: 1em">
+                <legend class="form-label-bold">Authentication</legend>
+                <p>0..1 Authentication element as child of Declaration element</p>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.authentication.authentication"),
+                    '_label -> "Authentication",
+                    '_inputHint -> "/MetaData/Declaration/Authentication/Authentication in XML (0..1). Max 255 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.authentication.authenticatorName"),
+                    '_label -> "Authenticator Name",
+                    '_inputHint -> "/MetaData/Declaration/Authentication/Authenticator/Name in XML (0..1). Max 70 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+            </fieldset>
+            <fieldset class="form-section" style="border: 1px dotted black;
+                padding: 1em">
+                <legend class="form-label-bold">Submitter</legend>
+                <p>0..1 Submitter element as child of Declaration element</p>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.submitter.name"),
+                    '_label -> "Submitter Name",
+                    '_inputHint -> "/MetaData/Declaration/Submitter/Name in XML (0..1). Max 70 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.submitter.id"),
+                    '_label -> "Submitter ID",
+                    '_inputHint -> "/MetaData/Declaration/Submitter/ID in XML (0..1). Max 17 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.submitter.address.cityName"),
+                    '_label -> "Submitter Address City Name",
+                    '_inputHint -> "/MetaData/Declaration/Submitter/Address/CityName in XML (0..1). Max 35 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.submitter.address.countryCode"),
+                    '_label -> "Submitter Address Country Code",
+                    '_inputHint -> "/MetaData/Declaration/Submitter/Address/CountryCode in XML (0..1). Exactly 2 chars when defined. Expected ISO-3166-1 Alpha2 code.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.submitter.address.countrySubDivisionCode"),
+                    '_label -> "Submitter Address Country Sub-Division Code",
+                    '_inputHint -> "/MetaData/Declaration/Submitter/Address/CountrySubDivisionCode in XML (0..1). Max 9 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.submitter.address.countrySubDivisionName"),
+                    '_label -> "Submitter Address Country Sub-Division Name",
+                    '_inputHint -> "/MetaData/Declaration/Submitter/Address/CountrySubDivisionName in XML (0..1). Max 35 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.submitter.address.line"),
+                    '_label -> "Submitter Address Line",
+                    '_inputHint -> "/MetaData/Declaration/Submitter/Address/Line in XML (0..1). Max 70 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.submitter.address.postcodeId"),
+                    '_label -> "Submitter Address Postcode ID",
+                    '_inputHint -> "/MetaData/Declaration/Submitter/Address/PostcodeID in XML (0..1). Max 9 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+            </fieldset>
+            <fieldset class="form-section" style="border: 1px dotted black;
+                padding: 1em">
+                <legend class="form-label-bold">Additional Documents</legend>
+                <p>There can be 0..* AdditionalDocument elements as children of a Declaration element</p>
                 <div class="form-field">
                 @helpers.input(form("metaData.declaration.additionalDocument.id"),
                     '_label -> "Additional Document ID",
                     '_inputHint -> "/MetaData/Declaration/AdditionalDocument/ID in XML (0..1). Max 70 chars.",
-                    '_inputClass -> "form-control--block")
+                    '_inputClass -> "form-control")
                 </div>
                 <div class="form-field">
                 @helpers.input(form("metaData.declaration.additionalDocument.categoryCode"),
                     '_label -> "Additional Document Category Code",
                     '_inputHint -> "/MetaData/Declaration/AdditionalDocument/CategoryCode in XML (0..1). Max 3 chars.",
-                    '_inputClass -> "form-control--block")
+                    '_inputClass -> "form-control")
                 </div>
                 <div class="form-field">
                 @helpers.input(form("metaData.declaration.additionalDocument.typeCode"),
                     '_label -> "Additional Document Type Code",
                     '_inputHint -> "/MetaData/Declaration/AdditionalDocument/TypeCode in XML (0..1). Max 3 chars.",
-                    '_inputClass -> "form-control--block")
+                    '_inputClass -> "form-control")
+                </div>
+            </fieldset>
+            <fieldset class="form-section" style="border: 1px dotted black;
+                padding: 1em">
+                <legend class="form-label-bold">Additional Information</legend>
+                <p>There can be 0..* AdditionalInformation elements as children of a Declaration element</p>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.additionalInformation.statementCode"),
+                    '_label -> "Additional Information Statement Code",
+                    '_inputHint -> "/MetaData/Declaration/AdditionalInformation/StatementCode in XML (0..1). Max 17 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.additionalInformation.statementDescription"),
+                    '_label -> "Additional Information Statement Description",
+                    '_inputHint -> "/MetaData/Declaration/AdditionalInformation/StatementDescription in XML (0..1). Max 512 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.additionalInformation.statementTypeCode"),
+                    '_label -> "Additional Information Statement Type Code",
+                    '_inputHint -> "/MetaData/Declaration/AdditionalInformation/StatementTypeCode in XML (0..1). Max 3 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <fieldset class="form-section" style="border: 1px dotted black;
+                    padding: 1em">
+                    <legend class="form-label-bold">Pointer</legend>
+                    <p>There can be 0..* Pointer elements as children of an AdditionalInformation element</p>
+                    <div class="form-field">
+                    @helpers.input(form("metaData.declaration.hack.additionalInformation.pointer.sequenceNumeric"),
+                        '_label -> "Additional Information Pointer Sequence Numeric",
+                        '_inputHint -> "/MetaData/Declaration/AdditionalInformation/Pointer/SequenceNumeric in XML (0..1). An unsigned integer. Max value 99999.",
+                        '_inputClass -> "form-control")
+                    </div>
+                    <div class="form-field">
+                    @helpers.input(form("metaData.declaration.hack.additionalInformation.pointer.documentSectionCode"),
+                        '_label -> "Additional Information Pointer Document Section Code",
+                        '_inputHint -> "/MetaData/Declaration/AdditionalInformation/Pointer/DocumentSectionCode in XML (0..1). Max 3 chars.",
+                        '_inputClass -> "form-control")
+                    </div>
+                    <div class="form-field">
+                    @helpers.input(form("metaData.declaration.hack.additionalInformation.pointer.tagId"),
+                        '_label -> "Additional Information Pointer Tag ID",
+                        '_inputHint -> "/MetaData/Declaration/AdditionalInformation/Pointer/TagID in XML (0..1). Max 4 chars.",
+                        '_inputClass -> "form-control")
+                    </div>
+                </fieldset>
+            </fieldset>
+            <fieldset class="form-section" style="border: 1px dotted black;
+                padding: 1em">
+                <legend class="form-label-bold">Agent</legend>
+                <p>0..1 Agent element per Declaration element</p>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.agent.name"),
+                    '_label -> "Agent Name",
+                    '_inputHint -> "/MetaData/Declaration/Agent/Name in XML (0..1). Max 70 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.agent.id"),
+                    '_label -> "Agent ID",
+                    '_inputHint -> "/MetaData/Declaration/Agent/ID in XML (0..1). Max 17 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.agent.functionCode"),
+                    '_label -> "Agent Function Code",
+                    '_inputHint -> "/MetaData/Declaration/Agent/FunctionCode in XML (0..1). Max 3 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.agent.address.cityName"),
+                    '_label -> "Agent Address City Name",
+                    '_inputHint -> "/MetaData/Declaration/Agent/Address/CityName in XML (0..1). Max 35 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.agent.address.countryCode"),
+                    '_label -> "Agent Address Country Code",
+                    '_inputHint -> "/MetaData/Declaration/Agent/Address/CountryCode in XML (0..1). Exactly 2 chars when defined. Expected ISO-3166-1 Alpha2 code.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.agent.address.countrySubDivisionCode"),
+                    '_label -> "Agent Address Country Sub-Division Code",
+                    '_inputHint -> "/MetaData/Declaration/Agent/Address/CountrySubDivisionCode in XML (0..1). Max 9 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.agent.address.countrySubDivisionName"),
+                    '_label -> "Agent Address Country Sub-Division Name",
+                    '_inputHint -> "/MetaData/Declaration/Agent/Address/CountrySubDivisionName in XML (0..1). Max 35 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.agent.address.line"),
+                    '_label -> "Agent Address Line",
+                    '_inputHint -> "/MetaData/Declaration/Agent/Address/Line in XML (0..1). Max 70 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.agent.address.postcodeId"),
+                    '_label -> "Agent Address Postcode ID",
+                    '_inputHint -> "/MetaData/Declaration/Agent/Address/PostcodeID in XML (0..1). Max 9 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+            </fieldset>
+            <fieldset class="form-section" style="border: 1px dotted black;
+                padding: 1em">
+                <legend class="form-label-bold">Authorisation Holder</legend>
+                <p>There can be 0..* AuthorisationHolder elements as children of a Declaration element</p>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.authorisationHolder.id"),
+                    '_label -> "Authorisation Holder ID",
+                    '_inputHint -> "/MetaData/Declaration/AuthorisationHolder/ID in XML (0..1). Max 17 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.authorisationHolder.categoryCode"),
+                    '_label -> "Authorisation Holder Category Code",
+                    '_inputHint -> "/MetaData/Declaration/AuthorisationHolder/CategoryCode in XML (0..1). Max 4 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+            </fieldset>
+
+            <fieldset class="form-section" style="border: 1px dotted black;
+                padding: 1em">
+                <legend class="form-label-bold">Border Transport means</legend>
+                <p>0..1 BorderTransportMeans element as child of a Declaration element</p>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.borderTransportMeans.name"),
+                    '_label -> "Border Transport Means Name",
+                    '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/Name in XML (0..1). Max 35 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.borderTransportMeans.id"),
+                    '_label -> "Border Transport Means ID",
+                    '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/ID in XML (0..1). Max 35 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.borderTransportMeans.identificationTypeCode"),
+                    '_label -> "Border Transport Means Identification Type Code",
+                    '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/IdentificationTypeCode in XML (0..1). Max 17 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.borderTransportMeans.typeCode"),
+                    '_label -> "Border Transport Means Type Code",
+                    '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/TypeCode in XML (0..1). Max 4 chars.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.borderTransportMeans.registrationNationalityCode"),
+                    '_label -> "Border Transport Means Registration Nationality Code",
+                    '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/RegistrationNationalityCode in XML (0..1). 2 chars when defined in pattern [a-zA-Z]{2}. Presumably expecting an ISO 3166-1 Alpha2 code.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.borderTransportMeans.modeCode"),
+                    '_label -> "Border Transport Means Mode Code",
+                    '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/ModeCode in XML (0..1). An unsigned integer in range 0-9 inclusive.",
+                    '_inputClass -> "form-control")
                 </div>
             </fieldset>
         </fieldset>
-        <fieldset class="form-field-group">
+        <fieldset class="form-section">
             <div class="form-field">
                 <button class="button" type="submit">Submit</button>
             </div>

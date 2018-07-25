@@ -30,7 +30,7 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport {
+class SubmissionController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   private val dateTimePattern = "(20\\d{6})(\\d{6}(Z|[-+]\\d\\d))?"
   private val dateTimePatternErrorMessage = "Date time string does not match required pattern"
@@ -80,13 +80,50 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
               "countrySubDivisionName" -> optional(text(maxLength = 35)),
               "line" -> optional(text(maxLength = 70)),
               "postcodeId" -> optional(text(maxLength = 9))
-            )(SubmitterAddressForm.apply)(SubmitterAddressForm.unapply)
+            )(AddressForm.apply)(AddressForm.unapply)
           )(SubmitterForm.apply)(SubmitterForm.unapply),
           "additionalDocument" -> mapping(
             "id" -> optional(text(maxLength = 70)),
             "categoryCode" -> optional(text(maxLength = 3)),
             "typeCode" -> optional(text(maxLength = 3))
-          )(DeclarationAdditionalDocumentForm.apply)(DeclarationAdditionalDocumentForm.unapply)
+          )(DeclarationAdditionalDocumentForm.apply)(DeclarationAdditionalDocumentForm.unapply),
+          "hack" -> mapping(
+            "additionalInformation" -> mapping(
+              "statementCode" -> optional(text(maxLength = 17)),
+              "statementDescription" -> optional(text(maxLength = 512)),
+              "statementTypeCode" -> optional(text(maxLength = 3)),
+              "pointer" -> mapping(
+                "sequenceNumeric" -> optional(number(min = 0, max = 99999)),
+                "documentSectionCode" -> optional(text(maxLength = 3)),
+                "tagId" -> optional(text(maxLength = 4))
+              )(PointerForm.apply)(PointerForm.unapply)
+            )(AdditionalInformationForm.apply)(AdditionalInformationForm.unapply),
+            "agent" -> mapping(
+              "name" -> optional(text(maxLength = 70)),
+              "id" -> optional(text(maxLength = 17)),
+              "functionCode" -> optional(text(maxLength = 3)),
+              "address" -> mapping(
+                "cityName" -> optional(text(maxLength = 35)),
+                "countryCode" -> optional(text(minLength = 2, maxLength = 2)),
+                "countrySubDivisionCode" -> optional(text(maxLength = 9)),
+                "countrySubDivisionName" -> optional(text(maxLength = 35)),
+                "line" -> optional(text(maxLength = 70)),
+                "postcodeId" -> optional(text(maxLength = 9))
+              )(AddressForm.apply)(AddressForm.unapply)
+            )(AgentForm.apply)(AgentForm.unapply),
+            "authorisationHolder" -> mapping(
+              "id" -> optional(text(maxLength = 17)),
+              "categoryCode" -> optional(text(maxLength = 4))
+            )(AuthorisationHolderForm.apply)(AuthorisationHolderForm.unapply),
+            "borderTransportMeans" -> mapping(
+              "name" -> optional(text(maxLength = 35)),
+              "id" -> optional(text(maxLength = 35)),
+              "identificationTypeCode" -> optional(text(maxLength = 17)),
+              "typeCode" -> optional(text(maxLength = 4)),
+              "registrationNationalityCode" -> optional(text(maxLength = 2)),
+              "modeCode" -> optional(number(min = 0, max = 9))
+            )(BorderTransportMeansForm.apply)(BorderTransportMeansForm.unapply)
+          )(MassiveHackToCreateHugeForm.apply)(MassiveHackToCreateHugeForm.unapply)
         )(DeclarationForm.apply)(DeclarationForm.unapply).verifying("Acceptance Date Time Format Code must be specified when Acceptance Date Time is provided", form => {
           form.acceptanceDateTime.isEmpty || (form.acceptanceDateTime.isDefined && form.acceptanceDateTimeFormatCode.isDefined)
         }).verifying("Issue Date Time Format Code must be specified when Issue Date Time is provided", form => {
@@ -111,6 +148,37 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
       }
     )
   }
+
+}
+
+case class BorderTransportMeansForm(name: Option[String] = None,
+                                    id: Option[String] = None,
+                                    identificationTypeCode: Option[String] = None,
+                                    typeCode: Option[String] = None,
+                                    registrationNationalityCode: Option[String] = None,
+                                    modeCode: Option[Int] = None) {
+
+  def toBorderTransportMeans: Option[BorderTransportMeans] = if (anyDefined) Some(BorderTransportMeans(
+    name, id, identificationTypeCode, typeCode, registrationNationalityCode, modeCode
+  )) else None
+
+  private def anyDefined: Boolean = name.isDefined ||
+    id.isDefined ||
+    identificationTypeCode.isDefined ||
+    typeCode.isDefined ||
+    registrationNationalityCode.isDefined ||
+    modeCode.isDefined
+
+}
+
+case class AuthorisationHolderForm(id: Option[String] = None,
+                                   categoryCode: Option[String] = None) {
+
+  def toAuthorisationHolder: Option[AuthorisationHolder] = if (anyDefined) Some(AuthorisationHolder(
+    id, categoryCode
+  )) else None
+
+  private def anyDefined: Boolean = id.isDefined || categoryCode.isDefined
 
 }
 
@@ -163,7 +231,8 @@ case class DeclarationForm(acceptanceDateTime: Option[String] = None,
                            specificCircumstancesCodeCode: Option[String] = None,
                            authentication: AuthenticationForm = AuthenticationForm(),
                            submitter: SubmitterForm = SubmitterForm(),
-                           additionalDocument: DeclarationAdditionalDocumentForm = DeclarationAdditionalDocumentForm()) {
+                           additionalDocument: DeclarationAdditionalDocumentForm = DeclarationAdditionalDocumentForm(),
+                           hack: MassiveHackToCreateHugeForm = MassiveHackToCreateHugeForm()) {
 
   private val defaultDateTimeFormatCode = "304"
 
@@ -183,7 +252,11 @@ case class DeclarationForm(acceptanceDateTime: Option[String] = None,
     totalPackageQuantity = totalPackageQuantity,
     specificCircumstancesCodeCode = specificCircumstancesCodeCode,
     authentication = authentication.toAuthentication,
-    additionalDocuments = additionalDocument.toAdditionalDocument.toSeq
+    additionalDocuments = additionalDocument.toAdditionalDocument.toSeq,
+    additionalInformations = hack.additionalInformation.toAdditionalInformation.toSeq,
+    agent = hack.agent.toAgent,
+    authorisationHolders = hack.authorisationHolder.toAuthorisationHolder.toSeq,
+    borderTransportMeans = hack.borderTransportMeans.toBorderTransportMeans
   )
 
 }
@@ -202,7 +275,7 @@ case class AuthenticationForm(authentication: Option[String] = None,
 
 case class SubmitterForm(name: Option[String] = None,
                          id: Option[String] = None,
-                         address: SubmitterAddressForm = SubmitterAddressForm()) {
+                         address: AddressForm = AddressForm()) {
 
   def toSubmitter: Submitter = Submitter(
     name = name,
@@ -212,12 +285,12 @@ case class SubmitterForm(name: Option[String] = None,
 
 }
 
-case class SubmitterAddressForm(cityName: Option[String] = None,
-                                countryCode: Option[String] = None,
-                                countrySubDivisionCode: Option[String] = None,
-                                countrySubDivisionName: Option[String] = None,
-                                line: Option[String] = None,
-                                postcodeId: Option[String] = None) {
+case class AddressForm(cityName: Option[String] = None,
+                       countryCode: Option[String] = None,
+                       countrySubDivisionCode: Option[String] = None,
+                       countrySubDivisionName: Option[String] = None,
+                       line: Option[String] = None,
+                       postcodeId: Option[String] = None) {
 
   def toAddress: Option[Address] = if (anyDefined) Some(Address(
     cityName, countryCode, countrySubDivisionCode, countrySubDivisionName, line, postcodeId
@@ -243,5 +316,56 @@ case class DeclarationAdditionalDocumentForm(id: Option[String] = None, // max 7
   private def anyDefined: Boolean = id.isDefined ||
     categoryCode.isDefined ||
     typeCode.isDefined
+
+}
+
+case class MassiveHackToCreateHugeForm(additionalInformation: AdditionalInformationForm = AdditionalInformationForm(),
+                                       agent: AgentForm = AgentForm(),
+                                       authorisationHolder: AuthorisationHolderForm = AuthorisationHolderForm(),
+                                       borderTransportMeans: BorderTransportMeansForm = BorderTransportMeansForm())
+
+case class AdditionalInformationForm(statementCode: Option[String] = None,
+                                     statementDescription: Option[String] = None,
+                                     statementTypeCode: Option[String] = None,
+                                     pointer: PointerForm = PointerForm()) {
+
+  def toAdditionalInformation: Option[AdditionalInformation] = if (anyDefined) Some(AdditionalInformation(
+    statementCode, statementDescription, statementTypeCode, pointer.toPointer.toSeq
+  )) else None
+
+  private def anyDefined: Boolean = statementCode.isDefined ||
+    statementDescription.isDefined ||
+    statementTypeCode.isDefined ||
+    pointer.toPointer.isDefined
+
+}
+
+case class PointerForm(sequenceNumeric: Option[Int] = None,
+                       documentSectionCode: Option[String] = None,
+                       tagId: Option[String] = None) {
+
+  def toPointer: Option[Pointer] = if (anyDefined) Some(Pointer(
+    sequenceNumeric, documentSectionCode, tagId
+  )) else None
+
+  private def anyDefined: Boolean = sequenceNumeric.isDefined ||
+    documentSectionCode.isDefined ||
+    tagId.isDefined
+
+}
+
+case class AgentForm(name: Option[String] = None,
+                     id: Option[String] = None,
+                     functionCode: Option[String] = None,
+                     address: AddressForm = AddressForm()) {
+
+  def toAgent: Option[Agent] = if (anyDefined) Some(Agent(
+    name, id, functionCode, address.toAddress
+  )) else None
+
+  private def anyDefined: Boolean = name.isDefined ||
+    id.isDefined ||
+    functionCode.isDefined ||
+    address.toAddress.isDefined
 
 }

@@ -43,7 +43,8 @@ case class Declaration(acceptanceDateTime: Option[AcceptanceDateTime] = None, //
                        submitter: Option[Submitter] = None, // name="Submitter" minOccurs="0" maxOccurs="1"
                        additionalDocuments: Seq[AdditionalDocument] = Seq.empty, // name="AdditionalDocument" minOccurs="0" maxOccurs="unbounded"
                        additionalInformations: Seq[AdditionalInformation] = Seq.empty, // name="AdditionalInformation" minOccurs="0" maxOccurs="unbounded"
-                       agent: Option[String] = None, // name="Agent" minOccurs="0" maxOccurs="1"
+                       agent: Option[Agent] = None, // name="Agent" minOccurs="0" maxOccurs="1"
+                       // TODO model amendment XML
                        amendments: Seq[String] = Seq.empty, //  name="Amendment" minOccurs="0" maxOccurs="unbounded"
                        authorisationHolders: Seq[AuthorisationHolder] = Seq.empty, // name="AuthorisationHolder" minOccurs="0" maxOccurs="unbounded"
                        borderTransportMeans: Option[BorderTransportMeans] = None, // name="BorderTransportMeans" minOccurs="0" maxOccurs="1"
@@ -55,6 +56,11 @@ case class Declaration(acceptanceDateTime: Option[AcceptanceDateTime] = None, //
                        obligationGuarantees: Seq[ObligationGuarantee] = Seq.empty, // name="ObligationGuarantee" minOccurs="0" maxOccurs="unbounded"
                        presentationOffice: Option[String] = None, // name="PresentationOffice" minOccurs="0" maxOccurs="1"
                        supervisingOffice: Option[SupervisingOffice] = None) // name="SupervisingOffice" minOccurs="0" maxOccurs="1"
+
+case class Agent(name: Option[String] = None, // max 70 chars
+                 id: Option[String] = None, // max 17 chars
+                 functionCode: Option[String] = None, // max 3 chars
+                 address: Option[Address] = None)
 
 case class Submitter(name: Option[String] = None, // max length 70
                      id: Option[String] = None, // max length 17
@@ -81,11 +87,15 @@ case class AdditionalDocument(id: Option[String] = None, // max 70 chars
                               name: Option[String] = None,
                               lpcoExemptionCode: Option[String] = None)
 
-case class AuthorisationHolder(id: String,
-                               categoryCode: String)
+case class AuthorisationHolder(id: Option[String] = None, // max 17 chars
+                               categoryCode: Option[String] = None) // max 4 chars
 
-case class BorderTransportMeans(registrationNationalityCode: String,
-                                modeCode: String)
+case class BorderTransportMeans(name: Option[String] = None, // max 35 chars,
+                                id: Option[String] = None, // max 35 chars,
+                                identificationTypeCode: Option[String] = None, // max 17 chars
+                                typeCode: Option[String] = None, // max 4 chars
+                                registrationNationalityCode: Option[String] = None, // 2 chars [a-zA-Z] when present; presumably ISO 3166-1 alpha2
+                                modeCode: Option[Int] = None) // 0-9
 
 case class Declarant(id: String)
 
@@ -166,7 +176,14 @@ case class Packaging(sequenceNumeric: Int,
 case class StatisticalValueAmount(currencyId: String,
                                   value: BigDecimal)
 
-case class AdditionalInformation(statementCode: String)
+case class AdditionalInformation(statementCode: Option[String] = None, // max 17 chars
+                                 statementDescription: Option[String] = None, // max 512 chars
+                                 statementTypeCode: Option[String] = None, // max 3 chars
+                                 pointers: Seq[Pointer] = Seq.empty)
+
+case class Pointer(sequenceNumeric: Option[Int] = None, // min 0 max 99999
+                   documentSectionCode: Option[String] = None, // max 3 chars
+                   tagId: Option[String] = None) // max 4 chars
 
 case class Commodity(description: String,
                      classifications: List[Classification],

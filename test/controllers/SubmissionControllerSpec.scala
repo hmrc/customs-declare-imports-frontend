@@ -21,7 +21,7 @@ import domain.features.{Feature, FeatureStatus}
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours, WiremockBehaviours}
 
-class DeclarationControllerSpec
+class SubmissionControllerSpec
   extends CustomsPlaySpec
     with AuthenticationBehaviours
     with FeatureSwitchBehaviours

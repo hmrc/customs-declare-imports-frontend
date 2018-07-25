@@ -1,9 +1,10 @@
 # microservice specific routes
 
+GET        /assets/*file                 controllers.Assets.at(path="/public", file)
 GET        /                             controllers.BeginController.displayBeginPage
 GET        /start                        controllers.StartController.displayStartPage
 GET        /enrol                        controllers.UnauthorisedController.enrol
-GET        /declaration                  controllers.DeclarationController.showDeclarationForm
-POST       /declaration                  controllers.DeclarationController.handleDeclarationForm
+GET        /declaration                  controllers.SubmissionController.showDeclarationForm
+POST       /declaration                  controllers.SubmissionController.handleDeclarationForm
 GET        /cancel-declaration          controllers.CancelController.showCancelForm
 POST       /cancel-declaration          controllers.CancelController.submitCancelForm

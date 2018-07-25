@@ -49,7 +49,7 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
                                 forceServerError: Boolean = false,
                                 hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
                                (test: Future[Boolean] => Unit): Unit = {
-    val messageProducer = new SubmitImportDeclarationMessageProducer {}
+    val messageProducer = new SubmissionMessageProducer {}
     val expectedUrl: String = s"${appConfig.customsDeclarationsEndpoint}${appConfig.submitImportDeclarationUri}"
     val expectedBody: String = messageProducer.produceDeclarationMessage(metaData).mkString
     val expectedHeaders: Map[String, String] = Map(

@@ -20,9 +20,9 @@ import domain.declaration._
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
+class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
-  val connector = new CustomsDeclarationsConnector(appConfig, app.injector.instanceOf[HttpClient])
+  val producer = new SubmissionMessageProducer {}
 
   "produce declaration message" should {
 
@@ -32,7 +32,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
         randomValidDeclaration,
         wcoDataModelVersionCode = Some(version)
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "WCODataModelVersionCode").text.trim must be(version)
       xml
     }
@@ -42,7 +42,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
         randomValidDeclaration,
         wcoDataModelVersionCode = None
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "WCODataModelVersionCode").size must be(0)
       xml
     }
@@ -53,7 +53,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
         randomValidDeclaration,
         wcoTypeName = Some(name)
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "WCOTypeName").text.trim must be(name)
       xml
     }
@@ -63,7 +63,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
         randomValidDeclaration,
         wcoTypeName = None
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "WCOTypeName").size must be(0)
       xml
     }
@@ -74,7 +74,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
         randomValidDeclaration,
         responsibleCountryCode = Some(code)
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "ResponsibleCountryCode").text.trim must be(code)
       xml
     }
@@ -84,7 +84,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
         randomValidDeclaration,
         responsibleCountryCode = None
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "ResponsibleCountryCode").size must be(0)
       xml
     }
@@ -95,7 +95,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
         randomValidDeclaration,
         responsibleAgencyName = Some(agency)
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "ResponsibleAgencyName").text.trim must be(agency)
       xml
     }
@@ -105,7 +105,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
         randomValidDeclaration,
         responsibleAgencyName = None
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "ResponsibleAgencyName").size must be(0)
       xml
     }
@@ -116,7 +116,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
         randomValidDeclaration,
         agencyAssignedCustomizationCode = Some(code)
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationCode").text.trim must be(code)
       xml
     }
@@ -126,7 +126,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
         randomValidDeclaration,
         agencyAssignedCustomizationCode = None
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationCode").size must be(0)
       xml
     }
@@ -137,7 +137,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
         randomValidDeclaration,
         agencyAssignedCustomizationVersionCode = Some(code)
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationVersionCode").text.trim must be(code)
       xml
     }
@@ -147,7 +147,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
         randomValidDeclaration,
         agencyAssignedCustomizationVersionCode = None
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationVersionCode").size must be(0)
       xml
     }
@@ -156,7 +156,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
       val meta = MetaData(
         randomValidDeclaration
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration").size must be(1)
       xml
     }
@@ -169,7 +169,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           acceptanceDateTime = Some(AcceptanceDateTime(DateTimeString(formatCode, dateTime)))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AcceptanceDateTime" \ "DateTimeString").text.trim must be(dateTime)
       (xml \ "Declaration" \ "AcceptanceDateTime" \ "DateTimeString" \ "@formatCode").text.trim must be(formatCode)
       xml
@@ -182,7 +182,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           functionCode = Some(code)
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "FunctionCode").text.trim must be(code)
       xml
     }
@@ -194,7 +194,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           functionalReferenceId = Some(id)
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "FunctionalReferenceID").text.trim must be(id)
       xml
     }
@@ -206,7 +206,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           id = Some(id)
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "ID").text.trim must be(id)
       xml
     }
@@ -219,7 +219,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           issueDateTime = Some(IssueDateTime(DateTimeString(formatCode, dateTime)))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "IssueDateTime" \ "DateTimeString").text.trim must be(dateTime)
       (xml \ "Declaration" \ "IssueDateTime" \ "DateTimeString" \ "@formatCode").text.trim must be(formatCode)
       xml
@@ -232,7 +232,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           issueLocationId = Some(id)
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "IssueLocationID").text.trim must be(id)
       xml
     }
@@ -244,7 +244,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           typeCode = Some(code)
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "TypeCode").text.trim must be(code)
       xml
     }
@@ -256,7 +256,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           goodsItemQuantity = Some(quantity)
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "GoodsItemQuantity").text.trim.toInt must be(quantity)
       xml
     }
@@ -268,7 +268,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           declarationOfficeId = Some(id)
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "DeclarationOfficeID").text.trim must be(id)
       xml
     }
@@ -280,7 +280,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           invoiceAmount = Some(InvoiceAmount(amount))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "InvoiceAmount").text.trim must be(amount.toString)
       (xml \ "Declaration" \ "InvoiceAmount" \ "@currencyID").size must be(0)
       xml
@@ -294,7 +294,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           invoiceAmount = Some(InvoiceAmount(amount, Some(currency)))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "InvoiceAmount").text.trim must be(amount.toString)
       (xml \ "Declaration" \ "InvoiceAmount" \ "@currencyID").text.trim must be(currency)
       xml
@@ -307,7 +307,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           loadingListQuantity = Some(quantity)
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "LoadingListQuantity").text.trim.toInt must be(quantity)
       xml
     }
@@ -319,7 +319,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           totalGrossMassMeasure = Some(MassMeasure(total))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "TotalGrossMassMeasure").text.trim must be(total.toString)
       xml
     }
@@ -332,7 +332,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           totalGrossMassMeasure = Some(MassMeasure(total, Some(code)))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "TotalGrossMassMeasure" \ "@unitCode").text.trim must be(code)
       xml
     }
@@ -344,7 +344,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           totalPackageQuantity = Some(total)
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "TotalPackageQuantity").text.trim.toInt must be(total)
       xml
     }
@@ -356,7 +356,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           specificCircumstancesCodeCode = Some(code)
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "SpecificCircumstancesCodeCode").text.trim must be(code)
       xml
     }
@@ -370,7 +370,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Authentication" \ "Authentication").text.trim must be(auth)
       xml
     }
@@ -386,7 +386,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Authentication" \ "Authenticator" \ "Name").text.trim must be(auth)
       xml
     }
@@ -400,7 +400,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Name").text.trim must be(name)
       xml
     }
@@ -414,7 +414,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "ID").text.trim must be(id)
       xml
     }
@@ -430,7 +430,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Address" \ "CityName").text.trim must be(name)
       xml
     }
@@ -446,7 +446,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Address" \ "CountryCode").text.trim must be(code)
       xml
     }
@@ -462,7 +462,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Address" \ "CountrySubDivisionCode").text.trim must be(code)
       xml
     }
@@ -478,7 +478,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Address" \ "CountrySubDivisionName").text.trim must be(name)
       xml
     }
@@ -494,7 +494,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Address" \ "Line").text.trim must be(line)
       xml
     }
@@ -510,7 +510,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Address" \ "PostcodeID").text.trim must be(id)
       xml
     }
@@ -524,7 +524,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalDocument" \ "ID").text.trim must be(id)
       xml
     }
@@ -538,7 +538,7 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalDocument" \ "CategoryCode").text.trim must be(code)
       xml
     }
@@ -552,8 +552,334 @@ class SubmitImportDeclarationMessageProducerSpec extends CustomsPlaySpec with Xm
           ))
         )
       )
-      val xml = connector.produceDeclarationMessage(meta)
+      val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalDocument" \ "TypeCode").text.trim must be(code)
+      xml
+    }
+
+    "include Additional Information Statement Code" in validDeclarationXmlScenario() {
+      val code = randomString(17)
+      val meta = MetaData(
+        Declaration(
+          additionalInformations = Seq(AdditionalInformation(
+            statementCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "AdditionalInformation" \ "StatementCode").text.trim must be(code)
+      xml
+    }
+
+    "include Additional Information Statement Description" in validDeclarationXmlScenario() {
+      val description = randomString(512)
+      val meta = MetaData(
+        Declaration(
+          additionalInformations = Seq(AdditionalInformation(
+            statementDescription = Some(description)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "AdditionalInformation" \ "StatementDescription").text.trim must be(description)
+      xml
+    }
+
+    "include Additional Information Statement Type Code" in validDeclarationXmlScenario() {
+      val code = randomString(3)
+      val meta = MetaData(
+        Declaration(
+          additionalInformations = Seq(AdditionalInformation(
+            statementTypeCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "AdditionalInformation" \ "StatementTypeCode").text.trim must be(code)
+      xml
+    }
+
+    "include Additional Information Pointer Sequence Numeric" in validDeclarationXmlScenario() {
+      val num = randomInt(100000)
+      val meta = MetaData(
+        Declaration(
+          additionalInformations = Seq(AdditionalInformation(
+            pointers = Seq(Pointer(
+              sequenceNumeric = Some(num)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "AdditionalInformation" \ "Pointer" \ "SequenceNumeric").text.trim.toInt must be(num)
+      xml
+    }
+
+    "include Additional Information Pointer Document Section Code" in validDeclarationXmlScenario() {
+      val code = randomString(3)
+      val meta = MetaData(
+        Declaration(
+          additionalInformations = Seq(AdditionalInformation(
+            pointers = Seq(Pointer(
+              documentSectionCode = Some(code)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "AdditionalInformation" \ "Pointer" \ "DocumentSectionCode").text.trim must be(code)
+      xml
+    }
+
+    "include Additional Information Pointer Tag ID" in validDeclarationXmlScenario() {
+      val id = randomString(3)
+      val meta = MetaData(
+        Declaration(
+          additionalInformations = Seq(AdditionalInformation(
+            pointers = Seq(Pointer(
+              tagId = Some(id)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "AdditionalInformation" \ "Pointer" \ "TagID").text.trim must be(id)
+      xml
+    }
+
+    "include Agent name" in validDeclarationXmlScenario() {
+      val name = randomString(70)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            name = Some(name)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Name").text.trim must be(name)
+      xml
+    }
+
+    "include Agent id" in validDeclarationXmlScenario() {
+      val id = randomString(17)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            id = Some(id)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "ID").text.trim must be(id)
+      xml
+    }
+
+    "include Agent function code" in validDeclarationXmlScenario() {
+      val code = randomString(3)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            functionCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "FunctionCode").text.trim must be(code)
+      xml
+    }
+
+    "include Agent Address CityName" in validDeclarationXmlScenario() {
+      val name = randomString(35)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            address = Some(Address(
+              cityName = Some(name)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Address" \ "CityName").text.trim must be(name)
+      xml
+    }
+
+    "include Agent Address CountryCode" in validDeclarationXmlScenario() {
+      val code = randomISO3166Alpha2CountryCode
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            address = Some(Address(
+              countryCode = Some(code)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Address" \ "CountryCode").text.trim must be(code)
+      xml
+    }
+
+    "include Agent Address CountrySubDivisionCode" in validDeclarationXmlScenario() {
+      val code = randomString(9)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            address = Some(Address(
+              countrySubDivisionCode = Some(code)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Address" \ "CountrySubDivisionCode").text.trim must be(code)
+      xml
+    }
+
+    "include Agent Address CountrySubDivisionName" in validDeclarationXmlScenario() {
+      val name = randomString(35)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            address = Some(Address(
+              countrySubDivisionName = Some(name)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Address" \ "CountrySubDivisionName").text.trim must be(name)
+      xml
+    }
+
+    "include Agent Address Line" in validDeclarationXmlScenario() {
+      val line = randomString(35)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            address = Some(Address(
+              line = Some(line)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Address" \ "Line").text.trim must be(line)
+      xml
+    }
+
+    "include Agent Address PostcodeID" in validDeclarationXmlScenario() {
+      val id = randomString(9)
+      val meta = MetaData(
+        Declaration(
+          agent = Some(Agent(
+            address = Some(Address(
+              postcodeId = Some(id)
+            ))
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "Agent" \ "Address" \ "PostcodeID").text.trim must be(id)
+      xml
+    }
+
+    "include Authorisation Holder ID" in validDeclarationXmlScenario() {
+      val id = randomString(17)
+      val meta = MetaData(
+        Declaration(
+          authorisationHolders = Seq(AuthorisationHolder(
+            id = Some(id)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "AuthorisationHolder" \ "ID").text.trim must be(id)
+      xml
+    }
+
+    "include Authorisation Holder category code" in validDeclarationXmlScenario() {
+      val code = randomString(4)
+      val meta = MetaData(
+        Declaration(
+          authorisationHolders = Seq(AuthorisationHolder(
+            categoryCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "AuthorisationHolder" \ "CategoryCode").text.trim must be(code)
+      xml
+    }
+
+    "include Border Transport Means name" in validDeclarationXmlScenario() {
+      val name = randomString(35)
+      val meta = MetaData(
+        Declaration(
+          borderTransportMeans = Some(BorderTransportMeans(
+            name = Some(name)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "BorderTransportMeans" \ "Name").text.trim must be(name)
+      xml
+    }
+
+    "include Border Transport Means id" in validDeclarationXmlScenario() {
+      val id = randomString(35)
+      val meta = MetaData(
+        Declaration(
+          borderTransportMeans = Some(BorderTransportMeans(
+            id = Some(id)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "BorderTransportMeans" \ "ID").text.trim must be(id)
+      xml
+    }
+
+    "include Border Transport Means identification type code" in validDeclarationXmlScenario() {
+      val code = randomString(17)
+      val meta = MetaData(
+        Declaration(
+          borderTransportMeans = Some(BorderTransportMeans(
+            identificationTypeCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "BorderTransportMeans" \ "IdentificationTypeCode").text.trim must be(code)
+      xml
+    }
+
+    "include Border Transport Means registration nationality code" in validDeclarationXmlScenario() {
+      val code = randomISO3166Alpha2CountryCode
+      val meta = MetaData(
+        Declaration(
+          borderTransportMeans = Some(BorderTransportMeans(
+            registrationNationalityCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "BorderTransportMeans" \ "RegistrationNationalityCode").text.trim must be(code)
+      xml
+    }
+
+    "include Border Transport Means mode code" in validDeclarationXmlScenario() {
+      val code = random0To9
+      val meta = MetaData(
+        Declaration(
+          borderTransportMeans = Some(BorderTransportMeans(
+            modeCode = Some(code)
+          ))
+        )
+      )
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "BorderTransportMeans" \ "ModeCode").text.trim.toInt must be(code)
       xml
     }
 
