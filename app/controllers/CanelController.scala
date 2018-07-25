@@ -46,7 +46,7 @@ class CancelController @Inject()(actions: Actions, client: CustomsDeclarationsCo
         "responsibleAgencyName" -> nonEmptyText,
         "agencyAssignedCustomizationVersionCode" -> nonEmptyText,
         "declaration" -> mapping(
-          "functionCode" -> nonEmptyText.verifying("Unknown function code. Must be one of 9, 13, or 14", Set("9", "13", "14").contains(_)),
+          "functionCode" -> nonEmptyText.verifying("Unknown function code. Must be 13", Set("13").contains(_)),
           "functionalReferenceId" -> optional(text(maxLength = 35)),
           "id" -> nonEmptyText(maxLength = 70),
           "submitter" -> mapping(
@@ -54,7 +54,7 @@ class CancelController @Inject()(actions: Actions, client: CustomsDeclarationsCo
             "id" -> text(maxLength = 17)
           )(CancelSubmitterForm.apply)(CancelSubmitterForm.unapply),
           "additionalInformation" -> mapping(
-            "statementDescription" -> nonEmptyText(maxLength = 70),
+            "statementDescription" -> nonEmptyText(maxLength = 512),
             "statementTypeCode" -> optional(text(maxLength = 3)),
             "pointer" -> mapping(
             "documentSectionCode" -> optional(text(maxLength = 3))

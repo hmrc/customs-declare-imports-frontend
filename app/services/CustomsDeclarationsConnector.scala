@@ -39,10 +39,7 @@ SubmitImportDeclarationMessageProducer with CustomsDeclarationsCancellationMessa
 
   def cancelImportDeclaration(metaData: domain.cancellation.MetaData, badgeIdentifier: Option[String] = None)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    Logger.debug("cancel Import declaration client" + appConfig.submitImportDeclarationUri)
     val payload = produceDeclarationCancellationMessage(metaData)
-    Logger.debug("import declaration url is")
-    Logger.debug("URL and payload ------>>>> " + appConfig.cancelImportDeclarationUri + payload)
     post(appConfig.cancelImportDeclarationUri,payload,badgeIdentifier).map(
       _.status == Status.ACCEPTED).recover{
       case error: Throwable =>
