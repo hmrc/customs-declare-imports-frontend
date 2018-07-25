@@ -28,14 +28,18 @@ import uk.gov.hmrc.play.http.ws._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviours {
+class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviours  with CancellationData{
 
   val connector = new CustomsDeclarationsConnector(appConfig, app.injector.instanceOf[HttpClient])
 
-  "submit import declaration" should {
+  "CustomsDeclarationsConnector " should {
 
     "POST metadata to Customs Declarations" in submitDeclarationScenario(MetaData(Declaration())) { resp =>
       resp.futureValue must be(true)
+    }
+
+      "POST declaration cancellation payload successfully" in submitDeclarationCancellationScenario(metadata) { resp =>
+        resp.futureValue must be(true)
     }
 
   }
@@ -56,6 +60,24 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
     val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError)
     val client = new CustomsDeclarationsConnector(appConfig, http)
     test(client.submitImportDeclaration(metaData, badgeIdentifier)(hc, ec))
+  }
+
+  def submitDeclarationCancellationScenario(metaData: domain.cancellation.MetaData,
+                                badgeIdentifier: Option[String] = None,
+                                forceServerError: Boolean = false,
+                                hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
+                               (test: Future[Boolean] => Unit): Unit = {
+    val messageProducer = new CustomsDeclarationsCancellationMessageProducer {}
+    val expectedUrl: String = s"${appConfig.customsDeclarationsEndpoint}${appConfig.cancelImportDeclarationUri}"
+    val expectedBody: String = messageProducer.produceDeclarationCancellationMessage(metaData).mkString
+    val expectedHeaders: Map[String, String] = Map(
+      "X-Client-ID" -> appConfig.developerHubClientId,
+      HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
+      HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
+    ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
+    val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError)
+    val client = new CustomsDeclarationsConnector(appConfig, http)
+    test(client.cancelImportDeclaration(metaData, badgeIdentifier)(hc, ec))
   }
 
   class MockHttpClient(expectedUrl: String, expectedBody: String, expectedHeaders: Map[String, String], forceServerError: Boolean = false) extends HttpClient with WSGet with WSPut with WSPost with WSDelete with WSPatch {

@@ -20,6 +20,7 @@ import com.google.inject.Inject
 import config.AppConfig
 import domain.declaration._
 import javax.inject.Singleton
+import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames, Status}
 import play.api.mvc.Codec
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
@@ -29,14 +30,22 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.Elem
 
 @Singleton
-class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends SubmissionMessageProducer {
+class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends
+SubmitImportDeclarationMessageProducer with CustomsDeclarationsCancellationMessageProducer {
 
   def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     post(appConfig.submitImportDeclarationUri, produceDeclarationMessage(metaData), badgeIdentifier).map(_.status == Status.ACCEPTED)
   }
 
-  // TODO implement cancel import declaration in CustomsDeclarationClient
-//  def cancelImportDeclaration(someType: SomeType, badgeIdentifier: Option[String] = None): Future[Boolean or CustomsDeclarationsResponse] = ???
+  def cancelImportDeclaration(metaData: domain.cancellation.MetaData, badgeIdentifier: Option[String] = None)
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    val payload = produceDeclarationCancellationMessage(metaData)
+    post(appConfig.cancelImportDeclarationUri,payload,badgeIdentifier).map(
+      _.status == Status.ACCEPTED).recover{
+      case error: Throwable =>
+        Logger.error(s"Error in submitting declaratoin cancellation to API  with the error ${error.getMessage}" ); false
+    }
+  }
 
   //noinspection ConvertExpressionToSAM
   private implicit val responseReader: HttpReads[CustomsDeclarationsResponse] = new HttpReads[CustomsDeclarationsResponse] {
@@ -52,6 +61,7 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: H
       HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
     ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
+    Logger.debug("URL is " + s"${appConfig.customsDeclarationsEndpoint}$uri")
     httpClient.POSTString[CustomsDeclarationsResponse](s"${appConfig.customsDeclarationsEndpoint}$uri", body.mkString, headers)(responseReader, hc, ec)
   }
 

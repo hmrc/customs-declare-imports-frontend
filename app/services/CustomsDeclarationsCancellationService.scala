@@ -21,8 +21,6 @@ import domain.cancellation._
 import scala.xml.{NodeSeq, Elem}
 
 
-class CustomsDeclarationsCancellationService extends CustomsDeclarationsCancellationMessageProducer
-
 trait CustomsDeclarationsCancellationMessageProducer {
   private[services] def produceDeclarationCancellationMessage(metaData: MetaData): Elem = <md:MetaData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                                                                            xmlns="urn:wco:datamodel:WCO:DEC-DMS:2"
@@ -76,8 +74,7 @@ trait CustomsDeclarationsCancellationMessageProducer {
      declaration.functionalReferenceID.map(refId => <FunctionalReferenceID>{refId}</FunctionalReferenceID>) ++
       <ID>{declaration.id}</ID> ++
       <TypeCode>{declaration.typeCode}</TypeCode> ++
-      declaration.submitter.map (
-      res => <Submitter>{res.name.map(name => <Name>{name}</Name>).getOrElse("")}<ID>{res.ID}</ID></Submitter>) ++
+      <Submitter>{declaration.submitter.name.map(name=> <Name>{name}</Name>).getOrElse("")}{ <ID>{declaration.submitter.ID}</ID>}</Submitter> ++
       {additionalInformation(declaration.additionalInformation)} ++ {amendment(declaration.amendment)}
   }
 

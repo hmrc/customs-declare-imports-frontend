@@ -19,12 +19,10 @@ package services
 import domain.cancellation._
 import uk.gov.hmrc.customs.test.{XmlBehaviours, CustomsPlaySpec}
 
-import scala.xml.NodeSeq
-
 
 class CustomsDeclarationsCancellationMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours with CancellationData{
 
-    val service = new CustomsDeclarationsCancellationService()
+    val service = new CustomsDeclarationsCancellationMessageProducer {}
 
   "CancellationService" should {
     "include WCODataModelVersionCode" in validCancellationDeclarationXml() {
@@ -57,6 +55,7 @@ class CustomsDeclarationsCancellationMessageProducerSpec extends CustomsPlaySpec
     "include Submitter in Declaration"  in validCancellationDeclarationXml() {
       val meta = metadata
       val xml = service.produceDeclarationCancellationMessage(meta)
+      println(xml \\"Submitter")
       (xml \\ "Submitter").xml_sameElements(expectedSubmitter) mustBe true
 
       xml
@@ -87,7 +86,7 @@ trait CancellationData extends CustomsPlaySpec{
   val changeReasonCode = randomString(3)
   val statementTypeCode = Some(randomString(3))
   val additionalInfo = AdditionalInformation(statementDesc,statementTypeCode,Some(Pointer(Some(documentSectionCode))))
-  val submitter = Some(Submitter(Some("submitter-1"),"1111"))
+  val submitter = Submitter(Some("submitter-1"),"1111")
   val pointer = Pointer(Some("sectionCode-1"))
   val amendment = Amendment(changeReasonCode)
   //Functioanl code can only be  13, for cancellation
@@ -99,7 +98,7 @@ trait CancellationData extends CustomsPlaySpec{
   val expectedSubmitter = <Submitter><Name>submitter-1</Name><ID>1111</ID></Submitter>
   val expAmendmentXml = <Amendment><ChangeReasonCode>{amendment.changeReasonCode}</ChangeReasonCode></Amendment>
 
-  val metadata = MetaData("versionCode1","wCOTypeName1","agencyVersionCode1","textType1",
+  val metadata:MetaData = MetaData("versionCode1","wCOTypeName1","agencyVersionCode1","textType1",
     "agencyAssignedCustomizationVersionCode1",declaration)
 
 }
