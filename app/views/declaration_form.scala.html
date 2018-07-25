@@ -399,7 +399,6 @@
                     '_inputClass -> "form-control")
                 </div>
             </fieldset>
-
             <fieldset class="form-section" style="border: 1px dotted black;
                 padding: 1em">
                 <legend class="form-label-bold">Border Transport means</legend>
@@ -438,6 +437,23 @@
                 @helpers.input(form("metaData.declaration.hack.borderTransportMeans.modeCode"),
                     '_label -> "Border Transport Means Mode Code",
                     '_inputHint -> "/MetaData/Declaration/BorderTransportMeans/ModeCode in XML (0..1). An unsigned integer in range 0-9 inclusive.",
+                    '_inputClass -> "form-control")
+                </div>
+            </fieldset>
+            <fieldset class="form-section" style="border: 1px dotted black;
+                padding: 1em">
+                <legend class="form-label-bold">Currency Exchange</legend>
+                <p>There can be 0..* CurrencyExchange elements as a child of a Declaration element.</p>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.currencyExchange.currencyTypeCode"),
+                    '_label -> "Currency Exchange Currency Type Code",
+                    '_inputHint -> "/MetaData/Declaration/CurrencyExchange/CurrencyTypeCode in XML (0..1). An ISO-4217 currency code.",
+                    '_inputClass -> "form-control")
+                </div>
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.hack.currencyExchange.rateNumeric"),
+                    '_label -> "Currency Exchange Rate Numeric",
+                    '_inputHint -> "/MetaData/Declaration/CurrencyExchange/RateNumeric in XML (0..1). A decimal with a scale of 12 and a precision of 5.",
                     '_inputClass -> "form-control")
                 </div>
             </fieldset>

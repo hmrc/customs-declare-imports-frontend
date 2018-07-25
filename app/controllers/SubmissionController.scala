@@ -122,7 +122,11 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
               "typeCode" -> optional(text(maxLength = 4)),
               "registrationNationalityCode" -> optional(text(maxLength = 2)),
               "modeCode" -> optional(number(min = 0, max = 9))
-            )(BorderTransportMeansForm.apply)(BorderTransportMeansForm.unapply)
+            )(BorderTransportMeansForm.apply)(BorderTransportMeansForm.unapply),
+            "currencyExchange" -> mapping(
+              "currencyTypeCode" -> optional(text(maxLength = 3)),
+              "rateNumeric" -> optional(bigDecimal(precision = 12, scale = 5))
+            )(CurrencyExchangeForm.apply)(CurrencyExchangeForm.unapply)
           )(MassiveHackToCreateHugeForm.apply)(MassiveHackToCreateHugeForm.unapply)
         )(DeclarationForm.apply)(DeclarationForm.unapply).verifying("Acceptance Date Time Format Code must be specified when Acceptance Date Time is provided", form => {
           form.acceptanceDateTime.isEmpty || (form.acceptanceDateTime.isDefined && form.acceptanceDateTimeFormatCode.isDefined)
@@ -148,6 +152,17 @@ class SubmissionController @Inject()(actions: Actions, client: CustomsDeclaratio
       }
     )
   }
+
+}
+
+case class CurrencyExchangeForm(currencyTypeCode: Option[String] = None,
+                                rateNumeric: Option[BigDecimal] = None) {
+
+  def toCurrencyExchange: Option[CurrencyExchange] = if (anyDefined) Some(CurrencyExchange(
+    currencyTypeCode, rateNumeric
+  )) else None
+
+  private def anyDefined: Boolean = currencyTypeCode.isDefined || rateNumeric.isDefined
 
 }
 
@@ -256,7 +271,8 @@ case class DeclarationForm(acceptanceDateTime: Option[String] = None,
     additionalInformations = hack.additionalInformation.toAdditionalInformation.toSeq,
     agent = hack.agent.toAgent,
     authorisationHolders = hack.authorisationHolder.toAuthorisationHolder.toSeq,
-    borderTransportMeans = hack.borderTransportMeans.toBorderTransportMeans
+    borderTransportMeans = hack.borderTransportMeans.toBorderTransportMeans,
+    currencyExchanges = hack.currencyExchange.toCurrencyExchange.toSeq
   )
 
 }
@@ -322,7 +338,8 @@ case class DeclarationAdditionalDocumentForm(id: Option[String] = None, // max 7
 case class MassiveHackToCreateHugeForm(additionalInformation: AdditionalInformationForm = AdditionalInformationForm(),
                                        agent: AgentForm = AgentForm(),
                                        authorisationHolder: AuthorisationHolderForm = AuthorisationHolderForm(),
-                                       borderTransportMeans: BorderTransportMeansForm = BorderTransportMeansForm())
+                                       borderTransportMeans: BorderTransportMeansForm = BorderTransportMeansForm(),
+                                       currencyExchange: CurrencyExchangeForm = CurrencyExchangeForm())
 
 case class AdditionalInformationForm(statementCode: Option[String] = None,
                                      statementDescription: Option[String] = None,

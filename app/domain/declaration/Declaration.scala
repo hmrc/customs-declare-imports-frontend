@@ -48,7 +48,7 @@ case class Declaration(acceptanceDateTime: Option[AcceptanceDateTime] = None, //
                        amendments: Seq[String] = Seq.empty, //  name="Amendment" minOccurs="0" maxOccurs="unbounded"
                        authorisationHolders: Seq[AuthorisationHolder] = Seq.empty, // name="AuthorisationHolder" minOccurs="0" maxOccurs="unbounded"
                        borderTransportMeans: Option[BorderTransportMeans] = None, // name="BorderTransportMeans" minOccurs="0" maxOccurs="1"
-                       currencyExchanges: Seq[String] = Seq.empty, // name="CurrencyExchange" minOccurs="0" maxOccurs="unbounded"
+                       currencyExchanges: Seq[CurrencyExchange] = Seq.empty, // name="CurrencyExchange" minOccurs="0" maxOccurs="unbounded"
                        declarant: Option[Declarant] = None, // name="Declarant" minOccurs="0" maxOccurs="1"
                        exitOffice: Option[String] = None, // name="ExitOffice" minOccurs="0" maxOccurs="1"
                        exporter: Option[Exporter] = None, // name="Exporter" minOccurs="0" maxOccurs="1"
@@ -56,6 +56,9 @@ case class Declaration(acceptanceDateTime: Option[AcceptanceDateTime] = None, //
                        obligationGuarantees: Seq[ObligationGuarantee] = Seq.empty, // name="ObligationGuarantee" minOccurs="0" maxOccurs="unbounded"
                        presentationOffice: Option[String] = None, // name="PresentationOffice" minOccurs="0" maxOccurs="1"
                        supervisingOffice: Option[SupervisingOffice] = None) // name="SupervisingOffice" minOccurs="0" maxOccurs="1"
+
+case class CurrencyExchange(currencyTypeCode: Option[String] = None, // max 3 chars [a-zA-Z] ISO 4217 3-alpha code
+                           rateNumeric: Option[BigDecimal] = None) // decimal with scale of 12 and precision of 5
 
 case class Agent(name: Option[String] = None, // max 70 chars
                  id: Option[String] = None, // max 17 chars
