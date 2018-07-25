@@ -118,6 +118,10 @@ class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
       cfg.isFeatureOn(Feature.start) must be (false)
     }
 
+    "return true for cancel feature enabled" in featureScenario(Feature.cancel, FeatureStatus.enabled) {
+      cfg.isFeatureOn(Feature.cancel) must be (true)
+    }
+
   }
 
 }
