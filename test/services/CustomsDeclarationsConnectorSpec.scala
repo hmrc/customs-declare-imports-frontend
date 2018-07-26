@@ -34,7 +34,7 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
 
   "CustomsDeclarationsConnector " should {
 
-    "POST metadata to Customs Declarations" in submitDeclarationScenario(MetaData(Declaration())) { resp =>
+    "POST metadata to Customs Declarations" in submitDeclarationScenario(MetaData(declaration = Declaration())) { resp =>
       resp.futureValue must be(true)
     }
 

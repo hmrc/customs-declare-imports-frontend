@@ -18,7 +18,6 @@ package services
 
 import domain.declaration._
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
@@ -28,20 +27,14 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include WCODataModelVersionCode" in validDeclarationXmlScenario() {
       val version = "3.6"
-      val meta = MetaData(
-        randomValidDeclaration,
-        wcoDataModelVersionCode = Some(version)
-      )
+      val meta = MetaData(wcoDataModelVersionCode = Some(version), declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "WCODataModelVersionCode").text.trim must be(version)
       xml
     }
 
     "not include WCODataModelVersionCode" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration,
-        wcoDataModelVersionCode = None
-      )
+      val meta = MetaData(wcoDataModelVersionCode = None, declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "WCODataModelVersionCode").size must be(0)
       xml
@@ -49,20 +42,14 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include WCOTypeName" in validDeclarationXmlScenario() {
       val name = "DEC"
-      val meta = MetaData(
-        randomValidDeclaration,
-        wcoTypeName = Some(name)
-      )
+      val meta = MetaData(wcoTypeName = Some(name), declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "WCOTypeName").text.trim must be(name)
       xml
     }
 
     "not include WCOTypeName" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration,
-        wcoTypeName = None
-      )
+      val meta = MetaData(wcoTypeName = None, declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "WCOTypeName").size must be(0)
       xml
@@ -70,20 +57,14 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include ResponsibleCountryCode" in validDeclarationXmlScenario() {
       val code = "GB"
-      val meta = MetaData(
-        randomValidDeclaration,
-        responsibleCountryCode = Some(code)
-      )
+      val meta = MetaData(responsibleCountryCode = Some(code), declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "ResponsibleCountryCode").text.trim must be(code)
       xml
     }
 
     "not include ResponsibleCountryCode" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration,
-        responsibleCountryCode = None
-      )
+      val meta = MetaData(responsibleCountryCode = None, declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "ResponsibleCountryCode").size must be(0)
       xml
@@ -91,20 +72,14 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include ResponsibleAgencyName" in validDeclarationXmlScenario() {
       val agency = "HMRC"
-      val meta = MetaData(
-        randomValidDeclaration,
-        responsibleAgencyName = Some(agency)
-      )
+      val meta = MetaData(responsibleAgencyName = Some(agency), declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "ResponsibleAgencyName").text.trim must be(agency)
       xml
     }
 
     "not include ResponsibleAgencyName" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration,
-        responsibleAgencyName = None
-      )
+      val meta = MetaData(responsibleAgencyName = None, declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "ResponsibleAgencyName").size must be(0)
       xml
@@ -112,20 +87,14 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include AgencyAssignedCustomizationCode" in validDeclarationXmlScenario() {
       val code = "foo"
-      val meta = MetaData(
-        randomValidDeclaration,
-        agencyAssignedCustomizationCode = Some(code)
-      )
+      val meta = MetaData(agencyAssignedCustomizationCode = Some(code), declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationCode").text.trim must be(code)
       xml
     }
 
     "not include AgencyAssignedCustomizationCode" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration,
-        agencyAssignedCustomizationCode = None
-      )
+      val meta = MetaData(agencyAssignedCustomizationCode = None, declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationCode").size must be(0)
       xml
@@ -133,29 +102,21 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include AgencyAssignedCustomizationVersionCode" in validDeclarationXmlScenario() {
       val code = "v2.1"
-      val meta = MetaData(
-        randomValidDeclaration,
-        agencyAssignedCustomizationVersionCode = Some(code)
-      )
+      val meta = MetaData(agencyAssignedCustomizationVersionCode = Some(code), declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationVersionCode").text.trim must be(code)
       xml
     }
 
     "not include AgencyAssignedCustomizationVersionCode" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration,
-        agencyAssignedCustomizationVersionCode = None
-      )
+      val meta = MetaData(agencyAssignedCustomizationVersionCode = None, declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "AgencyAssignedCustomizationVersionCode").size must be(0)
       xml
     }
 
     "always include Declaration" in validDeclarationXmlScenario() {
-      val meta = MetaData(
-        randomValidDeclaration
-      )
+      val meta = MetaData(declaration = randomValidDeclaration)
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration").size must be(1)
       xml
@@ -164,11 +125,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include AcceptanceDateTime" in validDeclarationXmlScenario() {
       val formatCode = randomDateTimeFormatCode
       val dateTime = randomDateTimeString
-      val meta = MetaData(
-        Declaration(
-          acceptanceDateTime = Some(AcceptanceDateTime(DateTimeString(formatCode, dateTime)))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                acceptanceDateTime = Some(AcceptanceDateTime(DateTimeString(formatCode, dateTime)))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AcceptanceDateTime" \ "DateTimeString").text.trim must be(dateTime)
       (xml \ "Declaration" \ "AcceptanceDateTime" \ "DateTimeString" \ "@formatCode").text.trim must be(formatCode)
@@ -177,11 +136,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include FunctionCode" in validDeclarationXmlScenario() {
       val code = randomDeclarationFunctionCode
-      val meta = MetaData(
-        Declaration(
-          functionCode = Some(code)
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                functionCode = Some(code)
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "FunctionCode").text.trim must be(code)
       xml
@@ -189,11 +146,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include FunctionalReferenceID" in validDeclarationXmlScenario() {
       val id = randomString(35)
-      val meta = MetaData(
-        Declaration(
-          functionalReferenceId = Some(id)
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                functionalReferenceId = Some(id)
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "FunctionalReferenceID").text.trim must be(id)
       xml
@@ -201,11 +156,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include ID" in validDeclarationXmlScenario() {
       val id = randomString(70)
-      val meta = MetaData(
-        Declaration(
-          id = Some(id)
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                id = Some(id)
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "ID").text.trim must be(id)
       xml
@@ -214,11 +167,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include IssueDateTime" in validDeclarationXmlScenario() {
       val formatCode = randomDateTimeFormatCode
       val dateTime = randomDateTimeString
-      val meta = MetaData(
-        Declaration(
-          issueDateTime = Some(IssueDateTime(DateTimeString(formatCode, dateTime)))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                issueDateTime = Some(IssueDateTime(DateTimeString(formatCode, dateTime)))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "IssueDateTime" \ "DateTimeString").text.trim must be(dateTime)
       (xml \ "Declaration" \ "IssueDateTime" \ "DateTimeString" \ "@formatCode").text.trim must be(formatCode)
@@ -227,11 +178,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include IssueLocationID" in validDeclarationXmlScenario() {
       val id = randomString(5)
-      val meta = MetaData(
-        Declaration(
-          issueLocationId = Some(id)
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                issueLocationId = Some(id)
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "IssueLocationID").text.trim must be(id)
       xml
@@ -239,11 +188,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include TypeCode" in validDeclarationXmlScenario() {
       val code = randomString(3)
-      val meta = MetaData(
-        Declaration(
-          typeCode = Some(code)
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                typeCode = Some(code)
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "TypeCode").text.trim must be(code)
       xml
@@ -251,11 +198,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include GoodsItemQuantity" in validDeclarationXmlScenario() {
       val quantity = randomInt(100000)
-      val meta = MetaData(
-        Declaration(
-          goodsItemQuantity = Some(quantity)
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                goodsItemQuantity = Some(quantity)
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "GoodsItemQuantity").text.trim.toInt must be(quantity)
       xml
@@ -263,11 +208,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include DeclarationOfficeID" in validDeclarationXmlScenario() {
       val id = randomString(17)
-      val meta = MetaData(
-        Declaration(
-          declarationOfficeId = Some(id)
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                declarationOfficeId = Some(id)
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "DeclarationOfficeID").text.trim must be(id)
       xml
@@ -275,11 +218,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include InvoiceAmount without currencyID attribute" in validDeclarationXmlScenario() {
       val amount = randomBigDecimal
-      val meta = MetaData(
-        Declaration(
-          invoiceAmount = Some(InvoiceAmount(amount))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                invoiceAmount = Some(InvoiceAmount(value = Some(amount)))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "InvoiceAmount").text.trim must be(amount.toString)
       (xml \ "Declaration" \ "InvoiceAmount" \ "@currencyID").size must be(0)
@@ -289,11 +230,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include InvoiceAmount with currencyID attribute" in validDeclarationXmlScenario() {
       val amount = randomBigDecimal
       val currency = randomISO4217CurrencyCode
-      val meta = MetaData(
-        Declaration(
-          invoiceAmount = Some(InvoiceAmount(amount, Some(currency)))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                invoiceAmount = Some(InvoiceAmount(Some(currency), Some(amount)))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "InvoiceAmount").text.trim must be(amount.toString)
       (xml \ "Declaration" \ "InvoiceAmount" \ "@currencyID").text.trim must be(currency)
@@ -302,11 +241,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include LoadingListQuantiy" in validDeclarationXmlScenario() {
       val quantity = randomInt(100000)
-      val meta = MetaData(
-        Declaration(
-          loadingListQuantity = Some(quantity)
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                loadingListQuantity = Some(quantity)
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "LoadingListQuantity").text.trim.toInt must be(quantity)
       xml
@@ -314,11 +251,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include TotalGrossMassMeasure" in validDeclarationXmlScenario() {
       val total = randomBigDecimal
-      val meta = MetaData(
-        Declaration(
-          totalGrossMassMeasure = Some(MassMeasure(total))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                totalGrossMassMeasure = Some(MassMeasure(value = Some(total)))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "TotalGrossMassMeasure").text.trim must be(total.toString)
       xml
@@ -327,11 +262,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include total gross mass measure unit code" in validDeclarationXmlScenario() {
       val total = randomBigDecimal
       val code = randomString(3)
-      val meta = MetaData(
-        Declaration(
-          totalGrossMassMeasure = Some(MassMeasure(total, Some(code)))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                totalGrossMassMeasure = Some(MassMeasure(Some(code), Some(total)))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "TotalGrossMassMeasure" \ "@unitCode").text.trim must be(code)
       xml
@@ -339,11 +272,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include TotalPackageQuantity" in validDeclarationXmlScenario() {
       val total = randomInt(100000000)
-      val meta = MetaData(
-        Declaration(
-          totalPackageQuantity = Some(total)
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                totalPackageQuantity = Some(total)
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "TotalPackageQuantity").text.trim.toInt must be(total)
       xml
@@ -351,11 +282,9 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include SpecificCircumstancesCodeCode" in validDeclarationXmlScenario() {
       val code = randomString(3)
-      val meta = MetaData(
-        Declaration(
-          specificCircumstancesCodeCode = Some(code)
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                specificCircumstancesCodeCode = Some(code)
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "SpecificCircumstancesCodeCode").text.trim must be(code)
       xml
@@ -363,13 +292,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Authentication Authentication" in validDeclarationXmlScenario() {
       val auth = randomString(255)
-      val meta = MetaData(
-        Declaration(
-          authentication = Some(Authentication(
-            authentication = Some(auth)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                authentication = Some(Authentication(
+                  authentication = Some(auth)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Authentication" \ "Authentication").text.trim must be(auth)
       xml
@@ -377,15 +304,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Authentication Authenticator Name" in validDeclarationXmlScenario() {
       val auth = randomString(70)
-      val meta = MetaData(
-        Declaration(
-          authentication = Some(Authentication(
-            authenticator = Some(Authenticator(
-              name = Some(auth)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                authentication = Some(Authentication(
+                  authenticator = Some(Authenticator(
+                    name = Some(auth)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Authentication" \ "Authenticator" \ "Name").text.trim must be(auth)
       xml
@@ -393,13 +318,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Submitter Name" in validDeclarationXmlScenario() {
       val name = randomString(70)
-      val meta = MetaData(
-        Declaration(
-          submitter = Some(Submitter(
-            name = Some(name)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                submitter = Some(Submitter(
+                  name = Some(name)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Name").text.trim must be(name)
       xml
@@ -407,13 +330,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Submitter ID" in validDeclarationXmlScenario() {
       val id = randomString(17)
-      val meta = MetaData(
-        Declaration(
-          submitter = Some(Submitter(
-            id = Some(id)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                submitter = Some(Submitter(
+                  id = Some(id)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "ID").text.trim must be(id)
       xml
@@ -421,15 +342,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Submitter Address CityName" in validDeclarationXmlScenario() {
       val name = randomString(35)
-      val meta = MetaData(
-        Declaration(
-          submitter = Some(Submitter(
-            address = Some(Address(
-              cityName = Some(name)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                submitter = Some(Submitter(
+                  address = Some(Address(
+                    cityName = Some(name)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Address" \ "CityName").text.trim must be(name)
       xml
@@ -437,15 +356,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Submitter Address CountryCode" in validDeclarationXmlScenario() {
       val code = randomISO3166Alpha2CountryCode
-      val meta = MetaData(
-        Declaration(
-          submitter = Some(Submitter(
-            address = Some(Address(
-              countryCode = Some(code)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                submitter = Some(Submitter(
+                  address = Some(Address(
+                    countryCode = Some(code)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Address" \ "CountryCode").text.trim must be(code)
       xml
@@ -453,15 +370,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Submitter Address CountrySubDivisionCode" in validDeclarationXmlScenario() {
       val code = randomString(9)
-      val meta = MetaData(
-        Declaration(
-          submitter = Some(Submitter(
-            address = Some(Address(
-              countrySubDivisionCode = Some(code)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                submitter = Some(Submitter(
+                  address = Some(Address(
+                    countrySubDivisionCode = Some(code)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Address" \ "CountrySubDivisionCode").text.trim must be(code)
       xml
@@ -469,15 +384,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Submitter Address CountrySubDivisionName" in validDeclarationXmlScenario() {
       val name = randomString(35)
-      val meta = MetaData(
-        Declaration(
-          submitter = Some(Submitter(
-            address = Some(Address(
-              countrySubDivisionName = Some(name)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                submitter = Some(Submitter(
+                  address = Some(Address(
+                    countrySubDivisionName = Some(name)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Address" \ "CountrySubDivisionName").text.trim must be(name)
       xml
@@ -485,15 +398,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Submitter Address Line" in validDeclarationXmlScenario() {
       val line = randomString(35)
-      val meta = MetaData(
-        Declaration(
-          submitter = Some(Submitter(
-            address = Some(Address(
-              line = Some(line)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                submitter = Some(Submitter(
+                  address = Some(Address(
+                    line = Some(line)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Address" \ "Line").text.trim must be(line)
       xml
@@ -501,15 +412,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Submitter Address PostcodeID" in validDeclarationXmlScenario() {
       val id = randomString(9)
-      val meta = MetaData(
-        Declaration(
-          submitter = Some(Submitter(
-            address = Some(Address(
-              postcodeId = Some(id)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                submitter = Some(Submitter(
+                  address = Some(Address(
+                    postcodeId = Some(id)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Submitter" \ "Address" \ "PostcodeID").text.trim must be(id)
       xml
@@ -517,13 +426,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Additional Document ID" in validDeclarationXmlScenario() {
       val id = randomString(70)
-      val meta = MetaData(
-        Declaration(
-          additionalDocuments = Seq(AdditionalDocument(
-            id = Some(id)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                additionalDocuments = Seq(AdditionalDocument(
+                  id = Some(id)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalDocument" \ "ID").text.trim must be(id)
       xml
@@ -531,13 +438,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Additional Document CategoryCode" in validDeclarationXmlScenario() {
       val code = randomString(3)
-      val meta = MetaData(
-        Declaration(
-          additionalDocuments = Seq(AdditionalDocument(
-            categoryCode = Some(code)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                additionalDocuments = Seq(AdditionalDocument(
+                  categoryCode = Some(code)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalDocument" \ "CategoryCode").text.trim must be(code)
       xml
@@ -545,13 +450,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Additional Document TypeCode" in validDeclarationXmlScenario() {
       val code = randomString(3)
-      val meta = MetaData(
-        Declaration(
-          additionalDocuments = Seq(AdditionalDocument(
-            typeCode = Some(code)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                additionalDocuments = Seq(AdditionalDocument(
+                  typeCode = Some(code)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalDocument" \ "TypeCode").text.trim must be(code)
       xml
@@ -559,13 +462,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Additional Information Statement Code" in validDeclarationXmlScenario() {
       val code = randomString(17)
-      val meta = MetaData(
-        Declaration(
-          additionalInformations = Seq(AdditionalInformation(
-            statementCode = Some(code)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                additionalInformations = Seq(AdditionalInformation(
+                  statementCode = Some(code)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalInformation" \ "StatementCode").text.trim must be(code)
       xml
@@ -573,13 +474,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Additional Information Statement Description" in validDeclarationXmlScenario() {
       val description = randomString(512)
-      val meta = MetaData(
-        Declaration(
-          additionalInformations = Seq(AdditionalInformation(
-            statementDescription = Some(description)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                additionalInformations = Seq(AdditionalInformation(
+                  statementDescription = Some(description)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalInformation" \ "StatementDescription").text.trim must be(description)
       xml
@@ -587,13 +486,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Additional Information Statement Type Code" in validDeclarationXmlScenario() {
       val code = randomString(3)
-      val meta = MetaData(
-        Declaration(
-          additionalInformations = Seq(AdditionalInformation(
-            statementTypeCode = Some(code)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                additionalInformations = Seq(AdditionalInformation(
+                  statementTypeCode = Some(code)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalInformation" \ "StatementTypeCode").text.trim must be(code)
       xml
@@ -601,15 +498,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Additional Information Pointer Sequence Numeric" in validDeclarationXmlScenario() {
       val num = randomInt(100000)
-      val meta = MetaData(
-        Declaration(
-          additionalInformations = Seq(AdditionalInformation(
-            pointers = Seq(Pointer(
-              sequenceNumeric = Some(num)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                additionalInformations = Seq(AdditionalInformation(
+                  pointers = Seq(Pointer(
+                    sequenceNumeric = Some(num)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalInformation" \ "Pointer" \ "SequenceNumeric").text.trim.toInt must be(num)
       xml
@@ -617,15 +512,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Additional Information Pointer Document Section Code" in validDeclarationXmlScenario() {
       val code = randomString(3)
-      val meta = MetaData(
-        Declaration(
-          additionalInformations = Seq(AdditionalInformation(
-            pointers = Seq(Pointer(
-              documentSectionCode = Some(code)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                additionalInformations = Seq(AdditionalInformation(
+                  pointers = Seq(Pointer(
+                    documentSectionCode = Some(code)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalInformation" \ "Pointer" \ "DocumentSectionCode").text.trim must be(code)
       xml
@@ -633,15 +526,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Additional Information Pointer Tag ID" in validDeclarationXmlScenario() {
       val id = randomString(3)
-      val meta = MetaData(
-        Declaration(
-          additionalInformations = Seq(AdditionalInformation(
-            pointers = Seq(Pointer(
-              tagId = Some(id)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                additionalInformations = Seq(AdditionalInformation(
+                  pointers = Seq(Pointer(
+                    tagId = Some(id)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AdditionalInformation" \ "Pointer" \ "TagID").text.trim must be(id)
       xml
@@ -649,13 +540,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Agent name" in validDeclarationXmlScenario() {
       val name = randomString(70)
-      val meta = MetaData(
-        Declaration(
-          agent = Some(Agent(
-            name = Some(name)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                agent = Some(Agent(
+                  name = Some(name)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Agent" \ "Name").text.trim must be(name)
       xml
@@ -663,13 +552,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Agent id" in validDeclarationXmlScenario() {
       val id = randomString(17)
-      val meta = MetaData(
-        Declaration(
-          agent = Some(Agent(
-            id = Some(id)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                agent = Some(Agent(
+                  id = Some(id)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Agent" \ "ID").text.trim must be(id)
       xml
@@ -677,13 +564,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Agent function code" in validDeclarationXmlScenario() {
       val code = randomString(3)
-      val meta = MetaData(
-        Declaration(
-          agent = Some(Agent(
-            functionCode = Some(code)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                agent = Some(Agent(
+                  functionCode = Some(code)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Agent" \ "FunctionCode").text.trim must be(code)
       xml
@@ -691,15 +576,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Agent Address CityName" in validDeclarationXmlScenario() {
       val name = randomString(35)
-      val meta = MetaData(
-        Declaration(
-          agent = Some(Agent(
-            address = Some(Address(
-              cityName = Some(name)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                agent = Some(Agent(
+                  address = Some(Address(
+                    cityName = Some(name)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Agent" \ "Address" \ "CityName").text.trim must be(name)
       xml
@@ -707,15 +590,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Agent Address CountryCode" in validDeclarationXmlScenario() {
       val code = randomISO3166Alpha2CountryCode
-      val meta = MetaData(
-        Declaration(
-          agent = Some(Agent(
-            address = Some(Address(
-              countryCode = Some(code)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                agent = Some(Agent(
+                  address = Some(Address(
+                    countryCode = Some(code)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Agent" \ "Address" \ "CountryCode").text.trim must be(code)
       xml
@@ -723,15 +604,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Agent Address CountrySubDivisionCode" in validDeclarationXmlScenario() {
       val code = randomString(9)
-      val meta = MetaData(
-        Declaration(
-          agent = Some(Agent(
-            address = Some(Address(
-              countrySubDivisionCode = Some(code)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                agent = Some(Agent(
+                  address = Some(Address(
+                    countrySubDivisionCode = Some(code)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Agent" \ "Address" \ "CountrySubDivisionCode").text.trim must be(code)
       xml
@@ -739,15 +618,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Agent Address CountrySubDivisionName" in validDeclarationXmlScenario() {
       val name = randomString(35)
-      val meta = MetaData(
-        Declaration(
-          agent = Some(Agent(
-            address = Some(Address(
-              countrySubDivisionName = Some(name)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                agent = Some(Agent(
+                  address = Some(Address(
+                    countrySubDivisionName = Some(name)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Agent" \ "Address" \ "CountrySubDivisionName").text.trim must be(name)
       xml
@@ -755,15 +632,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Agent Address Line" in validDeclarationXmlScenario() {
       val line = randomString(35)
-      val meta = MetaData(
-        Declaration(
-          agent = Some(Agent(
-            address = Some(Address(
-              line = Some(line)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                agent = Some(Agent(
+                  address = Some(Address(
+                    line = Some(line)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Agent" \ "Address" \ "Line").text.trim must be(line)
       xml
@@ -771,15 +646,13 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Agent Address PostcodeID" in validDeclarationXmlScenario() {
       val id = randomString(9)
-      val meta = MetaData(
-        Declaration(
-          agent = Some(Agent(
-            address = Some(Address(
-              postcodeId = Some(id)
-            ))
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                agent = Some(Agent(
+                  address = Some(Address(
+                    postcodeId = Some(id)
+                  ))
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "Agent" \ "Address" \ "PostcodeID").text.trim must be(id)
       xml
@@ -787,13 +660,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Authorisation Holder ID" in validDeclarationXmlScenario() {
       val id = randomString(17)
-      val meta = MetaData(
-        Declaration(
-          authorisationHolders = Seq(AuthorisationHolder(
-            id = Some(id)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                authorisationHolders = Seq(AuthorisationHolder(
+                  id = Some(id)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AuthorisationHolder" \ "ID").text.trim must be(id)
       xml
@@ -801,13 +672,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Authorisation Holder category code" in validDeclarationXmlScenario() {
       val code = randomString(4)
-      val meta = MetaData(
-        Declaration(
-          authorisationHolders = Seq(AuthorisationHolder(
-            categoryCode = Some(code)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                authorisationHolders = Seq(AuthorisationHolder(
+                  categoryCode = Some(code)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AuthorisationHolder" \ "CategoryCode").text.trim must be(code)
       xml
@@ -815,13 +684,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Border Transport Means name" in validDeclarationXmlScenario() {
       val name = randomString(35)
-      val meta = MetaData(
-        Declaration(
-          borderTransportMeans = Some(BorderTransportMeans(
-            name = Some(name)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                borderTransportMeans = Some(BorderTransportMeans(
+                  name = Some(name)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "BorderTransportMeans" \ "Name").text.trim must be(name)
       xml
@@ -829,13 +696,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Border Transport Means id" in validDeclarationXmlScenario() {
       val id = randomString(35)
-      val meta = MetaData(
-        Declaration(
-          borderTransportMeans = Some(BorderTransportMeans(
-            id = Some(id)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                borderTransportMeans = Some(BorderTransportMeans(
+                  id = Some(id)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "BorderTransportMeans" \ "ID").text.trim must be(id)
       xml
@@ -843,13 +708,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Border Transport Means identification type code" in validDeclarationXmlScenario() {
       val code = randomString(17)
-      val meta = MetaData(
-        Declaration(
-          borderTransportMeans = Some(BorderTransportMeans(
-            identificationTypeCode = Some(code)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                borderTransportMeans = Some(BorderTransportMeans(
+                  identificationTypeCode = Some(code)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "BorderTransportMeans" \ "IdentificationTypeCode").text.trim must be(code)
       xml
@@ -857,13 +720,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Border Transport Means registration nationality code" in validDeclarationXmlScenario() {
       val code = randomISO3166Alpha2CountryCode
-      val meta = MetaData(
-        Declaration(
-          borderTransportMeans = Some(BorderTransportMeans(
-            registrationNationalityCode = Some(code)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                borderTransportMeans = Some(BorderTransportMeans(
+                  registrationNationalityCode = Some(code)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "BorderTransportMeans" \ "RegistrationNationalityCode").text.trim must be(code)
       xml
@@ -871,13 +732,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Border Transport Means mode code" in validDeclarationXmlScenario() {
       val code = random0To9
-      val meta = MetaData(
-        Declaration(
-          borderTransportMeans = Some(BorderTransportMeans(
-            modeCode = Some(code)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                borderTransportMeans = Some(BorderTransportMeans(
+                  modeCode = Some(code)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "BorderTransportMeans" \ "ModeCode").text.trim.toInt must be(code)
       xml
@@ -885,13 +744,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Currency Exchange currency type code" in validDeclarationXmlScenario() {
       val code = randomISO4217CurrencyCode
-      val meta = MetaData(
-        Declaration(
-          currencyExchanges = Seq(CurrencyExchange(
-            currencyTypeCode = Some(code)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                currencyExchanges = Seq(CurrencyExchange(
+                  currencyTypeCode = Some(code)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "CurrencyExchange" \ "CurrencyTypeCode").text.trim must be(code)
       xml
@@ -899,13 +756,11 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
 
     "include Currency Exchange rate numeric" in validDeclarationXmlScenario() {
       val rate = randomBigDecimal
-      val meta = MetaData(
-        Declaration(
-          currencyExchanges = Seq(CurrencyExchange(
-            rateNumeric = Some(rate)
-          ))
-        )
-      )
+      val meta = MetaData(declaration = Declaration(
+                currencyExchanges = Seq(CurrencyExchange(
+                  rateNumeric = Some(rate)
+                ))
+              ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "CurrencyExchange" \ "RateNumeric").text.trim must be(rate.toString)
       xml

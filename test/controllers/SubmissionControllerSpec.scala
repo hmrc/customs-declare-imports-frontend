@@ -503,7 +503,7 @@ class SubmissionControllerSpec
             invoiceAmountCurrencyId = currency
           )
         )
-      ).toMetaData.declaration.invoiceAmount.get must be(InvoiceAmount(amount, currency))
+      ).toMetaData.declaration.invoiceAmount.get must be(InvoiceAmount(currency, Some(amount)))
     }
 
     "map loading list quantity" in {
@@ -525,7 +525,7 @@ class SubmissionControllerSpec
             totalGrossMassMeasure = Some(total)
           )
         )
-      ).toMetaData.declaration.totalGrossMassMeasure.get.value must be(total)
+      ).toMetaData.declaration.totalGrossMassMeasure.get.value.get must be(total)
     }
 
     "map total gross mass measure unit code" in {

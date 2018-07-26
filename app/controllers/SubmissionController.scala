@@ -212,15 +212,7 @@ case class SubmissionMetaDataForm(wcoDataModelVersionCode: Option[String] = None
                         agencyAssignedCustomizationVersionCode: Option[String] = None,
                         declaration: SubmissionDeclarationForm = SubmissionDeclarationForm()) {
 
-  def toMetaData: MetaData = MetaData(
-    declaration.toDeclaration,
-    wcoDataModelVersionCode,
-    wcoTypeName,
-    responsibleCountryCode,
-    responsibleAgencyName,
-    agencyAssignedCustomizationCode,
-    agencyAssignedCustomizationVersionCode
-  )
+  def toMetaData: MetaData = MetaData(wcoDataModelVersionCode, wcoTypeName, responsibleCountryCode, responsibleAgencyName, agencyAssignedCustomizationCode, agencyAssignedCustomizationVersionCode, declaration.toDeclaration)
 
 }
 
@@ -261,9 +253,9 @@ case class SubmissionDeclarationForm(acceptanceDateTime: Option[String] = None,
     typeCode = typeCode,
     goodsItemQuantity = goodsItemQuantity,
     declarationOfficeId = declarationOfficeId,
-    invoiceAmount = invoiceAmount.map(InvoiceAmount(_, invoiceAmountCurrencyId)),
+    invoiceAmount = invoiceAmount.map((value: BigDecimal) => InvoiceAmount(invoiceAmountCurrencyId, Some(value))),
     loadingListQuantity = loadingListQuantity,
-    totalGrossMassMeasure = totalGrossMassMeasure.map(MassMeasure(_, totalGrossMassMeasureUnitCode)),
+    totalGrossMassMeasure = totalGrossMassMeasure.map((value: BigDecimal) => MassMeasure(totalGrossMassMeasureUnitCode, Some(value))),
     totalPackageQuantity = totalPackageQuantity,
     specificCircumstancesCodeCode = specificCircumstancesCodeCode,
     authentication = authentication.toAuthentication,

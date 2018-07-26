@@ -5,12 +5,19 @@ import sbt._
 
 object AppDependencies {
 
+  val jacksonVersion = "2.9.6"
+
   val compile = Seq(
     "uk.gov.hmrc" %% "govuk-template" % "5.22.0",
     "uk.gov.hmrc" %% "play-ui" % "7.18.0",
     ws,
     "uk.gov.hmrc" %% "bootstrap-play-25" % "1.7.0",
-    "uk.gov.hmrc" %% "auth-client" % "2.6.0"
+    "uk.gov.hmrc" %% "auth-client" % "2.6.0",
+    "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
+    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+    "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
+    "com.fasterxml.jackson.dataformat" % "jackson-dataformat-xml" % jacksonVersion,
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion
   )
 
   def test(scope: String = "test") = Seq(
