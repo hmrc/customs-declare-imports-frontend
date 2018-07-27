@@ -16,121 +16,142 @@
 
 package domain.declaration
 
-import com.fasterxml.jackson.annotation.{JsonIgnore, JsonIgnoreProperties, JsonProperty}
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.dataformat.xml.annotation.{JacksonXmlElementWrapper, JacksonXmlProperty, JacksonXmlRootElement, JacksonXmlText}
 
-// declaration consists of xsd:sequence the order of which is reflected in the field order
+/*
+MetaData and Declaration schema generally consists of xsd:sequence definitions the order of which is reflected in the
+field order of the case classes.
+
+DO NOT CHANGE the field order on any of the case classes unless the XSD requires it.
+ */
+
 @JacksonXmlRootElement(namespace = "urn:wco:datamodel:WCO:DocumentMetaData-DMS:2", localName = "MetaData")
 case class MetaData(@JacksonXmlProperty(localName = "WCODataModelVersionCode", namespace = "urn:wco:datamodel:WCO:DocumentMetaData-DMS:2")
-                    wcoDataModelVersionCode: Option[String] = None,
+                    wcoDataModelVersionCode: Option[String] = None, // max 6 chars
 
                     @JacksonXmlProperty(localName = "WCOTypeName", namespace = "urn:wco:datamodel:WCO:DocumentMetaData-DMS:2")
-                    wcoTypeName: Option[String] = None,
+                    wcoTypeName: Option[String] = None, // no constraint
 
                     @JacksonXmlProperty(localName = "ResponsibleCountryCode", namespace = "urn:wco:datamodel:WCO:DocumentMetaData-DMS:2")
-                    responsibleCountryCode: Option[String] = None,
+                    responsibleCountryCode: Option[String] = None, // max 2 chars - ISO 3166-1 alpha2 code
 
                     @JacksonXmlProperty(localName = "ResponsibleAgencyName", namespace = "urn:wco:datamodel:WCO:DocumentMetaData-DMS:2")
-                    responsibleAgencyName: Option[String] = None,
+                    responsibleAgencyName: Option[String] = None, // max 70 chars
 
                     @JacksonXmlProperty(localName = "AgencyAssignedCustomizationCode", namespace = "urn:wco:datamodel:WCO:DocumentMetaData-DMS:2")
-                    agencyAssignedCustomizationCode: Option[String] = None,
+                    agencyAssignedCustomizationCode: Option[String] = None, // max 6 chars
 
                     @JacksonXmlProperty(localName = "AgencyAssignedCustomizationVersionCode", namespace = "urn:wco:datamodel:WCO:DocumentMetaData-DMS:2")
-                    agencyAssignedCustomizationVersionCode: Option[String] = None,
+                    agencyAssignedCustomizationVersionCode: Option[String] = None, // max 3 chars
 
                     @JacksonXmlProperty(localName = "Declaration", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                    declaration: Declaration)
+                    declaration: Declaration = Declaration())
 
-// declaration consists of xsd:sequence the order of which is reflected in the field order
 @JsonIgnoreProperties(Array(
   "amendments",
-  "declarant",
-  "exitOffice",
-  "exporter",
-  "goodsShipment",
-  "obligationGuarantees",
-  "presentationOffice",
-  "supervisingOffice"
+  "goodsShipment"
 ))
 case class Declaration(@JacksonXmlProperty(localName = "AcceptanceDateTime", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       acceptanceDateTime: Option[AcceptanceDateTime] = None, // name="AcceptanceDateTime" type="ds:DeclarationAcceptanceDateTimeType" minOccurs="0"
+                       acceptanceDateTime: Option[AcceptanceDateTime] = None,
 
                        @JacksonXmlProperty(localName = "FunctionCode", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       functionCode: Option[String] = None, // name="FunctionCode" type="ds:DeclarationFunctionCodeType" minOccurs="0"
+                       functionCode: Option[Int] = None, // unsigned int in enumeration of [9, 13, 14]
 
                        @JacksonXmlProperty(localName = "FunctionalReferenceID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       functionalReferenceId: Option[String] = None, // name="FunctionalReferenceID" type="ds:DeclarationFunctionalReferenceIDType" minOccurs="0"
+                       functionalReferenceId: Option[String] = None, // max 35 chars
 
                        @JacksonXmlProperty(localName = "ID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       id: Option[String] = None, // name="ID" type="ds:DeclarationIdentificationIDType" minOccurs="0"
+                       id: Option[String] = None, // max 70 chars
 
                        @JacksonXmlProperty(localName = "IssueDateTime", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       issueDateTime: Option[IssueDateTime] = None, // name="IssueDateTime" type="ds:DeclarationIssueDateTimeType" minOccurs="0"
+                       issueDateTime: Option[IssueDateTime] = None,
 
                        @JacksonXmlProperty(localName = "IssueLocationID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       issueLocationId: Option[String] = None, // name="IssueLocationID" type="ds:DeclarationIssueLocationIdentificationIDType" minOccurs="0"
+                       issueLocationId: Option[String] = None, // max 5 chars
 
                        @JacksonXmlProperty(localName = "TypeCode", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       typeCode: Option[String] = None, // name="TypeCode" type="ds:DeclarationTypeCodeType" minOccurs="0"
+                       typeCode: Option[String] = None, // max 3 chars
 
                        @JacksonXmlProperty(localName = "GoodsItemQuantity", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       goodsItemQuantity: Option[Int] = None, // name="GoodsItemQuantity" type="ds:DeclarationGoodsItemQuantityType" minOccurs="0"
+                       goodsItemQuantity: Option[Int] = None, // unsigned int max 99999
 
                        @JacksonXmlProperty(localName = "DeclarationOfficeID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       declarationOfficeId: Option[String] = None, // name="DeclarationOfficeID" type="ds:DeclarationDeclarationOfficeIDType" minOccurs="0"
+                       declarationOfficeId: Option[String] = None, // max 17 chars
 
                        @JacksonXmlProperty(localName = "InvoiceAmount", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       invoiceAmount: Option[InvoiceAmount] = None, // name="InvoiceAmount" type="ds:DeclarationInvoiceAmountType" minOccurs="0"
+                       invoiceAmount: Option[InvoiceAmount] = None,
 
                        @JacksonXmlProperty(localName = "LoadingListQuantity", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       loadingListQuantity: Option[Int] = None, // name="LoadingListQuantity" type="ds:DeclarationLoadingListQuantityType" minOccurs="0"
+                       loadingListQuantity: Option[Int] = None, // unsigned int max 99999
 
                        @JacksonXmlProperty(localName = "TotalGrossMassMeasure", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       totalGrossMassMeasure: Option[MassMeasure] = None, // name="TotalGrossMassMeasure" type="ds:DeclarationTotalGrossMassMeasureType" minOccurs="0"
+                       totalGrossMassMeasure: Option[MassMeasure] = None,
 
                        @JacksonXmlProperty(localName = "TotalPackageQuantity", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       totalPackageQuantity: Option[Int] = None, // name="TotalPackageQuantity" type="ds:DeclarationTotalPackageQuantityType" minOccurs="0"
+                       totalPackageQuantity: Option[Int] = None, // unsigned int max 99999999
 
                        @JacksonXmlProperty(localName = "SpecificCircumstancesCodeCode", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       specificCircumstancesCodeCode: Option[String] = None, // name="SpecificCircumstancesCodeCode" type="ds:DeclarationSpecificCircumstancesCodeCodeType" minOccurs="0"
+                       specificCircumstancesCode: Option[String] = None, // max 3 chars
 
                        @JacksonXmlProperty(localName = "Authentication", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       authentication: Option[Authentication] = None, // name="Authentication" minOccurs="0" maxOccurs="1"
+                       authentication: Option[Authentication] = None,
 
                        @JacksonXmlProperty(localName = "Submitter", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       submitter: Option[Submitter] = None, // name="Submitter" minOccurs="0" maxOccurs="1"
+                       submitter: Option[Submitter] = None,
 
                        @JacksonXmlElementWrapper(useWrapping = false)
                        @JacksonXmlProperty(localName = "AdditionalDocument", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       additionalDocuments: Seq[AdditionalDocument] = Seq.empty, // name="AdditionalDocument" minOccurs="0" maxOccurs="unbounded"
+                       additionalDocuments: Seq[AdditionalDocument] = Seq.empty,
 
                        @JacksonXmlElementWrapper(useWrapping = false)
                        @JacksonXmlProperty(localName = "AdditionalInformation", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       additionalInformations: Seq[AdditionalInformation] = Seq.empty, // name="AdditionalInformation" minOccurs="0" maxOccurs="unbounded"
+                       additionalInformations: Seq[AdditionalInformation] = Seq.empty,
 
                        @JacksonXmlProperty(localName = "Agent", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       agent: Option[Agent] = None, // name="Agent" minOccurs="0" maxOccurs="1"
+                       agent: Option[Agent] = None,
+
                        // TODO model amendment XML
                        amendments: Seq[String] = Seq.empty, //  name="Amendment" minOccurs="0" maxOccurs="unbounded"
 
                        @JacksonXmlElementWrapper(useWrapping = false)
                        @JacksonXmlProperty(localName = "AuthorisationHolder", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       authorisationHolders: Seq[AuthorisationHolder] = Seq.empty, // name="AuthorisationHolder" minOccurs="0" maxOccurs="unbounded"
+                       authorisationHolders: Seq[AuthorisationHolder] = Seq.empty,
 
                        @JacksonXmlProperty(localName = "BorderTransportMeans", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       borderTransportMeans: Option[BorderTransportMeans] = None, // name="BorderTransportMeans" minOccurs="0" maxOccurs="1"
+                       borderTransportMeans: Option[BorderTransportMeans] = None,
 
                        @JacksonXmlElementWrapper(useWrapping = false)
                        @JacksonXmlProperty(localName = "CurrencyExchange", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                       currencyExchanges: Seq[CurrencyExchange] = Seq.empty, // name="CurrencyExchange" minOccurs="0" maxOccurs="unbounded"
-                       declarant: Option[Declarant] = None, // name="Declarant" minOccurs="0" maxOccurs="1"
-                       exitOffice: Option[String] = None, // name="ExitOffice" minOccurs="0" maxOccurs="1"
-                       exporter: Option[Exporter] = None, // name="Exporter" minOccurs="0" maxOccurs="1"
+                       currencyExchanges: Seq[CurrencyExchange] = Seq.empty,
+
+                       @JacksonXmlProperty(localName = "Declarant", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                       declarant: Option[Declarant] = None,
+
+                       @JacksonXmlProperty(localName = "ExitOffice", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                       exitOffice: Option[ExitOffice] = None,
+
+                       @JacksonXmlProperty(localName = "Exporter", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                       exporter: Option[Exporter] = None,
+
+                       // TODO model goods shipment
                        goodsShipment: Option[GoodsShipment] = None, // name="GoodsShipment" minOccurs="0" maxOccurs="1"
-                       obligationGuarantees: Seq[ObligationGuarantee] = Seq.empty, // name="ObligationGuarantee" minOccurs="0" maxOccurs="unbounded"
-                       presentationOffice: Option[String] = None, // name="PresentationOffice" minOccurs="0" maxOccurs="1"
-                       supervisingOffice: Option[SupervisingOffice] = None) // name="SupervisingOffice" minOccurs="0" maxOccurs="1"
+
+                       @JacksonXmlElementWrapper(useWrapping = false)
+                       @JacksonXmlProperty(localName = "ObligationGuarantee", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                       obligationGuarantees: Seq[ObligationGuarantee] = Seq.empty,
+
+                       @JacksonXmlProperty(localName = "PresentationOffice", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                       presentationOffice: Option[PresentationOffice] = None,
+
+                       @JacksonXmlProperty(localName = "SupervisingOffice", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                       supervisingOffice: Option[SupervisingOffice] = None)
+
+case class PresentationOffice(@JacksonXmlProperty(localName = "ID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                              id: Option[String]) // max 17 chars
+
+case class ExitOffice(@JacksonXmlProperty(localName = "ID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                      id: Option[String] = None) // max 17 chars
 
 case class CurrencyExchange(@JacksonXmlProperty(localName = "CurrencyTypeCode", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
                             currencyTypeCode: Option[String] = None, // max 3 chars [a-zA-Z] ISO 4217 3-alpha code
@@ -160,13 +181,13 @@ case class Submitter(@JacksonXmlProperty(localName = "Name", namespace = "urn:wc
                      address: Option[Address] = None)
 
 case class Authentication(@JacksonXmlProperty(localName = "Authentication", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                          authentication: Option[String] = None,
+                          authentication: Option[String] = None, // max 256 chars
 
                           @JacksonXmlProperty(localName = "Authenticator", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
                           authenticator: Option[Authenticator] = None)
 
 case class Authenticator(@JacksonXmlProperty(localName = "Name", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                         name: Option[String] = None)
+                         name: Option[String] = None) // max 70 chars
 
 case class AcceptanceDateTime(@JacksonXmlProperty(localName = "DateTimeString", namespace = "urn:wco:datamodel:WCO:Declaration_DS:DMS:2")
                               dateTimeString: DateTimeString)
@@ -175,22 +196,22 @@ case class IssueDateTime(@JacksonXmlProperty(localName = "DateTimeString", names
                          dateTimeString: DateTimeString)
 
 case class DateTimeString(@JacksonXmlProperty(localName = "formatCode", isAttribute = true)
-                          formatCode: String,
+                          formatCode: String, // either "102" or "304"
 
                           @JacksonXmlText
-                          value: String)
+                          value: String) // max 35 chars
 
 case class InvoiceAmount(@JacksonXmlProperty(localName = "currencyID", isAttribute = true)
-                         currencyId: Option[String] = None,
+                         currencyId: Option[String] = None, // and ISO 4217 3 char currency code (i.e. "GBP")
 
                          @JacksonXmlText
-                         value: Option[BigDecimal] = None)
+                         value: Option[BigDecimal] = None) // scale of 16 and precision of 3
 
 case class MassMeasure(@JacksonXmlProperty(localName = "unitCode", isAttribute = true)
-                       unitCode: Option[String] = None,
+                       unitCode: Option[String] = None, // min 1 max 5 chars when specified
 
                        @JacksonXmlText
-                       value: Option[BigDecimal] = None)
+                       value: Option[BigDecimal] = None) // scale 16 precision 6
 
 case class AdditionalDocument(@JacksonXmlProperty(localName = "ID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
                               id: Option[String] = None, // max 70 chars
@@ -199,13 +220,7 @@ case class AdditionalDocument(@JacksonXmlProperty(localName = "ID", namespace = 
                               categoryCode: Option[String] = None, // max 3 chars
 
                               @JacksonXmlProperty(localName = "TypeCode", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                              typeCode: Option[String] = None, // max 3 chars
-
-                              @JacksonXmlProperty(localName = "Name", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                              name: Option[String] = None,
-
-                              @JacksonXmlProperty(localName = "LPCOExemptionCode", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
-                              lpcoExemptionCode: Option[String] = None)
+                              typeCode: Option[String] = None) // max 3 chars
 
 case class AuthorisationHolder(@JacksonXmlProperty(localName = "ID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
                                id: Option[String] = None, // max 17 chars
@@ -231,10 +246,47 @@ case class BorderTransportMeans(@JacksonXmlProperty(localName = "Name", namespac
                                 @JacksonXmlProperty(localName = "ModeCode", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
                                 modeCode: Option[Int] = None) // 0-9
 
-case class Declarant(id: String)
+case class Declarant(@JacksonXmlProperty(localName = "Name", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                     name: Option[String] = None, // max 70 chars
 
-case class Exporter(name: String,
-                    address: Address)
+                     @JacksonXmlProperty(localName = "ID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                     id: Option[String] = None, // max 17 chars
+
+                     @JacksonXmlProperty(localName = "Address", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                     address: Option[Address] = None,
+
+                     @JacksonXmlProperty(localName = "Contact", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                     contact: Option[Contact] = None,
+
+                     @JacksonXmlElementWrapper(useWrapping = false)
+                     @JacksonXmlProperty(localName = "Communication", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                     communications: Seq[Communication] = Seq.empty)
+
+case class Contact(@JacksonXmlProperty(localName = "Name", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                   name: Option[String] = None) // max 70 chars
+
+case class Communication(@JacksonXmlProperty(localName = "ID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                         id: Option[String] = None, // max 50 chars
+
+                         @JacksonXmlProperty(localName = "TypeCode", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                         typeCode: Option[String] = None) // max 3 chars
+
+case class Exporter(@JacksonXmlProperty(localName = "Name", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                    name: Option[String] = None, // max 70 chars
+
+                    @JacksonXmlProperty(localName = "ID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                    id: Option[String] = None, // max 17 chars
+
+                    @JacksonXmlProperty(localName = "Address", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                    address: Option[Address] = None,
+
+                    @JacksonXmlElementWrapper(useWrapping = false)
+                    @JacksonXmlProperty(localName = "Contact", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                    contacts: Seq[Contact] = Seq.empty,
+
+                    @JacksonXmlElementWrapper(useWrapping = false)
+                    @JacksonXmlProperty(localName = "Communication", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                    communications: Seq[Communication] = Seq.empty)
 
 case class Address(@JacksonXmlProperty(localName = "CityName", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
                    cityName: Option[String] = None, // max length 35
@@ -375,7 +427,26 @@ case class GovernmentProcedure(currentCode: String,
 case class Origin(countryCode: String,
                   typeCode: String)
 
-case class ObligationGuarantee(referenceId: String,
-                               securityDetailsCode: String)
+case class ObligationGuarantee(@JacksonXmlProperty(localName = "AmountAmount", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                               amount: Option[BigDecimal] = None, // scale 16 precision 3
 
-case class SupervisingOffice(id: String)
+                               @JacksonXmlProperty(localName = "ID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                               id: Option[String] = None, // max 70 chars
+
+                               @JacksonXmlProperty(localName = "ReferenceID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                               referenceId: Option[String] = None, // max 35 chars
+
+                               @JacksonXmlProperty(localName = "SecurityDetailsCode", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                               securityDetailsCode: Option[String] = None, // max 3 chars
+
+                               @JacksonXmlProperty(localName = "AccessCode", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                               accessCode: Option[String] = None, // max 4 chars
+
+                               @JacksonXmlProperty(localName = "GuaranteeOffice", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                               guaranteeOffice: Option[GuaranteeOffice] = None)
+
+case class GuaranteeOffice(@JacksonXmlProperty(localName = "ID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                           id: Option[String] = None) // max 17 chars
+
+case class SupervisingOffice(@JacksonXmlProperty(localName = "ID", namespace = "urn:wco:datamodel:WCO:DEC-DMS:2")
+                             id: Option[String] = None) // max 17 chars

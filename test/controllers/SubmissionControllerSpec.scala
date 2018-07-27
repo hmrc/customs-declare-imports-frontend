@@ -394,7 +394,7 @@ class SubmissionControllerSpec
     }
 
     "map function code" in {
-      val code = randomString(2)
+      val code = randomDeclarationFunctionCode
       SubmissionAllInOneForm(
         metaData = SubmissionMetaDataForm(
           declaration = SubmissionDeclarationForm(
@@ -560,7 +560,7 @@ class SubmissionControllerSpec
             specificCircumstancesCodeCode = Some(code)
           )
         )
-      ).toMetaData.declaration.specificCircumstancesCodeCode.get must be(code)
+      ).toMetaData.declaration.specificCircumstancesCode.get must be(code)
     }
 
   }

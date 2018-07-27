@@ -117,7 +117,7 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
 
   protected def randomBoolean: Boolean = if(Random.nextInt() % 2 == 0) true else false
 
-  protected def randomDeclarationFunctionCode: String = declarationFunctionCodes(randomInt(declarationFunctionCodes.length))
+  protected def randomDeclarationFunctionCode: Int = declarationFunctionCodes(randomInt(declarationFunctionCodes.length))
 
   protected def randomDateTimeFormatCode: String = dateTimeFormatCodes(randomInt(dateTimeFormatCodes.length))
 
@@ -131,7 +131,7 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
 
   private lazy val z: Seq[String] = Seq("+", "-")
 
-  private lazy val declarationFunctionCodes: Seq[String] = Seq("9", "13", "14")
+  private lazy val declarationFunctionCodes: Seq[Int] = Seq(9, 13, 14)
 
   private lazy val dateTimeFormatCodes: Seq[String] = Seq("102", "304")
 
