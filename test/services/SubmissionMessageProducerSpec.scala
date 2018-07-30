@@ -126,7 +126,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       val formatCode = randomDateTimeFormatCode
       val dateTime = randomDateTimeString
       val meta = MetaData(declaration = Declaration(
-        acceptanceDateTime = Some(AcceptanceDateTime(DateTimeString(formatCode, dateTime)))
+        acceptanceDateTime = Some(DateTimeElement(DateTimeString(formatCode, dateTime)))
       ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "AcceptanceDateTime" \ "DateTimeString").text.trim must be(dateTime)
@@ -168,7 +168,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       val formatCode = randomDateTimeFormatCode
       val dateTime = randomDateTimeString
       val meta = MetaData(declaration = Declaration(
-        issueDateTime = Some(IssueDateTime(DateTimeString(formatCode, dateTime)))
+        issueDateTime = Some(DateTimeElement(DateTimeString(formatCode, dateTime)))
       ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "IssueDateTime" \ "DateTimeString").text.trim must be(dateTime)
@@ -219,7 +219,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include InvoiceAmount without currencyID attribute" in validDeclarationXmlScenario() {
       val amount = randomBigDecimal
       val meta = MetaData(declaration = Declaration(
-        invoiceAmount = Some(InvoiceAmount(value = Some(amount)))
+        invoiceAmount = Some(Amount(value = Some(amount)))
       ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "InvoiceAmount").text.trim must be(amount.toString)
@@ -231,7 +231,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       val amount = randomBigDecimal
       val currency = randomISO4217CurrencyCode
       val meta = MetaData(declaration = Declaration(
-        invoiceAmount = Some(InvoiceAmount(Some(currency), Some(amount)))
+        invoiceAmount = Some(Amount(Some(currency), Some(amount)))
       ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "InvoiceAmount").text.trim must be(amount.toString)
@@ -252,7 +252,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include TotalGrossMassMeasure" in validDeclarationXmlScenario() {
       val total = randomBigDecimal
       val meta = MetaData(declaration = Declaration(
-        totalGrossMassMeasure = Some(MassMeasure(value = Some(total)))
+        totalGrossMassMeasure = Some(Measure(value = Some(total)))
       ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "TotalGrossMassMeasure").text.trim must be(total.toString)
@@ -263,7 +263,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       val total = randomBigDecimal
       val code = randomString(3)
       val meta = MetaData(declaration = Declaration(
-        totalGrossMassMeasure = Some(MassMeasure(Some(code), Some(total)))
+        totalGrossMassMeasure = Some(Measure(Some(code), Some(total)))
       ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "TotalGrossMassMeasure" \ "@unitCode").text.trim must be(code)
@@ -1177,6 +1177,22 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       ))
       val xml = producer.produceDeclarationMessage(meta)
       (xml \ "Declaration" \ "SupervisingOffice" \ "ID").text.trim must be(id)
+      xml
+    }
+
+    "include Goods Shipment Exist Date Time" in validDeclarationXmlScenario() {
+      val formatCode = randomDateTimeFormatCode
+      val dateTime = randomDateTimeString
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          exitDateTime = Some(DateTimeElement(
+            DateTimeString(formatCode, dateTime)
+          ))
+        ))
+      ))
+      val xml = producer.produceDeclarationMessage(meta)
+      (xml \ "Declaration" \ "GoodsShipment" \ "ExitDateTime" \ "DateTimeString").text.trim must be(dateTime)
+      (xml \ "Declaration" \ "GoodsShipment" \ "ExitDateTime" \ "DateTimeString" \ "@formatCode").text.trim must be(formatCode)
       xml
     }
 

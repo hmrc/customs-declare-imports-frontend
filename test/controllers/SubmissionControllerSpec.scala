@@ -16,7 +16,7 @@
 
 package controllers
 
-import domain.declaration.InvoiceAmount
+import domain.declaration.Amount
 import domain.features.{Feature, FeatureStatus}
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours, WiremockBehaviours}
@@ -503,7 +503,7 @@ class SubmissionControllerSpec
             invoiceAmountCurrencyId = currency
           )
         )
-      ).toMetaData.declaration.invoiceAmount.get must be(InvoiceAmount(currency, Some(amount)))
+      ).toMetaData.declaration.invoiceAmount.get must be(Amount(currency, Some(amount)))
     }
 
     "map loading list quantity" in {

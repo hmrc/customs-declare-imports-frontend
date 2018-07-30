@@ -20,7 +20,7 @@ import java.io.StringWriter
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.dataformat.xml.{JacksonXmlModule, XmlMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import domain.declaration._
 
@@ -28,7 +28,9 @@ import scala.xml.{Elem, XML}
 
 trait SubmissionMessageProducer {
 
-  private val mapper = new XmlMapper()
+  private val module = new JacksonXmlModule()
+  module.setDefaultUseWrapper(false)
+  private val mapper = new XmlMapper(module)
   mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
   mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
   mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
