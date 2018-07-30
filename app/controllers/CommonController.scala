@@ -32,7 +32,7 @@ import scala.concurrent.{Future, ExecutionContext}
 
 @Singleton
 class CommonController @Inject()(actions: Actions, client: CustomsDeclarationsConnector,val messagesApi: MessagesApi)
-(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport{
+(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport with ViewFormMappings with ControllerSupport{
 
   val commonFormMappings =
     mapping("title"-> text,
@@ -51,40 +51,60 @@ class CommonController @Inject()(actions: Actions, client: CustomsDeclarationsCo
 
   val commonForm:Form[CommonForm] = Form(commonFormMappings)
 
-  def showForm: Action[AnyContent] = Action.async { implicit req =>
-    val defaultForm:Form[CommonForm] = commonForm.fill(ViewFormMappings.listings.get("1").get)
+  def showForm(path:String): Action[AnyContent] = Action.async { implicit req =>
+    val defaultForm:Form[CommonForm] = commonForm.fill(listings.get("1").get)
     Future.successful(Ok(views.html.common_view(defaultForm)))
   }
 
-  def submitForm: Action[AnyContent] = Action.async { implicit req =>
+  def submitForm(path:String): Action[AnyContent] = Action.async { implicit req =>
     val form = commonForm.bindFromRequest()
     Logger.debug("<<<<<<<<<<Form errors >>>>>>>" + form.errors.mkString("++"))
     form.fold (
       errorsWithErrors => Future.successful(BadRequest(views.html.common_view(errorsWithErrors))),
       success => { Logger.debug("successful form navigation  Fields are --> " + success.fields.mkString("> <"))
-        Future.successful(Ok(views.html.common_view(commonForm.fill(ViewFormMappings.listings.get(form.get.nextViewId).get))))
+        Future.successful(Ok(views.html.common_view(commonForm.fill(listings.get(form.get.nextViewId).get))))
       }
     )
   }
+
+
 }
 
-object ViewFormMappings {
+trait ControllerSupport {
+  def mapValuesToForm(form:CommonForm) = ???
+
+
+  private def saveData(list: List[Field]) = ???
+
+  private def getData() = ???
+}
+
+trait ViewFormMappings {
 
   val commonMetadataFormFields = List(Field("WCO Data Model Version Code","wcoDataModelVersionCode","input",None,id = "1"),
     Field("wco Type Name","wcoTypeName","input",Some("value2"),id = "2"),
-    Field("Responsible Country Code","responsibleCountryCode","textarea",None,id = "3"),
-    Field("Responsible Agency Name","responsibleAgencyName","textarea",None,id = "4"),
+    Field("Responsible Country Code","responsibleCountryCode","select",None,id = "3"),
+    Field("Responsible Agency Name","responsibleAgencyName","TextArea",None,id = "4"),
     Field("Agency Assigned Version Code","agencyAssignedCustomizationVersionCode","input",Some("value3"),id = "5"))
 
   val submitterFormFields = List(Field("Submitter Name","Name","input",None,id = "1"),
     Field("Submitter ID","Id","input",None,id = "2"))
 
-  val CommonMetadataForm = CommonForm("Declaration Details",commonMetadataFormFields ,  "CommonMetadataForm",  "url1", "formAction1","1","2")
+  val exporterFields = List(Field("Name","Name","input",None,id = "1"),
+    Field("First Line of address","firstLineAddress","input",None,id = "2"),
+    Field("City","city","input",None,id = "2"),
+    Field("Country","country","select",None,id = "2")
+  )
 
-  val CommonSubmitterForm = CommonForm("Submitter Details",submitterFormFields ,  "CommonSubmitterForm",  "url2", "formAction2","2","3")
+  val commonMetadataForm = CommonForm("Declaration Details",commonMetadataFormFields ,  "CommonMetadataForm",  "submitter", "formAction1","1","2")
 
-  val listings = Map(CommonMetadataForm.id-> CommonMetadataForm,
-  CommonSubmitterForm.id -> CommonSubmitterForm)
+  val submitterForm = CommonForm("Submitter Details",submitterFormFields ,  "CommonSubmitterForm",  "exporter-details", "formAction2","2","3")
+
+  val exporterForm = CommonForm("Exporter details",exporterFields ,  "CommonSubmitterForm",  "what-next", "formAction2","3","4")
+
+  val listings = Map(commonMetadataForm.id-> commonMetadataForm,
+  submitterForm.id -> submitterForm,
+    exporterForm.id -> exporterForm)
 }
 
 case class CommonForm(title:String, fields:List[Field], formName:String, url:String, formAction:String, id:String, nextViewId:String)

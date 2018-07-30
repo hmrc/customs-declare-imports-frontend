@@ -8,5 +8,6 @@ GET        /declaration                  controllers.SubmissionController.showDe
 POST       /declaration                  controllers.SubmissionController.handleDeclarationForm
 GET        /cancel-declaration          controllers.CancelController.showCancelForm
 POST       /cancel-declaration          controllers.CancelController.submitCancelForm
-GET        /show          controllers.CommonController.showForm
-POST       /submitForm    controllers.CommonController.submitForm
+GET        /start-declaration          controllers.CommonController.showForm(path:String ="1")
+GET        /declaration/:path          controllers.CommonController.showForm(path:String)
+POST       /declaration/:path    controllers.CommonController.submitForm(path:String)

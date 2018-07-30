@@ -25,7 +25,7 @@
 @main_template(title = form("title").name, bodyClasses = None) {
 
 
-    @helpers.form(routes.CommonController.submitForm) {
+    @helpers.form(routes.CommonController.submitForm(form.data.get("url").get)) {
         <fieldset class="form-section">
             <legend>@form.data.get("title")</legend>
             <input type="hidden" name="title" value="@form.data.get("title")" />
@@ -39,19 +39,28 @@
                 @defining(i) {count =>
                     @defining(form.get.fields(i)){ element =>
                         <div class="form-group">
-                        @if(element.fieldType == "input") {@helpers.input(
+                        @if(element.fieldType == "input") {
+                            @helpers.input(
                             form("fields[" + count + "].fieldValue"),
                             'id -> element.id,
                             '_label -> element.label,
                             '_showConstraints -> false
                         )}
-                            @if(element.fieldType == "textArea") {helpers.textArea(
+                            @if(element.fieldType == "textArea") {
+                                @helpers.textArea(
                                 form("fields[" + count + "].fieldValue"),
                                 'id -> element.id,
                                 '_label -> element.label,
                                 '_showConstraints -> false
                                 )}
-
+                            @if(element.fieldType == "select") {
+                                @helper.select(
+                                    field = form("fields[" + count + "].fieldValue"),
+                               options = Seq("GR"->"Germany","FR"->"France"),
+                                    '_default -> "Choose One",
+                                'id -> element.id,
+                                '_help -> "Select one, any one"
+                            )}
                         </div>
                         <input type="hidden" name="fields[@count].label"  value=@element.label />
                         <input type="hidden" name="fields[@count].name"  value=@element.name />
