@@ -99,7 +99,7 @@ case class Declaration(@JacksonXmlProperty(localName = "AcceptanceDateTime", nam
                        authentication: Option[Authentication] = None,
 
                        @JacksonXmlProperty(localName = "Submitter", namespace = NS.dec)
-                       submitter: Option[Submitter] = None,
+                       submitter: Option[NamedEntityWithAddress] = None,
 
                        @JacksonXmlProperty(localName = "AdditionalDocument", namespace = NS.dec)
                        additionalDocuments: Seq[AdditionalDocument] = Seq.empty,
@@ -123,13 +123,13 @@ case class Declaration(@JacksonXmlProperty(localName = "AcceptanceDateTime", nam
                        currencyExchanges: Seq[CurrencyExchange] = Seq.empty,
 
                        @JacksonXmlProperty(localName = "Declarant", namespace = NS.dec)
-                       declarant: Option[Declarant] = None,
+                       declarant: Option[ImportExportParty] = None,
 
                        @JacksonXmlProperty(localName = "ExitOffice", namespace = NS.dec)
-                       exitOffice: Option[ExitOffice] = None,
+                       exitOffice: Option[Office] = None,
 
                        @JacksonXmlProperty(localName = "Exporter", namespace = NS.dec)
-                       exporter: Option[Exporter] = None,
+                       exporter: Option[ImportExportParty] = None,
 
                        @JacksonXmlProperty(localName = "GoodsShipment", namespace = NS.dec)
                        goodsShipment: Option[GoodsShipment] = None,
@@ -138,22 +138,16 @@ case class Declaration(@JacksonXmlProperty(localName = "AcceptanceDateTime", nam
                        obligationGuarantees: Seq[ObligationGuarantee] = Seq.empty,
 
                        @JacksonXmlProperty(localName = "PresentationOffice", namespace = NS.dec)
-                       presentationOffice: Option[PresentationOffice] = None,
+                       presentationOffice: Option[Office] = None,
 
                        @JacksonXmlProperty(localName = "SupervisingOffice", namespace = NS.dec)
-                       supervisingOffice: Option[SupervisingOffice] = None)
+                       supervisingOffice: Option[Office] = None)
 
 case class Amendment(@JacksonXmlProperty(localName = "ChangeReasonCode", namespace = NS.dec)
                      changeReasonCode: Option[String] = None, // max 3 chars
 
                      @JacksonXmlProperty(localName = "Pointer", namespace = NS.dec)
                      pointers: Seq[Pointer] = Seq.empty)
-
-case class PresentationOffice(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                              id: Option[String]) // max 17 chars
-
-case class ExitOffice(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                      id: Option[String] = None) // max 17 chars
 
 case class CurrencyExchange(@JacksonXmlProperty(localName = "CurrencyTypeCode", namespace = NS.dec)
                             currencyTypeCode: Option[String] = None, // max 3 chars [a-zA-Z] ISO 4217 3-alpha code
@@ -172,15 +166,6 @@ case class Agent(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
 
                  @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
                  address: Option[Address] = None)
-
-case class Submitter(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
-                     name: Option[String] = None, // max length 70
-
-                     @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                     id: Option[String] = None, // max length 17
-
-                     @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
-                     address: Option[Address] = None)
 
 case class Authentication(@JacksonXmlProperty(localName = "Authentication", namespace = NS.dec)
                           authentication: Option[String] = None, // max 256 chars
@@ -224,36 +209,6 @@ case class BorderTransportMeans(@JacksonXmlProperty(localName = "Name", namespac
                                 @JacksonXmlProperty(localName = "ModeCode", namespace = NS.dec)
                                 modeCode: Option[Int] = None) // 0-9
 
-case class Declarant(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
-                     name: Option[String] = None, // max 70 chars
-
-                     @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                     id: Option[String] = None, // max 17 chars
-
-                     @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
-                     address: Option[Address] = None,
-
-                     @JacksonXmlProperty(localName = "Contact", namespace = NS.dec)
-                     contact: Option[Contact] = None,
-
-                     @JacksonXmlProperty(localName = "Communication", namespace = NS.dec)
-                     communications: Seq[Communication] = Seq.empty)
-
-case class Exporter(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
-                    name: Option[String] = None, // max 70 chars
-
-                    @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                    id: Option[String] = None, // max 17 chars
-
-                    @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
-                    address: Option[Address] = None,
-
-                    @JacksonXmlProperty(localName = "Contact", namespace = NS.dec)
-                    contacts: Seq[Contact] = Seq.empty,
-
-                    @JacksonXmlProperty(localName = "Communication", namespace = NS.dec)
-                    communications: Seq[Communication] = Seq.empty)
-
 case class GoodsShipment(@JacksonXmlProperty(localName = "ExitDateTime", namespace = NS.dec)
                          exitDateTime: Option[DateTimeElement] = None,
 
@@ -261,20 +216,19 @@ case class GoodsShipment(@JacksonXmlProperty(localName = "ExitDateTime", namespa
                          transactionNatureCode: Option[Int] = None, // unsigned int max 99
 
                          @JacksonXmlProperty(localName = "AEOMutualRecognitionParty", namespace = NS.dec)
-                         aeoMutualRecognitionParties: Seq[AeoMutualRecognitionParty] = Seq.empty,
+                         aeoMutualRecognitionParties: Seq[RoleBasedParty] = Seq.empty,
 
                          @JacksonXmlProperty(localName = "Buyer", namespace = NS.dec)
-                         buyer: Option[Buyer] = None,
-
+                         buyer: Option[ImportExportParty] = None,
 
                          @JacksonXmlProperty(localName = "Consignee", namespace = NS.dec)
-                         consignee: Option[Consignatory] = None,
+                         consignee: Option[NamedEntityWithAddress] = None,
 
                          @JacksonXmlProperty(localName = "Consignment", namespace = NS.dec)
                          consignment: Option[Consignment] = None,
 
                          @JacksonXmlProperty(localName = "Consignor", namespace = NS.dec)
-                         consignor: Option[Consignatory] = None,
+                         consignor: Option[NamedEntityWithAddress] = None,
 
                          @JacksonXmlProperty(localName = "CustomsValuation", namespace = NS.dec)
                          customsValuation: Option[CustomsValuation] = None,
@@ -283,7 +237,7 @@ case class GoodsShipment(@JacksonXmlProperty(localName = "ExitDateTime", namespa
                          destination: Option[Destination] = None,
 
                          @JacksonXmlProperty(localName = "DomesticDutyTaxParty", namespace = NS.dec)
-                         domesticDutyTaxParties: Seq[DomesticDutyTaxParty] = Seq.empty,
+                         domesticDutyTaxParties: Seq[RoleBasedParty] = Seq.empty,
 
                          @JacksonXmlProperty(localName = "ExportCountry", namespace = NS.dec)
                          exportCountry: Option[ExportCountry] = None,
@@ -292,22 +246,22 @@ case class GoodsShipment(@JacksonXmlProperty(localName = "ExitDateTime", namespa
                          governmentAgencyGoodsItems: Seq[GovernmentAgencyGoodsItem] = Seq.empty,
 
                          @JacksonXmlProperty(localName = "Importer", namespace = NS.dec)
-                         importer: Option[Importer] = None,
+                         importer: Option[ImportExportParty] = None,
 
                          @JacksonXmlProperty(localName = "Invoice", namespace = NS.dec)
                          invoice: Option[Invoice] = None,
 
                          @JacksonXmlProperty(localName = "Payer", namespace = NS.dec)
-                         payers: Seq[Payer] = Seq.empty,
+                         payers: Seq[NamedEntityWithAddress] = Seq.empty,
 
                          @JacksonXmlProperty(localName = "PreviousDocument", namespace = NS.dec)
                          previousDocuments: Seq[PreviousDocument] = Seq.empty,
 
                          @JacksonXmlProperty(localName = "Seller", namespace = NS.dec)
-                         seller: Option[Seller] = None,
+                         seller: Option[ImportExportParty] = None,
 
                          @JacksonXmlProperty(localName = "Surety", namespace = NS.dec)
-                         sureties: Seq[Surety] = Seq.empty,
+                         sureties: Seq[NamedEntityWithAddress] = Seq.empty,
 
                          @JacksonXmlProperty(localName = "TradeTerms", namespace = NS.dec)
                          tradeTerms: Option[TradeTerms] = None,
@@ -318,66 +272,11 @@ case class GoodsShipment(@JacksonXmlProperty(localName = "ExitDateTime", namespa
                          @JacksonXmlProperty(localName = "Warehouse", namespace = NS.dec)
                          warehouse: Option[Warehouse] = None)
 
-// TODO there are quite a few of these "person with address" type classes which could be represented as a single case class
-case class Payer(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
-                 name: Option[String] = None, // max 70 chars
-
-                 @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                 id: Option[String] = None, // max 17 chars
-
-                 @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
-                 address: Option[Address] = None)
-
-case class Surety(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
-                  name: Option[String] = None, // max 70 chars
-
-                  @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                  id: Option[String] = None, // max 17 chars
-
-                  @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
-                  address: Option[Address] = None)
-
 case class Invoice(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
                    id: Option[String] = None,
 
                    @JacksonXmlProperty(localName = "IssueDateTime", namespace = NS.dec)
                    issueDateTime: Option[DateTimeElement] = None)
-
-case class DomesticDutyTaxParty(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                                id: Option[String] = None, // max 17 chars
-
-                                @JacksonXmlProperty(localName = "RoleCode", namespace = NS.dec)
-                                roleCode: Option[String] = None) // max 3 chars
-
-case class Consignatory(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
-                        name: Option[String] = None, // max 70 chars
-
-                        @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                        id: Option[String] = None, // max 17 chars
-
-                        @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
-                        address: Option[Address] = None)
-
-case class Buyer(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
-                 name: Option[String] = None, // max 70 chars
-
-                 @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                 id: Option[String] = None, // max 17 chars
-
-                 @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
-                 address: Option[Address] = None,
-
-                 @JacksonXmlProperty(localName = "Contact", namespace = NS.dec)
-                 contacts: Seq[Contact] = Seq.empty,
-
-                 @JacksonXmlProperty(localName = "Communication", namespace = NS.dec)
-                 communications: Seq[Communication] = Seq.empty)
-
-case class AeoMutualRecognitionParty(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                                     id: Option[String] = None, // max 17 chars
-
-                                     @JacksonXmlProperty(localName = "RoleCode", namespace = NS.dec)
-                                     roleCode: Option[String] = None) // max 3 chars
 
 case class Warehouse(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
                      id: Option[String] = None, // max 35 chars
@@ -405,21 +304,6 @@ case class Ucr(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
 
                @JacksonXmlProperty(localName = "TraderAssignedReferenceID", namespace = NS.dec)
                traderAssignedReferenceId: Option[String] = None) // max 35 chars
-
-case class Importer(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
-                    name: Option[String] = None, // max 70 chars
-
-                    @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                    id: Option[String] = None, // max 17 chars
-
-                    @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
-                    address: Option[Address] = None,
-
-                    @JacksonXmlProperty(localName = "Contact", namespace = NS.dec)
-                    contacts: Seq[Contact] = Seq.empty,
-
-                    @JacksonXmlProperty(localName = "Communication", namespace = NS.dec)
-                    communications: Seq[Communication] = Seq.empty)
 
 case class Consignment(@JacksonXmlProperty(localName = "ContainerCode", namespace = NS.dec)
                        containerCode: Option[String] = None, // max 3 chars
@@ -539,19 +423,19 @@ case class GovernmentAgencyGoodsItem(@JacksonXmlProperty(localName = "CustomsVal
                                      additionalInformations: Seq[AdditionalInformation] = Seq.empty,
 
                                      @JacksonXmlProperty(localName = "AEOMutualRecognitionParty", namespace = NS.dec)
-                                     aeoMutualRecognitionParties: Seq[AeoMutualRecognitionParty] = Seq.empty,
+                                     aeoMutualRecognitionParties: Seq[RoleBasedParty] = Seq.empty,
 
                                      @JacksonXmlProperty(localName = "Buyer", namespace = NS.dec)
-                                     buyer: Option[Buyer] = None,
+                                     buyer: Option[ImportExportParty] = None,
 
                                      @JacksonXmlProperty(localName = "Commodity", namespace = NS.dec)
                                      commodity: Option[Commodity] = None,
 
                                      @JacksonXmlProperty(localName = "Consignee", namespace = NS.dec)
-                                     consignee: Option[Consignatory] = None,
+                                     consignee: Option[NamedEntityWithAddress] = None,
 
                                      @JacksonXmlProperty(localName = "Consignor", namespace = NS.dec)
-                                     consignor: Option[Consignatory] = None,
+                                     consignor: Option[NamedEntityWithAddress] = None,
 
                                      @JacksonXmlProperty(localName = "CustomsValuation", namespace = NS.dec)
                                      customsValuation: Option[CustomsValuation] = None,
@@ -560,7 +444,7 @@ case class GovernmentAgencyGoodsItem(@JacksonXmlProperty(localName = "CustomsVal
                                      destination: Option[Destination] = None,
 
                                      @JacksonXmlProperty(localName = "DomesticDutyTaxParty", namespace = NS.dec)
-                                     domesticDutyTaxParties: Seq[DomesticDutyTaxParty] = Seq.empty,
+                                     domesticDutyTaxParties: Seq[RoleBasedParty] = Seq.empty,
 
                                      @JacksonXmlProperty(localName = "ExportCountry", namespace = NS.dec)
                                      exportCountry: Option[ExportCountry] = None,
@@ -569,7 +453,7 @@ case class GovernmentAgencyGoodsItem(@JacksonXmlProperty(localName = "CustomsVal
                                      governmentProcedures: Seq[GovernmentProcedure] = Seq.empty,
 
                                      @JacksonXmlProperty(localName = "Manufacturer", namespace = NS.dec)
-                                     manufacturers: Seq[Manufacturer] = Seq.empty,
+                                     manufacturers: Seq[NamedEntityWithAddress] = Seq.empty,
 
                                      @JacksonXmlProperty(localName = "Origin", namespace = NS.dec)
                                      origins: Seq[Origin] = Seq.empty,
@@ -581,49 +465,16 @@ case class GovernmentAgencyGoodsItem(@JacksonXmlProperty(localName = "CustomsVal
                                      previousDocuments: Seq[PreviousDocument] = Seq.empty,
 
                                      @JacksonXmlProperty(localName = "RefundRecipientParty", namespace = NS.dec)
-                                     refundRecipientParties: Seq[RefundRecipientParty] = Seq.empty,
+                                     refundRecipientParties: Seq[NamedEntityWithAddress] = Seq.empty,
 
                                      @JacksonXmlProperty(localName = "Seller", namespace = NS.dec)
-                                     seller: Option[Seller] = None,
+                                     seller: Option[ImportExportParty] = None,
 
                                      @JacksonXmlProperty(localName = "UCR", namespace = NS.dec)
                                      ucr: Option[Ucr] = None,
 
                                      @JacksonXmlProperty(localName = "ValuationAdjustment", namespace = NS.dec)
                                      valuationAdjustment: Option[ValuationAdjustment] = None)
-
-case class Seller(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
-                  name: Option[String] = None, // max 70 chars
-
-                  @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                  id: Option[String] = None, // max 17 chars
-
-                  @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
-                  address: Option[Address] = None,
-
-                  @JacksonXmlProperty(localName = "Contact", namespace = NS.dec)
-                  contacts: Seq[Contact] = Seq.empty,
-
-                  @JacksonXmlProperty(localName = "Communication", namespace = NS.dec)
-                  communications: Seq[Communication] = Seq.empty)
-
-case class RefundRecipientParty(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
-                                name: Option[String] = None, // max 70 chars
-
-                                @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                                id: Option[String] = None, // max 17 chars
-
-                                @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
-                                address: Option[Address] = None)
-
-case class Manufacturer(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
-                        name: Option[String] = None, // max 70 chars
-
-                        @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                        id: Option[String] = None, // max 17 chars
-
-                        @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
-                        address: Option[Address] = None)
 
 case class GovernmentAgencyGoodsItemAdditionalDocument(@JacksonXmlProperty(localName = "CategoryCode", namespace = NS.dec)
                                                        categoryCode: Option[String] = None, // max 3 chars
@@ -715,15 +566,6 @@ case class AdditionalInformation(@JacksonXmlProperty(localName = "StatementCode"
 
                                  @JacksonXmlProperty(localName = "Pointer", namespace = NS.dec)
                                  pointers: Seq[Pointer] = Seq.empty) // pointers not permitted when used as part of GovernmentAgencyGoodsItem
-
-case class Pointer(@JacksonXmlProperty(localName = "SequenceNumeric", namespace = NS.dec)
-                   sequenceNumeric: Option[Int] = None, // min 0 max 99999
-
-                   @JacksonXmlProperty(localName = "DocumentSectionCode", namespace = NS.dec)
-                   documentSectionCode: Option[String] = None, // max 3 chars
-
-                   @JacksonXmlProperty(localName = "TagID", namespace = NS.dec)
-                   tagId: Option[String] = None) // max 4 chars
 
 case class Commodity(@JacksonXmlProperty(localName = "Description", namespace = NS.dec)
                      description: Option[String] = None, // max 512 chars
@@ -858,13 +700,7 @@ case class ObligationGuarantee(@JacksonXmlProperty(localName = "AmountAmount", n
                                accessCode: Option[String] = None, // max 4 chars
 
                                @JacksonXmlProperty(localName = "GuaranteeOffice", namespace = NS.dec)
-                               guaranteeOffice: Option[GuaranteeOffice] = None)
-
-case class GuaranteeOffice(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                           id: Option[String] = None) // max 17 chars
-
-case class SupervisingOffice(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
-                             id: Option[String] = None) // max 17 chars
+                               guaranteeOffice: Option[Office] = None)
 
 /* --------------------- PLACE THE MORE GENERIC, RE-USABLE TYPES BELOW -------------------- */
 
@@ -910,9 +746,51 @@ case class DateTimeString(@JacksonXmlProperty(localName = "formatCode", isAttrib
                           @JacksonXmlText
                           value: String) // max 35 chars
 
+case class ImportExportParty(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
+                             name: Option[String] = None, // max 70 chars
+
+                             @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
+                             id: Option[String] = None, // max 17 chars
+
+                             @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
+                             address: Option[Address] = None,
+
+                             @JacksonXmlProperty(localName = "Contact", namespace = NS.dec)
+                             contacts: Seq[Contact] = Seq.empty,
+
+                             @JacksonXmlProperty(localName = "Communication", namespace = NS.dec)
+                             communications: Seq[Communication] = Seq.empty)
+
 case class Measure(@JacksonXmlProperty(localName = "unitCode", isAttribute = true)
                    unitCode: Option[String] = None, // min 1 max 5 chars when specified
 
                    @JacksonXmlText
                    value: Option[BigDecimal] = None) // scale 16 precision 6
 
+case class NamedEntityWithAddress(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
+                                  name: Option[String] = None, // max 70 chars
+
+                                  @JacksonXmlProperty(localName = "ID", namespace = NS.dec)
+                                  id: Option[String] = None, // max 17 chars
+
+                                  @JacksonXmlProperty(localName = "Address", namespace = NS.dec)
+                                  address: Option[Address] = None)
+
+case class Office(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
+                  id: Option[String]) // max 17 chars
+
+case class Pointer(@JacksonXmlProperty(localName = "SequenceNumeric", namespace = NS.dec)
+                   sequenceNumeric: Option[Int] = None, // min 0 max 99999
+
+                   @JacksonXmlProperty(localName = "DocumentSectionCode", namespace = NS.dec)
+                   documentSectionCode: Option[String] = None, // max 3 chars
+
+                   @JacksonXmlProperty(localName = "TagID", namespace = NS.dec)
+                   tagId: Option[String] = None) // max 4 chars
+
+
+case class RoleBasedParty(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
+                          id: Option[String] = None, // max 17 chars
+
+                          @JacksonXmlProperty(localName = "RoleCode", namespace = NS.dec)
+                          roleCode: Option[String] = None) // max 3 chars

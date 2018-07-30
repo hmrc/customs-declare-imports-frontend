@@ -319,7 +319,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Submitter Name" in validDeclarationXmlScenario() {
       val name = randomString(70)
       val meta = MetaData(declaration = Declaration(
-        submitter = Some(Submitter(
+        submitter = Some(NamedEntityWithAddress(
           name = Some(name)
         ))
       ))
@@ -331,7 +331,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Submitter ID" in validDeclarationXmlScenario() {
       val id = randomString(17)
       val meta = MetaData(declaration = Declaration(
-        submitter = Some(Submitter(
+        submitter = Some(NamedEntityWithAddress(
           id = Some(id)
         ))
       ))
@@ -343,7 +343,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Submitter Address CityName" in validDeclarationXmlScenario() {
       val name = randomString(35)
       val meta = MetaData(declaration = Declaration(
-        submitter = Some(Submitter(
+        submitter = Some(NamedEntityWithAddress(
           address = Some(Address(
             cityName = Some(name)
           ))
@@ -357,7 +357,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Submitter Address CountryCode" in validDeclarationXmlScenario() {
       val code = randomISO3166Alpha2CountryCode
       val meta = MetaData(declaration = Declaration(
-        submitter = Some(Submitter(
+        submitter = Some(NamedEntityWithAddress(
           address = Some(Address(
             countryCode = Some(code)
           ))
@@ -371,7 +371,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Submitter Address CountrySubDivisionCode" in validDeclarationXmlScenario() {
       val code = randomString(9)
       val meta = MetaData(declaration = Declaration(
-        submitter = Some(Submitter(
+        submitter = Some(NamedEntityWithAddress(
           address = Some(Address(
             countrySubDivisionCode = Some(code)
           ))
@@ -385,7 +385,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Submitter Address CountrySubDivisionName" in validDeclarationXmlScenario() {
       val name = randomString(35)
       val meta = MetaData(declaration = Declaration(
-        submitter = Some(Submitter(
+        submitter = Some(NamedEntityWithAddress(
           address = Some(Address(
             countrySubDivisionName = Some(name)
           ))
@@ -399,7 +399,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Submitter Address Line" in validDeclarationXmlScenario() {
       val line = randomString(35)
       val meta = MetaData(declaration = Declaration(
-        submitter = Some(Submitter(
+        submitter = Some(NamedEntityWithAddress(
           address = Some(Address(
             line = Some(line)
           ))
@@ -413,7 +413,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Submitter Address PostcodeID" in validDeclarationXmlScenario() {
       val id = randomString(9)
       val meta = MetaData(declaration = Declaration(
-        submitter = Some(Submitter(
+        submitter = Some(NamedEntityWithAddress(
           address = Some(Address(
             postcodeId = Some(id)
           ))
@@ -770,7 +770,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       val name = randomString(70)
       val meta = MetaData(
         declaration = Declaration(
-          declarant = Some(Declarant(
+          declarant = Some(ImportExportParty(
             name = Some(name)
           ))
         )
@@ -784,7 +784,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       val id = randomString(17)
       val meta = MetaData(
         declaration = Declaration(
-          declarant = Some(Declarant(
+          declarant = Some(ImportExportParty(
             id = Some(id)
           ))
         )
@@ -797,7 +797,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Declarant Address CityName" in validDeclarationXmlScenario() {
       val name = randomString(35)
       val meta = MetaData(declaration = Declaration(
-        declarant = Some(Declarant(
+        declarant = Some(ImportExportParty(
           address = Some(Address(
             cityName = Some(name)
           ))
@@ -811,7 +811,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Declarant Address CountryCode" in validDeclarationXmlScenario() {
       val code = randomISO3166Alpha2CountryCode
       val meta = MetaData(declaration = Declaration(
-        declarant = Some(Declarant(
+        declarant = Some(ImportExportParty(
           address = Some(Address(
             countryCode = Some(code)
           ))
@@ -825,7 +825,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Declarant Address CountrySubDivisionCode" in validDeclarationXmlScenario() {
       val code = randomString(9)
       val meta = MetaData(declaration = Declaration(
-        declarant = Some(Declarant(
+        declarant = Some(ImportExportParty(
           address = Some(Address(
             countrySubDivisionCode = Some(code)
           ))
@@ -839,7 +839,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Declarant Address CountrySubDivisionName" in validDeclarationXmlScenario() {
       val name = randomString(35)
       val meta = MetaData(declaration = Declaration(
-        declarant = Some(Declarant(
+        declarant = Some(ImportExportParty(
           address = Some(Address(
             countrySubDivisionName = Some(name)
           ))
@@ -853,7 +853,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Declarant Address Line" in validDeclarationXmlScenario() {
       val line = randomString(35)
       val meta = MetaData(declaration = Declaration(
-        declarant = Some(Declarant(
+        declarant = Some(ImportExportParty(
           address = Some(Address(
             line = Some(line)
           ))
@@ -867,7 +867,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Declarant Address PostcodeID" in validDeclarationXmlScenario() {
       val id = randomString(9)
       val meta = MetaData(declaration = Declaration(
-        declarant = Some(Declarant(
+        declarant = Some(ImportExportParty(
           address = Some(Address(
             postcodeId = Some(id)
           ))
@@ -881,8 +881,8 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Declarant Contact Name" in validDeclarationXmlScenario() {
       val name = randomString(70)
       val meta = MetaData(declaration = Declaration(
-        declarant = Some(Declarant(
-          contact = Some(Contact(
+        declarant = Some(ImportExportParty(
+          contacts = Seq(Contact(
             name = Some(name)
           ))
         ))
@@ -895,7 +895,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Declarant Communication ID" in validDeclarationXmlScenario() {
       val id = randomString(50)
       val meta = MetaData(declaration = Declaration(
-        declarant = Some(Declarant(
+        declarant = Some(ImportExportParty(
           communications = Seq(Communication(
             id = Some(id)
           ))
@@ -909,7 +909,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Declarant Communication Type Code" in validDeclarationXmlScenario() {
       val code = randomString(3)
       val meta = MetaData(declaration = Declaration(
-        declarant = Some(Declarant(
+        declarant = Some(ImportExportParty(
           communications = Seq(Communication(
             typeCode = Some(code)
           ))
@@ -923,7 +923,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Exit Office ID" in validDeclarationXmlScenario() {
       val id = randomString(17)
       val meta = MetaData(declaration = Declaration(
-        exitOffice = Some(ExitOffice(
+        exitOffice = Some(Office(
           id = Some(id)
         ))
       ))
@@ -935,7 +935,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Exporter Name" in validDeclarationXmlScenario() {
       val name = randomString(70)
       val meta = MetaData(declaration = Declaration(
-        exporter = Some(Exporter(
+        exporter = Some(ImportExportParty(
           name = Some(name)
         ))
       ))
@@ -947,7 +947,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Exporter ID" in validDeclarationXmlScenario() {
       val id = randomString(17)
       val meta = MetaData(declaration = Declaration(
-        exporter = Some(Exporter(
+        exporter = Some(ImportExportParty(
           id = Some(id)
         ))
       ))
@@ -959,7 +959,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Exporter Address CityName" in validDeclarationXmlScenario() {
       val name = randomString(35)
       val meta = MetaData(declaration = Declaration(
-        exporter = Some(Exporter(
+        exporter = Some(ImportExportParty(
           address = Some(Address(
             cityName = Some(name)
           ))
@@ -973,7 +973,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Exporter Address CountryCode" in validDeclarationXmlScenario() {
       val code = randomISO3166Alpha2CountryCode
       val meta = MetaData(declaration = Declaration(
-        exporter = Some(Exporter(
+        exporter = Some(ImportExportParty(
           address = Some(Address(
             countryCode = Some(code)
           ))
@@ -987,7 +987,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Exporter Address CountrySubDivisionCode" in validDeclarationXmlScenario() {
       val code = randomString(9)
       val meta = MetaData(declaration = Declaration(
-        exporter = Some(Exporter(
+        exporter = Some(ImportExportParty(
           address = Some(Address(
             countrySubDivisionCode = Some(code)
           ))
@@ -1001,7 +1001,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Exporter Address CountrySubDivisionName" in validDeclarationXmlScenario() {
       val name = randomString(35)
       val meta = MetaData(declaration = Declaration(
-        exporter = Some(Exporter(
+        exporter = Some(ImportExportParty(
           address = Some(Address(
             countrySubDivisionName = Some(name)
           ))
@@ -1015,7 +1015,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Exporter Address Line" in validDeclarationXmlScenario() {
       val line = randomString(35)
       val meta = MetaData(declaration = Declaration(
-        exporter = Some(Exporter(
+        exporter = Some(ImportExportParty(
           address = Some(Address(
             line = Some(line)
           ))
@@ -1029,7 +1029,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Exporter Address PostcodeID" in validDeclarationXmlScenario() {
       val id = randomString(9)
       val meta = MetaData(declaration = Declaration(
-        exporter = Some(Exporter(
+        exporter = Some(ImportExportParty(
           address = Some(Address(
             postcodeId = Some(id)
           ))
@@ -1043,7 +1043,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Exporter Contact Name" in validDeclarationXmlScenario() {
       val name = randomString(70)
       val meta = MetaData(declaration = Declaration(
-        exporter = Some(Exporter(
+        exporter = Some(ImportExportParty(
           contacts = Seq(Contact(
             name = Some(name)
           ))
@@ -1057,7 +1057,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Exporter Communication ID" in validDeclarationXmlScenario() {
       val id = randomString(50)
       val meta = MetaData(declaration = Declaration(
-        exporter = Some(Exporter(
+        exporter = Some(ImportExportParty(
           communications = Seq(Communication(
             id = Some(id)
           ))
@@ -1071,7 +1071,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Exporter Communication Type Code" in validDeclarationXmlScenario() {
       val code = randomString(3)
       val meta = MetaData(declaration = Declaration(
-        exporter = Some(Exporter(
+        exporter = Some(ImportExportParty(
           communications = Seq(Communication(
             typeCode = Some(code)
           ))
@@ -1146,7 +1146,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       val id = randomString(17)
       val meta = MetaData(declaration = Declaration(
         obligationGuarantees = Seq(ObligationGuarantee(
-          guaranteeOffice = Some(GuaranteeOffice(
+          guaranteeOffice = Some(Office(
             id = Some(id)
           ))
         ))
@@ -1159,7 +1159,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Presentation Office ID" in validDeclarationXmlScenario() {
       val id = randomString(17)
       val meta = MetaData(declaration = Declaration(
-        presentationOffice = Some(PresentationOffice(
+        presentationOffice = Some(Office(
           id = Some(id)
         ))
       ))
@@ -1171,7 +1171,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
     "include Supervising Office ID" in validDeclarationXmlScenario() {
       val id = randomString(17)
       val meta = MetaData(declaration = Declaration(
-        supervisingOffice = Some(SupervisingOffice(
+        supervisingOffice = Some(Office(
           id = Some(id)
         ))
       ))

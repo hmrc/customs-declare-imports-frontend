@@ -285,7 +285,7 @@ case class SubmissionSubmitterForm(name: Option[String] = None,
                          id: Option[String] = None,
                          address: SubmissionAddressForm = SubmissionAddressForm()) {
 
-  def toSubmitter: Submitter = Submitter(
+  def toSubmitter: NamedEntityWithAddress = NamedEntityWithAddress(
     name = name,
     id = id,
     address = address.toAddress
