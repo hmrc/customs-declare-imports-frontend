@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-package domain.declaration
+package domain.wco
 
+import java.io.StringWriter
+
+import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonInclude}
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.dataformat.xml.{JacksonXmlModule, XmlMapper}
 import com.fasterxml.jackson.dataformat.xml.annotation.{JacksonXmlProperty, JacksonXmlRootElement, JacksonXmlText}
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+
+import scala.xml.{Elem, XML}
 
 /*
 MetaData and Declaration schema generally consists of xsd:sequence definitions the order of which is reflected in the
@@ -25,12 +33,13 @@ field order of the case classes.
 DO NOT CHANGE the field order on any of the case classes unless the XSD requires it.
  */
 
-private[declaration] object NS {
+private[wco] object NS {
   final val dms = "urn:wco:datamodel:WCO:DocumentMetaData-DMS:2"
   final val dec = "urn:wco:datamodel:WCO:DEC-DMS:2"
   final val ds = "urn:wco:datamodel:WCO:Declaration_DS:DMS:2"
 }
 
+@JsonIgnoreProperties(Array("_module", "_mapper"))
 @JacksonXmlRootElement(namespace = NS.dms, localName = "MetaData")
 case class MetaData(@JacksonXmlProperty(localName = "WCODataModelVersionCode", namespace = NS.dms)
                     wcoDataModelVersionCode: Option[String] = None, // max 6 chars
@@ -51,7 +60,24 @@ case class MetaData(@JacksonXmlProperty(localName = "WCODataModelVersionCode", n
                     agencyAssignedCustomizationVersionCode: Option[String] = None, // max 3 chars
 
                     @JacksonXmlProperty(localName = "Declaration", namespace = NS.dec)
-                    declaration: Declaration = Declaration())
+                    declaration: Declaration = Declaration()) {
+
+  private val _module = new JacksonXmlModule()
+  _module.setDefaultUseWrapper(false)
+  private val _mapper = new XmlMapper(_module)
+  _mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+  _mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+  _mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+  _mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
+  _mapper.registerModule(DefaultScalaModule)
+
+  def toXml: Elem = {
+    val sw = new StringWriter()
+    _mapper.writeValue(sw, this)
+    XML.loadString(sw.toString)
+  }
+
+}
 
 case class Declaration(@JacksonXmlProperty(localName = "AcceptanceDateTime", namespace = NS.dec)
                        acceptanceDateTime: Option[DateTimeElement] = None,
@@ -72,7 +98,7 @@ case class Declaration(@JacksonXmlProperty(localName = "AcceptanceDateTime", nam
                        issueLocationId: Option[String] = None, // max 5 chars
 
                        @JacksonXmlProperty(localName = "TypeCode", namespace = NS.dec)
-                       typeCode: Option[String] = None, // max 3 chars
+                       typeCode: Option[String] = None, // max 3 chars; MUST be "INV" in cancellation use case
 
                        @JacksonXmlProperty(localName = "GoodsItemQuantity", namespace = NS.dec)
                        goodsItemQuantity: Option[Int] = None, // unsigned int max 99999
@@ -111,7 +137,7 @@ case class Declaration(@JacksonXmlProperty(localName = "AcceptanceDateTime", nam
                        agent: Option[Agent] = None,
 
                        @JacksonXmlProperty(localName = "Amendment", namespace = NS.dec)
-                       amendments: Seq[String] = Seq.empty,
+                       amendments: Seq[Amendment] = Seq.empty,
 
                        @JacksonXmlProperty(localName = "AuthorisationHolder", namespace = NS.dec)
                        authorisationHolders: Seq[AuthorisationHolder] = Seq.empty,

@@ -18,7 +18,7 @@ package services
 
 import com.google.inject.Inject
 import config.AppConfig
-import domain.declaration._
+import domain.wco._
 import javax.inject.Singleton
 import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames, Status}
@@ -30,20 +30,19 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.Elem
 
 @Singleton
-class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends
-SubmissionMessageProducer with CustomsDeclarationsCancellationMessageProducer {
+class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends CustomsDeclarationsCancellationMessageProducer {
 
   def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    post(appConfig.submitImportDeclarationUri, produceDeclarationMessage(metaData), badgeIdentifier).map(_.status == Status.ACCEPTED)
+    post(appConfig.submitImportDeclarationUri, metaData.toXml, badgeIdentifier).map(_.status == Status.ACCEPTED)
   }
 
   def cancelImportDeclaration(metaData: domain.cancellation.MetaData, badgeIdentifier: Option[String] = None)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val payload = produceDeclarationCancellationMessage(metaData)
-    post(appConfig.cancelImportDeclarationUri,payload,badgeIdentifier).map(
-      _.status == Status.ACCEPTED).recover{
+    post(appConfig.cancelImportDeclarationUri, payload, badgeIdentifier).map(
+      _.status == Status.ACCEPTED).recover {
       case error: Throwable =>
-        Logger.error(s"Error in submitting declaratoin cancellation to API  with the error ${error.getMessage}" ); false
+        Logger.error(s"Error in submitting declaratoin cancellation to API  with the error ${error.getMessage}"); false
     }
   }
 

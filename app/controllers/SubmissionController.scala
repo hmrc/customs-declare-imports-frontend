@@ -17,7 +17,7 @@
 package controllers
 
 import config.AppConfig
-import domain.declaration._
+import domain.wco._
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
 import play.api.data.Form

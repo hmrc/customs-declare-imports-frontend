@@ -14,17 +14,41 @@
  * limitations under the License.
  */
 
-package services
+package domain.wco
 
-import domain.declaration
-import domain.declaration._
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
 
 import scala.xml.Elem
 
-class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
+class WCOSerializationSpec extends CustomsPlaySpec with XmlBehaviours {
 
-  val producer = new SubmissionMessageProducer {}
+  val cancellation = MetaData(
+    wcoDataModelVersionCode = Some(randomString(6)),
+    wcoTypeName = Some(randomString(712)),
+    responsibleCountryCode = Some(randomISO3166Alpha2CountryCode),
+    responsibleAgencyName = Some(randomString(70)),
+    agencyAssignedCustomizationVersionCode = Some(randomString(3)),
+    declaration = Declaration(
+      typeCode = Some("INV"), // ONLY acceptable value for a cancellation
+      functionCode = Some(13),
+      functionalReferenceId = Some(randomString(35)),
+      id = Some(randomString(70)),
+      submitter = Some(NamedEntityWithAddress(
+        name = Some(randomString(70)),
+        id = Some(randomString(17))
+      )),
+      amendments = Seq(Amendment(
+        changeReasonCode = Some(randomString(3))
+      )),
+      additionalInformations = Seq(AdditionalInformation(
+        statementDescription = Some(randomString(512)),
+        statementTypeCode = Some(randomString(3)),
+        pointers = Seq(Pointer(
+          documentSectionCode = Some(randomString(3))
+        ))
+      ))
+    )
+  )
 
   "produce declaration message" should {
 
@@ -1492,7 +1516,6 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       }
     }
 
-
     "include goods shipment consignment container code" in validDeclarationXmlScenario() {
       val code = randomInt(2).toString
       val meta = MetaData(declaration = Declaration(
@@ -1507,10 +1530,82 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       }
     }
 
+    "include Declaration AdditionalInformation Statement Description for cancellation" in validCancellationDeclarationXml() {
+      hasExpectedOutput(cancellation, cancellation.declaration.additionalInformations(0).statementDescription.get) { xml =>
+        (xml \ "Declaration" \ "AdditionalInformation" \ "StatementDescription").text.trim
+      }
+    }
+
+    "include Declaration AdditionalInformation Statement Type Code for cancellation" in validCancellationDeclarationXml() {
+      hasExpectedOutput(cancellation, cancellation.declaration.additionalInformations(0).statementTypeCode.get) { xml =>
+        (xml \ "Declaration" \ "AdditionalInformation" \ "StatementTypeCode").text.trim
+      }
+    }
+
+    "include Declaration AdditionalInformation Pointer Document Section Code for cancellation" in validCancellationDeclarationXml() {
+      hasExpectedOutput(cancellation, cancellation.declaration.additionalInformations(0).pointers(0).documentSectionCode.get) { xml =>
+        (xml \ "Declaration" \ "AdditionalInformation" \ "Pointer" \ "DocumentSectionCode").text.trim
+      }
+    }
+
+    "include Declaration Amendment Change Reason Code for cancellation" in validCancellationDeclarationXml() {
+      hasExpectedOutput(cancellation, cancellation.declaration.amendments(0).changeReasonCode.get) { xml =>
+        (xml \ "Declaration" \ "Amendment" \ "ChangeReasonCode").text.trim
+      }
+    }
+
+    "include Declaration Submitter name for cancellation" in validCancellationDeclarationXml() {
+      hasExpectedOutput(cancellation, cancellation.declaration.submitter.get.name.get) { xml =>
+        (xml \ "Declaration" \ "Submitter" \ "Name").text.trim
+      }
+    }
+
+    "include Declaration Submitter ID for cancellation" in validCancellationDeclarationXml() {
+      hasExpectedOutput(cancellation, cancellation.declaration.submitter.get.id.get) { xml =>
+        (xml \ "Declaration" \ "Submitter" \ "ID").text.trim
+      }
+    }
+
+    "include Declaration ID for cancellation" in validCancellationDeclarationXml() {
+      hasExpectedOutput(cancellation, cancellation.declaration.id.get) { xml =>
+        (xml \ "Declaration" \ "ID").text.trim
+      }
+    }
+
+    "include Declaration functional reference ID for cancellation" in validCancellationDeclarationXml() {
+      hasExpectedOutput(cancellation, cancellation.declaration.functionalReferenceId.get) { xml =>
+        (xml \ "Declaration" \ "FunctionalReferenceID").text.trim
+      }
+    }
+
+    "include Declaration function code for cancellation" in validCancellationDeclarationXml() {
+      hasExpectedOutput(cancellation, cancellation.declaration.functionCode.get) { xml =>
+        (xml \ "Declaration" \ "FunctionCode").text.trim.toInt
+      }
+    }
+
+    "include WCODataModelVersionCode for cancellation" in validCancellationDeclarationXml() {
+      hasExpectedOutput(cancellation, cancellation.wcoDataModelVersionCode.get) { xml =>
+        (xml \ "WCODataModelVersionCode").text.trim
+      }
+    }
+
+    "include WCOTypeName for cancellation" in validCancellationDeclarationXml() {
+      hasExpectedOutput(cancellation, cancellation.wcoTypeName.get) { xml =>
+        (xml \ "WCOTypeName").text.trim
+      }
+    }
+
+    "include AgencyAssignedCustomizationVersionCode for cancellation" in validCancellationDeclarationXml() {
+      hasExpectedOutput(cancellation, cancellation.agencyAssignedCustomizationVersionCode.get) { xml =>
+        (xml \ "AgencyAssignedCustomizationVersionCode").text.trim
+      }
+    }
+
   }
 
   def hasExpectedOutput[T](meta: MetaData, expected: T)(extractor: Elem => T): Elem = {
-    val xml = producer.produceDeclarationMessage(meta)
+    val xml = meta.toXml
     extractor(xml) must be(expected)
     xml
   }

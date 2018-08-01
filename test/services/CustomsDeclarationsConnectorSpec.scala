@@ -16,7 +16,7 @@
 
 package services
 
-import domain.declaration._
+import domain.wco._
 import play.api.http.{ContentTypes, HeaderNames}
 import play.api.mvc.Codec
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
@@ -49,9 +49,8 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
                                 forceServerError: Boolean = false,
                                 hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
                                (test: Future[Boolean] => Unit): Unit = {
-    val messageProducer = new SubmissionMessageProducer {}
     val expectedUrl: String = s"${appConfig.customsDeclarationsEndpoint}${appConfig.submitImportDeclarationUri}"
-    val expectedBody: String = messageProducer.produceDeclarationMessage(metaData).mkString
+    val expectedBody: String = metaData.toXml.mkString
     val expectedHeaders: Map[String, String] = Map(
       "X-Client-ID" -> appConfig.developerHubClientId,
       HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",

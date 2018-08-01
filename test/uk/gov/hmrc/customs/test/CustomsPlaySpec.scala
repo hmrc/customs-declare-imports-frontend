@@ -21,7 +21,7 @@ import akka.util.Timeout
 import com.gu.scalatest.JsoupShouldMatchers
 import config.AppConfig
 import domain.auth.SignedInUser
-import domain.declaration.Declaration
+import domain.wco.Declaration
 import org.jsoup.nodes.Element
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar

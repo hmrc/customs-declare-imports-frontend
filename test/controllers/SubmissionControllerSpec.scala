@@ -16,7 +16,7 @@
 
 package controllers
 
-import domain.declaration.Amount
+import domain.wco.Amount
 import domain.features.{Feature, FeatureStatus}
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours, WiremockBehaviours}
