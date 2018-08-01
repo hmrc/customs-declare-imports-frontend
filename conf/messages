@@ -1,0 +1,27 @@
+## Global
+global.error.experiencing-difficulties                              = Sorry, we''re experiencing technical difficulties
+
+## Common
+common.service.name                                                 = Declare an import
+common.button.next                                                  = Next
+common.button.continue                                              = Continue
+common.button.submit                                                = Submit
+common.button.save                                                  = Save
+common.button.save-and-continue                                     = Save and continue
+common.sign-in                                                      = Sign in
+common.sign-out                                                     = Sign out
+common.back                                                         = Back
+common.start-now.                                                   = Start now
+common.errorSummary.label                                           = This page has errors
+common.err.postcode.required                                        = Please enter a valid postcode
+common.home                                                         = Home
+common.phase                                                        = Alpha
+common.feedbackFirst                                                = This is a new service - your
+common.feedbackSecond                                               = feedback
+common.feedbackThird                                                = will help us to improve it.
+common.day                                                          = Day
+common.month                                                        = Month
+common.year                                                         = Year
+common.dateMessage                                                  = Enter the date in format dd mm yyyy
+common.dateExample                                                  = For example,
+common.button.ConfirmAndContinue                                    = Confirm and continue
