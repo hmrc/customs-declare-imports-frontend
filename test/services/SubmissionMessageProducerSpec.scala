@@ -16,6 +16,7 @@
 
 package services
 
+import domain.declaration
 import domain.declaration._
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
 
@@ -1137,7 +1138,7 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
       }
     }
 
-    "include Goods Shipment Exist Date Time" in validDeclarationXmlScenario() {
+    "include Goods Shipment Exit Date Time" in validDeclarationXmlScenario() {
       val formatCode = randomDateTimeFormatCode
       val dateTime = randomDateTimeString
       val meta = MetaData(declaration = Declaration(
@@ -1152,6 +1153,357 @@ class SubmissionMessageProducerSpec extends CustomsPlaySpec with XmlBehaviours {
           (xml \ "Declaration" \ "GoodsShipment" \ "ExitDateTime" \ "DateTimeString" \ "@formatCode").text.trim,
           (xml \ "Declaration" \ "GoodsShipment" \ "ExitDateTime" \ "DateTimeString").text.trim
         )
+      }
+    }
+
+    "include goods shipment transaction nature code" in validDeclarationXmlScenario() {
+      val code = randomInt(100)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          transactionNatureCode = Some(code)
+        ))
+      ))
+      hasExpectedOutput(meta, code) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "TransactionNatureCode").text.trim.toInt
+      }
+    }
+
+    "include goods shipment AEO mutual recognition party id" in validDeclarationXmlScenario() {
+      val id = randomString(17)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          aeoMutualRecognitionParties = Seq(RoleBasedParty(
+            id = Some(id)
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, id) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "AEOMutualRecognitionParty" \ "ID").text.trim
+      }
+    }
+
+    "include goods shipment AEO mutual recognition party role code" in validDeclarationXmlScenario() {
+      val code = randomString(3)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          aeoMutualRecognitionParties = Seq(RoleBasedParty(
+            roleCode = Some(code)
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, code) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "AEOMutualRecognitionParty" \ "RoleCode").text.trim
+      }
+    }
+
+    "include goods shipment buyer name" in validDeclarationXmlScenario() {
+      val name = randomString(70)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          buyer = Some(ImportExportParty(
+            name = Some(name)
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, name) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Buyer" \ "Name").text.trim
+      }
+    }
+
+    "include goods shipment buyer id" in validDeclarationXmlScenario() {
+      val id = randomString(17)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          buyer = Some(ImportExportParty(
+            id = Some(id)
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, id) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Buyer" \ "ID").text.trim
+      }
+    }
+
+    "include GoodsShipment Buyer Address CityName" in validDeclarationXmlScenario() {
+      val name = randomString(35)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          buyer = Some(ImportExportParty(
+            address = Some(Address(
+              cityName = Some(name)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, name) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Buyer" \ "Address" \ "CityName").text.trim
+      }
+    }
+
+    "include GoodsShipment Buyer Address CountryCode" in validDeclarationXmlScenario() {
+      val code = randomISO3166Alpha2CountryCode
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          buyer = Some(ImportExportParty(
+            address = Some(Address(
+              countryCode = Some(code)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, code) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Buyer" \ "Address" \ "CountryCode").text.trim
+      }
+    }
+
+    "include GoodsShipment Buyer Address CountrySubDivisionCode" in validDeclarationXmlScenario() {
+      val code = randomString(9)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          buyer = Some(ImportExportParty(
+            address = Some(Address(
+              countrySubDivisionCode = Some(code)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, code) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Buyer" \ "Address" \ "CountrySubDivisionCode").text.trim
+      }
+    }
+
+    "include GoodsShipment Buyer Address CountrySubDivisionName" in validDeclarationXmlScenario() {
+      val name = randomString(35)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          buyer = Some(ImportExportParty(
+            address = Some(Address(
+              countrySubDivisionName = Some(name)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, name) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Buyer" \ "Address" \ "CountrySubDivisionName").text.trim
+      }
+    }
+
+    "include GoodsShipment Buyer Address Line" in validDeclarationXmlScenario() {
+      val line = randomString(35)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          buyer = Some(ImportExportParty(
+            address = Some(Address(
+              line = Some(line)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, line) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Buyer" \ "Address" \ "Line").text.trim
+      }
+    }
+
+    "include GoodsShipment Buyer Address PostcodeID" in validDeclarationXmlScenario() {
+      val id = randomString(9)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          buyer = Some(ImportExportParty(
+            address = Some(Address(
+              postcodeId = Some(id)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, id) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Buyer" \ "Address" \ "PostcodeID").text.trim
+      }
+    }
+
+    "include GoodsShipment Buyer Contact Name" in validDeclarationXmlScenario() {
+      val name = randomString(70)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          buyer = Some(ImportExportParty(
+            contacts = Seq(Contact(
+              name = Some(name)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, name) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Buyer" \ "Contact" \ "Name").text.trim
+      }
+    }
+
+    "include GoodsShipment Buyer Communication ID" in validDeclarationXmlScenario() {
+      val id = randomString(50)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          buyer = Some(ImportExportParty(
+            communications = Seq(Communication(
+              id = Some(id)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, id) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Buyer" \ "Communication" \ "ID").text.trim
+      }
+    }
+
+    "include GoodsShipment Buyer Communication TypeCode" in validDeclarationXmlScenario() {
+      val code = randomString(3)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          buyer = Some(ImportExportParty(
+            communications = Seq(Communication(
+              typeCode = Some(code)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, code) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Buyer" \ "Communication" \ "TypeCode").text.trim
+      }
+    }
+
+    "include GoodsShipment Consignee Name" in validDeclarationXmlScenario() {
+      val name = randomString(70)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          consignee = Some(NamedEntityWithAddress(
+            name = Some(name)
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, name) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Consignee" \ "Name").text.trim
+      }
+    }
+
+    "include GoodsShipment Consignee ID" in validDeclarationXmlScenario() {
+      val id = randomString(17)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          consignee = Some(NamedEntityWithAddress(
+            id = Some(id)
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, id) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Consignee" \ "ID").text.trim
+      }
+    }
+
+    "include GoodsShipment Consignee Address CityName" in validDeclarationXmlScenario() {
+      val name = randomString(35)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          consignee = Some(NamedEntityWithAddress(
+            address = Some(Address(
+              cityName = Some(name)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, name) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Consignee" \ "Address" \ "CityName").text.trim
+      }
+    }
+
+    "include GoodsShipment Consignee Address CountryCode" in validDeclarationXmlScenario() {
+      val code = randomISO3166Alpha2CountryCode
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          consignee = Some(NamedEntityWithAddress(
+            address = Some(Address(
+              countryCode = Some(code)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, code) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Consignee" \ "Address" \ "CountryCode").text.trim
+      }
+    }
+
+    "include GoodsShipment Consignee Address CountrySubDivisionCode" in validDeclarationXmlScenario() {
+      val code = randomString(9)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          consignee = Some(NamedEntityWithAddress(
+            address = Some(Address(
+              countrySubDivisionCode = Some(code)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, code) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Consignee" \ "Address" \ "CountrySubDivisionCode").text.trim
+      }
+    }
+
+    "include GoodsShipment Consignee Address CountrySubDivisionName" in validDeclarationXmlScenario() {
+      val name = randomString(35)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          consignee = Some(NamedEntityWithAddress(
+            address = Some(Address(
+              countrySubDivisionName = Some(name)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, name) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Consignee" \ "Address" \ "CountrySubDivisionName").text.trim
+      }
+    }
+
+    "include GoodsShipment Consignee Address Line" in validDeclarationXmlScenario() {
+      val line = randomString(35)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          consignee = Some(NamedEntityWithAddress(
+            address = Some(Address(
+              line = Some(line)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, line) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Consignee" \ "Address" \ "Line").text.trim
+      }
+    }
+
+    "include GoodsShipment Consignee Address PostcodeID" in validDeclarationXmlScenario() {
+      val id = randomString(9)
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          consignee = Some(NamedEntityWithAddress(
+            address = Some(Address(
+              postcodeId = Some(id)
+            ))
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, id) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Consignee" \ "Address" \ "PostcodeID").text.trim
+      }
+    }
+
+
+    "include goods shipment consignment container code" in validDeclarationXmlScenario() {
+      val code = randomInt(2).toString
+      val meta = MetaData(declaration = Declaration(
+        goodsShipment = Some(GoodsShipment(
+          consignment = Some(Consignment(
+            containerCode = Some(code)
+          ))
+        ))
+      ))
+      hasExpectedOutput(meta, code) { xml =>
+        (xml \ "Declaration" \ "GoodsShipment" \ "Consignment" \ "ContainerCode").text.trim
       }
     }
 

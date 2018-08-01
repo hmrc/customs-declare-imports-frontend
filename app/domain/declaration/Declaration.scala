@@ -306,7 +306,7 @@ case class Ucr(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
                traderAssignedReferenceId: Option[String] = None) // max 35 chars
 
 case class Consignment(@JacksonXmlProperty(localName = "ContainerCode", namespace = NS.dec)
-                       containerCode: Option[String] = None, // max 3 chars
+                       containerCode: Option[String] = None, // max 3 chars; must be "0" or "1"; modeled as String rather than Int *only* to match schema
 
                        @JacksonXmlProperty(localName = "ArrivalTransportMeans", namespace = NS.dec)
                        arrivalTransportMeans: Option[TransportMeans] = None,
