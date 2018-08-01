@@ -16,17 +16,15 @@
 
 package controllers
 
-import domain.features.{FeatureStatus, Feature}
+import domain.features.{Feature, FeatureStatus}
 import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.{WiremockBehaviours, FeatureSwitchBehaviours, AuthenticationBehaviours, CustomsPlaySpec}
-
+import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours, WiremockBehaviours}
 
 class CancelControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours with WiremockBehaviours {
 
   val method = "GET"
   val handleMethod = "POST"
   val uri = uriWithContextPath("/cancel-declaration")
-
 
   s"$method $uri" should {
 
@@ -68,94 +66,13 @@ class CancelControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours
       }
     }
 
-        "include a text input for WCO type name" in featureScenario(Feature.cancel, FeatureStatus.enabled) {
-          signedInScenario() {
-            userRequestScenario(method, uri) { resp =>
-              includesHtmlInput(resp, "text", "metaData.wcoTypeName")
-            }
-          }
+    "include a text input for WCO type name" in featureScenario(Feature.cancel, FeatureStatus.enabled) {
+      signedInScenario() {
+        userRequestScenario(method, uri) { resp =>
+          includesHtmlInput(resp, "text", "metaData.wcoTypeName")
         }
-    /*
-           "include a text input for Responsible Country Code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-             signedInScenario() {
-               userRequestScenario(method, uri) { resp =>
-                 includesHtmlInput(resp, "text", "metaData.responsibleCountryCode")
-               }
-             }
-           }
-
-           "include a text input for Responsible Agency Name" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-             signedInScenario() {
-               userRequestScenario(method, uri) { resp =>
-                 includesHtmlInput(resp, "text", "metaData.responsibleAgencyName")
-               }
-             }
-           }
-
-           "include a text input for Agency Assigned Customization Code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-             signedInScenario() {
-               userRequestScenario(method, uri) { resp =>
-                 includesHtmlInput(resp, "text", "metaData.agencyAssignedCustomizationCode")
-               }
-             }
-           }
-
-           "include a text input for Agency Assigned Customization Version Code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-             signedInScenario() {
-               userRequestScenario(method, uri) { resp =>
-                 includesHtmlInput(resp, "text", "metaData.agencyAssignedCustomizationVersionCode")
-               }
-             }
-           }
-
-           "include a text input for Badge ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-             signedInScenario() {
-               userRequestScenario(method, uri) { resp =>
-                 includesHtmlInput(resp, "text", "badgeId")
-               }
-             }
-           }
-
-           "include a text input for Acceptance Date Time" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-             signedInScenario() {
-               userRequestScenario(method, uri) { resp =>
-                 includesHtmlInput(resp, "text", "metaData.declaration.acceptanceDateTime")
-               }
-             }
-           }
-
-           "include a text input for Acceptance Date Time format code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-             signedInScenario() {
-               userRequestScenario(method, uri) { resp =>
-                 includesHtmlInput(resp, "text", "metaData.declaration.acceptanceDateTimeFormatCode")
-               }
-             }
-           }
-
-           "include a text input for Function Code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-             signedInScenario() {
-               userRequestScenario(method, uri) { resp =>
-                 includesHtmlInput(resp, "text", "metaData.declaration.functionCode")
-               }
-             }
-           }
-
-           "include a text input for Functional Reference ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-             signedInScenario() {
-               userRequestScenario(method, uri) { resp =>
-                 includesHtmlInput(resp, "text", "metaData.declaration.functionalReferenceId")
-               }
-             }
-           }
-
-           "include a text input for ID" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-             signedInScenario() {
-               userRequestScenario(method, uri) { resp =>
-                 includesHtmlInput(resp, "text", "metaData.declaration.id")
-               }
-             }
-           }*/
+      }
+    }
   }
-
 
 }

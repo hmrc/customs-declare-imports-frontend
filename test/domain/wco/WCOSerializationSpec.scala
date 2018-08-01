@@ -22,33 +22,7 @@ import scala.xml.Elem
 
 class WCOSerializationSpec extends CustomsPlaySpec with XmlBehaviours {
 
-  val cancellation = MetaData(
-    wcoDataModelVersionCode = Some(randomString(6)),
-    wcoTypeName = Some(randomString(712)),
-    responsibleCountryCode = Some(randomISO3166Alpha2CountryCode),
-    responsibleAgencyName = Some(randomString(70)),
-    agencyAssignedCustomizationVersionCode = Some(randomString(3)),
-    declaration = Declaration(
-      typeCode = Some("INV"), // ONLY acceptable value for a cancellation
-      functionCode = Some(13),
-      functionalReferenceId = Some(randomString(35)),
-      id = Some(randomString(70)),
-      submitter = Some(NamedEntityWithAddress(
-        name = Some(randomString(70)),
-        id = Some(randomString(17))
-      )),
-      amendments = Seq(Amendment(
-        changeReasonCode = Some(randomString(3))
-      )),
-      additionalInformations = Seq(AdditionalInformation(
-        statementDescription = Some(randomString(512)),
-        statementTypeCode = Some(randomString(3)),
-        pointers = Seq(Pointer(
-          documentSectionCode = Some(randomString(3))
-        ))
-      ))
-    )
-  )
+  val cancellation = randomCancelDeclaration
 
   "produce declaration message" should {
 

@@ -30,15 +30,15 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.Elem
 
 @Singleton
-class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends CustomsDeclarationsCancellationMessageProducer {
+class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient) {
 
   def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     post(appConfig.submitImportDeclarationUri, metaData.toXml, badgeIdentifier).map(_.status == Status.ACCEPTED)
   }
 
-  def cancelImportDeclaration(metaData: domain.cancellation.MetaData, badgeIdentifier: Option[String] = None)
+  def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    val payload = produceDeclarationCancellationMessage(metaData)
+    val payload = metaData.toXml
     post(appConfig.cancelImportDeclarationUri, payload, badgeIdentifier).map(
       _.status == Status.ACCEPTED).recover {
       case error: Throwable =>

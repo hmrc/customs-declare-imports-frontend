@@ -21,7 +21,7 @@ import akka.util.Timeout
 import com.gu.scalatest.JsoupShouldMatchers
 import config.AppConfig
 import domain.auth.SignedInUser
-import domain.wco.Declaration
+import domain.wco._
 import org.jsoup.nodes.Element
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
@@ -90,6 +90,34 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
     Enrolments(
       if (eori.isDefined) Set(Enrolment(SignedInUser.cdsEnrolmentName, Seq(EnrolmentIdentifier(SignedInUser.eoriIdentifierKey, eori.get)), "activated"))
       else Set.empty
+    )
+  )
+
+  protected def randomCancelDeclaration: MetaData = MetaData(
+    wcoDataModelVersionCode = Some(randomString(6)),
+    wcoTypeName = Some(randomString(712)),
+    responsibleCountryCode = Some(randomISO3166Alpha2CountryCode),
+    responsibleAgencyName = Some(randomString(70)),
+    agencyAssignedCustomizationVersionCode = Some(randomString(3)),
+    declaration = Declaration(
+      typeCode = Some("INV"), // ONLY acceptable value for a cancellation
+      functionCode = Some(13),
+      functionalReferenceId = Some(randomString(35)),
+      id = Some(randomString(70)),
+      submitter = Some(NamedEntityWithAddress(
+        name = Some(randomString(70)),
+        id = Some(randomString(17))
+      )),
+      amendments = Seq(Amendment(
+        changeReasonCode = Some(randomString(3))
+      )),
+      additionalInformations = Seq(AdditionalInformation(
+        statementDescription = Some(randomString(512)),
+        statementTypeCode = Some(randomString(3)),
+        pointers = Seq(Pointer(
+          documentSectionCode = Some(randomString(3))
+        ))
+      ))
     )
   )
 
