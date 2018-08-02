@@ -54,14 +54,14 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: H
     )
   }
 
-  private[services] def post(uri: String, body: Elem, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
+  private[services] def post(uri: String, body: String, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
     val headers: Seq[(String, String)] = Seq(
       "X-Client-ID" -> appConfig.developerHubClientId,
       HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
     ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
     Logger.debug("URL is " + s"${appConfig.customsDeclarationsEndpoint}$uri")
-    httpClient.POSTString[CustomsDeclarationsResponse](s"${appConfig.customsDeclarationsEndpoint}$uri", body.mkString, headers)(responseReader, hc, ec)
+    httpClient.POSTString[CustomsDeclarationsResponse](s"${appConfig.customsDeclarationsEndpoint}$uri", body, headers)(responseReader, hc, ec)
   }
 
 }

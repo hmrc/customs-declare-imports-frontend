@@ -18,9 +18,9 @@ package domain.wco
 
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
 
-import scala.xml.Elem
+import scala.xml.{Elem, XML}
 
-class WCOSerializationSpec extends CustomsPlaySpec with XmlBehaviours {
+class DeclarationSpec extends CustomsPlaySpec with XmlBehaviours {
 
   val cancellation = randomCancelDeclaration
 
@@ -1579,7 +1579,7 @@ class WCOSerializationSpec extends CustomsPlaySpec with XmlBehaviours {
   }
 
   def hasExpectedOutput[T](meta: MetaData, expected: T)(extractor: Elem => T): Elem = {
-    val xml = meta.toXml
+    val xml = XML.loadString(meta.toXml)
     extractor(xml) must be(expected)
     xml
   }

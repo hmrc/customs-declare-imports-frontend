@@ -50,7 +50,7 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
                                 hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
                                (test: Future[Boolean] => Unit): Unit = {
     val expectedUrl: String = s"${appConfig.customsDeclarationsEndpoint}${appConfig.submitImportDeclarationUri}"
-    val expectedBody: String = metaData.toXml.mkString
+    val expectedBody: String = metaData.toXml
     val expectedHeaders: Map[String, String] = Map(
       "X-Client-ID" -> appConfig.developerHubClientId,
       HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
@@ -67,7 +67,7 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
                                             hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
                                            (test: Future[Boolean] => Unit): Unit = {
     val expectedUrl: String = s"${appConfig.customsDeclarationsEndpoint}${appConfig.cancelImportDeclarationUri}"
-    val expectedBody: String = metaData.toXml.mkString
+    val expectedBody: String = metaData.toXml
     val expectedHeaders: Map[String, String] = Map(
       "X-Client-ID" -> appConfig.developerHubClientId,
       HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",

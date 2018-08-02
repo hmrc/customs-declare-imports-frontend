@@ -18,13 +18,11 @@ package domain.wco
 
 import java.io.StringWriter
 
-import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonInclude}
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.dataformat.xml.{JacksonXmlModule, XmlMapper}
 import com.fasterxml.jackson.dataformat.xml.annotation.{JacksonXmlProperty, JacksonXmlRootElement, JacksonXmlText}
+import com.fasterxml.jackson.dataformat.xml.{JacksonXmlModule, XmlMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-
-import scala.xml.{Elem, XML}
 
 /*
 MetaData and Declaration schema generally consists of xsd:sequence definitions the order of which is reflected in the
@@ -39,7 +37,6 @@ private[wco] object NS {
   final val ds = "urn:wco:datamodel:WCO:Declaration_DS:DMS:2"
 }
 
-@JsonIgnoreProperties(Array("_module", "_mapper"))
 @JacksonXmlRootElement(namespace = NS.dms, localName = "MetaData")
 case class MetaData(@JacksonXmlProperty(localName = "WCODataModelVersionCode", namespace = NS.dms)
                     wcoDataModelVersionCode: Option[String] = None, // max 6 chars
@@ -71,10 +68,10 @@ case class MetaData(@JacksonXmlProperty(localName = "WCODataModelVersionCode", n
   _mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
   _mapper.registerModule(DefaultScalaModule)
 
-  def toXml: Elem = {
+  def toXml: String = {
     val sw = new StringWriter()
     _mapper.writeValue(sw, this)
-    XML.loadString(sw.toString)
+    sw.toString
   }
 
 }
