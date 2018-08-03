@@ -19,10 +19,10 @@
 @import domain.auth.AuthenticatedRequest
 @import uk.gov.hmrc.play.views.html.helpers
 
-@(form: Form[SubmissionAllInOneForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[SubmitForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(title = "Declare an Import", bodyClasses = None) {
-    @helpers.form(routes.SubmissionController.handleDeclarationForm) {
+    @helpers.form(routes.DeclarationController.handleSubmitForm) {
         <fieldset class="form-section" style="border: 1px dotted black;
             padding: 1em">
             <legend class="form-label-bold">Miscellaneous</legend>
