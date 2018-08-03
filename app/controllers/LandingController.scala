@@ -26,10 +26,10 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import scala.concurrent.Future
 
 @Singleton
-class BeginController @Inject()(actions: Actions, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
+class LandingController @Inject()(actions: Actions, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  def displayBeginPage: Action[AnyContent] = (actions.switch(Feature.begin) andThen actions.auth).async { implicit req =>
-    Future.successful(Ok(views.html.begin()))
+  def displayLandingPage: Action[AnyContent] = (actions.switch(Feature.begin) andThen actions.auth).async { implicit req =>
+    Future.successful(Ok(views.html.landing()))
   }
 
 }

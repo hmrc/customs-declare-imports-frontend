@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def showSubmitForm: Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
-    Future.successful(Ok(views.html.declaration_form(Forms.submit)))
+    Future.successful(Ok(views.html.submit_form(Forms.submit)))
   }
 
   def showCancelForm: Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
@@ -40,10 +40,10 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
   def handleSubmitForm: Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
     val bound = Forms.submit.bindFromRequest()
     bound.fold(
-      errors => Future.successful(BadRequest(views.html.declaration_form(errors))),
+      errors => Future.successful(BadRequest(views.html.submit_form(errors))),
       success => {
         client.submitImportDeclaration(success.toMetaData, success.badgeId).map { b =>
-          Ok(views.html.declaration_acknowledgement(b))
+          Ok(views.html.submit_confirmation(b))
         }
       }
     )
@@ -55,7 +55,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
       errorsWithErrors => Future.successful(BadRequest(views.html.cancel_form(errorsWithErrors))),
       success => {
         client.cancelImportDeclaration(success.toMetaData, success.badgeId).map { b =>
-          Ok(views.html.declaration_acknowledgement(b))
+          Ok(views.html.cancel_confirmation(b))
         }
       }
     )
