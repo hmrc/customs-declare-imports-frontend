@@ -11,3 +11,6 @@ POST       /cancel-declaration          controllers.CancelController.submitCance
 GET        /start-declaration          controllers.CommonController.showForm(path:String ="1")
 GET        /declaration/:path          controllers.CommonController.showForm(path:String)
 POST       /declaration/:path    controllers.CommonController.submitForm(path:String)
+
+GET       /declaration/:path  controllers.GenericController.displayForm(path)
+POST       /declaration/:first/:next  controllers.GenericController.handleForm(first,next)
