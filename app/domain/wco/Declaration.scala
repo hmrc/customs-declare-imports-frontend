@@ -18,8 +18,12 @@ package domain.wco
 
 import java.io.StringWriter
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonInclude}
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.{DeserializationContext, DeserializationFeature, JsonNode}
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.node.{ObjectNode, TextNode}
 import com.fasterxml.jackson.dataformat.xml.annotation.{JacksonXmlProperty, JacksonXmlRootElement, JacksonXmlText}
 import com.fasterxml.jackson.dataformat.xml.{JacksonXmlModule, XmlMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -37,6 +41,20 @@ private[wco] object NS {
   final val ds = "urn:wco:datamodel:WCO:Declaration_DS:DMS:2"
 }
 
+trait JacksonMapper {
+
+  private val _module = new JacksonXmlModule()
+  _module.setDefaultUseWrapper(false)
+  protected val _mapper = new XmlMapper(_module)
+  _mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+  _mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+  _mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+  _mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
+  _mapper.registerModule(DefaultScalaModule)
+
+}
+
+@JsonIgnoreProperties(Array("_mapper"))
 @JacksonXmlRootElement(namespace = NS.dms, localName = "MetaData")
 case class MetaData(@JacksonXmlProperty(localName = "WCODataModelVersionCode", namespace = NS.dms)
                     wcoDataModelVersionCode: Option[String] = None, // max 6 chars
@@ -57,22 +75,19 @@ case class MetaData(@JacksonXmlProperty(localName = "WCODataModelVersionCode", n
                     agencyAssignedCustomizationVersionCode: Option[String] = None, // max 3 chars
 
                     @JacksonXmlProperty(localName = "Declaration", namespace = NS.dec)
-                    declaration: Declaration = Declaration()) {
-
-  private val _module = new JacksonXmlModule()
-  _module.setDefaultUseWrapper(false)
-  private val _mapper = new XmlMapper(_module)
-  _mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-  _mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-  _mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-  _mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-  _mapper.registerModule(DefaultScalaModule)
+                    declaration: Declaration = Declaration()) extends JacksonMapper {
 
   def toXml: String = {
     val sw = new StringWriter()
     _mapper.writeValue(sw, this)
     sw.toString
   }
+
+}
+
+object MetaData extends JacksonMapper {
+
+  def fromXml(xml: String): MetaData = _mapper.readValue(xml, classOf[MetaData])
 
 }
 
@@ -745,11 +760,18 @@ case class Address(@JacksonXmlProperty(localName = "CityName", namespace = NS.de
                    @JacksonXmlProperty(localName = "PostcodeID", namespace = NS.dec)
                    postcodeId: Option[String] = None) // max 9 chars
 
+@JsonDeserialize(using = classOf[AmountDeserializer])
 case class Amount(@JacksonXmlProperty(localName = "currencyID", isAttribute = true)
                   currencyId: Option[String] = None, // and ISO 4217 3 char currency code (i.e. "GBP")
 
                   @JacksonXmlText
                   value: Option[BigDecimal] = None) // scale of 16 and precision of 3
+
+class AmountDeserializer extends StdAttributeAndTextDeserializer[Amount]("currencyID", classOf[Amount]) {
+
+  override def newInstanceFromTuple(values: (Option[String], Option[String])): Amount = Amount(values._1, values._2.map(BigDecimal(_)))
+
+}
 
 case class Communication(@JacksonXmlProperty(localName = "ID", namespace = NS.dec)
                          id: Option[String] = None, // max 50 chars
@@ -763,11 +785,18 @@ case class Contact(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
 case class DateTimeElement(@JacksonXmlProperty(localName = "DateTimeString", namespace = NS.ds)
                            dateTimeString: DateTimeString)
 
+@JsonDeserialize(using = classOf[DateTimeStringDeserializer])
 case class DateTimeString(@JacksonXmlProperty(localName = "formatCode", isAttribute = true)
                           formatCode: String, // either "102" or "304"
 
                           @JacksonXmlText
                           value: String) // max 35 chars
+
+class DateTimeStringDeserializer extends StdAttributeAndTextDeserializer[DateTimeString]("formatCode", classOf[DateTimeString]) {
+
+  override def newInstanceFromTuple(values: (Option[String], Option[String])): DateTimeString = DateTimeString(values._1.getOrElse(""), values._2.getOrElse(""))
+
+}
 
 case class ImportExportParty(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
                              name: Option[String] = None, // max 70 chars
@@ -784,11 +813,18 @@ case class ImportExportParty(@JacksonXmlProperty(localName = "Name", namespace =
                              @JacksonXmlProperty(localName = "Communication", namespace = NS.dec)
                              communications: Seq[Communication] = Seq.empty)
 
+@JsonDeserialize(using = classOf[MeasureDeserializer])
 case class Measure(@JacksonXmlProperty(localName = "unitCode", isAttribute = true)
                    unitCode: Option[String] = None, // min 1 max 5 chars when specified
 
                    @JacksonXmlText
                    value: Option[BigDecimal] = None) // scale 16 precision 6
+
+class MeasureDeserializer extends StdAttributeAndTextDeserializer[Measure]("unitCode", classOf[Measure]) {
+
+  override def newInstanceFromTuple(values: (Option[String], Option[String])): Measure = Measure(values._1, values._2.map(BigDecimal(_)))
+
+}
 
 case class NamedEntityWithAddress(@JacksonXmlProperty(localName = "Name", namespace = NS.dec)
                                   name: Option[String] = None, // max 70 chars
@@ -817,3 +853,19 @@ case class RoleBasedParty(@JacksonXmlProperty(localName = "ID", namespace = NS.d
 
                           @JacksonXmlProperty(localName = "RoleCode", namespace = NS.dec)
                           roleCode: Option[String] = None) // max 3 chars
+
+abstract class StdAttributeAndTextDeserializer[T](attributeName: String, t: Class[T]) extends StdDeserializer[T](t) {
+
+  def newInstanceFromTuple(values: (Option[String], Option[String])): T
+
+  override final def deserialize(p: JsonParser, ctx: DeserializationContext): T = {
+    val n: JsonNode = p.getCodec.readTree(p)
+    n match {
+      case o: ObjectNode => newInstanceFromTuple((nonEmptyOrNone(o.get(attributeName)), nonEmptyOrNone(o.get(""))))
+      case t: TextNode => newInstanceFromTuple((None, nonEmptyOrNone(t)))
+    }
+  }
+
+  private def nonEmptyOrNone(n: JsonNode): Option[String] = if (n == null || n.asText() == null || n.asText().trim.isEmpty) None else Some(n.asText())
+
+}

@@ -18,13 +18,14 @@ package domain.wco
 
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
 
+import scala.io.Source
 import scala.xml.{Elem, XML}
 
 class DeclarationSpec extends CustomsPlaySpec with XmlBehaviours {
 
   val cancellation = randomCancelDeclaration
 
-  "produce declaration message" should {
+  "to XML" should {
 
     "include WCODataModelVersionCode" in validDeclarationXmlScenario() {
       val version = randomString(6)
@@ -1578,10 +1579,51 @@ class DeclarationSpec extends CustomsPlaySpec with XmlBehaviours {
 
   }
 
+  "from XML" should {
+
+    "read WCO data model version code" in {
+      val code: Option[String] = Some(randomString(6))
+      val meta = MetaData(wcoDataModelVersionCode = code)
+      hasExpectedInput(meta, code) { m =>
+        m.wcoDataModelVersionCode
+      }
+    }
+
+    "read measure" in {
+      val measure: Option[Measure] = Some(Measure(
+        unitCode = Some(randomString(5)),
+        value = Some(randomBigDecimal)
+      ))
+      val meta = MetaData(declaration = Declaration(
+        totalGrossMassMeasure = measure
+      ))
+      hasExpectedInput(meta, measure) { m =>
+        m.declaration.totalGrossMassMeasure
+      }
+    }
+
+    "read measure without unit code" in {
+      val measure: Option[Measure] = Some(Measure(
+        unitCode = None,
+        value = Some(randomBigDecimal)
+      ))
+      val meta = MetaData(declaration = Declaration(
+        totalGrossMassMeasure = measure
+      ))
+      hasExpectedInput(meta, measure) { m =>
+        m.declaration.totalGrossMassMeasure
+      }
+    }
+
+  }
+
   def hasExpectedOutput[T](meta: MetaData, expected: T)(extractor: Elem => T): Elem = {
     val xml = XML.loadString(meta.toXml)
     extractor(xml) must be(expected)
     xml
   }
+
+  def hasExpectedInput[T](meta: MetaData, expected: T)(extractor: MetaData => T): Unit =
+    extractor(MetaData.fromXml(meta.toXml)) must be(expected)
 
 }
