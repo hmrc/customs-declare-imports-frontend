@@ -25,12 +25,13 @@
     @errors.get(key).get.messages.map(messages(_))}
 }
 
-@main_template("declaration view 2", bodyClasses = None) {
+@main_template("Reference Numbers", bodyClasses = None) {
+<fieldset>
     <div class="grid-row">
         <div class="column-two-thirds">
             <h1 class="heading-large">Reference</h1>
 
-            <form method="post" action="/customs-declare-imports/dynamic/form_two/form_one">
+            <form method="post" action="/customs-declare-imports/submit-declaration/references/exporter-details">
                 @{
                     play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
                 }
@@ -86,5 +87,6 @@
 
             </form>
         </div>
-
+    </div>
+</fieldset>
     }

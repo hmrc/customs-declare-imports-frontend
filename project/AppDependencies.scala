@@ -10,7 +10,8 @@ object AppDependencies {
     "uk.gov.hmrc" %% "play-ui" % "7.17.0",
     ws,
     "uk.gov.hmrc" %% "bootstrap-play-25" % "1.7.0",
-    "uk.gov.hmrc" %% "auth-client" % "2.6.0"
+    "uk.gov.hmrc" %% "auth-client" % "2.6.0",
+    "uk.gov.hmrc" %% "http-caching-client" % "7.0.0"
   )
 
   def test(scope: String = "test") = Seq(

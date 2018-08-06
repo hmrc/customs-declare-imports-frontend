@@ -25,7 +25,7 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
 
   val method = "GET"
   val handleMethod = "POST"
-  val uri = uriWithContextPath("/declaration/declarant-details")
+  val uri = uriWithContextPath("/submit-declaration/declarant-details")
 
 
   s"$method $uri" should {
@@ -60,21 +60,21 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
       }
     }
 
-/*    "include a text input for WCO data model version code" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+    "include a text input for Declarant Name" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri) { resp =>
-          includesHtmlInput(resp, "text", "metaData.wcoDataModelVersionCode")
+          includesHtmlInput(resp, "text", "DeclarantName")
         }
       }
     }
 
-        "include a text input for WCO type name" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+        "include a text input for Declarant Address Line" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
           signedInScenario() {
             userRequestScenario(method, uri) { resp =>
-              includesHtmlInput(resp, "text", "metaData.wcoTypeName")
+              includesHtmlInput(resp, "text", "DeclarantAddressLine")
             }
           }
-        }*/
+        }
   }
 
 

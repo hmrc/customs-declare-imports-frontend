@@ -24,20 +24,21 @@ import play.api.Logger
 import play.api.data.validation.ValidationError
 import play.api.i18n.{MessagesApi, I18nSupport}
 import play.api.mvc.{AnyContent, Action}
-import services.CustomsDeclarationsConnector
+import services.SessionCacheService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{Future, ExecutionContext}
 
 
 @Singleton
-class GenericController @Inject()(actions: Actions, client: CustomsDeclarationsConnector)(implicit val messagesApi: MessagesApi,
+class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(implicit val messagesApi: MessagesApi,
                     val appConfig: AppConfig, val ec: ExecutionContext) extends FrontendController with I18nSupport with DeclarationValidator{
 
-  private implicit var keystore: Map[String, Seq[String]] = Map()
-
+    val cacheId:String  = "submit-declaration"
   def displayForm(name: String): Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
-    Future.successful(Ok(views.html.generic_view(name, keystore)))
+    cache.get(cacheId,cacheId).map { data =>
+      Ok(views.html.generic_view(name, data.getOrElse(Map())))
+    }
   }
 
   def handleForm(current: String, next: String): Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
@@ -45,17 +46,13 @@ class GenericController @Inject()(actions: Actions, client: CustomsDeclarationsC
     val errors = validatePayload(payload)
 
     errors.size match {
-      case 0 => putIntoKeystore(payload).map(res => Redirect(routes.GenericController.displayForm(next)))
-      case _ => Logger.debug("FORM data --> " + payload.mkString(" ") )
-        Logger.debug("validation errors are --> " + errors.mkString("} {") )
+      case 0 => cache.get(cacheId,cacheId).flatMap { cachedData =>
+        val allData = cachedData.getOrElse(payload) ++ payload
+        cache.put(cacheId, cacheId, (allData)).map(res => Redirect(routes.GenericController.displayForm(next)))
+      }
+      case _ => Logger.debug("validation errors are --> " + errors.mkString("} {") )
         Future.successful(BadRequest(views.html.generic_view(current,payload,errors)))
     }
-  }
-
-  private def putIntoKeystore(data: Map[String, Seq[String]]): Future[Boolean] = {
-    keystore = keystore ++ data
-    Logger.info(keystore.mkString(","))
-    Future.successful(true)
   }
 
 }
