@@ -26,123 +26,90 @@
 
     @helpers.form(routes.DeclarationController.handleCancelForm) {
         <fieldset class="form-section">
-            <legend>Miscellaneous</legend>
-            <div class="form-field">
-            @helpers.input(form("badgeId"),
-                '_label -> "CSP Badge ID",
-                '_inputHint -> "Passed via header to declarations API (optional)",
-                '_inputClass -> "form-control")
-            </div>
-        </fieldset>
-        <fieldset class="form-field">
             <legend>Metadata</legend>
             <div class="form-field">
             @helpers.input(form("metaData.wcoDataModelVersionCode"),
                 '_label -> "WCO Data Model Version Code",
-                '_inputHint -> "/MetaData/WCODataModelVersionCode in XML (0..1)",
+                '_inputHint -> "/MetaData/WCODataModelVersionCode in XML (required)",
                 '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.wcoTypeName"),
                 '_label -> "WCO Type Name",
-                '_inputHint -> "/MetaData/WCOTypeName in XML (0..1)",
+                '_inputHint -> "/MetaData/WCOTypeName in XML (required)",
                 '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.responsibleCountryCode"),
                 '_label -> "Responsible Country Code",
-                '_inputHint -> "/MetaData/ResponsibleCountryCode in XML (0..1)",
+                '_inputHint -> "/MetaData/ResponsibleCountryCode in XML (required)",
                 '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.responsibleAgencyName"),
                 '_label -> "Responsible Agency Name",
-                '_inputHint -> "/MetaData/ResponsibleAgencyName in XML (0..1)",
+                '_inputHint -> "/MetaData/ResponsibleAgencyName in XML (required)",
                 '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.agencyAssignedCustomizationVersionCode"),
                 '_label -> "Agency Assigned Customization Version Code",
-                '_inputHint -> "/MetaData/AgencyAssignedCustomizationCode in XML (0..1)",
+                '_inputHint -> "/MetaData/AgencyAssignedCustomizationCode in XML (required)",
                 '_inputClass -> "form-control")
             </div>
         </fieldset>
-        <fieldset>
+        <fieldset class="form-section">
             <legend>Declaration</legend>
+            <div class="form-field">
+            @helpers.input(form("metaData.declaration.typeCode"),
+                '_label -> "Type Code",
+                '_inputHint -> "/MetaData/Declaration/TypeCode in XML (required). Must be 'INV'",
+                '_inputClass -> "form-control")
+            </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.functionCode"),
                 '_label -> "Function Code",
-                '_inputHint -> "/MetaData/Declaration/FunctionCode in XML (0..1). Must be '13'",
+                '_inputHint -> "/MetaData/Declaration/FunctionCode in XML (required). Must be '13'",
                 '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.functionalReferenceId"),
                 '_label -> "Functional Reference ID",
-                '_inputHint -> "/MetaData/Declaration/FunctionalReferenceID in XML (0..1). Max 35 chars.",
+                '_inputHint -> "/MetaData/Declaration/FunctionalReferenceID in XML (required). Max 35 chars.",
                 '_inputClass -> "form-control")
             </div>
             <div class="form-field">
             @helpers.input(form("metaData.declaration.id"),
                 '_label -> "ID",
-                '_inputHint -> "/MetaData/Declaration/ID in XML (0..1). Max 70 chars.",
+                '_inputHint -> "/MetaData/Declaration/ID in XML (required). Max 70 chars.",
                 '_inputClass -> "form-control")
             </div>
-
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.typeCode"),
-                '_label -> "Type Code",
-                '_inputHint -> "/MetaData/Declaration/TypeCode in XML (0..1). Max 3 chars.",
-                '_inputClass -> "form-control")
-            </div>
-            <fieldset>
-                 <div class="form-field">
-                       <legend>Submitter Details</legend>
-                        @helpers.input(form("metaData.declaration.submitter.name"),
-                            '_label -> "Submitter Name",
-                            '_inputHint -> "/MetaData/Declaration/Submitter/Name in XML (0..1). Max 70 chars.",
-                            '_inputClass -> "form-control")
-                 </div>
-                <div class="form-field">
-                @helpers.input(form("metaData.declaration.submitter.id"),
-                    '_label -> "Submitter ID",
-                    '_inputHint -> "/MetaData/Declaration/Submitter/ID in XML (0..1). Max 17 chars.",
-                    '_inputClass -> "form-control")
-                </div>
-          </fieldset>
-            <fieldset>
+            <fieldset class="form-section">
                 <div class="form-field">
                     <legend>Additional Information</legend>
+                    <p>There can be 1..* <code>AdditionalInformation</code> elements as a child of a <code>Declaration</code>
+                        element.</p>
                     @helpers.textArea(form("metaData.declaration.additionalInformation.statementDescription"),
-                        '_label -> "statement Description",
-                        '_inputHint -> "/MetaData/Declaration/Submitter/Name in XML (0..1). Max 512 chars.",
+                        '_label -> "Statement Description",
+                        '_inputHint -> "/MetaData/Declaration/AdditionalInformation/StatementDescription in XML (required). Max 512 chars.",
                         '_inputClass -> "form-control")
                 </div>
-                <div class="form-field">
-                @helpers.input(form("metaData.declaration.additionalInformation.statementTypeCode"),
-                    '_label -> "Statement Type Code",
-                    '_inputHint -> "/MetaData/Declaration/Submitter/ID in XML (0..1). Max 3 chars.",
-                    '_inputClass -> "form-control")
-                </div>
-                <div class="form-field">
-                @helpers.input(form("metaData.declaration.additionalInformation.pointer.documentSectionCode"),
-                    '_label -> "Document Section Code",
-                    '_inputHint -> "/MetaData/Declaration/Submitter/ID in XML (0..1). Max 3 chars.",
-                    '_inputClass -> "form-control")
-                </div>
             </fieldset>
-            <fieldset>
+            <fieldset class="form-section">
                 <div class="form-field">
                     <legend>Amendment</legend>
+                    <p>There can be 1..* <code>Amendment</code> elements as a child of a <code>Declaration</code>
+                        element</p>
                     @helpers.input(form("metaData.declaration.amendment.changeReasonCode"),
                         '_label -> "Change Reason Code",
-                        '_inputHint -> "/MetaData/Declaration/Submitter/Name in XML (0..1). Max 3 chars.",
+                        '_inputHint -> "/MetaData/Declaration/Amendment/ChangeReasonCode in XML (required). Max 3 chars.",
                         '_inputClass -> "form-control")
                 </div>
             </fieldset>
         </fieldset>
-        <fieldset class="form-field-group">
+        <fieldset class="form-section">
             <div class="form-field">
-                <button class="button" type="submit">Submit</button>
+                <button class="button" type="submit">Cancel Declaration</button>
             </div>
         </fieldset>
     }

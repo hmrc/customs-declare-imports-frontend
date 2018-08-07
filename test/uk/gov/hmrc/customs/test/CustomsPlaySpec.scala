@@ -101,22 +101,14 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
     agencyAssignedCustomizationVersionCode = Some(randomString(3)),
     declaration = Declaration(
       typeCode = Some("INV"), // ONLY acceptable value for a cancellation
-      functionCode = Some(13),
+      functionCode = Some(13), // ONLY acceptable value for a cancellation
       functionalReferenceId = Some(randomString(35)),
       id = Some(randomString(70)),
-      submitter = Some(NamedEntityWithAddress(
-        name = Some(randomString(70)),
-        id = Some(randomString(17))
+      additionalInformations = Seq(AdditionalInformation(
+        statementDescription = Some(randomString(512))
       )),
       amendments = Seq(Amendment(
         changeReasonCode = Some(randomString(3))
-      )),
-      additionalInformations = Seq(AdditionalInformation(
-        statementDescription = Some(randomString(512)),
-        statementTypeCode = Some(randomString(3)),
-        pointers = Seq(Pointer(
-          documentSectionCode = Some(randomString(3))
-        ))
       ))
     )
   )

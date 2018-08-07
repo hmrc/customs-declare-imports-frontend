@@ -20,7 +20,6 @@ import com.google.inject.Inject
 import config.AppConfig
 import domain.wco._
 import javax.inject.Singleton
-import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames, Status}
 import play.api.mvc.Codec
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
@@ -31,19 +30,17 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient) {
 
-  def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    post(appConfig.submitImportDeclarationUri, metaData.toXml, badgeIdentifier).map(_.status == Status.ACCEPTED)
-  }
+  def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+    postMetaData(appConfig.submitImportDeclarationUri, metaData, badgeIdentifier)
 
   def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    val payload = metaData.toXml
-    post(appConfig.cancelImportDeclarationUri, payload, badgeIdentifier).map(
-      _.status == Status.ACCEPTED).recover {
-      case error: Throwable =>
-        Logger.error(s"Error in submitting declaratoin cancellation to API  with the error ${error.getMessage}"); false
-    }
-  }
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+    postMetaData(appConfig.cancelImportDeclarationUri, metaData, badgeIdentifier)
+
+  private def postMetaData(uri: String, metaData: MetaData, badgeIdentifier: Option[String] = None)
+                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+    post(uri, metaData.toXml, badgeIdentifier).map(_.status == Status.ACCEPTED)
 
   //noinspection ConvertExpressionToSAM
   private implicit val responseReader: HttpReads[CustomsDeclarationsResponse] = new HttpReads[CustomsDeclarationsResponse] {
@@ -59,12 +56,9 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: H
       HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
     ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
-    Logger.debug("URL is " + s"${appConfig.customsDeclarationsEndpoint}$uri")
     httpClient.POSTString[CustomsDeclarationsResponse](s"${appConfig.customsDeclarationsEndpoint}$uri", body, headers)(responseReader, hc, ec)
   }
 
 }
 
 case class CustomsDeclarationsResponse(status: Int, conversationId: Option[String])
-
-

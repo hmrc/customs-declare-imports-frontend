@@ -18,7 +18,6 @@ package domain.wco
 
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
 
-import scala.io.Source
 import scala.xml.{Elem, XML}
 
 class DeclarationSpec extends CustomsPlaySpec with XmlBehaviours {
@@ -1511,33 +1510,9 @@ class DeclarationSpec extends CustomsPlaySpec with XmlBehaviours {
       }
     }
 
-    "include Declaration AdditionalInformation Statement Type Code for cancellation" in validCancellationDeclarationXml() {
-      hasExpectedOutput(cancellation, cancellation.declaration.additionalInformations(0).statementTypeCode.get) { xml =>
-        (xml \ "Declaration" \ "AdditionalInformation" \ "StatementTypeCode").text.trim
-      }
-    }
-
-    "include Declaration AdditionalInformation Pointer Document Section Code for cancellation" in validCancellationDeclarationXml() {
-      hasExpectedOutput(cancellation, cancellation.declaration.additionalInformations(0).pointers(0).documentSectionCode.get) { xml =>
-        (xml \ "Declaration" \ "AdditionalInformation" \ "Pointer" \ "DocumentSectionCode").text.trim
-      }
-    }
-
     "include Declaration Amendment Change Reason Code for cancellation" in validCancellationDeclarationXml() {
       hasExpectedOutput(cancellation, cancellation.declaration.amendments(0).changeReasonCode.get) { xml =>
         (xml \ "Declaration" \ "Amendment" \ "ChangeReasonCode").text.trim
-      }
-    }
-
-    "include Declaration Submitter name for cancellation" in validCancellationDeclarationXml() {
-      hasExpectedOutput(cancellation, cancellation.declaration.submitter.get.name.get) { xml =>
-        (xml \ "Declaration" \ "Submitter" \ "Name").text.trim
-      }
-    }
-
-    "include Declaration Submitter ID for cancellation" in validCancellationDeclarationXml() {
-      hasExpectedOutput(cancellation, cancellation.declaration.submitter.get.id.get) { xml =>
-        (xml \ "Declaration" \ "Submitter" \ "ID").text.trim
       }
     }
 
