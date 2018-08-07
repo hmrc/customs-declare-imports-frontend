@@ -1,0 +1,161 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+
+@import views.html.helper.CSRF
+@import play.api.data.validation.ValidationError
+@(fieldsMap:Map[String,Seq[String]], errors:Map[String,ValidationError])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig)
+
+@getError(key: String) = {
+@if(errors.get(key).isDefined) {
+    @errors.get(key).get.messages.map(messages(_))}
+}
+
+@countryOptions = @{Map("AF"->"Afghanistan",
+    "AX"->"Aland Islands",
+    "AL"->"Albania",
+    "DZ"->"Algeria",
+    "AS"->"American Samoa",
+    "AD"->"Andorra",
+    "AO"->"Angola",
+    "AI"->"Anguilla",
+    "AQ"->"Antarctica",
+    "AG"->"Antigua and Barbuda",
+    "AR"->"Argentina",
+    "AM"->"Armenia",
+    "AW"->"Aruba",
+    "AU"->"Australia",
+    "AT"->"Austria",
+    "AZ"->"Azerbaijan",
+    "BS"->"Bahamas",
+    "BH"->"Bahrain",
+    "BD"->"Bangladesh",
+    "BB"->"Barbados",
+    "BY"->"Belarus",
+    "BE"->"Belgium",
+    "BZ"->"Belize",
+    "BJ"->"Benin",
+    "BM"->"Bermuda",
+    "BT"->"Bhutan",
+    "BO"->"Bolivia",
+    "BA"->"Bosnia and Herzegovina",
+    "BW"->"Botswana",
+    "BV"->"Bouvet Island",
+    "BR"->"Brazil",
+    "INCOMPLETE"->"Incomplete list"
+)}
+
+@main_template("Representative's details", bodyClasses = None) {
+    <fieldset>
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <h1 class="heading-large">Representative's details</h1>
+
+            <form method="post" action="/customs-declare-imports/submit-declaration/representative-details/declarant-details">
+                @{
+                    play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
+                }
+                <div class="form-group">
+                    <label class="form-label" for="AgentName">
+                        Representative's name
+                    </label>
+                    <input class="form-control" name="AgentName" id="AgentName" type="text" value=@fieldsMap.get("AgentName")>
+                    <span class="errors">@getError("AgentName")</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="AgentAddressLine">
+                        First line of address
+                    </label>
+                    <input class="form-control" name="AgentAddressLine" id="AgentAddressLine" type="text" value=@fieldsMap.get("AgentAddressLine")>
+                    <span class="errors">@getError("AgentAddressLine")</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="AgentAddressCityName">
+                        City
+                    </label>
+                    <input class="form-control" name="AgentAddressCityName" id="AgentAddressCityName" type="text" value=@fieldsMap.get("AgentAddressCityName")>
+                    <span class="errors">@getError("AgentAddressCityName")</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="AgentAddressCountryCode">
+                        Country
+                    </label>
+
+                    <select class="form-control" id="AgentAddressCountryCode" name="AgentAddressCountryCode" value=@fieldsMap.get("AgentAddressCountryCode")>
+                            <option value="">Please Select</option>
+                            @countryOptions.map{ country =>
+                                <option value=@country._1
+                                    @if(fieldsMap.isDefinedAt("AgentAddressCountryCode") && fieldsMap.get("AgentAddressCountryCode").get.head.equals(country._1)) {selected}>
+                                @country._2</option>
+                            }
+                        </select>
+
+                    <span class="errors">@getError("AgentAddressCountryCode")</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="AgentAddressPostcodeID">
+                        Postcode
+                    </label>
+                    <input class="form-control" name="AgentAddressPostcodeID" id="AgentAddressPostcodeID" type="text" value=@fieldsMap.get("AgentAddressPostcodeID")>
+                    <span class="errors">@getError("AgentAddressPostcodeID")</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="AgentID">
+                        EORI number
+                        <span>
+                            Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).
+                        </span>
+                    </label>
+                    <input class="form-control" name="AgentID" id="AgentID" type="text" value=@fieldsMap.get("AgentID")>
+                    <span class="errors">@getError("AgentID")</span>
+                </div>
+
+                <div class="form-group">
+                    <fieldset class="inline">
+                        <label class="form-label" for="AgentFunctionCode">
+                            Status code
+                            <span class="form-hint">
+                                This code declares the way in which the declarant is representing the Importer.
+                            </span>
+                        </label>
+
+                        <div class="multiple-choice">
+                            <input id="AgentFunctionCode-1" type="radio" name="AgentFunctionCode" value="2" @if(fieldsMap.isDefinedAt("AgentFunctionCode") && fieldsMap.get("AgentFunctionCode").get.head.equals("2")){ checked}>
+                            <label for="AgentFunctionCode-1">2</label>
+                        </div>
+
+                        <div class="multiple-choice">
+                            <input id="AgentFunctionCode-2" type="radio" name="AgentFunctionCode" value="3" @if(fieldsMap.isDefinedAt("AgentFunctionCode") && fieldsMap.get("AgentFunctionCode").get.head.equals("3")) { checked}>
+                            <label for="AgentFunctionCode-2">3</label>
+                        </div>
+                        <span class="errors">@getError("AgentFunctionCode")</span>
+
+                    </fieldset>
+                </div>
+                    <!-- <button class="button" type="back" id="back" name="back" value="back">Back</button> -->
+                <button class="button" type="next" id="next" name="next" value="next">Continue</button>
+
+            </form>
+        </div>
+    </div>
+    </fieldset>
+    }

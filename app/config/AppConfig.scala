@@ -43,6 +43,9 @@ class AppConfig @Inject()(val runModeConfiguration: Configuration, val environme
   lazy val submitImportDeclarationUri: String = getConfString("customs-declarations.submit-uri", throw new IllegalStateException("Missing configuration for Customs Declarations submission URI"))
   lazy val developerHubClientId: String = appName
 
+  lazy val keyStoreSource = appName
+  lazy val keyStoreUrl = baseUrl("keystore")
+  lazy val sessionCacheDomain = getConfString("cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
   lazy val defaultFeatureStatus: features.FeatureStatus.Value = FeatureStatus.withName(loadConfig(feature2Key(Feature.default)))
 
   def featureStatus(feature: Feature): FeatureStatus = sys.props.get(feature2Key(feature)).map(str2FeatureStatus).getOrElse(

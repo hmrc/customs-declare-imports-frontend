@@ -25,3 +25,8 @@ common.year                                                         = Year
 common.dateMessage                                                  = Enter the date in format dd mm yyyy
 common.dateExample                                                  = For example,
 common.button.ConfirmAndContinue                                    = Confirm and continue
+
+##Validations
+input.required                                                      =This is a mandatory field.
+##Declarant Details fields
+DeclarantName=DeclarantName

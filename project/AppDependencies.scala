@@ -13,6 +13,7 @@ object AppDependencies {
     ws,
     "uk.gov.hmrc" %% "bootstrap-play-25" % "1.7.0",
     "uk.gov.hmrc" %% "auth-client" % "2.6.0",
+    "uk.gov.hmrc" %% "http-caching-client" % "7.0.0",
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
