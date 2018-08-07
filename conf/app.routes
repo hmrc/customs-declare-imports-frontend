@@ -4,9 +4,6 @@ GET        /assets/*file                controllers.Assets.at(path="/public", fi
 GET        /                            controllers.LandingController.displayLandingPage
 GET        /start                       controllers.StartController.displayStartPage
 GET        /enrol                       controllers.UnauthorisedController.enrol
-GET        /start-declaration           controllers.CommonController.showForm(path:String ="1")
-GET        /declaration/:path           controllers.CommonController.showForm(path:String)
-POST       /declaration/:path           controllers.CommonController.submitForm(path:String)
 
 GET       /submit-declaration/:path         controllers.GenericController.displayForm(path)
 POST       /submit-declaration/:first/:next  controllers.GenericController.handleForm(first,next)

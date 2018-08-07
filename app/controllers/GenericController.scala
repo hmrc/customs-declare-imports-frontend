@@ -38,7 +38,7 @@ class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(
   def displayForm(name: String): Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
 
     cache.get(req.user.eori.get,cacheId).map { data =>
-      Ok(views.html.generic_view(name, data.getOrElse(Map())))
+      Ok(views.html.generic_view(name, data.getOrElse(Map.empty)))
     }
   }
 

@@ -16,7 +16,7 @@
 
 package services
 
-import com.google.inject.Inject
+import com.google.inject.{Singleton, Inject}
 import config.AppConfig
 import play.api.Logger
 import uk.gov.hmrc.http.{HttpDelete, HttpPut, HttpGet, HeaderCarrier}
@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{Future, ExecutionContext}
 
-
+@Singleton
 class SessionCacheService @Inject()(appConfig: AppConfig, httpClient: HttpClient)extends HttpCaching  {
 
     override def defaultSource: String = appConfig.keyStoreSource
