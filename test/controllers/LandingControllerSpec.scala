@@ -20,7 +20,7 @@ import domain.features.{Feature, FeatureStatus}
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours}
 
-class BeginControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours {
+class LandingControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours {
 
   val method = "GET"
   val uri = uriWithContextPath("/")

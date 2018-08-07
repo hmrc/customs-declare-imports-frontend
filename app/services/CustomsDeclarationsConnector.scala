@@ -18,7 +18,7 @@ package services
 
 import com.google.inject.Inject
 import config.AppConfig
-import domain.declaration._
+import domain.wco._
 import javax.inject.Singleton
 import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames, Status}
@@ -27,23 +27,21 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.xml.Elem
 
 @Singleton
-class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends
-SubmissionMessageProducer with CustomsDeclarationsCancellationMessageProducer {
+class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient) {
 
   def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    post(appConfig.submitImportDeclarationUri, produceDeclarationMessage(metaData), badgeIdentifier).map(_.status == Status.ACCEPTED)
+    post(appConfig.submitImportDeclarationUri, metaData.toXml, badgeIdentifier).map(_.status == Status.ACCEPTED)
   }
 
-  def cancelImportDeclaration(metaData: domain.cancellation.MetaData, badgeIdentifier: Option[String] = None)
+  def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    val payload = produceDeclarationCancellationMessage(metaData)
-    post(appConfig.cancelImportDeclarationUri,payload,badgeIdentifier).map(
-      _.status == Status.ACCEPTED).recover{
+    val payload = metaData.toXml
+    post(appConfig.cancelImportDeclarationUri, payload, badgeIdentifier).map(
+      _.status == Status.ACCEPTED).recover {
       case error: Throwable =>
-        Logger.error(s"Error in submitting declaratoin cancellation to API  with the error ${error.getMessage}" ); false
+        Logger.error(s"Error in submitting declaratoin cancellation to API  with the error ${error.getMessage}"); false
     }
   }
 
@@ -55,14 +53,14 @@ SubmissionMessageProducer with CustomsDeclarationsCancellationMessageProducer {
     )
   }
 
-  private[services] def post(uri: String, body: Elem, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
+  private[services] def post(uri: String, body: String, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
     val headers: Seq[(String, String)] = Seq(
       "X-Client-ID" -> appConfig.developerHubClientId,
       HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
     ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
     Logger.debug("URL is " + s"${appConfig.customsDeclarationsEndpoint}$uri")
-    httpClient.POSTString[CustomsDeclarationsResponse](s"${appConfig.customsDeclarationsEndpoint}$uri", body.mkString, headers)(responseReader, hc, ec)
+    httpClient.POSTString[CustomsDeclarationsResponse](s"${appConfig.customsDeclarationsEndpoint}$uri", body, headers)(responseReader, hc, ec)
   }
 
 }

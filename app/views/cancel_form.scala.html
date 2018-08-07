@@ -20,11 +20,11 @@
 @import uk.gov.hmrc.play.views.html.helpers
 
 
-@(form: Form[AllInOneCancelForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[CancelForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(title = "Declare an Import", bodyClasses = None) {
 
-    @helpers.form(routes.CancelController.submitCancelForm) {
+    @helpers.form(routes.DeclarationController.handleCancelForm) {
         <fieldset class="form-section">
             <legend>Miscellaneous</legend>
             <div class="form-field">

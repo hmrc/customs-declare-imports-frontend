@@ -1,16 +1,16 @@
 # microservice specific routes
 
-GET        /assets/*file                 controllers.Assets.at(path="/public", file)
-GET        /                             controllers.BeginController.displayBeginPage
-GET        /start                        controllers.StartController.displayStartPage
-GET        /enrol                        controllers.UnauthorisedController.enrol
-GET        /declaration                  controllers.SubmissionController.showDeclarationForm
-POST       /declaration                  controllers.SubmissionController.handleDeclarationForm
-GET        /cancel-declaration          controllers.CancelController.showCancelForm
-POST       /cancel-declaration          controllers.CancelController.submitCancelForm
-GET        /start-declaration          controllers.CommonController.showForm(path:String ="1")
-GET        /declaration/:path          controllers.CommonController.showForm(path:String)
-POST       /declaration/:path    controllers.CommonController.submitForm(path:String)
+GET        /assets/*file                controllers.Assets.at(path="/public", file)
+GET        /                            controllers.LandingController.displayLandingPage
+GET        /start                       controllers.StartController.displayStartPage
+GET        /enrol                       controllers.UnauthorisedController.enrol
+GET        /start-declaration           controllers.CommonController.showForm(path:String ="1")
+GET        /declaration/:path           controllers.CommonController.showForm(path:String)
+POST       /declaration/:path           controllers.CommonController.submitForm(path:String)
 
-GET       /submit-declaration/:path  controllers.GenericController.displayForm(path)
+GET       /submit-declaration/:path         controllers.GenericController.displayForm(path)
 POST       /submit-declaration/:first/:next  controllers.GenericController.handleForm(first,next)
+GET        /declaration                     controllers.DeclarationController.showSubmitForm
+POST       /declaration                  controllers.DeclarationController.handleSubmitForm
+GET        /cancel-declaration           controllers.DeclarationController.showCancelForm
+POST       /cancel-declaration           controllers.DeclarationController.handleCancelForm

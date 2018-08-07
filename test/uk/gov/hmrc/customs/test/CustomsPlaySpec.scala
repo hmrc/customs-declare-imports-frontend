@@ -21,7 +21,7 @@ import akka.util.Timeout
 import com.gu.scalatest.JsoupShouldMatchers
 import config.AppConfig
 import domain.auth.SignedInUser
-import domain.declaration.Declaration
+import domain.wco._
 import org.jsoup.nodes.Element
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
@@ -93,6 +93,34 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
     )
   )
 
+  protected def randomCancelDeclaration: MetaData = MetaData(
+    wcoDataModelVersionCode = Some(randomString(6)),
+    wcoTypeName = Some(randomString(712)),
+    responsibleCountryCode = Some(randomISO3166Alpha2CountryCode),
+    responsibleAgencyName = Some(randomString(70)),
+    agencyAssignedCustomizationVersionCode = Some(randomString(3)),
+    declaration = Declaration(
+      typeCode = Some("INV"), // ONLY acceptable value for a cancellation
+      functionCode = Some(13),
+      functionalReferenceId = Some(randomString(35)),
+      id = Some(randomString(70)),
+      submitter = Some(NamedEntityWithAddress(
+        name = Some(randomString(70)),
+        id = Some(randomString(17))
+      )),
+      amendments = Seq(Amendment(
+        changeReasonCode = Some(randomString(3))
+      )),
+      additionalInformations = Seq(AdditionalInformation(
+        statementDescription = Some(randomString(512)),
+        statementTypeCode = Some(randomString(3)),
+        pointers = Seq(Pointer(
+          documentSectionCode = Some(randomString(3))
+        ))
+      ))
+    )
+  )
+
   protected def randomDomainName: String = randomString(8) + tlds(randomInt(tlds.length))
 
   protected def randomEmail: String = randomEmail(randomFirstName, randomLastName)
@@ -117,7 +145,7 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
 
   protected def randomBoolean: Boolean = if(Random.nextInt() % 2 == 0) true else false
 
-  protected def randomDeclarationFunctionCode: String = declarationFunctionCodes(randomInt(declarationFunctionCodes.length))
+  protected def randomDeclarationFunctionCode: Int = declarationFunctionCodes(randomInt(declarationFunctionCodes.length))
 
   protected def randomDateTimeFormatCode: String = dateTimeFormatCodes(randomInt(dateTimeFormatCodes.length))
 
@@ -131,7 +159,7 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
 
   private lazy val z: Seq[String] = Seq("+", "-")
 
-  private lazy val declarationFunctionCodes: Seq[String] = Seq("9", "13", "14")
+  private lazy val declarationFunctionCodes: Seq[Int] = Seq(9, 13, 14)
 
   private lazy val dateTimeFormatCodes: Seq[String] = Seq("102", "304")
 

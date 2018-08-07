@@ -1,0 +1,12 @@
+/* ---- Global header bar ---- */
+
+/*
+	This, I'm guessing, will become redundant if HMRC move to creating TaaS (Template as a Service)
+	and include the div#global-header-bar in the template (which they should)
+*/
+
+#global-header-bar {
+  max-width: 1020px;
+  height: 10px;
+  background-color: #005ea5;
+}

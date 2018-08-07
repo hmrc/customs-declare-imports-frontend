@@ -27,7 +27,7 @@ class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
   "the config" should {
 
     "have assets prefix" in {
-      cfg.assetsPrefix must be ("http://localhost:9032/assets/4.3.1")
+      cfg.assetsPrefix must be ("http://localhost:9032/assets/3.3.2")
     }
 
     "have analytics token" in {

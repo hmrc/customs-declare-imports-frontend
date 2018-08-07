@@ -43,7 +43,7 @@ class StartControllerSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
 
     "include link to begin page" in featureScenario(Seq(Feature.start, Feature.begin), FeatureStatus.enabled) {
       requestScenario(method, uri) { resp =>
-        contentAsHtml(resp) should include element withName("a").withClass("button-start").withAttrValue("href", routes.BeginController.displayBeginPage().url)
+        contentAsHtml(resp) should include element withName("a").withClass("button-start").withAttrValue("href", routes.LandingController.displayLandingPage().url)
       }
     }
 
