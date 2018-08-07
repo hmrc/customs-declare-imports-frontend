@@ -73,7 +73,15 @@ class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
     "have HMRC Developer Hub Client ID" in {
       cfg.developerHubClientId must be (cfg.appName)
     }
-
+    "have keyStoreSource" in {
+      cfg.keyStoreSource must be (cfg.appName)
+    }
+    "have keyStoreUrl" in {
+      cfg.keyStoreUrl must be ("http://localhost:8400")
+    }
+    "have sessionCacheDomain" in {
+      cfg.sessionCacheDomain must be ("keystore")
+    }
   }
 
   "feature status" should {
