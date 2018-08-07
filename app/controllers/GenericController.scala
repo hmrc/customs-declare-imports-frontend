@@ -36,7 +36,8 @@ class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(
 
     val cacheId:String  = "submit-declaration"
   def displayForm(name: String): Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
-    cache.get(cacheId,cacheId).map { data =>
+
+    cache.get(req.user.eori.get,cacheId).map { data =>
       Ok(views.html.generic_view(name, data.getOrElse(Map())))
     }
   }
@@ -46,9 +47,9 @@ class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(
     val errors = validatePayload(payload)
 
     errors.size match {
-      case 0 => cache.get(cacheId,cacheId).flatMap { cachedData =>
+      case 0 => cache.get(req.user.eori.get,cacheId).flatMap { cachedData =>
         val allData = cachedData.getOrElse(payload) ++ payload
-        cache.put(cacheId, cacheId, (allData)).map(res => Redirect(routes.GenericController.displayForm(next)))
+        cache.put(req.user.eori.get, cacheId, (allData)).map(res => Redirect(routes.GenericController.displayForm(next)))
       }
       case _ => Logger.debug("validation errors are --> " + errors.mkString("} {") )
         Future.successful(BadRequest(views.html.generic_view(current,payload,errors)))

@@ -58,28 +58,21 @@
 
                 <div class="form-group">
                     <label class="form-label" for="borderTransportMeansModeCode">
-                        Declaration type
-                    </label>
-                    <select class="form-control" id="borderTransportMeansModeCode" name="borderTransportMeansModeCode" value=@fieldsMap.get("borderTransportMeansModeCode")>
-                        <option value="">Please select...</option>
-                        <option value="CO">CO</option>
-                        <option value="IM">IM</option>
-                    </select>
-                    <span class="errors">@getError("borderTransportMeansModeCode")</span>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="borderTransportMeansModeCode">
                         Additional declaration type
                     </label>
-                    <select class="form-control" id="borderTransportMeansModeCode" name="borderTransportMeansModeCode" value=@fieldsMap.get("borderTransportMeansModeCode")>
-                        <option value="">Please select...</option>
-                        <option value="C">C</option>
-                        <option value="F">F</option>
-                        <option value="Y">Y</option>
-                        <option value="Z">Z</option>
+                    @defining( Map("C"-> "C","F"->"F","Z"-> "Z","Y"->"Y")){ options =>
+                    <select class="form-control" id="borderTransportMeansModeCode" name="borderTransportMeansModeCode">
+                        <option value="">Please Select</option>
+                        @options.map{ code =>
+                        <option value=@code._1
+                            @if(fieldsMap.isDefinedAt("borderTransportMeansModeCode") && fieldsMap.get("borderTransportMeansModeCode").get.head.equals(code._1)) {selected}>
+                        @code._2</option>
+                        }
                     </select>
+
                     <span class="errors">@getError("borderTransportMeansModeCode")</span>
+
+                }
                 </div>
 
                     <!-- <button class="button" type="back" id="back" name="back" value="back">Back</button> -->

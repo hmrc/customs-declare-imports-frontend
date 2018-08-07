@@ -25,6 +25,40 @@
     @errors.get(key).get.messages.map(messages(_))}
 }
 
+@countryOptions = @{Map("AF"->"Afghanistan",
+    "AX"->"Aland Islands",
+    "AL"->"Albania",
+    "DZ"->"Algeria",
+    "AS"->"American Samoa",
+    "AD"->"Andorra",
+    "AO"->"Angola",
+    "AI"->"Anguilla",
+    "AQ"->"Antarctica",
+    "AG"->"Antigua and Barbuda",
+    "AR"->"Argentina",
+    "AM"->"Armenia",
+    "AW"->"Aruba",
+    "AU"->"Australia",
+    "AT"->"Austria",
+    "AZ"->"Azerbaijan",
+    "BS"->"Bahamas",
+    "BH"->"Bahrain",
+    "BD"->"Bangladesh",
+    "BB"->"Barbados",
+    "BY"->"Belarus",
+    "BE"->"Belgium",
+    "BZ"->"Belize",
+    "BJ"->"Benin",
+    "BM"->"Bermuda",
+    "BT"->"Bhutan",
+    "BO"->"Bolivia",
+    "BA"->"Bosnia and Herzegovina",
+    "BW"->"Botswana",
+    "BV"->"Bouvet Island",
+    "BR"->"Brazil",
+    "INCOMPLETE"->"Incomplete list"
+)}
+
 @main_template("Representative's details", bodyClasses = None) {
     <fieldset>
     <div class="grid-row">
@@ -47,80 +81,41 @@
                     <label class="form-label" for="AgentAddressLine">
                         First line of address
                     </label>
-                    <input class="form-control" name="AgentAddressLine" id="AgentAddressLine" type="text" @fieldsMap.get("AgentAddressLine")>
-                    <span class="errors">@getError("AgentName")</span>
+                    <input class="form-control" name="AgentAddressLine" id="AgentAddressLine" type="text" value=@fieldsMap.get("AgentAddressLine")>
+                    <span class="errors">@getError("AgentAddressLine")</span>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="AgentAddressCityName">
                         City
                     </label>
-                    <input class="form-control" name="AgentAddressCityName" id="AgentAddressCityName" type="text" @fieldsMap.get("AgentAddressCityName")>
-                    <span class="errors">@getError("AgentName")</span>
+                    <input class="form-control" name="AgentAddressCityName" id="AgentAddressCityName" type="text" value=@fieldsMap.get("AgentAddressCityName")>
+                    <span class="errors">@getError("AgentAddressCityName")</span>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="AgentAddressCountryCode">
                         Country
                     </label>
-                        <!-- Partial view to allow building a select dropdown list -->
-                    <select class="form-control" id="AgentAddressCountryCode" name="AgentAddressCountryCode">
-                        <option class="" @fieldsMap.get("AgentAddressCountryCode") >Please select...</option>
 
-                        <option
-                        value="AD"  class="">
-                            AD
-                        </option>
+                    <select class="form-control" id="AgentAddressCountryCode" name="AgentAddressCountryCode" value=@fieldsMap.get("AgentAddressCountryCode")>
+                            <option value="">Please Select</option>
+                            @countryOptions.map{ country =>
+                                <option value=@country._1
+                                    @if(fieldsMap.isDefinedAt("AgentAddressCountryCode") && fieldsMap.get("AgentAddressCountryCode").get.head.equals(country._1)) {selected}>
+                                @country._2</option>
+                            }
+                        </select>
 
-                        <option
-                        value="AE"  class="">
-                            AE
-                        </option>
-
-                        <option
-                        value="AF"  class="">
-                            AF
-                        </option>
-
-                        <option
-                        value="AG"  class="">
-                            AG
-                        </option>
-
-                        <option
-                        value="AI"  class="">
-                            AI
-                        </option>
-
-                        <option
-                        value="AL"  class="">
-                            AL
-                        </option>
-
-                        <option
-                        value="AM"  class="">
-                            AM
-                        </option>
-
-                        <option
-                        value="AO"  class="">
-                            AO
-                        </option>
-
-                        <option
-                        value="0"  class="">
-                            (incomplete...)
-                        </option>
-                    </select>
-                    <span class="errors">@getError("AgentName")</span>
+                    <span class="errors">@getError("AgentAddressCountryCode")</span>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="AgentAddressPostcodeID">
                         Postcode
                     </label>
-                    <input class="form-control" name="AgentAddressPostcodeID" id="AgentAddressPostcodeID" type="text" @fieldsMap.get("AgentAddressPostcodeID")>
-                    <span class="errors">@getError("AgentName")</span>
+                    <input class="form-control" name="AgentAddressPostcodeID" id="AgentAddressPostcodeID" type="text" value=@fieldsMap.get("AgentAddressPostcodeID")>
+                    <span class="errors">@getError("AgentAddressPostcodeID")</span>
                 </div>
 
                 <div class="form-group">
@@ -130,8 +125,8 @@
                             Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).
                         </span>
                     </label>
-                    <input class="form-control" name="AgentID" id="AgentID" type="text" @fieldsMap.get("AgentID")>
-                    <span class="errors">@getError("AgentName")</span>
+                    <input class="form-control" name="AgentID" id="AgentID" type="text" value=@fieldsMap.get("AgentID")>
+                    <span class="errors">@getError("AgentID")</span>
                 </div>
 
                 <div class="form-group">
@@ -144,15 +139,15 @@
                         </label>
 
                         <div class="multiple-choice">
-                            <input id="AgentFunctionCode-1" type="radio" name="AgentFunctionCode" value=@fieldsMap.get("AgentFunctionCode") >
+                            <input id="AgentFunctionCode-1" type="radio" name="AgentFunctionCode" value="2" @if(fieldsMap.isDefinedAt("AgentFunctionCode") && fieldsMap.get("AgentFunctionCode").get.head.equals("2")){ checked}>
                             <label for="AgentFunctionCode-1">2</label>
                         </div>
 
                         <div class="multiple-choice">
-                            <input id="AgentFunctionCode-2" type="radio" name="AgentFunctionCode" value=@fieldsMap.get("AgentFunctionCode") >
+                            <input id="AgentFunctionCode-2" type="radio" name="AgentFunctionCode" value="3" @if(fieldsMap.isDefinedAt("AgentFunctionCode") && fieldsMap.get("AgentFunctionCode").get.head.equals("3")) { checked}>
                             <label for="AgentFunctionCode-2">3</label>
                         </div>
-                        <span class="errors">@getError("AgentName")</span>
+                        <span class="errors">@getError("AgentFunctionCode")</span>
 
                     </fieldset>
                 </div>
