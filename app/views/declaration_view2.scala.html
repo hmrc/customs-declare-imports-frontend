@@ -35,49 +35,11 @@
                 @{
                     play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
                 }
-                <div class="form-group">
-                    <label class="form-label" for="ucrTraderAssignedReferenceId">
-                        Reference Number / UCR (optional)
-                    </label>
-                    <input class="form-control" name="ucrTraderAssignedReferenceId" id="ucrTraderAssignedReferenceId" type="text", value=@fieldsMap.get("ucrTraderAssignedReferenceId")>
-                    <span class="errors">@getError("ucrTraderAssignedReferenceId")</span>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="declarationFunctionalReferenceId">
-                        LRN
-                    </label>
-                    <span class="form-hint">
-                        The reference is unique to the trader and usually provided by the software.
-                    </span>
-                    <input class="form-control" name="declarationFunctionalReferenceId" id="declarationFunctionalReferenceId" type="text"
-                    value=@fieldsMap.get("declarationFunctionalReferenceId")>
-                    <span class="errors">@getError("declarationFunctionalReferenceId")</span>
-
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="borderTransportMeansModeCode">
-                        Additional declaration type
-                    </label>
-                    @defining( Map("C"-> "C","F"->"F","Z"-> "Z","Y"->"Y")){ options =>
-                    <select class="form-control" id="borderTransportMeansModeCode" name="borderTransportMeansModeCode">
-                        <option value="">Please Select</option>
-                        @options.map{ code =>
-                        <option value=@code._1
-                            @if(fieldsMap.isDefinedAt("borderTransportMeansModeCode") && fieldsMap.get("borderTransportMeansModeCode").get.head.equals(code._1)) {selected}>
-                        @code._2</option>
-                        }
-                    </select>
-
-                    <span class="errors">@getError("borderTransportMeansModeCode")</span>
-
-                }
-                </div>
-
-                    <!-- <button class="button" type="back" id="back" name="back" value="back">Back</button> -->
+                @inputField("Reference Number / UCR (optional)","ucrTraderAssignedReferenceId",fieldsMap)
+                @inputField("LRN","declarationFunctionalReferenceId",fieldsMap,Some("The reference is unique to the trader and usually provided by the software."))
+                @selectField(label="Additional declaration type",fieldsMap,"borderTransportMeansModeCode",ViewUtils.borderTransportMeansModeCodes)
+                   <!-- <button class="button" type="back" id="back" name="back" value="back">Back</button> -->
                 <button class="button" type="next" id="next" name="next" value="next">Continue</button>
-
             </form>
         </div>
     </div>
