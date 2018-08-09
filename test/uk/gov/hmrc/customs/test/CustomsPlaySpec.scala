@@ -35,6 +35,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup.Individual
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
 
+import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
@@ -44,6 +45,7 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
   implicit val mat: Materializer = app.materializer
   implicit val ec: ExecutionContext = Implicits.defaultContext
   implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  implicit val patience: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 50.milliseconds) // be more patient than the default
 
   protected val contextPath: String = "/customs-declare-imports"
 
