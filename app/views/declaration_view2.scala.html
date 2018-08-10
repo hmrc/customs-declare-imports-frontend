@@ -29,8 +29,10 @@
 <fieldset>
     <div class="grid-row">
         <div class="column-two-thirds">
+            <div class="back-arrow">
+                <a class="link-back" href="@{routes.GenericController.displayForm("declarant-details").url}" >back</a>
+            </div>
             <h1 class="heading-large">Reference</h1>
-
             <form method="post" action="/customs-declare-imports/submit-declaration/references/exporter-details">
                 @{
                     play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}

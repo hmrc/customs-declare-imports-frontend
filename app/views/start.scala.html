@@ -23,7 +23,7 @@
     @main_template(title = "Hello from customs-declare-imports-frontend", bodyClasses = None) {
         <h1>Hello from customs-declare-imports-frontend !</h1>
         @if(appConfig.isFeatureOn(Feature.begin)) {
-            <a role="button" class="button button-start" href="@{routes.LandingController.displayLandingPage().url}">Start</a>
+            <a role="button" class="button button-start" href="@{routes.GenericController.displayForm("declarant-details").url}">Start</a>
         } else {
             <p class="message">Sorry, you cannot begin today.</p>
         }

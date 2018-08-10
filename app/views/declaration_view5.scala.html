@@ -26,9 +26,13 @@
     <fieldset>
     <div class="grid-row">
         <div class="column-two-thirds">
+            <div class="back-arrow">
+                <a class="link-back" href="@{routes.GenericController.displayForm("representative-details").url}" >back</a>
+            </div>
+
             <h1 class="heading-large">Importer's details</h1>
 
-            <form method="post" action="/customs-declare-imports/submit-declaration/importer-details/declarant-details">
+            <form method="post" action="/customs-declare-imports/submit-declaration/importer-details/seller-details">
                 @{
                     play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
                 }
