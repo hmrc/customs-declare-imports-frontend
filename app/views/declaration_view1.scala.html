@@ -26,6 +26,9 @@
     <fieldset>
         <div class="grid-row">
             <div class="column-two-thirds">
+                <div class="back-arrow">
+                    <a class="link-back" href="@{routes.StartController.displayStartPage.url}" >back</a>
+                </div>
                 <h1 class="heading-large">Declarant Details</h1>
 
                 <form action = "/customs-declare-imports/submit-declaration/declarant-details/references" method="post">
@@ -40,7 +43,7 @@
                                 </ul>
                             </div>
                     }
-                    @inputField("Declarant's name","DeclarantName",fieldsMap)
+                    @inputField("Declarant's name","MetaData_DeclarantName",fieldsMap)
                     @inputField("First line of address","DeclarantAddressLine",fieldsMap)
                     @inputField("City","DeclarantAddressCityName",fieldsMap)
                     @selectField(label="Country",fieldsMap,"DeclarantAddressCountryCode",countryOptions)

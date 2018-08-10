@@ -18,7 +18,6 @@ package controllers
 
 import play.api.data.validation.ValidationError
 import play.api.i18n.Messages
-import play.twirl.api.Html
 
 
 object ViewUtils {

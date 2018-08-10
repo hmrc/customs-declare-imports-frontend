@@ -60,22 +60,38 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
       }
     }
 
-    "include a text input for Declarant Name" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+  }
+
+  "Declarant Page" should {
+
+    case class ExpectedField(fieldType:String ="input", fieldTypeValue:String = "text",fieldName:String)
+
+    def declarantScenarios = {
+      val declarantPageScenarios:Map[String,ExpectedField] = Map.empty
+      declarantPageScenarios + (s"include a text input for  Metadata_DeclarantName" -> ExpectedField(fieldName = "Metadata_DeclarantName"),
+      s"include a text input for  Metadata_DeclarantName" -> ExpectedField(fieldName = "DeclarantAddressLine"),
+      s"include a text input for  Metadata_DeclarantName" -> ExpectedField(fieldName = "Metadata_DeclarantName")
+        )
+    }
+
+    declarantScenarios.map(scenario =>
+      scenario._1 in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+        signedInScenario() {
+          userRequestScenario(method, uri) { resp =>
+            includesHtmlField(resp, scenario._2.fieldType,scenario._2.fieldTypeValue,scenario._2.fieldName)
+          }
+        }
+      }
+    )
+
+    "include back link with URL" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri) { resp =>
-          includesHtmlInput(resp, "text", "DeclarantName")
+          includesHtmlLink(resp, "/customs-declare-imports/start")
         }
       }
     }
 
-        "include a text input for Declarant Address Line" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-          signedInScenario() {
-            userRequestScenario(method, uri) { resp =>
-              includesHtmlInput(resp, "text", "DeclarantAddressLine")
-            }
-          }
-        }
   }
-
 
 }
