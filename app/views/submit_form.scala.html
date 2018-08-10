@@ -19,10 +19,17 @@
 @import domain.auth.AuthenticatedRequest
 @import uk.gov.hmrc.play.views.html.helpers
 
-@()(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[SubmitForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
 
     @main_template(title = "Declare an Import", bodyClasses = None) {
         @helpers.form(routes.DeclarationController.handleSubmitForm) {
+            <fieldset class="form-section">
+                <div class="form-field">
+                @helpers.input(form("metaData.declaration.functionalReferenceId"),
+                    '_label -> "Your reference for this declaration (optional, max. 35 chars)",
+                    '_inputClass -> "form-control")
+                </div>
+            </fieldset>
             <fieldset class="form-section">
                 <div class="form-field">
                     <button class="button" type="submit">Submit Declaration</button>

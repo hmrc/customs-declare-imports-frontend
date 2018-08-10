@@ -19,9 +19,9 @@ package repositories.declaration
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.customs.test.CustomsPlaySpec
 
-class DeclarationRepositorySpec extends CustomsPlaySpec with BeforeAndAfterEach {
+class SubmissionRepositorySpec extends CustomsPlaySpec with BeforeAndAfterEach {
 
-  val repo = app.injector.instanceOf[DeclarationRepository]
+  val repo = app.injector.instanceOf[SubmissionRepository]
 
   "repo" should {
 
@@ -31,22 +31,22 @@ class DeclarationRepositorySpec extends CustomsPlaySpec with BeforeAndAfterEach 
       and the conversation ID we received from the customs-declarations API response, generating a timestamp to record
       when this occurred.
        */
-      val eori = randomString(8)
-      val lrn = randomString(70)
-      val conversationId = randomString(80)
+      val eori = Some(randomString(8))
+      val lrn = Some(randomString(70))
+      val conversationId = Some(randomString(80))
       val before = System.currentTimeMillis()
-      repo.insert(DeclarationEntity(
+      repo.insert(Submission(
         eori,
         conversationId,
-        Some(lrn)
+        lrn
       )).futureValue.ok must be(true)
 
       // we can now display a list of all the declarations belonging to the current user, searching by EORI
       val found = repo.findByEori(eori).futureValue
       found.length must be(1)
       found(0).eori must be(eori)
-      found(0).submissionConversationId must be(conversationId)
-      found(0).lrn.get must be(lrn)
+      found(0).conversationId must be(conversationId)
+      found(0).lrn must be(lrn)
 
       // a timestamp has been generated representing "creation time" of case class instance
       found(0).submittedTimestamp must (be >= before).and(be <= System.currentTimeMillis())

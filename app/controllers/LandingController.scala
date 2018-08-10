@@ -21,15 +21,16 @@ import domain.features.Feature
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
+import repositories.declaration.SubmissionRepository
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
-
 @Singleton
-class LandingController @Inject()(actions: Actions, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
+class LandingController @Inject()(submissionRepository: SubmissionRepository, actions: Actions, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
   def displayLandingPage: Action[AnyContent] = (actions.switch(Feature.begin) andThen actions.auth).async { implicit req =>
-    Future.successful(Ok(views.html.landing()))
+    submissionRepository.findByEori(req.user.eori).map { submissions =>
+      Ok(views.html.landing(submissions.sortBy(_.submittedTimestamp)))
+    }
   }
 
 }

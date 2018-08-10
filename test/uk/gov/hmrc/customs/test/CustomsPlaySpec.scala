@@ -37,6 +37,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enr
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 import scala.util.Random
 
 // TODO override configured ports from application.conf with random available ports
@@ -52,6 +53,8 @@ trait CustomsPlaySpec extends PlaySpec with OneAppPerSuite with JsoupShouldMatch
   class RequestScenario(method: String = "GET", uri: String = s"/$contextPath/", headers: Map[String, String] = Map.empty) {
     val req: FakeRequest[AnyContentAsEmpty.type] = basicRequest(method, uri, headers)
   }
+
+  protected def component[T: ClassTag]: T = app.injector.instanceOf[T]
 
   protected def basicRequest(method: String = "GET", uri: String = "/", headers: Map[String, String] = Map.empty): FakeRequest[AnyContentAsEmpty.type] = FakeRequest(method, uri).withHeaders(headers.toSeq: _*)
 

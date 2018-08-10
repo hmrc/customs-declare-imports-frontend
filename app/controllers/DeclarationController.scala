@@ -18,7 +18,6 @@ package controllers
 
 import config.AppConfig
 import domain.features.Feature
-import domain.wco.MetaData
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -31,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def showSubmitForm: Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
-    Future.successful(Ok(views.html.submit_form()))
+    Future.successful(Ok(views.html.submit_form(Forms.submit)))
   }
 
   def showCancelForm: Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
@@ -39,9 +38,16 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
   }
 
   def handleSubmitForm: Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
-    client.submitImportDeclaration(MetaData()).map { b =>
-      Ok(views.html.submit_confirmation(b))
-    }
+    implicit val user = req.user
+    val submission = Forms.submit.bindFromRequest()
+    submission.fold(
+      errors => Future.successful(BadRequest(views.html.submit_form(errors))),
+      success => {
+        client.submitImportDeclaration(success.toMetaData).map { b =>
+          Ok(views.html.submit_confirmation(b))
+        }
+      }
+    )
   }
 
   def handleCancelForm: Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>

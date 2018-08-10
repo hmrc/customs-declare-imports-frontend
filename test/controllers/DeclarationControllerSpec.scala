@@ -16,9 +16,7 @@
 
 package controllers
 
-import domain.wco.Amount
 import domain.features.{Feature, FeatureStatus}
-import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours, WiremockBehaviours}
 
 class DeclarationControllerSpec
@@ -60,55 +58,6 @@ class DeclarationControllerSpec
       signedInScenario(signedInUser) {
         userRequestScenario(get, submitUri, signedInUser) {
           wasNotFound
-        }
-      }
-    }
-
-  }
-
-  s"$post $submitUri" should {
-
-    "return 200" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      withDeclarationSubmissionApi() {
-        signedInScenario(signedInUser) {
-          userRequestScenario(post, submitUri, signedInUser) {
-            wasOk
-          }
-        }
-      }
-    }
-
-    "return HTML" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      withDeclarationSubmissionApi() {
-        signedInScenario(signedInUser) {
-          userRequestScenario(post, submitUri, signedInUser) {
-            wasHtml
-          }
-        }
-      }
-    }
-
-    // FIXME why does this not pass?
-    "require authentication" ignore featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      notSignedInScenario() {
-        accessDeniedRequestScenarioTest(post, submitUri)
-      }
-    }
-
-    "be behind a feature switch" in featureScenario(Feature.declaration, FeatureStatus.disabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(post, submitUri, signedInUser) {
-          wasNotFound
-        }
-      }
-    }
-
-    "submit declaration" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      withDeclarationSubmissionApi() {
-        signedInScenario(signedInUser) {
-          userRequestScenario(post, submitUri, signedInUser) { resp =>
-            // TODO unigration test for declaration submission
-          }
         }
       }
     }

@@ -22,6 +22,16 @@ import play.api.data.Forms._
 
 object Forms {
 
+  val submit: Form[SubmitForm] = Form(
+    mapping(
+      "metaData" -> mapping(
+        "declaration" -> mapping(
+          "functionalReferenceId" -> optional(text(maxLength = 35))
+        )(SubmitDeclarationForm.apply)(SubmitDeclarationForm.unapply)
+      )(SubmitMetaDataForm.apply)(SubmitMetaDataForm.unapply)
+    )(SubmitForm.apply)(SubmitForm.unapply)
+  )
+
   val cancel: Form[CancelForm] = Form(
     mapping(
       "metaData" -> mapping(
@@ -47,6 +57,20 @@ object Forms {
   )
 
 }
+
+// submit declaration form objects
+
+case class SubmitForm(metaData: SubmitMetaDataForm) {
+
+  def toMetaData: MetaData = MetaData(declaration = Declaration(
+    functionalReferenceId = metaData.declaration.functionalReferenceId
+  ))
+
+}
+
+case class SubmitMetaDataForm(declaration: SubmitDeclarationForm)
+
+case class SubmitDeclarationForm(functionalReferenceId: Option[String])
 
 // cancel declaration form objects
 

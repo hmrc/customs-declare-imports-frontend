@@ -27,28 +27,29 @@ import uk.gov.hmrc.mongo.json.ReactiveMongoFormats.{mongoEntity, objectIdFormats
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeclarationRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: ExecutionContext)
-  extends ReactiveRepository[DeclarationEntity, BSONObjectID]("declarations", mc.mongoConnector.db, DeclarationEntity.formats, objectIdFormats) {
+class SubmissionRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: ExecutionContext)
+  extends ReactiveRepository[Submission, BSONObjectID]("submissions", mc.mongoConnector.db, Submission.formats, objectIdFormats) {
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq("eori" -> IndexType.Ascending), name = Some("eoriIdx")),
-    Index(Seq("submissionConversationId" -> IndexType.Ascending), unique = true, name = Some("submissionConversationIdIdx"))
+    Index(Seq("conversationId" -> IndexType.Ascending), unique = true, name = Some("conversationIdIdx"))
   )
 
-  def findByEori(eori: String): Future[Seq[DeclarationEntity]] = find("eori" -> JsString(eori))
+  // TODO enhance query implementation to sensibly handle option
+  def findByEori(eori: Option[String]): Future[Seq[Submission]] = find("eori" -> JsString(eori.getOrElse("")))
 
 }
 
-case class DeclarationEntity(eori: String,
-                             submissionConversationId: String,
-                             lrn: Option[String] = None,
-                             submittedTimestamp: Long = System.currentTimeMillis(),
-                             id: BSONObjectID = BSONObjectID.generate())
+case class Submission(eori: Option[String] = None,
+                      conversationId: Option[String] = None,
+                      lrn: Option[String] = None,
+                      submittedTimestamp: Long = System.currentTimeMillis(),
+                      id: BSONObjectID = BSONObjectID.generate())
 
-object DeclarationEntity {
+object Submission {
 
   implicit val formats = mongoEntity {
-    Json.format[DeclarationEntity]
+    Json.format[Submission]
   }
 
 }

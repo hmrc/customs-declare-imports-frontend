@@ -15,8 +15,16 @@
  *@
 
 @import config.AppConfig
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@import repositories.declaration.Submission
 
-@main_template(title = "Hello from customs-declare-imports-frontend", bodyClasses = None) {
-    <p class="message">Well done. You have begun your first step on a long journey.</p>
-}
+@(submissions: Seq[Submission])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+    @main_template(title = "Hello from customs-declare-imports-frontend", bodyClasses = None) {
+        <p class="message">Well done. You have begun your first step on a long journey.</p>
+        <h1>Your submitted declarations</h1>
+        <ol>
+            @for(submission <- submissions) {
+            <li>@submission</li>
+            }
+        </ol>
+    }
