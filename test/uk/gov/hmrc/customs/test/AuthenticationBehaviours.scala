@@ -25,7 +25,8 @@ import play.api.Application
 import play.api.http.{HeaderNames, Status}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.libs.json.Json
+import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson, AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.filters.csrf.CSRF.Token
@@ -51,8 +52,20 @@ trait AuthenticationBehaviours {
     .overrides(bind[AuthConnector].to(mockAuthConnector))
     .build()
 
-  class UserRequestScenario(method: String = "GET", uri: String = s"/$contextPath/", headers: Map[String, String] = Map.empty, user: SignedInUser = signedInUser) {
-    val req: FakeRequest[AnyContentAsEmpty.type] = userRequest(method, uri, user, headers)
+  class UserRequestScenario(method: String = "GET", uri: String = s"/$contextPath/",
+                            user: SignedInUser = signedInUser,
+                            headers: Map[String, String] = Map.empty,
+                           body:AnyContentAsFormUrlEncoded) {
+
+    val req: FakeRequest[AnyContentAsEmpty.type ] = userRequest(method, uri, user, headers)
+
+    val reqPayload: FakeRequest[AnyContentAsFormUrlEncoded] = userRequest(method, uri, user, headers).withBody(body)
+
+    method match {
+        case "GET" => req
+        case _ => reqPayload
+      }
+
   }
 
   //noinspection ConvertExpressionToSAM
@@ -94,8 +107,9 @@ trait AuthenticationBehaviours {
   protected def userRequestScenario(method: String = "GET",
                                     uri: String = s"/$contextPath/",
                                     user: SignedInUser = signedInUser,
-                                    headers: Map[String, String] = Map.empty)(test: Future[Result] => Unit): Unit = {
-    new UserRequestScenario(method, uri, headers, user) {
+                                    headers: Map[String, String] = Map.empty,
+                                    body: AnyContentAsFormUrlEncoded = AnyContentAsFormUrlEncoded(Map.empty))(test: Future[Result] => Unit): Unit = {
+    new UserRequestScenario(method, uri, user,headers, body) {
       test(route(app, req).get)
     }
   }
@@ -115,7 +129,8 @@ trait AuthenticationBehaviours {
     ex must be theSameInstanceAs notLoggedInException
   }
 
-  protected def userRequest(method: String, uri: String, user: SignedInUser, headers: Map[String, String] = Map.empty): FakeRequest[AnyContentAsEmpty.type] = {
+  protected def userRequest(method: String, uri: String, user: SignedInUser, headers: Map[String, String] = Map.empty):
+  FakeRequest[AnyContentAsEmpty.type] = {
     val session: Map[String, String] = Map(
       SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
       SessionKeys.userId -> user.internalId.getOrElse(randomString(8))
@@ -126,9 +141,9 @@ trait AuthenticationBehaviours {
       Token.NameRequestTag -> cfg.tokenName,
       Token.RequestTag -> token
     )
-    FakeRequest(method, uri).
-      withHeaders((Map(cfg.headerName -> token) ++ headers).toSeq: _*).
-      withSession(session.toSeq: _*).copyFakeRequest(tags = tags)
+      FakeRequest(method, uri).
+        withHeaders((Map(cfg.headerName -> token) ++ headers).toSeq: _*).
+        withSession(session.toSeq: _*).copyFakeRequest(tags = tags)
   }
 
 }

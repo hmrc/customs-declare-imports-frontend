@@ -27,7 +27,7 @@
         <div class="grid-row">
             <div class="column-two-thirds">
                 <div class="back-arrow">
-                    <a class="link-back" href="@{routes.StartController.displayStartPage.url}" >back</a>
+                    <a class="link-back" href="@{routes.StartController.displayStartPage.url}" >@messages("common.back")</a>
                 </div>
                 <h1 class="heading-large">Declarant Details</h1>
 
@@ -43,13 +43,13 @@
                                 </ul>
                             </div>
                     }
-                    @inputField("Declarant's name","MetaData_DeclarantName",fieldsMap)
-                    @inputField("First line of address","DeclarantAddressLine",fieldsMap)
-                    @inputField("City","DeclarantAddressCityName",fieldsMap)
-                    @selectField(label="Country",fieldsMap,"DeclarantAddressCountryCode",countryOptions)
-                    @inputField("Postcode","declarantPostcode",fieldsMap)
+                    @inputField("Declarant's name",declarantName,fieldsMap)
+                    @inputField("First line of address",declarantAddressLine,fieldsMap)
+                    @inputField("City",declarantAddressCityName,fieldsMap)
+                    @selectField(label="Country",fieldsMap,declarantAddressCountryCode,countryOptions)
+                    @inputField("Postcode",declarantAddressPostcode,fieldsMap)
                     @inputField("EORI number",
-                        "DeclarantID",fieldsMap,
+                        declarantEori,fieldsMap,
                         Some("Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).")
                     )
 

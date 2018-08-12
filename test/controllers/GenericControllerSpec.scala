@@ -17,6 +17,8 @@
 package controllers
 
 import domain.features.{Feature, FeatureStatus}
+import play.api.libs.json.Json
+import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson}
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours, WiremockBehaviours}
 
@@ -26,6 +28,7 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
   val method = "GET"
   val handleMethod = "POST"
   val uri = uriWithContextPath("/submit-declaration/declarant-details")
+  val submitUri = uriWithContextPath("/submit-declaration/declarant-details/references")
 
 
   s"$method $uri" should {
@@ -62,23 +65,69 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
 
   }
 
+  s"$handleMethod $uri" should {
+
+    "return 200" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario(signedInUser) {
+        userRequestScenario(handleMethod, submitUri, signedInUser, body =
+          AnyContentAsFormUrlEncoded(Map("MetaData_declaration_declarant_name"-> Seq("name1"),
+          "MetaData_declaration_declarant_address_line"-> Seq("Address1")))) {
+          wasOk
+        }
+      }
+    }
+
+    "return HTML" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      signedInScenario(signedInUser) {
+        userRequestScenario(handleMethod, submitUri, signedInUser) {
+          wasHtml
+        }
+      }
+    }
+
+    "require authentication" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+      notSignedInScenario() {
+        accessDeniedRequestScenarioTest(handleMethod, submitUri)
+      }
+    }
+
+    "be behind a feature switch" in featureScenario(Feature.declaration, FeatureStatus.disabled) {
+      signedInScenario(signedInUser) {
+        userRequestScenario(handleMethod, submitUri, signedInUser) {
+          wasNotFound
+        }
+      }
+    }
+
+  }
+
+
   "Declarant Page" should {
 
-    case class ExpectedField(fieldType:String ="input", fieldTypeValue:String = "text",fieldName:String)
+    case class ExpectedField(fieldType:String ="input",fieldName:String)
 
     def declarantScenarios = {
+      val declarantName = "MetaData_declaration_declarant_name"
+      val declarantAddressLine = "MetaData_declaration_declarant_address_line"
+      val declarantAddressCityName = "MetaData_declaration_declarant_address_cityName"
+      val declarantAddressCountryCode = "MetaData_declaration_declarant_address_countryCode"
+      val declarantAddressPostcode = "MetaData_declaration_declarant_address_postcodeId"
+      val declarantId = "MetaData_declaration_declarant_id"
+
       val declarantPageScenarios:Map[String,ExpectedField] = Map.empty
-      declarantPageScenarios + (s"include a text input for  Metadata_DeclarantName" -> ExpectedField(fieldName = "Metadata_DeclarantName"),
-      s"include a text input for  Metadata_DeclarantName" -> ExpectedField(fieldName = "DeclarantAddressLine"),
-      s"include a text input for  Metadata_DeclarantName" -> ExpectedField(fieldName = "Metadata_DeclarantName")
-        )
+      declarantPageScenarios + (s"include a text input for  ${declarantName}" -> ExpectedField(fieldName = declarantName),
+      s"include a text input for  ${declarantAddressLine}" -> ExpectedField(fieldName = declarantAddressLine),
+      s"include a text input for  ${declarantAddressCityName}" -> ExpectedField(fieldName = declarantAddressCityName),
+      s"include a select field for  ${declarantAddressCountryCode}" -> ExpectedField("select",fieldName = declarantAddressCountryCode),
+      s"include a text input for  ${declarantAddressPostcode}" -> ExpectedField(fieldName = declarantAddressPostcode)
+      )
     }
 
     declarantScenarios.map(scenario =>
       scenario._1 in featureScenario(Feature.declaration, FeatureStatus.enabled) {
         signedInScenario() {
           userRequestScenario(method, uri) { resp =>
-            includesHtmlField(resp, scenario._2.fieldType,scenario._2.fieldTypeValue,scenario._2.fieldName)
+            includesHtmlField(resp, scenario._2.fieldType,scenario._2.fieldName)
           }
         }
       }

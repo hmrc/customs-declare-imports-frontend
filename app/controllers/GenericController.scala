@@ -43,6 +43,8 @@ class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(
   }
 
   def handleForm(current: String, next: String): Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
+    Logger.debug("payload is --> " + req.body)
+    Logger.debug("payload as asFormUrlEncoded --> " + req.body.asFormUrlEncoded)
       val payload = req.body.asFormUrlEncoded.get
     val errors = validatePayload(payload)
 
