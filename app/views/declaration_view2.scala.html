@@ -25,25 +25,35 @@
     @errors.get(key).get.messages.map(messages(_))}
 }
 
-@main_template("Reference Numbers", bodyClasses = None) {
-<fieldset>
-    <div class="grid-row">
-        <div class="column-two-thirds">
-            <div class="back-arrow">
-                <a class="link-back" href="@{routes.GenericController.displayForm("declarant-details").url}" >back</a>
-            </div>
-            <h1 class="heading-large">Reference</h1>
-            <form method="post" action="/customs-declare-imports/submit-declaration/references/exporter-details">
-                @{
-                    play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
-                }
-                @inputField("Reference Number / UCR (optional)","ucrTraderAssignedReferenceId",fieldsMap)
-                @inputField("LRN","declarationFunctionalReferenceId",fieldsMap,Some("The reference is unique to the trader and usually provided by the software."))
-                @selectField(label="Additional declaration type",fieldsMap,"borderTransportMeansModeCode",ViewUtils.borderTransportMeansModeCodes)
-                   <!-- <button class="button" type="back" id="back" name="back" value="back">Back</button> -->
-                <button class="button" type="next" id="next" name="next" value="next">Continue</button>
-            </form>
-        </div>
+@main_template("Reference numbers", bodyClasses = None) {
+  <a class="link-back" href="@{routes.GenericController.displayForm("declarant-details").url}">@messages("common.back")</a>
+
+  @if(errors) {
+    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading">This page has errors</h2>
+
+      <ul class="error-summary-list">
+        @for(element <- errors) {
+          <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
+        }
+      </ul>
     </div>
-</fieldset>
-    }
+  }
+
+  <fieldset>
+    <legend>
+      <h1 class="heading-large">Reference</h1>
+    </legend>
+
+    <form method="post" action="/customs-declare-imports/submit-declaration/references/exporter-details">
+      @{
+        play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
+      }
+      @inputField("Reference Number / UCR (optional)","ucrTraderAssignedReferenceId",fieldsMap)
+      @inputField("LRN","declarationFunctionalReferenceId",fieldsMap,Some("The reference is unique to the trader and usually provided by the software."))
+      @selectField(label="Additional declaration type",fieldsMap,"borderTransportMeansModeCode",ViewUtils.borderTransportMeansModeCodes)
+
+      <button class="button" type="next" id="next" name="next" value="next">Continue</button>
+    </form>
+  </fieldset>
+}
