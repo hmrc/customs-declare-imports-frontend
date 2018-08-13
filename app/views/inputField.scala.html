@@ -16,7 +16,7 @@
 
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
-@(label: String, name: String,fieldsMap: Map[String, Seq[String]],spanText:Option[String]=None)(implicit errors: Map[String, ValidationError] = Map.empty, messages: Messages)
+@(label: String, name: String,fieldsMap: Map[String, Seq[String]],spanText:Option[String]=None,errors: Map[String, ValidationError])(implicit messages: Messages)
 
 <div class="form-group">
     <label class="form-label" for=@name>

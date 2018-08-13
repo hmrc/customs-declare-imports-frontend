@@ -49,9 +49,9 @@
       @{
         play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
       }
-      @inputField("Reference Number / UCR (optional)","ucrTraderAssignedReferenceId",fieldsMap)
-      @inputField("LRN","declarationFunctionalReferenceId",fieldsMap,Some("The reference is unique to the trader and usually provided by the software."))
-      @selectField(label="Additional declaration type",fieldsMap,"borderTransportMeansModeCode",ViewUtils.borderTransportMeansModeCodes)
+      @inputField("Reference Number / UCR (optional)","ucrTraderAssignedReferenceId",fieldsMap,errors =errors)
+      @inputField("LRN","declarationFunctionalReferenceId",fieldsMap,Some("The reference is unique to the trader and usually provided by the software."),errors =errors)
+      @selectField(label="Additional declaration type",fieldsMap,"borderTransportMeansModeCode",ViewUtils.borderTransportMeansModeCodes,errors =errors)
 
       <button class="button" type="next" id="next" name="next" value="next">Continue</button>
     </form>

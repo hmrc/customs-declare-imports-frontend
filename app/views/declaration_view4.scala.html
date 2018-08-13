@@ -44,15 +44,16 @@
       @{
           play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
       }
-      @inputField("Representative's name","AgentName",fieldsMap)
-      @inputField("First line of address","AgentAddressLine",fieldsMap)
-      @inputField("City","AgentAddressCityName",fieldsMap)
-      @selectField(label="Country",fieldsMap,"AgentAddressCountryCode",ViewUtils.countryOptions)
-      @inputField("Postcode","AgentAddressPostcodeID",fieldsMap)
+      @inputField("Representative's name","AgentName",fieldsMap,errors =errors)
+      @inputField("First line of address","AgentAddressLine",fieldsMap,errors =errors)
+      @inputField("City","AgentAddressCityName",fieldsMap,errors =errors)
+      @selectField(label="Country",fieldsMap,"AgentAddressCountryCode",ViewUtils.countryOptions,errors =errors)
+      @inputField("Postcode","AgentAddressPostcodeID",fieldsMap,errors =errors)
       @inputField("EORI number",
         "AgentID",
         fieldsMap,
         Some("Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).")
+        ,errors =errors
       )
       <div class="form-group">
         <fieldset class="inline">

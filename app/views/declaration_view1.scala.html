@@ -47,14 +47,15 @@
           play.filters.csrf.CSRF.getToken(request).map { token => CSRF.formField(request) }
       }
 
-      @inputField("Declarant's name","DeclarantName",fieldsMap)
-      @inputField("First line of address","DeclarantAddressLine",fieldsMap)
-      @inputField("City","DeclarantAddressCityName",fieldsMap)
-      @selectField(label="Country",fieldsMap,"DeclarantAddressCountryCode",countryOptions)
-      @inputField("Postcode","declarantPostcode",fieldsMap)
+      @inputField("Declarant's name","DeclarantName",fieldsMap,errors =errors)
+      @inputField("First line of address","DeclarantAddressLine",fieldsMap,errors =errors)
+      @inputField("City","DeclarantAddressCityName",fieldsMap,errors =errors)
+      @selectField(label="Country",fieldsMap,"DeclarantAddressCountryCode",countryOptions,errors)
+      @inputField("Postcode","declarantPostcode",fieldsMap,errors =errors)
       @inputField("EORI number",
           "DeclarantID",fieldsMap,
-          Some("Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).")
+          Some("Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU)."),
+      errors
       )
 
       <button class="button" type="next" id="next" name="next" value="next">Continue</button>
