@@ -22,41 +22,44 @@
 
 @(fieldsMap: Map[String, Seq[String]], errors: Map[String, ValidationError])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@main_template("Declarant Details", bodyClasses = None) {
-    <fieldset>
-        <div class="grid-row">
-            <div class="column-two-thirds">
-                <div class="back-arrow">
-                    <a class="link-back" href="@{routes.StartController.displayStartPage.url}" >back</a>
-                </div>
-                <h1 class="heading-large">Declarant Details</h1>
+@main_template("Declarant details", bodyClasses = None) {
+  <a class="link-back" href="@{routes.StartController.displayStartPage.url}" >@messages("common.back")</a>
 
-                <form action = "/customs-declare-imports/submit-declaration/declarant-details/references" method="post">
-                    @{
-                        play.filters.csrf.CSRF.getToken(request).map { token => CSRF.formField(request) }
-                    }
+  @if(errors) {
+    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
 
-                    @for(element <- errors) {
-                            <div class="alert alert-error">
-                                <ul>
-                                        <li>@element._1 -> @messages(element._2.message)</li>
-                                </ul>
-                            </div>
-                    }
-                    @inputField("Declarant's name","MetaData_DeclarantName",fieldsMap)
-                    @inputField("First line of address","DeclarantAddressLine",fieldsMap)
-                    @inputField("City","DeclarantAddressCityName",fieldsMap)
-                    @selectField(label="Country",fieldsMap,"DeclarantAddressCountryCode",countryOptions)
-                    @inputField("Postcode","declarantPostcode",fieldsMap)
-                    @inputField("EORI number",
-                        "DeclarantID",fieldsMap,
-                        Some("Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).")
-                    )
+      <ul class="error-summary-list">
+        @for(element <- errors) {
+          <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
+        }
+      </ul>
+    </div>
+  }
 
-                    <button class="button" type="next" id="next" name="next" value="next">Continue</button>
-                </form>
-            </div>
-        </div>
-    </fieldset>
+  <fieldset>
+    <legend>
+      <h1 class="heading-large">Declarant details</h1>
+    </legend>
+
+    <form action = "/customs-declare-imports/submit-declaration/declarant-details/references" method="post">
+      @{
+          play.filters.csrf.CSRF.getToken(request).map { token => CSRF.formField(request) }
+      }
+
+      @inputField("Declarant's name","DeclarantName",fieldsMap,errors =errors)
+      @inputField("First line of address","DeclarantAddressLine",fieldsMap,errors =errors)
+      @inputField("City","DeclarantAddressCityName",fieldsMap,errors =errors)
+      @selectField(label="Country",fieldsMap,"DeclarantAddressCountryCode",countryOptions,errors)
+      @inputField("Postcode","declarantPostcode",fieldsMap,errors =errors)
+      @inputField("EORI number",
+          "DeclarantID",fieldsMap,
+          Some("Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU)."),
+      errors
+      )
+
+      <button class="button" type="next" id="next" name="next" value="next">Continue</button>
+    </form>
+  </fieldset>
 
 }

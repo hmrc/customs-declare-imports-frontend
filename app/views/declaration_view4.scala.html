@@ -21,55 +21,64 @@
 @(fieldsMap:Map[String,Seq[String]], errors:Map[String,ValidationError])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig)
 
 @main_template("Representative's details", bodyClasses = None) {
-    <fieldset>
-    <div class="grid-row">
-        <div class="column-two-thirds">
-            <div class="back-arrow">
-                <a class="link-back" href="@{routes.GenericController.displayForm("exporter-details").url}" >back</a>
-            </div>
-            <h1 class="heading-large">Representative's details</h1>
+  <a class="link-back" href="@{routes.GenericController.displayForm("exporter-details").url}">@messages("common.back")</a>
 
-            <form method="post" action="/customs-declare-imports/submit-declaration/representative-details/importer-details">
-                @{
-                    play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
-                }
-                @inputField("Representative's name","AgentName",fieldsMap)
-                @inputField("First line of address","AgentAddressLine",fieldsMap)
-                @inputField("City","AgentAddressCityName",fieldsMap)
-                @selectField(label="Country",fieldsMap,"AgentAddressCountryCode",ViewUtils.countryOptions)
-                @inputField("Postcode","AgentAddressPostcodeID",fieldsMap)
-                @inputField("EORI number",
-                    "AgentID",
-                    fieldsMap,
-                    Some("Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).")
-                )
-                <div class="form-group">
-                    <fieldset class="inline">
-                        <label class="form-label" for="AgentFunctionCode">
-                            Status code
-                            <span class="form-hint">
-                                This code declares the way in which the declarant is representing the Importer.
-                            </span>
-                        </label>
+  @if(errors) {
+    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
 
-                        <div class="multiple-choice">
-                            <input id="AgentFunctionCode-1" type="radio" name="AgentFunctionCode" value="2" @if(fieldsMap.isDefinedAt("AgentFunctionCode") && fieldsMap.get("AgentFunctionCode").get.head.equals("2")){ checked}>
-                            <label for="AgentFunctionCode-1">2</label>
-                        </div>
-
-                        <div class="multiple-choice">
-                            <input id="AgentFunctionCode-2" type="radio" name="AgentFunctionCode" value="3" @if(fieldsMap.isDefinedAt("AgentFunctionCode") && fieldsMap.get("AgentFunctionCode").get.head.equals("3")) { checked}>
-                            <label for="AgentFunctionCode-2">3</label>
-                        </div>
-                        <span class="errors">@ViewUtils.getError("AgentFunctionCode",errors)</span>
-
-                    </fieldset>
-                </div>
-                    <!-- <button class="button" type="back" id="back" name="back" value="back">Back</button> -->
-                <button class="button" type="next" id="next" name="next" value="next">Continue</button>
-
-            </form>
-        </div>
+      <ul class="error-summary-list">
+        @for(element <- errors) {
+          <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
+        }
+      </ul>
     </div>
-    </fieldset>
-    }
+  }
+
+  <fieldset>
+    <legend>
+      <h1 class="heading-large">Representative's details</h1>
+    </legend>
+
+    <form method="post" action="/customs-declare-imports/submit-declaration/representative-details/importer-details">
+      @{
+          play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
+      }
+      @inputField("Representative's name","AgentName",fieldsMap,errors =errors)
+      @inputField("First line of address","AgentAddressLine",fieldsMap,errors =errors)
+      @inputField("City","AgentAddressCityName",fieldsMap,errors =errors)
+      @selectField(label="Country",fieldsMap,"AgentAddressCountryCode",ViewUtils.countryOptions,errors =errors)
+      @inputField("Postcode","AgentAddressPostcodeID",fieldsMap,errors =errors)
+      @inputField("EORI number",
+        "AgentID",
+        fieldsMap,
+        Some("Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).")
+        ,errors =errors
+      )
+      <div class="form-group">
+        <fieldset class="inline">
+          <label class="form-label" for="AgentFunctionCode">
+            Status code
+            <span class="form-hint">
+                This code declares the way in which the declarant is representing the Importer.
+            </span>
+          </label>
+
+          <div class="multiple-choice">
+            <input id="AgentFunctionCode-1" type="radio" name="AgentFunctionCode" value="2" @if(fieldsMap.isDefinedAt("AgentFunctionCode") && fieldsMap.get("AgentFunctionCode").get.head.equals("2")){ checked}>
+            <label for="AgentFunctionCode-1">2</label>
+          </div>
+
+          <div class="multiple-choice">
+            <input id="AgentFunctionCode-2" type="radio" name="AgentFunctionCode" value="3" @if(fieldsMap.isDefinedAt("AgentFunctionCode") && fieldsMap.get("AgentFunctionCode").get.head.equals("3")) { checked}>
+            <label for="AgentFunctionCode-2">3</label>
+          </div>
+          <span class="errors">@ViewUtils.getError("AgentFunctionCode",errors)</span>
+
+        </fieldset>
+      </div>
+
+      <button class="button" type="next" id="next" name="next" value="next">Continue</button>
+    </form>
+  </fieldset>
+}

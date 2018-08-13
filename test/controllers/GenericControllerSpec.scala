@@ -68,9 +68,9 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
 
     def declarantScenarios = {
       val declarantPageScenarios:Map[String,ExpectedField] = Map.empty
-      declarantPageScenarios + (s"include a text input for  Metadata_DeclarantName" -> ExpectedField(fieldName = "Metadata_DeclarantName"),
-      s"include a text input for  Metadata_DeclarantName" -> ExpectedField(fieldName = "DeclarantAddressLine"),
-      s"include a text input for  Metadata_DeclarantName" -> ExpectedField(fieldName = "Metadata_DeclarantName")
+      declarantPageScenarios + (s"include a text input for  DeclarantName" -> ExpectedField(fieldName = "DeclarantName"),
+      s"include a text input for  DeclarantAddressLine" -> ExpectedField(fieldName = "DeclarantAddressLine"),
+      s"include a text input for  DeclarantAddressCityName" -> ExpectedField(fieldName = "DeclarantAddressCityName")
         )
     }
 
