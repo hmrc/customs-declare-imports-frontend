@@ -21,15 +21,16 @@ import java.util.UUID
 import domain.auth.SignedInUser
 import org.mockito.Mockito.when
 import org.mockito.{ArgumentMatcher, ArgumentMatchers}
-import play.api.Application
+import play.api.{Logger, Application}
 import play.api.http.{HeaderNames, Status}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.filters.csrf.CSRF.Token
 import play.filters.csrf.{CSRFConfigProvider, CSRFFilter}
+import services.SessionCacheService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrievals.{credentials, _}
@@ -47,12 +48,27 @@ trait AuthenticationBehaviours {
 
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
+  val sessionCacheServiceMock = mock[SessionCacheService]
+
+
   override lazy val app: Application = GuiceApplicationBuilder()
     .overrides(bind[AuthConnector].to(mockAuthConnector))
     .build()
 
-  class UserRequestScenario(method: String = "GET", uri: String = s"/$contextPath/", headers: Map[String, String] = Map.empty, user: SignedInUser = signedInUser) {
-    val req: FakeRequest[AnyContentAsEmpty.type] = userRequest(method, uri, user, headers)
+  class UserRequestScenario(method: String = "GET", uri: String = s"/$contextPath/",
+                            user: SignedInUser = signedInUser,
+                            headers: Map[String, String] = Map.empty) {
+    val req: FakeRequest[AnyContentAsEmpty.type ] = userRequest(method, uri, user, headers)
+  }
+
+  class UserRequestSubmitScenario(method: String = "POST", uri: String = s"/$contextPath/",
+                            user: SignedInUser = signedInUser,
+                            headers: Map[String, String] = Map.empty,
+                            payload: Map[String,String]) {
+
+    val req: FakeRequest[AnyContentAsFormUrlEncoded] =
+      userRequest(method, uri, user, headers).withFormUrlEncodedBody(payload.toSeq: _*)
+
   }
 
   //noinspection ConvertExpressionToSAM
@@ -94,9 +110,19 @@ trait AuthenticationBehaviours {
   protected def userRequestScenario(method: String = "GET",
                                     uri: String = s"/$contextPath/",
                                     user: SignedInUser = signedInUser,
-                                    headers: Map[String, String] = Map.empty)(test: Future[Result] => Unit): Unit = {
-    new UserRequestScenario(method, uri, headers, user) {
-      test(route(app, req).get)
+                                    headers: Map[String, String] = Map.empty,
+                                    body: Map[String,String]= Map())(test: Future[Result] => Unit): Unit = {
+    method match  {
+      case "GET" =>
+        new UserRequestScenario(method, uri, user,headers) {
+          test(route(app, req).get)
+        }
+      case _ =>
+        new UserRequestSubmitScenario(uri= uri, user=user,headers=headers, payload = body) {
+          when(sessionCacheServiceMock.put(ArgumentMatchers.any(),ArgumentMatchers.any(),
+            ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(true))
+          test(route(app, req).get)
+        }
     }
   }
 
@@ -115,7 +141,8 @@ trait AuthenticationBehaviours {
     ex must be theSameInstanceAs notLoggedInException
   }
 
-  protected def userRequest(method: String, uri: String, user: SignedInUser, headers: Map[String, String] = Map.empty): FakeRequest[AnyContentAsEmpty.type] = {
+  protected def userRequest(method: String, uri: String, user: SignedInUser, headers: Map[String, String] = Map.empty):
+  FakeRequest[AnyContentAsEmpty.type] = {
     val session: Map[String, String] = Map(
       SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
       SessionKeys.userId -> user.internalId.getOrElse(randomString(8))
@@ -126,9 +153,9 @@ trait AuthenticationBehaviours {
       Token.NameRequestTag -> cfg.tokenName,
       Token.RequestTag -> token
     )
-    FakeRequest(method, uri).
-      withHeaders((Map(cfg.headerName -> token) ++ headers).toSeq: _*).
-      withSession(session.toSeq: _*).copyFakeRequest(tags = tags)
+      FakeRequest(method, uri).
+        withHeaders((Map(cfg.headerName -> token) ++ headers).toSeq: _*).
+        withSession(session.toSeq: _*).copyFakeRequest(tags = tags)
   }
 
 }

@@ -274,5 +274,13 @@ object ViewUtils {
     if(errors.get(key).isDefined) {
       errors.get(key).get.messages.map(messages(_))}
   }
+
+  val declarantName = "MetaData_declaration_declarant_name"
+  val declarantAddressLine = "MetaData_declaration_declarant_address_line"
+  val declarantAddressCityName = "MetaData_declaration_declarant_address_cityName"
+  val declarantAddressCountryCode = "MetaData_declaration_declarant_address_countryCode"
+  val declarantAddressPostcode = "MetaData_declaration_declarant_address_postcodeId"
+  val declarantEori = "MetaData_declaration_declarant_id"
+
 }
 
