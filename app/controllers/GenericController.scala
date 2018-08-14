@@ -73,22 +73,31 @@ trait DeclarationValidator  {
   }
 
   val refValidations : Map[String, (String) => Option[ValidationError]] =
-    Map("ucrTraderAssignedReferenceId" -> digitConstraint,
-      "declarationFunctionalReferenceId" -> digitConstraint)
+    Map("ucrTraderAssignedReferenceId" -> optionalText70MaxConstraint,
+      "declarationFunctionalReferenceId" -> optionalText70MaxConstraint)
 
 
   val declarantDetailsValidations: Map[String, (String) => Option[ValidationError]] =
-    Map("MetaData_declaration_declarant_name" -> textInputConstraint,
-      "MetaData_declaration_declarant_address_line" -> textInputConstraint,
-      "MetaData_declaration_declarant_address_cityName" -> textInputConstraint)
+    Map("MetaData_declaration_declarant_name" -> optionalText70MaxConstraint,
+      "MetaData_declaration_declarant_address_line" -> optionalText70MaxConstraint,
+      "MetaData_declaration_declarant_address_cityName" -> optionalText35MaxConstraint,
+      "MetaData_declaration_declarant_address_countryCode" -> countryConstraint,
+      "MetaData_declaration_declarant_address_postcodeId" -> postcodeConstraint)
 
   val validations : Map[String, (String) => Option[ValidationError]] =
     declarantDetailsValidations ++ refValidations
 
-  val lettersDigitPattern = """^(?!\s*$).+"""
-  val onlyDigitsPattern = """^(?!\s*$).+"""
-  def textInputConstraint(input:String) = validator(input,lettersDigitPattern,requiredKey)
-  def digitConstraint(input:String) = validator(input,onlyDigitsPattern,requiredKey)
+  private def lettersDigitPattern(input:String,min:Int=1,max:Int=35) =
+    if (input.isEmpty) None else validator(input, s"""^[a-zA-Z0-9]{$min,$max}$$""", requiredKey)
+
+
+  def optionalText35MaxConstraint(input:String) = lettersDigitPattern(input)
+  def optionalText70MaxConstraint(input:String) = lettersDigitPattern(input=input,max=70)
+
+  def countryConstraint(input:String) = validator(input,s"""^[A-Z]{2}""",requiredKey)
+  def postcodeConstraint(input:String) = lettersDigitPattern(input=input,max=9)
+  def textInputConstraint(input:String) = validator(input,s""""^[a-zA-Z0-9]""",requiredKey)
+
 
   def validator = (text: String, regex:String, errMsgKey:String) => {
     Logger.debug(s"Validation information :-> input  = ${text}, regex = ${regex}, errMsg = ${errMsgKey} " )
