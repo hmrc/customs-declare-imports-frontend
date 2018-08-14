@@ -19,7 +19,7 @@
 @(label: String, name: String,fieldsMap: Map[String, Seq[String]],spanText:Option[String]=None)(implicit messages: Messages,errors: Map[String, ValidationError])
 
 @if(errors.get(name).isDefined) {
-    <div class="form-group-error">
+    <div class="form-group form-group-error">
         <label class="form-label" for=@name>
             @label
             @spanText.map{text=> <span>@text</span>}
