@@ -43,11 +43,8 @@ class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(
   }
 
   def handleForm(current: String, next: String): Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
-    Logger.debug("payload is --> " + req.request.body.asFormUrlEncoded)
-    Logger.debug("payload as asFormUrlEncoded --> " + req.body.asFormUrlEncoded)
-      val payload = req.body.asFormUrlEncoded.get
+    val payload = req.body.asFormUrlEncoded.get
     implicit val errors = validatePayload(payload)
-
     errors.size match {
       case 0 => cache.get(req.user.eori.get,cacheId).flatMap { cachedData =>
         val allData = cachedData.getOrElse(payload) ++ payload
