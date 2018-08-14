@@ -15,7 +15,7 @@
  *@
 
 @import play.api.data.validation.ValidationError
-@(label: String, fieldsMap: Map[String, Seq[String]], name: String, options: Map[String, String])(implicit errors: Map[String, ValidationError] = Map.empty, messages: Messages)
+@(label: String, fieldsMap: Map[String, Seq[String]], name: String, options: Map[String, String],errors: Map[String, ValidationError])(implicit messages: Messages)
 
 @renderOptions(fieldsValues: Option[Seq[String]], name: String) = {
     <option value="">Please Select</option>

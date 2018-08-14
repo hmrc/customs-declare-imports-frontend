@@ -16,13 +16,13 @@
 
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
-@(label: String, name: String,fieldsMap: Map[String, Seq[String]],spanText:Option[String]=None)(implicit errors: Map[String, ValidationError] = Map.empty, messages: Messages)
+@(label: String, name: String,fieldsMap: Map[String, Seq[String]],spanText:Option[String]=None,errors: Map[String, ValidationError])(implicit messages: Messages)
 
-<div class="form-group">
+<div class="form-group @if(errors){form-group-error}">
     <label class="form-label" for=@name>
         @label
         @spanText.map{text=> <span>@text</span>}
     </label>
+    <span class="error-message">@getError(name, errors)</span>
     <input class="form-control" name=@name id=@name type="text" value=@fieldsMap.get(name)>
-    <span class="errors">@getError(name, errors)</span>
 </div>

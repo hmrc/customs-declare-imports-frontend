@@ -28,5 +28,6 @@ common.button.ConfirmAndContinue                                    = Confirm an
 
 ##Validations
 input.required                                                      =This is a mandatory field.
+
 ##Declarant Details fields
-DeclarantName=DeclarantName
+DeclarantName                                                       =DeclarantName
