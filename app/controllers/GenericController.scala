@@ -47,7 +47,6 @@ class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(
     implicit val errors = validatePayload(payload)
     errors.size match {
       case 0 => cache.get(req.user.eori.get,cacheId).flatMap { cachedData =>
-        Logger.debug("TESTING cached data ****** " + cachedData)
         val allData = cachedData.getOrElse(payload) ++ payload
         cache.put(req.user.eori.get, cacheId, (allData)).map(res => Redirect(routes.GenericController.displayForm(next)))
       }

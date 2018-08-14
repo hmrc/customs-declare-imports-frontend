@@ -17,14 +17,9 @@
 package controllers
 
 import domain.features.{Feature, FeatureStatus}
-import org.mockito.ArgumentMatchers
-import play.api.test.Helpers._
-import services.SessionCacheService
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours}
-import org.mockito.Mockito.when
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.Future
 
 
 class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours  {
@@ -93,58 +88,10 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
       }
     }
 
-/*    "require authentication" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      notSignedInScenario() {
-        accessDeniedRequestScenarioTest(handleMethod, submitUri)
-      }
-    }*/
-
     "be behind a feature switch" in featureScenario(Feature.declaration, FeatureStatus.disabled) {
       signedInScenario(signedInUser) {
         userRequestScenario(handleMethod, submitUri, signedInUser) {
           wasNotFound
-        }
-      }
-    }
-
-  }
-
-
-  "Declarant Page" should {
-
-    case class ExpectedField(fieldType:String ="input",fieldName:String)
-
-    def declarantScenarios = {
-      val declarantName = "MetaData_declaration_declarant_name"
-      val declarantAddressLine = "MetaData_declaration_declarant_address_line"
-      val declarantAddressCityName = "MetaData_declaration_declarant_address_cityName"
-      val declarantAddressCountryCode = "MetaData_declaration_declarant_address_countryCode"
-      val declarantAddressPostcode = "MetaData_declaration_declarant_address_postcodeId"
-      val declarantId = "MetaData_declaration_declarant_id"
-
-      val declarantPageScenarios:Map[String,ExpectedField] = Map.empty
-      declarantPageScenarios + (s"include a text input for  ${declarantName}" -> ExpectedField(fieldName = declarantName),
-      s"include a text input for  ${declarantAddressLine}" -> ExpectedField(fieldName = declarantAddressLine),
-      s"include a text input for  ${declarantAddressCityName}" -> ExpectedField(fieldName = declarantAddressCityName),
-      s"include a select field for  ${declarantAddressCountryCode}" -> ExpectedField("select",fieldName = declarantAddressCountryCode),
-      s"include a text input for  ${declarantAddressPostcode}" -> ExpectedField(fieldName = declarantAddressPostcode)
-      )
-    }
-
-    declarantScenarios.map(scenario =>
-      scenario._1 in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-        signedInScenario() {
-          userRequestScenario(method, uri) { resp =>
-            includesHtmlField(resp, scenario._2.fieldType,scenario._2.fieldName)
-          }
-        }
-      }
-    )
-
-    "include back link with URL" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      signedInScenario() {
-        userRequestScenario(method, uri) { resp =>
-          includesHtmlLink(resp, "/customs-declare-imports/start")
         }
       }
     }
