@@ -21,16 +21,16 @@ import java.util.UUID
 import domain.auth.SignedInUser
 import org.mockito.Mockito.when
 import org.mockito.{ArgumentMatcher, ArgumentMatchers}
-import play.api.Application
+import play.api.{Logger, Application}
 import play.api.http.{HeaderNames, Status}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson, AnyContentAsEmpty, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.filters.csrf.CSRF.Token
 import play.filters.csrf.{CSRFConfigProvider, CSRFFilter}
+import services.SessionCacheService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrievals.{credentials, _}
@@ -48,23 +48,26 @@ trait AuthenticationBehaviours {
 
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
+  val sessionCacheServiceMock = mock[SessionCacheService]
+
+
   override lazy val app: Application = GuiceApplicationBuilder()
     .overrides(bind[AuthConnector].to(mockAuthConnector))
     .build()
 
   class UserRequestScenario(method: String = "GET", uri: String = s"/$contextPath/",
                             user: SignedInUser = signedInUser,
-                            headers: Map[String, String] = Map.empty,
-                           body:AnyContentAsFormUrlEncoded) {
-
+                            headers: Map[String, String] = Map.empty) {
     val req: FakeRequest[AnyContentAsEmpty.type ] = userRequest(method, uri, user, headers)
+  }
 
-    val reqPayload: FakeRequest[AnyContentAsFormUrlEncoded] = userRequest(method, uri, user, headers).withBody(body)
+  class UserRequestSubmitScenario(method: String = "POST", uri: String = s"/$contextPath/",
+                            user: SignedInUser = signedInUser,
+                            headers: Map[String, String] = Map.empty,
+                            payload: Map[String,String]) {
 
-    method match {
-        case "GET" => req
-        case _ => reqPayload
-      }
+    val req: FakeRequest[AnyContentAsFormUrlEncoded] =
+      userRequest(method, uri, user, headers).withFormUrlEncodedBody(payload.toSeq: _*)
 
   }
 
@@ -108,9 +111,18 @@ trait AuthenticationBehaviours {
                                     uri: String = s"/$contextPath/",
                                     user: SignedInUser = signedInUser,
                                     headers: Map[String, String] = Map.empty,
-                                    body: AnyContentAsFormUrlEncoded = AnyContentAsFormUrlEncoded(Map.empty))(test: Future[Result] => Unit): Unit = {
-    new UserRequestScenario(method, uri, user,headers, body) {
-      test(route(app, req).get)
+                                    body: Map[String,String]= Map())(test: Future[Result] => Unit): Unit = {
+    method match  {
+      case "GET" =>
+        new UserRequestScenario(method, uri, user,headers) {
+          test(route(app, req).get)
+        }
+      case _ =>
+        new UserRequestSubmitScenario(uri= uri, user=user,headers=headers, payload = body) {
+          when(sessionCacheServiceMock.put(ArgumentMatchers.any(),ArgumentMatchers.any(),
+            ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(true))
+          test(route(app, req).get)
+        }
     }
   }
 

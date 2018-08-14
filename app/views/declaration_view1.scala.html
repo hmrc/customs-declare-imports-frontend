@@ -20,7 +20,7 @@
 @import ViewUtils._
 
 
-@(fieldsMap: Map[String, Seq[String]], errors: Map[String, ValidationError])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(fieldsMap: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Declarant Details", bodyClasses = None) {
     <fieldset>
@@ -36,12 +36,16 @@
                         play.filters.csrf.CSRF.getToken(request).map { token => CSRF.formField(request) }
                     }
 
-                    @for(element <- errors) {
-                            <div class="alert alert-error">
-                                <ul>
-                                        <li>@element._1 -> @messages(element._2.message)</li>
-                                </ul>
-                            </div>
+                    @if(errors) {
+                        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+                            <h2 class="heading-medium error-summary-heading">This page has errors</h2>
+
+                            <ul class="error-summary-list">
+                            @for(element <- errors) {
+                                <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
+                            }
+                            </ul>
+                        </div>
                     }
                     @inputField("Declarant's name",declarantName,fieldsMap)
                     @inputField("First line of address",declarantAddressLine,fieldsMap)

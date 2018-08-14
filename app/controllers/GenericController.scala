@@ -43,10 +43,10 @@ class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(
   }
 
   def handleForm(current: String, next: String): Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
-    Logger.debug("payload is --> " + req.body)
+    Logger.debug("payload is --> " + req.request.body.asFormUrlEncoded)
     Logger.debug("payload as asFormUrlEncoded --> " + req.body.asFormUrlEncoded)
       val payload = req.body.asFormUrlEncoded.get
-    val errors = validatePayload(payload)
+    implicit val errors = validatePayload(payload)
 
     errors.size match {
       case 0 => cache.get(req.user.eori.get,cacheId).flatMap { cachedData =>
@@ -54,7 +54,7 @@ class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(
         cache.put(req.user.eori.get, cacheId, (allData)).map(res => Redirect(routes.GenericController.displayForm(next)))
       }
       case _ => Logger.debug("validation errors are --> " + errors.mkString("} {") )
-        Future.successful(BadRequest(views.html.generic_view(current,payload,errors)))
+        Future.successful(BadRequest(views.html.generic_view(current,payload)))
     }
   }
 
@@ -78,9 +78,9 @@ trait DeclarationValidator  {
 
 
   val declarantDetailsValidations: Map[String, (String) => Option[ValidationError]] =
-    Map("DeclarantName" -> textInputConstraint,
-      "DeclarantAddressLine" -> textInputConstraint,
-      "DeclarantAddressCityName" -> textInputConstraint)
+    Map("MetaData_declaration_declarant_name" -> textInputConstraint,
+      "MetaData_declaration_declarant_address_line" -> textInputConstraint,
+      "MetaData_declaration_declarant_address_cityName" -> textInputConstraint)
 
   val validations : Map[String, (String) => Option[ValidationError]] =
     declarantDetailsValidations ++ refValidations
