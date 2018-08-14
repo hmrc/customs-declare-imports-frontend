@@ -26,12 +26,14 @@
 }
 }
 
-<div class="form-group">
+<div class="form-group @if(errors.get(name).isDefined) {form-group-error}">
     <label class="form-label" for=@name>
     @label
     </label>
+     @if(errors.get(name).isDefined) {
+         <span class="error-message">@ViewUtils.getError(name, errors)</span>
+     }
     <select class="form-control" id=@name name=@name>
     @renderOptions(fieldsMap.get(name), name)
     </select>
-    <span class="errors">@ViewUtils.getError(name, errors)</span>
 </div>
