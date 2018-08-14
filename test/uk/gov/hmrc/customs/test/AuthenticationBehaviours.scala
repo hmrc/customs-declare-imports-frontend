@@ -21,6 +21,7 @@ import java.util.UUID
 import domain.auth.SignedInUser
 import org.mockito.Mockito.when
 import org.mockito.{ArgumentMatcher, ArgumentMatchers}
+import play.api.libs.json.{JsString, JsObject}
 import play.api.{Logger, Application}
 import play.api.http.{HeaderNames, Status}
 import play.api.inject.bind
@@ -35,6 +36,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrievals.{credentials, _}
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 
 import scala.concurrent.Future
@@ -48,11 +50,12 @@ trait AuthenticationBehaviours {
 
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
-  val sessionCacheServiceMock = mock[SessionCacheService]
+  lazy val sessionCacheServiceMock = mock[SessionCacheService]
 
 
   override lazy val app: Application = GuiceApplicationBuilder()
     .overrides(bind[AuthConnector].to(mockAuthConnector))
+    .overrides(bind[SessionCacheService].to(sessionCacheServiceMock))
     .build()
 
   class UserRequestScenario(method: String = "GET", uri: String = s"/$contextPath/",
@@ -112,6 +115,14 @@ trait AuthenticationBehaviours {
                                     user: SignedInUser = signedInUser,
                                     headers: Map[String, String] = Map.empty,
                                     body: Map[String,String]= Map())(test: Future[Result] => Unit): Unit = {
+
+    when(sessionCacheServiceMock.put(ArgumentMatchers.any(),ArgumentMatchers.any(),
+      ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(true))
+    when(sessionCacheServiceMock.get(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(
+      Future.successful(
+        Some(Map("MetaData_declaration_declarant_name"-> Seq("name1")))
+      ))
+
     method match  {
       case "GET" =>
         new UserRequestScenario(method, uri, user,headers) {
@@ -119,8 +130,6 @@ trait AuthenticationBehaviours {
         }
       case _ =>
         new UserRequestSubmitScenario(uri= uri, user=user,headers=headers, payload = body) {
-          when(sessionCacheServiceMock.put(ArgumentMatchers.any(),ArgumentMatchers.any(),
-            ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(true))
           test(route(app, req).get)
         }
     }

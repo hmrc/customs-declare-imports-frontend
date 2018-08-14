@@ -71,26 +71,29 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
   s"$handleMethod $uri" should {
     val payload =
       Map("MetaData_declaration_declarant_name"-> "name1",
-        "MetaData_declaration_declarant_address_line"-> "Address1")
+        "MetaData_declaration_declarant_address_line"-> "Address1","MetaData_declaration_declarant_id"->"12345678912341234")
     implicit val hc = HeaderCarrier()
 
-/*    "return 303" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+    "return 303" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
         userRequestScenario(handleMethod, submitUri, signedInUser,Map.empty, payload) {
           wasRedirected
         }
       }
     }
+    val errorsPayload =
+      Map("MetaData_declaration_declarant_name"-> "name1",
+        "MetaData_declaration_declarant_address_line"-> "Address1","MetaData_declaration_declarant_id"->"41234")
 
-    "return HTML" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+    "return to same page with errors" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(handleMethod, submitUri, signedInUser,Map.empty, payload) {
+        userRequestScenario(handleMethod, submitUri, signedInUser,Map.empty, errorsPayload) {
           wasHtml
         }
       }
     }
 
-    "require authentication" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+/*    "require authentication" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
       notSignedInScenario() {
         accessDeniedRequestScenarioTest(handleMethod, submitUri)
       }
