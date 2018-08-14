@@ -53,7 +53,7 @@ class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(
         val allData = cachedData.getOrElse(payload) ++ payload
         cache.put(req.user.eori.get, cacheId, (allData)).map(res => Redirect(routes.GenericController.displayForm(next)))
       }
-      case _ => Logger.debug("validation errors are --> " + errors.mkString("} {") )
+      case _ => Logger.debug("validation errors are --> { " + errors.mkString("} {") )
         Future.successful(BadRequest(views.html.generic_view(current,payload)))
     }
   }
@@ -82,7 +82,8 @@ trait DeclarationValidator  {
       "MetaData_declaration_declarant_address_line" -> optionalText70MaxConstraint,
       "MetaData_declaration_declarant_address_cityName" -> optionalText35MaxConstraint,
       "MetaData_declaration_declarant_address_countryCode" -> countryConstraint,
-      "MetaData_declaration_declarant_address_postcodeId" -> postcodeConstraint)
+      "MetaData_declaration_declarant_address_postcodeId" -> postcodeConstraint,
+      "MetaData_declaration_declarant_id" -> eoriConstraint)
 
   val validations : Map[String, (String) => Option[ValidationError]] =
     declarantDetailsValidations ++ refValidations
@@ -97,6 +98,7 @@ trait DeclarationValidator  {
   def countryConstraint(input:String) = validator(input,s"""^[A-Z]{2}""",requiredKey)
   def postcodeConstraint(input:String) = lettersDigitPattern(input=input,max=9)
   def textInputConstraint(input:String) = validator(input,s""""^[a-zA-Z0-9]""",requiredKey)
+  def eoriConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9]{17}""",requiredKey)
 
 
   def validator = (text: String, regex:String, errMsgKey:String) => {
