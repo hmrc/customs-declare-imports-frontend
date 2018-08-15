@@ -30,6 +30,14 @@ object ViewUtils {
   val declarantAddressPostcode = "MetaData_declaration_declarant_address_postcodeId"
   val declarantEori = "MetaData_declaration_declarant_id"
 
+  //Exporter fields
+  val consignorName = "MetaData_declaration_consignor_name"
+  val consignorAddressLine = "MetaData_declaration_consignor_address_line"
+  val consignorAddressCityName = "MetaData_declaration_consignor_address_cityName"
+  val consignorAddressCountryCode = "MetaData_declaration_consignor_address_countryCode"
+  val consignorAddressPostcode = "MetaData_declaration_consignor_address_postcodeId"
+  val consignorEori = "MetaData_declaration_consignor_id"
+
   //references screen fields
  //functionalReferenceId: Option[String] = None, // max 35 chars
   val declarantFunctionalReferenceID = "MetaData_declaration_functionalReferenceID"
