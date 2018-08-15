@@ -47,6 +47,14 @@ object ViewUtils {
   val agentEori = "MetaData_declaration_agent_id"
   val agentFunctionCode = "MetaData_declaration_agent_functionCode"
 
+  //Importer fields
+  val importerName = "MetaData_declaration_importer_name"
+  val importerAddressLine = "MetaData_declaration_importer_address_line"
+  val importerAddressCityName = "MetaData_declaration_importer_address_cityName"
+  val importerAddressCountryCode = "MetaData_declaration_importer_address_countryCode"
+  val importerAddressPostcode = "MetaData_declaration_importer_address_postcodeId"
+  val importerEori = "MetaData_declaration_importer_id"
+
   //references screen fields
  //functionalReferenceId: Option[String] = None, // max 35 chars
   val declarantFunctionalReferenceID = "MetaData_declaration_functionalReferenceID"
