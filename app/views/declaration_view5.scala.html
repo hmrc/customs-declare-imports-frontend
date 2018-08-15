@@ -50,9 +50,9 @@
       @inputField(messages("peoplepage.common.firstLineAddress"),importerAddressLine,fieldsMap)
       @inputField(messages("peoplepage.common.city"),importerAddressCityName,fieldsMap)
       @selectField(label=messages("peoplepage.common.country"),fieldsMap,importerAddressCountryCode,ViewUtils.countryOptions)
-      @inputField(messages("peoplepage.common.postcode"),importerAddressPostcodeID,fieldsMap)
+      @inputField(messages("peoplepage.common.postcode"),importerAddressPostcode,fieldsMap)
       @inputField(messages("peoplepage.common.eoriNumber"),
-        importerID,
+        importerEori,
         fieldsMap,
         Some(messages("peoplepage.common.eoriNumberHint"))
       )
