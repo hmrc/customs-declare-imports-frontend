@@ -22,7 +22,7 @@
     <div class="form-group form-group-error">
         <label class="form-label" for=@name>
             @label
-            @spanText.map{text=> <span>@text</span>}
+            @spanText.map{text=> <span class="form-hint">@text</span>}
         </label>
         <span class="error-message">@getError(name, errors)</span>
         <input class="form-control" name=@name id=@name type="text" value=@fieldsMap.get(name)>
@@ -31,7 +31,7 @@
     <div class="form-group">
         <label class="form-label" for=@name>
             @label
-            @spanText.map{text=> <span>@text</span>}
+            @spanText.map{text=> <span class="form-hint">@text</span>}
         </label>
         <input class="form-control" name=@name id=@name type="text" value=@fieldsMap.get(name)>
     </div>

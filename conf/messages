@@ -1,5 +1,5 @@
 ## Global
-global.error.experiencing-difficulties                              = Sorry, we''re experiencing technical difficulties
+global.error.experiencing-difficulties                              = Sorry, we'’re experiencing technical difficulties
 
 ## Common
 common.service.name                                                 = Declare an import
@@ -26,8 +26,40 @@ common.dateMessage                                                  = Enter the 
 common.dateExample                                                  = For example,
 common.button.ConfirmAndContinue                                    = Confirm and continue
 
-##Validations
+## Validations
 input.required                                                      =This is a mandatory field.
 
-##Declarant Details fields
+## Declarant Details fields
 DeclarantName                                                       =DeclarantName
+
+## People pages
+declarant.details                                                   =Declarant'’s details
+declarant.name                                                      =Declarant'’s name
+representative.details                                              =Representative'’s details
+representative.name                                                 =Representative'’s name
+importer.details                                                    =Importer'’s details
+importer.name                                                       =Importer'’s name
+exporter.details                                                    =Exporter'’s details
+exporter.name                                                       =Exporter'’s name
+buyer.details                                                       =Buyer'’s details
+buyer.name                                                          =Buyer'’s name
+seller.details                                                      =Seller'’s details
+seller.name                                                         =Seller'’s name
+
+peoplepage.common.firstLineAddress                                  =First line of address
+peoplepage.common.city                                              =City
+peoplepage.common.country                                           =Country
+peoplepage.common.postcode                                          =Postcode
+peoplepage.common.eoriNumber                                        =EORI number
+peoplepage.common.eoriNumberHint                             =Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).
+
+## Representative page
+representativepage.statusCode                                       =Status code
+representativepage.statusCodeHint                                   =This code declares the way in which the declarant is representing the Importer.
+
+## Refernece page
+referencepage.heading                                               =Reference
+referencepage.referenceNumber                                       =Reference Number / UCR (optional)
+referencepage.lrn                                                   =LRN
+referencepage.lrnHint                                               =The reference is unique to the trader and usually provided by the software.
+referencepage.addtionalDeclarationType                              =Additional declaration type

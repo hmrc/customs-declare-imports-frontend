@@ -39,27 +39,25 @@
 
   <fieldset>
     <legend>
-      <h1 class="heading-large">Seller's details</h1>
+      <h1 class="heading-large">@messages("seller.details")</h1>
     </legend>
 
     <form method="post" action="/customs-declare-imports/submit-declaration/seller-details/declarant-details">
         @{
             play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
         }
-        @inputField(" Seller's name","sellerName",fieldsMap)
-        @inputField("First line of address","sellerAddressLine",fieldsMap)
-        @inputField("City","sellerAddressCityName",fieldsMap)
-
-        @inputField("City","sellerrAddressCityName",fieldsMap)
-        @inputField("Postcode","sellerAddressPostcodeID",fieldsMap)
-        @selectField(label="Country",fieldsMap,"sellerAddressCountryCode",ViewUtils.countryOptions)
-        @inputField("EORI number",
+        @inputField(messages("seller.name"),"sellerName",fieldsMap)
+        @inputField(messages("peoplepage.common.firstLineAddress"),"sellerAddressLine",fieldsMap)
+        @inputField(messages("peoplepage.common.city"),"sellerrAddressCityName",fieldsMap)
+        @selectField(label=messages("peoplepage.common.country"),fieldsMap,"sellerAddressCountryCode",ViewUtils.countryOptions)
+        @inputField(messages("peoplepage.common.postcode"),"sellerAddressPostcodeID",fieldsMap)
+        @inputField(messages("peoplepage.common.eoriNumber"),
           "sellerID",
           fieldsMap,
-          Some("Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).")
+          Some(messages("peoplepage.common.eoriNumberHint"))
         )
 
-      <button class="button" type="next" id="next" name="next" value="next">Continue</button>
+      <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
     </form>
   </fieldset>
 

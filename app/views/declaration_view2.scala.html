@@ -42,16 +42,16 @@
 
   <fieldset>
     <legend>
-      <h1 class="heading-large">Reference</h1>
+      <h1 class="heading-large">@messages("referencepage.heading")</h1>
     </legend>
 
     <form method="post" action="/customs-declare-imports/submit-declaration/references/exporter-details">
       @{
         play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
       }
-      @inputField("Reference Number / UCR (optional)","ucrTraderAssignedReferenceId",fieldsMap)
-      @inputField("LRN","declarationFunctionalReferenceId",fieldsMap,Some("The reference is unique to the trader and usually provided by the software."))
-      @selectField(label="Additional declaration type",fieldsMap,"borderTransportMeansModeCode",ViewUtils.borderTransportMeansModeCodes)
+      @inputField(messages("referencepage.referenceNumber"),"ucrTraderAssignedReferenceId",fieldsMap)
+      @inputField(messages("referencepage.lrn"),"declarationFunctionalReferenceId",fieldsMap,Some(messages("referencepage.lrnHint")))
+      @selectField(label=messages("referencepage.addtionalDeclarationType"),fieldsMap,"borderTransportMeansModeCode",ViewUtils.borderTransportMeansModeCodes)
 
       <button class="button" type="next" id="next" name="next" value="next">Continue</button>
     </form>

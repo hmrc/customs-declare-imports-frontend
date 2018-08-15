@@ -37,29 +37,29 @@
 
   <fieldset>
     <legend>
-      <h1 class="heading-large">Representative's details</h1>
+      <h1 class="heading-large">@messages("representative.details")</h1>
     </legend>
 
     <form method="post" action="/customs-declare-imports/submit-declaration/representative-details/importer-details">
       @{
           play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
       }
-      @inputField("Representative's name","AgentName",fieldsMap)
-      @inputField("First line of address","AgentAddressLine",fieldsMap)
-      @inputField("City","AgentAddressCityName",fieldsMap)
-      @selectField(label="Country",fieldsMap,"AgentAddressCountryCode",ViewUtils.countryOptions)
-      @inputField("Postcode","AgentAddressPostcodeID",fieldsMap)
-      @inputField("EORI number",
+      @inputField(messages("representative.name"),"AgentName",fieldsMap)
+      @inputField(messages("peoplepage.common.firstLineAddress"),"AgentAddressLine",fieldsMap)
+      @inputField(messages("peoplepage.common.city"),"AgentAddressCityName",fieldsMap)
+      @selectField(label=messages("peoplepage.common.country"),fieldsMap,"AgentAddressCountryCode",ViewUtils.countryOptions)
+      @inputField(messages("peoplepage.common.postcode"),"AgentAddressPostcodeID",fieldsMap)
+      @inputField(messages("peoplepage.common.eoriNumber"),
         "AgentID",
         fieldsMap,
-        Some("Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).")
+        Some(messages("peoplepage.common.eoriNumberHint"))
       )
       <div class="form-group">
         <fieldset class="inline">
           <label class="form-label" for="AgentFunctionCode">
-            Status code
+            @messages("representativepage.statusCode")
             <span class="form-hint">
-                This code declares the way in which the declarant is representing the Importer.
+              @messages("representativepage.statusCodeHint")
             </span>
           </label>
 
@@ -77,7 +77,7 @@
         </fieldset>
       </div>
 
-      <button class="button" type="next" id="next" name="next" value="next">Continue</button>
+      <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
     </form>
   </fieldset>
 }
