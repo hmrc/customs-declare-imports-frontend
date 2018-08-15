@@ -22,7 +22,31 @@ import play.api.i18n.Messages
 
 object ViewUtils {
 
+  //Declarant fields
+  val declarantName = "MetaData_declaration_declarant_name"
+  val declarantAddressLine = "MetaData_declaration_declarant_address_line"
+  val declarantAddressCityName = "MetaData_declaration_declarant_address_cityName"
+  val declarantAddressCountryCode = "MetaData_declaration_declarant_address_countryCode"
+  val declarantAddressPostcode = "MetaData_declaration_declarant_address_postcodeId"
+  val declarantEori = "MetaData_declaration_declarant_id"
+
+  //references screen fields
+ //functionalReferenceId: Option[String] = None, // max 35 chars
+  val declarantFunctionalReferenceID = "MetaData_declaration_functionalReferenceID"
+  //traderAssignedReferenceId: Option[String] = None) // max 35 chars
+  val referenceNumberUCR1 = "MetaData_declaration_goodsShipment_ucr_traderAssignedReferenceId"
+  //TODO:governmentAgencyGoodsItems is a seq of elements needs mapping the sequence
+  //traderAssignedReferenceId: Option[String] = None) // max 35 chars
+  val referenceNumberUCR2 = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_ucr_traderAssignedReferenceID"
+  //typeCode: Option[String] = None, // max 3 chars; MUST be "INV" in cancellation use case
+  //TODO: Same xml element mapped for declarationType and additionalDeclarationType
+  val declarationType = "MetaData_declaration_typeCode"
+  //typeCode: Option[String] = None, // max 3 chars; MUST be "INV" in cancellation use case
+  val additionalDeclarationType = "MetaData_declaration_typeCode"
+
+
   val borderTransportMeansModeCodes = Map("C"-> "C","F"->"F","Z"-> "Z","Y"->"Y")
+
   val countryOptions = Map("AF"->"Afghanistan",
     "AX"->"Aland Islands",
     "AL"->"Albania",
@@ -274,13 +298,5 @@ object ViewUtils {
     if(errors.get(key).isDefined) {
       errors.get(key).get.messages.map(messages(_))}
   }
-
-  val declarantName = "MetaData_declaration_declarant_name"
-  val declarantAddressLine = "MetaData_declaration_declarant_address_line"
-  val declarantAddressCityName = "MetaData_declaration_declarant_address_cityName"
-  val declarantAddressCountryCode = "MetaData_declaration_declarant_address_countryCode"
-  val declarantAddressPostcode = "MetaData_declaration_declarant_address_postcodeId"
-  val declarantEori = "MetaData_declaration_declarant_id"
-
 }
 

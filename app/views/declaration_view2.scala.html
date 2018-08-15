@@ -18,12 +18,11 @@
 
 @import views.html.helper.CSRF
 @import play.api.data.validation.ValidationError
-@(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@import ViewUtils.declarantFunctionalReferenceID
+@import ViewUtils.referenceNumberUCR1
+@import ViewUtils.additionalDeclarationType
 
-@getError(key: String) = {
-@if(errors.get(key).isDefined) {
-    @errors.get(key).get.messages.map(messages(_))}
-}
+@(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Reference numbers", bodyClasses = None) {
   <a class="link-back" href="@{routes.GenericController.displayForm("declarant-details").url}">@messages("common.back")</a>
@@ -49,9 +48,9 @@
       @{
         play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
       }
-      @inputField(messages("referencepage.referenceNumber"),"ucrTraderAssignedReferenceId",fieldsMap)
-      @inputField(messages("referencepage.lrn"),"declarationFunctionalReferenceId",fieldsMap,Some(messages("referencepage.lrnHint")))
-      @selectField(label=messages("referencepage.addtionalDeclarationType"),fieldsMap,"borderTransportMeansModeCode",ViewUtils.borderTransportMeansModeCodes)
+      @inputField(messages("referencepage.referenceNumber"),referenceNumberUCR1,fieldsMap)
+      @inputField(messages("referencepage.lrn"),declarantFunctionalReferenceID,fieldsMap,Some(messages("referencepage.lrnHint")))
+      @selectField(label=messages("referencepage.addtionalDeclarationType"),fieldsMap,additionalDeclarationType,ViewUtils.borderTransportMeansModeCodes)
 
       <button class="button" type="next" id="next" name="next" value="next">Continue</button>
     </form>
