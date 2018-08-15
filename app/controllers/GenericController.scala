@@ -28,6 +28,7 @@ import services.SessionCacheService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{Future, ExecutionContext}
+import controllers.ViewUtils._
 
 
 @Singleton
@@ -75,15 +76,24 @@ trait DeclarationValidator  {
 
 
   val declarantDetailsValidations: Map[String, (String) => Option[ValidationError]] =
-    Map("MetaData_declaration_declarant_name" -> optionalText70MaxConstraint,
-      "MetaData_declaration_declarant_address_line" -> optionalText70MaxConstraint,
-      "MetaData_declaration_declarant_address_cityName" -> optionalText35MaxConstraint,
-      "MetaData_declaration_declarant_address_countryCode" -> countryConstraint,
-      "MetaData_declaration_declarant_address_postcodeId" -> postcodeConstraint,
-      "MetaData_declaration_declarant_id" -> eoriConstraint)
+    Map(declarantName -> optionalText70MaxConstraint,
+      declarantAddressLine -> optionalText70MaxConstraint,
+      declarantAddressCityName -> optionalText35MaxConstraint,
+      declarantAddressCountryCode -> countryConstraint,
+      declarantAddressPostcode -> postcodeConstraint,
+      declarantEori -> eoriConstraint)
+
+  val exporterDetailsValidations: Map[String, (String) => Option[ValidationError]] =
+    Map(exporterName -> optionalText70MaxConstraint,
+      exporterAddressLine -> optionalText70MaxConstraint,
+      exporterAddressCityName -> optionalText35MaxConstraint,
+      exporterAddressCountryCode -> countryConstraint,
+      exporterAddressPostcode -> postcodeConstraint,
+      exporterEori -> optionalEoriConstraint
+    )
 
   val validations : Map[String, (String) => Option[ValidationError]] =
-    declarantDetailsValidations ++ refValidations
+    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations
 
   private def lettersDigitPattern(input:String,min:Int=1,max:Int=35) =
     if (input.isEmpty) None else validator(input, s"""^[a-zA-Z0-9]{$min,$max}$$""", requiredKey)
@@ -92,10 +102,11 @@ trait DeclarationValidator  {
   def optionalText35MaxConstraint(input:String) = lettersDigitPattern(input)
   def optionalText70MaxConstraint(input:String) = lettersDigitPattern(input=input,max=70)
 
-  def countryConstraint(input:String) = validator(input,s"""^[A-Z]{2}""",requiredKey)
+  def countryConstraint(input:String) = if (input.isEmpty) None else validator(input,s"""^[A-Z]{2}""",requiredKey)
   def postcodeConstraint(input:String) = lettersDigitPattern(input=input,max=9)
   def textInputConstraint(input:String) = validator(input,s""""^[a-zA-Z0-9]""",requiredKey)
   def eoriConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9]{17}""",requiredKey)
+  def optionalEoriConstraint(input:String) = if (input.isEmpty) None else validator(input,s"""^[a-zA-Z0-9]{17}""",requiredKey)
 
 
   def validator = (text: String, regex:String, errMsgKey:String) => {
