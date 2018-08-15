@@ -18,6 +18,8 @@
 
 @import views.html.helper.CSRF
 @import play.api.data.validation.ValidationError
+@import ViewUtils._
+
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Representative's details", bodyClasses = None) {
@@ -44,13 +46,13 @@
       @{
           play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
       }
-      @inputField(messages("representative.name"),"AgentName",fieldsMap)
-      @inputField(messages("peoplepage.common.firstLineAddress"),"AgentAddressLine",fieldsMap)
-      @inputField(messages("peoplepage.common.city"),"AgentAddressCityName",fieldsMap)
-      @selectField(label=messages("peoplepage.common.country"),fieldsMap,"AgentAddressCountryCode",ViewUtils.countryOptions)
-      @inputField(messages("peoplepage.common.postcode"),"AgentAddressPostcodeID",fieldsMap)
+      @inputField(messages("representative.name"),agentName,fieldsMap)
+      @inputField(messages("peoplepage.common.firstLineAddress"),agentAddressLine,fieldsMap)
+      @inputField(messages("peoplepage.common.city"),agentAddressCityName,fieldsMap)
+      @selectField(label=messages("peoplepage.common.country"),fieldsMap,agentAddressCountryCode,ViewUtils.countryOptions)
+      @inputField(messages("peoplepage.common.postcode"),agentAddressPostcode,fieldsMap)
       @inputField(messages("peoplepage.common.eoriNumber"),
-        "AgentID",
+        agentEori,
         fieldsMap,
         Some(messages("peoplepage.common.eoriNumberHint"))
       )
@@ -72,7 +74,7 @@
             <input id="AgentFunctionCode-2" type="radio" name="AgentFunctionCode" value="3" @if(fieldsMap.isDefinedAt("AgentFunctionCode") && fieldsMap.get("AgentFunctionCode").get.head.equals("3")) { checked}>
             <label for="AgentFunctionCode-2">3</label>
           </div>
-          <span class="errors">@ViewUtils.getError("AgentFunctionCode",errors)</span>
+          <span class="errors">@ViewUtils.getError(agentFunctionCode,errors)</span>
 
         </fieldset>
       </div>
