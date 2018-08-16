@@ -50,7 +50,7 @@ peoplepage.common.firstLineAddress                                  =First line 
 peoplepage.common.city                                              =City
 peoplepage.common.country                                           =Country
 peoplepage.common.postcode                                          =Postcode
-peoplepage.common.phoneNumber                                       =Phone number
+peoplepage.common.phoneNumber                                       =Phone number (optional)
 peoplepage.common.eoriNumber                                        =EORI number
 peoplepage.common.eoriNumberHint                             =Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).
 
