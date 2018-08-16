@@ -102,12 +102,12 @@ trait DeclarationValidator  {
     )
 
   val importerDetailsValidations: Map[String, (String) => Option[ValidationError]] =
-    Map(exporterName -> optionalText70MaxConstraint,
-      exporterAddressLine -> optionalText70MaxConstraint,
-      exporterAddressCityName -> optionalText35MaxConstraint,
-      exporterAddressCountryCode -> countryConstraint,
-      exporterAddressPostcode -> postcodeConstraint,
-      exporterEori -> optionalEoriConstraint
+    Map(importerName -> optionalText70MaxConstraint,
+      importerAddressLine -> optionalText70MaxConstraint,
+      importerAddressCityName -> optionalText35MaxConstraint,
+      importerAddressCountryCode -> countryConstraint,
+      importerAddressPostcode -> postcodeConstraint,
+      importerEori -> optionalEoriConstraint
     )
 
   val sellerDetailsValidations: Map[String, (String) => Option[ValidationError]] =
