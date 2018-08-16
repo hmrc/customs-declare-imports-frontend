@@ -61,6 +61,7 @@ object ViewUtils {
   val sellerAddressCityName = "MetaData_declaration_seller_address_cityName"
   val sellerAddressCountryCode = "MetaData_declaration_seller_address_countryCode"
   val sellerAddressPostcode = "MetaData_declaration_seller_address_postcodeId"
+  val sellerCommunicationID = "MetaData_declaration_seller_communications_id"
   val sellerEori = "MetaData_declaration_seller_id"
 
   //references screen fields

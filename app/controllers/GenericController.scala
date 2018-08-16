@@ -92,14 +92,43 @@ trait DeclarationValidator  {
       exporterEori -> optionalEoriConstraint
     )
 
+  val representativeDetailsValidations: Map[String, (String) => Option[ValidationError]] =
+    Map(agentName -> optionalText70MaxConstraint,
+      agentAddressLine -> optionalText70MaxConstraint,
+      agentAddressCityName -> optionalText35MaxConstraint,
+      agentAddressCountryCode -> countryConstraint,
+      agentAddressPostcode -> postcodeConstraint,
+      agentEori -> optionalEoriConstraint
+    )
+
+  val importerDetailsValidations: Map[String, (String) => Option[ValidationError]] =
+    Map(exporterName -> optionalText70MaxConstraint,
+      exporterAddressLine -> optionalText70MaxConstraint,
+      exporterAddressCityName -> optionalText35MaxConstraint,
+      exporterAddressCountryCode -> countryConstraint,
+      exporterAddressPostcode -> postcodeConstraint,
+      exporterEori -> optionalEoriConstraint
+    )
+
+  val sellerDetailsValidations: Map[String, (String) => Option[ValidationError]] =
+    Map(sellerName -> optionalText70MaxConstraint,
+      sellerAddressLine -> optionalText70MaxConstraint,
+      sellerAddressCityName -> optionalText35MaxConstraint,
+      sellerAddressCountryCode -> countryConstraint,
+      sellerAddressPostcode -> postcodeConstraint,
+      sellerCommunicationID -> optionalText50MaxConstraint,
+      sellerEori -> optionalEoriConstraint
+    )
+
   val validations : Map[String, (String) => Option[ValidationError]] =
-    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations
+    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations ++ representativeDetailsValidations ++ importerDetailsValidations ++ sellerDetailsValidations
 
   private def lettersDigitPattern(input:String,min:Int=1,max:Int=35) =
     if (input.isEmpty) None else validator(input, s"""^[a-zA-Z0-9]{$min,$max}$$""", requiredKey)
 
 
   def optionalText35MaxConstraint(input:String) = lettersDigitPattern(input)
+  def optionalText50MaxConstraint(input:String) = lettersDigitPattern(input=input,max=50)
   def optionalText70MaxConstraint(input:String) = lettersDigitPattern(input=input,max=70)
 
   def countryConstraint(input:String) = if (input.isEmpty) None else validator(input,s"""^[A-Z]{2}""",requiredKey)
