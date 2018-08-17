@@ -64,6 +64,15 @@ object ViewUtils {
   val sellerCommunicationID = "MetaData_declaration_seller_communications_id"
   val sellerEori = "MetaData_declaration_seller_id"
 
+  //Buyer fields
+  val buyerName = "MetaData_declaration_buyer_name"
+  val buyerAddressLine = "MetaData_declaration_buyer_address_line"
+  val buyerAddressCityName = "MetaData_declaration_buyer_address_cityName"
+  val buyerAddressCountryCode = "MetaData_declaration_buyer_address_countryCode"
+  val buyerAddressPostcode = "MetaData_declaration_buyer_address_postcodeId"
+  val buyerCommunicationID = "MetaData_declaration_buyer_communications_id"
+  val buyerEori = "MetaData_declaration_buyer_id"
+
   //references screen fields
  //functionalReferenceId: Option[String] = None, // max 35 chars
   val declarantFunctionalReferenceID = "MetaData_declaration_functionalReferenceID"
