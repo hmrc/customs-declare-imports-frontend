@@ -73,6 +73,12 @@ object ViewUtils {
   val buyerCommunicationID = "MetaData_declaration_buyer_communications_id"
   val buyerEori = "MetaData_declaration_buyer_id"
 
+  //Additional supply chain actors fields
+  val aeoMutualRecognitionPartiesID = "MetaData_declaration_aeoMutualRecognitionParties_id"
+  val aeoMutualRecognitionPartyRoleCode = "MetaData_declaration_aeoMutualRecognitionParties_roleCode"
+  val authorisationHolderID = "MetaData_declaration_authorisationHolders_id"
+  val authorisationHolderCategoryCode = "MetaData_declaration_authorisationHolders_categoryCode"
+
   //references screen fields
  //functionalReferenceId: Option[String] = None, // max 35 chars
   val declarantFunctionalReferenceID = "MetaData_declaration_functionalReferenceID"
@@ -89,6 +95,68 @@ object ViewUtils {
 
 
   val borderTransportMeansModeCodes = Map("C"-> "C","F"->"F","Z"-> "Z","Y"->"Y")
+
+  val PartySubRoleTypes = Map("CS"-> "CS",
+    "FR1"-> "FR1",
+    "FR2"-> "FR2",
+    "FR3"-> "FR3",
+    "FR4"-> "FR4",
+    "FW"-> "FW",
+    "MF"-> "MF",
+    "WH"-> "WH")
+
+  val PartyRoleAuthorizationTypes = Map("ACE"-> "ACE",
+    "ACP"-> "ACP",
+    "ACR"-> "ACR",
+    "ACT"-> "ACT",
+    "AEOC"-> "AEOC",
+    "AEOF"-> "AEOF",
+    "AEOS"-> "AEOS",
+    "APEX"-> "APEX",
+    "AWB"-> "AWB",
+    "BOI"-> "BOI",
+    "BTI"-> "BTI",
+    "CCL"-> "CCL",
+    "CGU"-> "CGU",
+    "CSDR"-> "CSDR",
+    "CSE"-> "CSE",
+    "CVA"-> "CVA",
+    "CW1"-> "CW1",
+    "CW2"-> "CW2",
+    "CWP"-> "CWP",
+    "DEP"-> "DEP",
+    "DPO"-> "DPO",
+    "EIR"-> "EIR",
+    "EORI"-> "EORI",
+    "EPSS"-> "EPSS",
+    "ETD"-> "ETD",
+    "EUS"-> "EUS",
+    "EXEE"-> "EXEE",
+    "EXOR"-> "EXOR",
+    "EXW"-> "EXW",
+    "EXWH"-> "EXWH",
+    "FAS"-> "FAS",
+    "FZ"-> "FZ",
+    "GGA"-> "GGA",
+    "GVS"-> "GVS",
+    "IPO"-> "IPO",
+    "LVBI"-> "LVBI",
+    "OPO"-> "OPO",
+    "REM"-> "REM",
+    "REP"-> "REP",
+    "REX"-> "REX",
+    "RSS"-> "RSS",
+    "SAS"-> "SAS",
+    "SASP"-> "SASP",
+    "SDE"-> "SDE",
+    "SIVA"-> "SIVA",
+    "SSE"-> "SSE",
+    "TEA"-> "TEA",
+    "TEAH"-> "TEAH",
+    "TRD"-> "TRD",
+    "TST"-> "TST",
+    "UKCS"-> "UKCS")
+
 
   val countryOptions = Map("AF"->"Afghanistan",
     "AX"->"Aland Islands",

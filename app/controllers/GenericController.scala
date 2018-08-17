@@ -130,8 +130,15 @@ trait DeclarationValidator  {
       buyerEori -> optionalEoriConstraint
     )
 
+  val additionalSupplyChainActorsValidations: Map[String, (String) => Option[ValidationError]] =
+    Map(aeoMutualRecognitionPartiesID -> optionalEoriConstraint,
+      aeoMutualRecognitionPartyRoleCode -> optionalText70MaxConstraint,
+      authorisationHolderID -> optionalEoriConstraint,
+      authorisationHolderCategoryCode -> optionalText70MaxConstraint
+    )
+
   val validations : Map[String, (String) => Option[ValidationError]] =
-    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations ++ representativeDetailsValidations ++ importerDetailsValidations ++ sellerDetailsValidations ++ buyerDetailsValidations
+    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations ++ representativeDetailsValidations ++ importerDetailsValidations ++ sellerDetailsValidations ++ buyerDetailsValidations ++ additionalSupplyChainActorsValidations ++ additionalSupplyChainActorsValidations
 
   private def lettersDigitPattern(input:String,min:Int=1,max:Int=35) =
     if (input.isEmpty) None else validator(input, s"""^[a-zA-Z0-9]{$min,$max}$$""", requiredKey)

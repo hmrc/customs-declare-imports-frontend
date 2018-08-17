@@ -23,7 +23,7 @@
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Seller's details", bodyClasses = None) {
-  <a class="link-back" href="@{routes.GenericController.displayForm("seller-details").url}" >@messages("common.back")</a>
+  <a class="link-back" href="@{routes.GenericController.displayForm("buyer-details").url}" >@messages("common.back")</a>
 
   @if(errors) {
     <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -39,24 +39,26 @@
 
   <fieldset>
     <legend>
-      <h1 class="heading-large">@messages("buyer.details")</h1>
+      <h1 class="heading-large">@messages("additionalSupplyChainActors.heading")</h1>
     </legend>
 
-    <form method="post" action="/customs-declare-imports/submit-declaration/buyer-details/additional-supply-chain-actors">
+    <form method="post" action="/customs-declare-imports/submit-declaration/additional-supply-chain-actors/declarant-details">
         @{
             play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
         }
-        @inputField(messages("buyer.name"),buyerName,fieldsMap)
-        @inputField(messages("peoplepage.common.firstLineAddress"),buyerAddressLine,fieldsMap)
-        @inputField(messages("peoplepage.common.city"),buyerAddressCityName,fieldsMap)
-        @selectField(label=messages("peoplepage.common.country"),fieldsMap,buyerAddressCountryCode,ViewUtils.countryOptions)
-        @inputField(messages("peoplepage.common.postcode"),buyerAddressPostcode,fieldsMap)
-        @inputField(messages("peoplepage.common.phoneNumber"),buyerCommunicationID,fieldsMap)
-        @inputField(messages("peoplepage.common.eoriNumber"),
-          buyerEori,
+        @inputField(messages("additionalSupplyChainActors.ID"),aeoMutualRecognitionPartiesID,fieldsMap)
+        @selectField(label=messages("additionalSupplyChainActors.roleCode"),
           fieldsMap,
-          Some(messages("peoplepage.common.eoriNumberHint"))
+          aeoMutualRecognitionPartyRoleCode,
+          PartySubRoleTypes
         )
+        @inputField(messages("additionalSupplyChainActors.holderID"),authorisationHolderID,fieldsMap)
+        @selectField(label=messages("additionalSupplyChainActors.holderAuthTypeCode"),
+          fieldsMap,
+          authorisationHolderCategoryCode,
+          PartyRoleAuthorizationTypes
+        )
+
 
       <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
     </form>
