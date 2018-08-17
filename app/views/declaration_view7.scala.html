@@ -23,7 +23,7 @@
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Seller's details", bodyClasses = None) {
-  <a class="link-back" href="@{routes.GenericController.displayForm("importer-details").url}" >@messages("common.back")</a>
+  <a class="link-back" href="@{routes.GenericController.displayForm("seller-details").url}" >@messages("common.back")</a>
 
   @if(errors) {
     <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -39,21 +39,21 @@
 
   <fieldset>
     <legend>
-      <h1 class="heading-large">@messages("seller.details")</h1>
+      <h1 class="heading-large">@messages("buyer.details")</h1>
     </legend>
 
-    <form method="post" action="/customs-declare-imports/submit-declaration/seller-details/buyer-details">
+    <form method="post" action="/customs-declare-imports/submit-declaration/buyer-details/declarant-details">
         @{
             play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
         }
-        @inputField(messages("seller.name"),sellerName,fieldsMap)
-        @inputField(messages("peoplepage.common.firstLineAddress"),sellerAddressLine,fieldsMap)
-        @inputField(messages("peoplepage.common.city"),sellerAddressCityName,fieldsMap)
-        @selectField(label=messages("peoplepage.common.country"),fieldsMap,sellerAddressCountryCode,ViewUtils.countryOptions)
-        @inputField(messages("peoplepage.common.postcode"),sellerAddressPostcode,fieldsMap)
-        @inputField(messages("peoplepage.common.phoneNumber"),sellerCommunicationID,fieldsMap)
+        @inputField(messages("buyer.name"),buyerName,fieldsMap)
+        @inputField(messages("peoplepage.common.firstLineAddress"),buyerAddressLine,fieldsMap)
+        @inputField(messages("peoplepage.common.city"),buyerAddressCityName,fieldsMap)
+        @selectField(label=messages("peoplepage.common.country"),fieldsMap,buyerAddressCountryCode,ViewUtils.countryOptions)
+        @inputField(messages("peoplepage.common.postcode"),buyerAddressPostcode,fieldsMap)
+        @inputField(messages("peoplepage.common.phoneNumber"),buyerCommunicationID,fieldsMap)
         @inputField(messages("peoplepage.common.eoriNumber"),
-          sellerEori,
+          buyerEori,
           fieldsMap,
           Some(messages("peoplepage.common.eoriNumberHint"))
         )
