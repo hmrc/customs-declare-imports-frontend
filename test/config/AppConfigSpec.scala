@@ -63,7 +63,7 @@ class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
     }
 
     "have customs declarations endpoint" in {
-      cfg.customsDeclarationsEndpoint must be ("http://localhost:9820")
+      cfg.customsDeclarationsEndpoint must be ("http://localhost:6790")
     }
 
     "have customs declarations API version" in {
