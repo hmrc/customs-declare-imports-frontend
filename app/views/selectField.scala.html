@@ -15,7 +15,8 @@
  *@
 
 @import play.api.data.validation.ValidationError
-@(label: String, fieldsMap: Map[String, Seq[String]], name: String, options: Map[String, String],spanText:Option[String]=None)(implicit messages: Messages,errors: Map[String, ValidationError])
+@import scala.collection.mutable
+@(label: String, fieldsMap: Map[String, Seq[String]], name: String, options: mutable.LinkedHashMap[String, String],spanText:Option[String]=None)(implicit messages: Messages,errors: Map[String, ValidationError])
 
 @renderOptions(fieldsValues: Option[Seq[String]], name: String) = {
     <option value="">Please Select</option>

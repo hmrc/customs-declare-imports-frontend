@@ -19,6 +19,8 @@ package controllers
 import play.api.data.validation.ValidationError
 import play.api.i18n.Messages
 
+import scala.collection.mutable
+
 
 object ViewUtils {
 
@@ -94,9 +96,9 @@ object ViewUtils {
   val additionalDeclarationType = "MetaData_declaration_typeCode"
 
 
-  val borderTransportMeansModeCodes = Map("C"-> "C","F"->"F","Z"-> "Z","Y"->"Y")
+  val borderTransportMeansModeCodes = mutable.LinkedHashMap("C"-> "C","F"->"F","Z"-> "Z","Y"->"Y")
 
-  val PartySubRoleTypes = Map("CS"-> "CS",
+  val PartySubRoleTypes = mutable.LinkedHashMap("CS"-> "CS",
     "FR1"-> "FR1",
     "FR2"-> "FR2",
     "FR3"-> "FR3",
@@ -105,7 +107,7 @@ object ViewUtils {
     "MF"-> "MF",
     "WH"-> "WH")
 
-  val PartyRoleAuthorizationTypes = Map("ACE"-> "ACE",
+  val PartyRoleAuthorizationTypes = mutable.LinkedHashMap("ACE"-> "ACE",
     "ACP"-> "ACP",
     "ACR"-> "ACR",
     "ACT"-> "ACT",
@@ -158,7 +160,7 @@ object ViewUtils {
     "UKCS"-> "UKCS")
 
 
-  val countryOptions = Map("AF"->"Afghanistan",
+  val countryOptions = mutable.LinkedHashMap("AF"->"Afghanistan",
     "AX"->"Aland Islands",
     "AL"->"Albania",
     "DZ"->"Algeria",
