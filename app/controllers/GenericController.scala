@@ -58,9 +58,7 @@ class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(
 
 }
 
-trait DeclarationValidator  {
-
-  val requiredKey = "input.required"
+trait DeclarationValidator extends Constraints{
 
   def validatePayload(payload: Map[String, Seq[String]]) = {
     val filteredPayload = payload.filter(element => validations.get(element._1).isDefined)
@@ -130,8 +128,21 @@ trait DeclarationValidator  {
       buyerEori -> optionalEoriConstraint
     )
 
+  val additionalSupplyChainActorsValidations: Map[String, (String) => Option[ValidationError]] =
+    Map(aeoMutualRecognitionPartiesID -> optionalEoriConstraint,
+      aeoMutualRecognitionPartyRoleCode -> optionalText70MaxConstraint,
+      authorisationHolderID -> optionalEoriConstraint,
+      authorisationHolderCategoryCode -> optionalText70MaxConstraint
+    )
+
   val validations : Map[String, (String) => Option[ValidationError]] =
-    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations ++ representativeDetailsValidations ++ importerDetailsValidations ++ sellerDetailsValidations ++ buyerDetailsValidations
+    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations ++ representativeDetailsValidations ++ importerDetailsValidations ++ sellerDetailsValidations ++ buyerDetailsValidations ++ additionalSupplyChainActorsValidations ++ additionalSupplyChainActorsValidations
+
+}
+
+trait Constraints {
+
+  val requiredKey = "input.required"
 
   private def lettersDigitPattern(input:String,min:Int=1,max:Int=35) =
     if (input.isEmpty) None else validator(input, s"""^[a-zA-Z0-9]{$min,$max}$$""", requiredKey)
@@ -153,5 +164,6 @@ trait DeclarationValidator  {
     if(text.matches(regex)) None
     else Some(ValidationError(errMsgKey))
   }
+
 }
 

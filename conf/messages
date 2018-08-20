@@ -64,3 +64,11 @@ referencepage.referenceNumber                                       =Reference N
 referencepage.lrn                                                   =LRN
 referencepage.lrnHint                                               =The reference is unique to the trader and usually provided by the software.
 referencepage.addtionalDeclarationType                              =Additional declaration type
+
+## Additional supply chain actors page
+additionalSupplyChainActors.heading                                 =Additional supply chain actors
+additionalSupplyChainActors.ID                                      =Additional supply chain actor(s) identification No. - Identifier
+additionalSupplyChainActors.roleCode                                =Additional supply chain actor(s) identification No. - Role Code
+additionalSupplyChainActors.roleCodeHint                            =Specifies the third party's role in the supply chain. Only used in conjunction with the Additional Supply Chain actor identification No. id.
+additionalSupplyChainActors.holderID                                =Holder of the authorisation identification no. - Identifier
+additionalSupplyChainActors.holderAuthTypeCode                      =Holder of the authorisation identification no. - Authorisation type code
