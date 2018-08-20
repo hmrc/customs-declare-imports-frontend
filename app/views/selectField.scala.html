@@ -15,7 +15,7 @@
  *@
 
 @import play.api.data.validation.ValidationError
-@(label: String, fieldsMap: Map[String, Seq[String]], name: String, options: Map[String, String])(implicit messages: Messages,errors: Map[String, ValidationError])
+@(label: String, fieldsMap: Map[String, Seq[String]], name: String, options: Map[String, String],spanText:Option[String]=None)(implicit messages: Messages,errors: Map[String, ValidationError])
 
 @renderOptions(fieldsValues: Option[Seq[String]], name: String) = {
     <option value="">Please Select</option>
@@ -29,6 +29,7 @@
 <div class="form-group @if(errors.get(name).isDefined) {form-group-error}">
     <label class="form-label" for=@name>
     @label
+        @spanText.map{text=> <span class="form-hint">@text</span>}
     </label>
      @if(errors.get(name).isDefined) {
          <span class="error-message">@ViewUtils.getError(name, errors)</span>

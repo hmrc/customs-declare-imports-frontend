@@ -56,9 +56,8 @@
         @selectField(label=messages("additionalSupplyChainActors.holderAuthTypeCode"),
           fieldsMap,
           authorisationHolderCategoryCode,
-          PartyRoleAuthorizationTypes
-        )
-
+          PartyRoleAuthorizationTypes,
+          Some(messages("additionalSupplyChainActors.roleCodeHint")))
 
       <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
     </form>
