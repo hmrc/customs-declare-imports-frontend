@@ -69,8 +69,8 @@ trait DeclarationValidator extends Constraints{
   }
 
   val refValidations : Map[String, (String) => Option[ValidationError]] =
-    Map("ucrTraderAssignedReferenceId" -> optionalText70MaxConstraint,
-      "declarationFunctionalReferenceId" -> optionalText70MaxConstraint)
+    Map(referenceNumberUCR1 -> optionalText35MaxConstraint,
+      declarantFunctionalReferenceID -> lrnConstraint)
 
 
   val declarantDetailsValidations: Map[String, (String) => Option[ValidationError]] =
@@ -156,6 +156,7 @@ trait Constraints {
   def postcodeConstraint(input:String) = lettersDigitPattern(input=input,max=9)
   def textInputConstraint(input:String) = validator(input,s""""^[a-zA-Z0-9 ]""",requiredKey)
   def eoriConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{17}""",requiredKey)
+  def lrnConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{1,22}""",requiredKey)
   def optionalEoriConstraint(input:String) = if (input.isEmpty) None else validator(input,s"""^[a-zA-Z0-9]{17}""",requiredKey)
 
 

@@ -50,14 +50,14 @@
         @selectField(label=messages("additionalSupplyChainActors.roleCode"),
           fieldsMap,
           aeoMutualRecognitionPartyRoleCode,
-          PartySubRoleTypes
+          PartySubRoleTypes,
+          Some(messages("additionalSupplyChainActors.roleCodeHint"))
         )
         @inputField(messages("additionalSupplyChainActors.holderID"),authorisationHolderID,fieldsMap)
         @selectField(label=messages("additionalSupplyChainActors.holderAuthTypeCode"),
           fieldsMap,
           authorisationHolderCategoryCode,
-          PartyRoleAuthorizationTypes,
-          Some(messages("additionalSupplyChainActors.roleCodeHint")))
+          PartyRoleAuthorizationTypes)
 
       <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
     </form>
