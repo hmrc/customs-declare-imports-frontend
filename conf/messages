@@ -58,11 +58,12 @@ peoplepage.common.eoriNumberHint                             =Economic Operator 
 representativepage.statusCode                                       =Status code
 representativepage.statusCodeHint                                   =This code declares the way in which the declarant is representing the Importer.
 
-## Refernece page
+## Reference page
 referencepage.heading                                               =Reference
 referencepage.referenceNumber                                       =Reference Number / UCR (optional)
 referencepage.lrn                                                   =LRN
 referencepage.lrnHint                                               =The reference is unique to the trader and usually provided by the software.
+referencepage.declarationType                                       =Declaration type
 referencepage.addtionalDeclarationType                              =Additional declaration type
 
 ## Additional supply chain actors page
