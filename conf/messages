@@ -73,3 +73,9 @@ additionalSupplyChainActors.roleCode                                =Additional 
 additionalSupplyChainActors.roleCodeHint                            =Specifies the third party's role in the supply chain. Only used in conjunction with the Additional Supply Chain actor identification No. id.
 additionalSupplyChainActors.holderID                                =Holder of the authorisation identification no. - Identifier
 additionalSupplyChainActors.holderAuthTypeCode                      =Holder of the authorisation identification no. - Authorisation type code
+
+## Procedure codes page
+procedure.codes			                                            =Procedure codes
+procedure.codes.requestedProcedureCode								=Requested procedure code
+procedure.codes.previousProcedureCode								=Previous procedure code
+procedure.codes.additionalProcedure									=Additional procedure
