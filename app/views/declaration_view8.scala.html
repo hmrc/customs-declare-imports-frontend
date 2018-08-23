@@ -46,15 +46,15 @@
         @{
             play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
         }
-        @inputField(messages("additionalSupplyChainActors.ID"),aeoMutualRecognitionPartiesID,fieldsMap)
-        @selectField(label=messages("additionalSupplyChainActors.roleCode"),
+        @helpers.inputField(messages("additionalSupplyChainActors.ID"),aeoMutualRecognitionPartiesID,fieldsMap)
+        @helpers.selectField(label=messages("additionalSupplyChainActors.roleCode"),
           fieldsMap,
           aeoMutualRecognitionPartyRoleCode,
           PartySubRoleTypes,
           Some(messages("additionalSupplyChainActors.roleCodeHint"))
         )
-        @inputField(messages("additionalSupplyChainActors.holderID"),authorisationHolderID,fieldsMap)
-        @selectField(label=messages("additionalSupplyChainActors.holderAuthTypeCode"),
+        @helpers.inputField(messages("additionalSupplyChainActors.holderID"),authorisationHolderID,fieldsMap)
+        @helpers.selectField(label=messages("additionalSupplyChainActors.holderAuthTypeCode"),
           fieldsMap,
           authorisationHolderCategoryCode,
           PartyRoleAuthorizationTypes)

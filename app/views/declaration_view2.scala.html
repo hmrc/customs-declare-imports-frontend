@@ -46,8 +46,8 @@
       @{
         play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
       }
-      @inputField(messages("referencepage.referenceNumber"),referenceNumberUCR1,fieldsMap)
-      @inputField(messages("referencepage.lrn"),declarantFunctionalReferenceID,fieldsMap,Some(messages("referencepage.lrnHint")))
+      @helpers.inputField(messages("referencepage.referenceNumber"),referenceNumberUCR1,fieldsMap)
+      @helpers.inputField(messages("referencepage.lrn"),declarantFunctionalReferenceID,fieldsMap,Some(messages("referencepage.lrnHint")))
 
       <div class="form-group">
         <fieldset>

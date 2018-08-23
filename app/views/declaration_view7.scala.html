@@ -46,13 +46,13 @@
         @{
             play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
         }
-        @inputField(messages("buyer.name"),buyerName,fieldsMap)
-        @inputField(messages("peoplepage.common.firstLineAddress"),buyerAddressLine,fieldsMap)
-        @inputField(messages("peoplepage.common.city"),buyerAddressCityName,fieldsMap)
-        @selectField(label=messages("peoplepage.common.country"),fieldsMap,buyerAddressCountryCode,ViewUtils.countryOptions)
-        @inputField(messages("peoplepage.common.postcode"),buyerAddressPostcode,fieldsMap)
-        @inputField(messages("peoplepage.common.phoneNumber"),buyerCommunicationID,fieldsMap)
-        @inputField(messages("peoplepage.common.eoriNumber"),
+        @helpers.inputField(messages("buyer.name"),buyerName,fieldsMap)
+        @helpers.inputField(messages("peoplepage.common.firstLineAddress"),buyerAddressLine,fieldsMap)
+        @helpers.inputField(messages("peoplepage.common.city"),buyerAddressCityName,fieldsMap)
+        @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap,buyerAddressCountryCode,ViewUtils.countryOptions)
+        @helpers.inputField(messages("peoplepage.common.postcode"),buyerAddressPostcode,fieldsMap)
+        @helpers.inputField(messages("peoplepage.common.phoneNumber"),buyerCommunicationID,fieldsMap)
+        @helpers.inputField(messages("peoplepage.common.eoriNumber"),
           buyerEori,
           fieldsMap,
           Some(messages("peoplepage.common.eoriNumberHint"))

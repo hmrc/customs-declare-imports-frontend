@@ -48,12 +48,12 @@
                 }
 
 
-                @inputField(messages("declarant.name"),declarantName,fieldsMap)
-                @inputField(messages("peoplepage.common.firstLineAddress"),declarantAddressLine,fieldsMap)
-                @inputField(messages("peoplepage.common.city"),declarantAddressCityName,fieldsMap)
-                @selectField(label=messages("peoplepage.common.country"),fieldsMap,declarantAddressCountryCode,countryOptions)
-                @inputField(messages("peoplepage.common.postcode"),declarantAddressPostcode,fieldsMap)
-                @inputField(messages("peoplepage.common.eoriNumber"),
+                @helpers.inputField(messages("declarant.name"),declarantName,fieldsMap)
+                @helpers.inputField(messages("peoplepage.common.firstLineAddress"),declarantAddressLine,fieldsMap)
+                @helpers.inputField(messages("peoplepage.common.city"),declarantAddressCityName,fieldsMap)
+                @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap,declarantAddressCountryCode,countryOptions)
+                @helpers.inputField(messages("peoplepage.common.postcode"),declarantAddressPostcode,fieldsMap)
+                @helpers.inputField(messages("peoplepage.common.eoriNumber"),
                     declarantEori,fieldsMap,
                     Some(messages("peoplepage.common.eoriNumberHint"))
                 )

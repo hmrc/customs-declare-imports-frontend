@@ -46,12 +46,12 @@
     @{
       play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
     }
-      @inputField(messages("exporter.name"), exporterName,fieldsMap)
-      @inputField(messages("peoplepage.common.firstLineAddress"), exporterAddressLine,fieldsMap)
-      @inputField(messages("peoplepage.common.city"), exporterAddressCityName,fieldsMap)
-      @selectField(label=messages("peoplepage.common.country"),fieldsMap, exporterAddressCountryCode,ViewUtils.countryOptions)
-      @inputField(messages("peoplepage.common.postcode"), exporterAddressPostcode,fieldsMap)
-      @inputField(messages("peoplepage.common.eoriNumber"),
+      @helpers.inputField(messages("exporter.name"), exporterName,fieldsMap)
+      @helpers.inputField(messages("peoplepage.common.firstLineAddress"), exporterAddressLine,fieldsMap)
+      @helpers.inputField(messages("peoplepage.common.city"), exporterAddressCityName,fieldsMap)
+      @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap, exporterAddressCountryCode,ViewUtils.countryOptions)
+      @helpers.inputField(messages("peoplepage.common.postcode"), exporterAddressPostcode,fieldsMap)
+      @helpers.inputField(messages("peoplepage.common.eoriNumber"),
         exporterEori,fieldsMap,
         Some(messages("peoplepage.common.eoriNumberHint"))
     )
