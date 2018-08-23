@@ -135,8 +135,15 @@ trait DeclarationValidator extends Constraints{
       authorisationHolderCategoryCode -> optionalText70MaxConstraint
     )
 
+  val previousDocumentsValidations: Map[String, (String) => Option[ValidationError]] =
+    Map(previousDocumentsDocumentCategory -> countryConstraint,
+      previousDocumentsDocumentTypeCode -> countryConstraint,
+      previousDocumentsPreviousDocumentReference -> textConstraintMax35,
+      previousDocumentsDocumentGoodsItemIdentifier -> numericConstraintMax999
+    )
+
   val validations : Map[String, (String) => Option[ValidationError]] =
-    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations ++ representativeDetailsValidations ++ importerDetailsValidations ++ sellerDetailsValidations ++ buyerDetailsValidations ++ additionalSupplyChainActorsValidations ++ additionalSupplyChainActorsValidations
+    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations ++ representativeDetailsValidations ++ importerDetailsValidations ++ sellerDetailsValidations ++ buyerDetailsValidations ++ additionalSupplyChainActorsValidations ++ additionalSupplyChainActorsValidations ++ previousDocumentsValidations
 
 }
 
@@ -156,6 +163,8 @@ trait Constraints {
   def postcodeConstraint(input:String) = lettersDigitPattern(input=input,max=9)
   def textInputConstraint(input:String) = validator(input,s""""^[a-zA-Z0-9 ]""",requiredKey)
   def eoriConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{17}""",requiredKey)
+  def textConstraintMax35(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{1,35}""",requiredKey)
+  def numericConstraintMax999(input:String) = if (input.isEmpty) None else validator(input,s"""^[0-9]{1,3}""",requiredKey)
   def lrnConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{1,22}""",requiredKey)
   def optionalEoriConstraint(input:String) = if (input.isEmpty) None else validator(input,s"""^[a-zA-Z0-9]{17}""",requiredKey)
 

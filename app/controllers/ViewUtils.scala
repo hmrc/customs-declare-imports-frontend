@@ -95,6 +95,12 @@ object ViewUtils {
   //typeCode: Option[String] = None, // max 3 chars; MUST be "INV" in cancellation use case
   val additionalDeclarationType = "MetaData_declaration_typeCode"
 
+  //Previous document page fields
+  val previousDocumentsDocumentCategory = "MetaData_declaration_previousDocuments_categoryCode"
+  val previousDocumentsDocumentTypeCode = "MetaData_declaration_previousDocuments_typeCode"
+  val previousDocumentsPreviousDocumentReference = "MetaData_declaration_previousDocuments_id"
+  val previousDocumentsDocumentGoodsItemIdentifier = "MetaData_declaration_previousDocuments_lineNumeric"
+
 
   //Procedure Codes fields
   val requestedProcedureCode = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_governmentProcedures_currentCode"
@@ -107,6 +113,47 @@ object ViewUtils {
 
 
   val borderTransportMeansModeCodes = mutable.LinkedHashMap("C"-> "C","F"->"F","Z"-> "Z","Y"->"Y")
+
+  val DocumentCategory = mutable.LinkedHashMap("no list data currently"-> "no list data currently")
+  val DocumentType = mutable.LinkedHashMap("235" -> "235",
+    "270" -> "270",
+    "271" -> "271",
+    "325" -> "325",
+    "337" -> "337",
+    "355" -> "355",
+    "380" -> "380",
+    "703" -> "703",
+    "704" -> "704",
+    "705" -> "705",
+    "714" -> "714",
+    "720" -> "720",
+    "730" -> "730",
+    "740" -> "740",
+    "741" -> "741",
+    "750" -> "750",
+    "760" -> "760",
+    "785" -> "785",
+    "787" -> "787",
+    "820" -> "820",
+    "821" -> "821",
+    "822" -> "822",
+    "823" -> "823",
+    "825" -> "825",
+    "952" -> "952",
+    "955" -> "955",
+    "CLE" -> "CLE",
+    "CSE" -> "CSE",
+    "DCR" -> "DCR",
+    "DCS" -> "DCS",
+    "IF3" -> "IF3",
+    "MCR" -> "MCR",
+    "MNS" -> "MNS",
+    "MRN" -> "MRN",
+    "SDE" -> "SDE",
+    "T2F" -> "T2F",
+    "T2G" -> "T2G",
+    "T2M" -> "T2M",
+    "ZZZ" -> "ZZZ")
 
   val PartySubRoleTypes = mutable.LinkedHashMap("CS"-> "CS",
     "FR1"-> "FR1",

@@ -23,7 +23,7 @@
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Seller's details", bodyClasses = None) {
-  <a class="link-back" href="@{routes.GenericController.displayForm("buyer-details").url}" >@messages("common.back")</a>
+  <a class="link-back" href="@{routes.GenericController.displayForm("additional-supply-chain-actors").url}" >@messages("common.back")</a>
 
   @if(errors) {
     <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
@@ -39,25 +39,27 @@
 
   <fieldset>
     <legend>
-      <h1 class="heading-large">@messages("additionalSupplyChainActors.heading")</h1>
+      <h1 class="heading-large">@messages("previousDocuments.heading")</h1>
     </legend>
 
-    <form method="post" action="/customs-declare-imports/submit-declaration/additional-supply-chain-actors/previous-documents">
+    <form method="post" action="/customs-declare-imports/submit-declaration/previous-documents/procedure-codes">
         @{
             play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
         }
-        @helpers.inputField(messages("additionalSupplyChainActors.ID"),aeoMutualRecognitionPartiesID,fieldsMap)
-        @helpers.selectField(label=messages("additionalSupplyChainActors.roleCode"),
+
+        @helpers.selectField(label=messages("previousDocuments.documentCategory"),
           fieldsMap,
-          aeoMutualRecognitionPartyRoleCode,
-          PartySubRoleTypes,
-          Some(messages("additionalSupplyChainActors.roleCodeHint"))
+          previousDocumentsDocumentCategory,
+          DocumentCategory
         )
-        @helpers.inputField(messages("additionalSupplyChainActors.holderID"),authorisationHolderID,fieldsMap)
-        @helpers.selectField(label=messages("additionalSupplyChainActors.holderAuthTypeCode"),
+        @helpers.selectField(label=messages("previousDocuments.documentType"),
           fieldsMap,
-          authorisationHolderCategoryCode,
-          PartyRoleAuthorizationTypes)
+          previousDocumentsDocumentTypeCode,
+          DocumentType
+        )
+
+        @helpers.inputField(messages("previousDocuments.documentReference"),previousDocumentsPreviousDocumentReference,fieldsMap)
+        @helpers.inputField(messages("previousDocuments.goodsItemIdentifier"),previousDocumentsDocumentGoodsItemIdentifier,fieldsMap)
 
       <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
     </form>

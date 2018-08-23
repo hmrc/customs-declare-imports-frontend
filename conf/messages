@@ -74,6 +74,13 @@ additionalSupplyChainActors.roleCodeHint                            =Specifies t
 additionalSupplyChainActors.holderID                                =Holder of the authorisation identification no. - Identifier
 additionalSupplyChainActors.holderAuthTypeCode                      =Holder of the authorisation identification no. - Authorisation type code
 
+## Previous documents page
+previousDocuments.heading                                           =Previous documents
+previousDocuments.documentCategory                                  =Document Category
+previousDocuments.documentType                                      =Document type
+previousDocuments.documentReference                                 =Document reference
+previousDocuments.goodsItemIdentifier                               =Goods Item Identifier (optional)
+
 ## Procedure codes page
 procedure.codes			                                            =Procedure codes
 procedure.codes.requestedProcedureCode								=Requested procedure code
