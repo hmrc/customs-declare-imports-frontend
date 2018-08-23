@@ -20,13 +20,13 @@
 @(templateName: String, data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig,errors:Map[String,ValidationError] = Map.empty)
 
 @templateName match {
-    case "declarant-details" => {@declaration_view1(data) }
-    case "references" => { @declaration_view2(data) }
-    case "exporter-details" => { @declaration_view3(data)}
-    case "representative-details" => { @declaration_view4(data)}
-    case "importer-details" => { @declaration_view5(data)}
-    case "seller-details" => { @declaration_view6(data)}
-    case "buyer-details" => { @declaration_view7(data)}
-    case "additional-supply-chain-actors" => { @declaration_view8(data)}
+    case "declarant-details" => {@declarant_details(data) }
+    case "references" => { @references(data) }
+    case "exporter-details" => { @exporter_details(data)}
+    case "representative-details" => { @representative_details(data)}
+    case "importer-details" => { @importer_details(data)}
+    case "seller-details" => { @seller_details(data)}
+    case "buyer-details" => { @buyer_details(data)}
+    case "additional-supply-chain-actors" => { @additional_supply_chain_actors(data)}
 
 }
