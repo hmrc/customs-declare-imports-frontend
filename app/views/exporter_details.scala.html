@@ -18,18 +18,18 @@
 @import config.AppConfig
 @import play.api.data.validation.ValidationError
 
-@(fieldsMap: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@(data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Exporter's details", bodyClasses = None) {
 
     @helpers.form(routes.GenericController.displayForm("references"), "exporter-details", "representative-details", Some(messages("exporter.details"))) {
-        @helpers.inputField(messages("exporter.name"), exporterName, fieldsMap)
-        @helpers.inputField(messages("peoplepage.common.firstLineAddress"), exporterAddressLine, fieldsMap)
-        @helpers.inputField(messages("peoplepage.common.city"), exporterAddressCityName, fieldsMap)
-        @helpers.selectField(label = messages("peoplepage.common.country"), fieldsMap, exporterAddressCountryCode, ListOptions.countryOptions)
-        @helpers.inputField(messages("peoplepage.common.postcode"), exporterAddressPostcode, fieldsMap)
+        @helpers.inputField(messages("exporter.name"), exporterName, data)
+        @helpers.inputField(messages("peoplepage.common.firstLineAddress"), exporterAddressLine, data)
+        @helpers.inputField(messages("peoplepage.common.city"), exporterAddressCityName, data)
+        @helpers.selectField(label = messages("peoplepage.common.country"), data, exporterAddressCountryCode, ListOptions.countryOptions)
+        @helpers.inputField(messages("peoplepage.common.postcode"), exporterAddressPostcode, data)
         @helpers.inputField(messages("peoplepage.common.eoriNumber"),
-            exporterEori, fieldsMap,
+            exporterEori, data,
             Some(messages("peoplepage.common.eoriNumberHint"))
         )
         @helpers.nextButton()

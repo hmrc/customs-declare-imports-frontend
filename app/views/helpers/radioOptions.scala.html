@@ -17,11 +17,16 @@
 @import ViewUtils._
 @import play.api.data.validation.ValidationError
 
-@(name: String, label: String, options: Seq[(String, String, String)], errorCode: String, data: Map[String, Seq[String]])(implicit messages: Messages, errors: Map[String, ValidationError])
+@(name: String, label: String, options: Seq[(String, String, String)], errorCode: String, data: Map[String, Seq[String]], formHint: Option[String] = None, inline: Boolean = false)(implicit messages: Messages, errors: Map[String, ValidationError])
 
 <div class="form-group">
-    <fieldset>
-        <label class="form-label" for="@name">@label</label>
+    <fieldset@if(inline){ class="inline"}>
+        <label class="form-label" for="@name">
+            @label
+            @if(formHint.isDefined) {
+                <span class="form-hint">@formHint</span>
+            }
+        </label>
 
         @for(opt <- options) {
             <div class="multiple-choice">

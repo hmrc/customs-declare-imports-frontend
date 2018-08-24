@@ -14,74 +14,41 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
-
-@import views.html.helper.CSRF
-@import play.api.data.validation.ValidationError
 @import ViewUtils._
+@import config.AppConfig
+@import play.api.data.validation.ValidationError
 
-@(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@(data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Representative's details", bodyClasses = None) {
-  <a class="link-back" href="@{routes.GenericController.displayForm("exporter-details").url}">@messages("common.back")</a>
 
-  @if(errors) {
-    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-      <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
-
-      <ul class="error-summary-list">
-        @for(element <- errors) {
-          <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
-        }
-      </ul>
-    </div>
-  }
-
-  <fieldset>
-    <legend>
-      <h1 class="heading-large">@messages("representative.details")</h1>
-    </legend>
-
-    <form method="post" action="/customs-declare-imports/submit-declaration/representative-details/importer-details">
-      @{
-          play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
-      }
-      @helpers.inputField(messages("representative.name"),agentName,fieldsMap)
-      @helpers.inputField(messages("peoplepage.common.firstLineAddress"),agentAddressLine,fieldsMap)
-      @helpers.inputField(messages("peoplepage.common.city"),agentAddressCityName,fieldsMap)
-      @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap,agentAddressCountryCode,ListOptions.countryOptions)
-      @helpers.inputField(messages("peoplepage.common.postcode"),agentAddressPostcode,fieldsMap)
-      @helpers.inputField(messages("peoplepage.common.eoriNumber"),
-        agentEori,
-        fieldsMap,
-        Some(messages("peoplepage.common.eoriNumberHint"))
-      )
-      <div class="form-group">
-        <fieldset class="inline">
-          <label class="form-label" for="AgentFunctionCode">
-            @messages("representativepage.statusCode")
-            <span class="form-hint">
-              @messages("representativepage.statusCodeHint")
-            </span>
-          </label>
-
-          <div class="multiple-choice">
-            <input id="AgentFunctionCode-1" type="radio" name="AgentFunctionCode" value="2" @if(fieldsMap.isDefinedAt("AgentFunctionCode") && fieldsMap.get("AgentFunctionCode").get.head.equals("2")){ checked}>
-            <label for="AgentFunctionCode-1">2</label>
-          </div>
-
-          <div class="multiple-choice">
-            <input id="AgentFunctionCode-2" type="radio" name="AgentFunctionCode" value="3" @if(fieldsMap.isDefinedAt("AgentFunctionCode") && fieldsMap.get("AgentFunctionCode").get.head.equals("3")) { checked}>
-            <label for="AgentFunctionCode-2">3</label>
-          </div>
-          <span class="errors">@ViewUtils.getError(agentFunctionCode,errors)</span>
-
-        </fieldset>
-      </div>
-
-      <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
-
-      <input type="hidden" id=="next-page" name="next-page" value="importer-details"/>
-    </form>
-  </fieldset>
+    @helpers.form(routes.GenericController.displayForm("exporter-details"),
+        "representative-details",
+        "importer-details",
+        Some(messages("representative.details"))
+    ) {
+        @helpers.inputField(messages("representative.name"), agentName, data)
+        @helpers.inputField(messages("peoplepage.common.firstLineAddress"), agentAddressLine, data)
+        @helpers.inputField(messages("peoplepage.common.city"), agentAddressCityName, data)
+        @helpers.selectField(label = messages("peoplepage.common.country"), data, agentAddressCountryCode, ListOptions.countryOptions)
+        @helpers.inputField(messages("peoplepage.common.postcode"), agentAddressPostcode, data)
+        @helpers.inputField(messages("peoplepage.common.eoriNumber"),
+            agentEori,
+            data,
+            Some(messages("peoplepage.common.eoriNumberHint"))
+        )
+        @helpers.radioOptions(
+            "AgentFunctionCode",
+            messages("representativepage.statusCode"),
+            Seq(
+                ("AgentFunctionCode-1", "2", "2"),
+                ("AgentFunctionCode-2", "3", "3")
+            ),
+            agentFunctionCode,
+            data,
+            Some(messages("representativepage.statusCodeHint")),
+            true
+        )
+        @helpers.nextButton()
+    }
 }
