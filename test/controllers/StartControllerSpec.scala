@@ -41,9 +41,9 @@ class StartControllerSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
       }
     }
 
-    "include link to begin page" in featureScenario(Seq(Feature.start, Feature.begin), FeatureStatus.enabled) {
+    "include link to begin page" in featureScenario(Seq(Feature.start, Feature.landing), FeatureStatus.enabled) {
       requestScenario(method, uri) { resp =>
-        contentAsHtml(resp) should include element withName("a").withClass("button-start").withAttrValue("href", routes.GenericController.displayForm("declarant-details").url)
+        contentAsHtml(resp) should include element withName("a").withClass("button-start").withAttrValue("href", routes.LandingController.displayLandingPage().url)
       }
     }
 
@@ -51,7 +51,7 @@ class StartControllerSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
       requestScenario(method, uri) { wasNotFound }
     }
 
-    "include a message when begin page is not on" in featureScenario(Map(Feature.start -> FeatureStatus.enabled, Feature.begin -> FeatureStatus.disabled)) {
+    "include a message when begin page is not on" in featureScenario(Map(Feature.start -> FeatureStatus.enabled, Feature.landing -> FeatureStatus.disabled)) {
       requestScenario(method, uri) { resp =>
         contentAsHtml(resp) should include element withClass("message").withValue("Sorry, you cannot begin today.")
       }
