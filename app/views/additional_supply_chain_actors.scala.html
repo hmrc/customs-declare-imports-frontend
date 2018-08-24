@@ -22,7 +22,7 @@
 
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
-@main_template("Seller's details", bodyClasses = None) {
+@main_template("Additional Supply Chain Actors", bodyClasses = None) {
   <a class="link-back" href="@{routes.GenericController.displayForm("buyer-details").url}" >@messages("common.back")</a>
 
   @if(errors) {
@@ -42,7 +42,7 @@
       <h1 class="heading-large">@messages("additionalSupplyChainActors.heading")</h1>
     </legend>
 
-    <form method="post" action="/customs-declare-imports/submit-declaration/additional-supply-chain-actors/previous-documents">
+    <form method="post" action="/customs-declare-imports/submit-declaration/additional-supply-chain-actors/additional-fiscal-references">
         @{
             play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
         }
@@ -61,7 +61,7 @@
 
       <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
 
-      <input type="hidden" id=="next-page" name="next-page" value="previous-documents"/>
+      <input type="hidden" id=="next-page" name="next-page" value="additional-fiscal-references"/>
 
     </form>
   </fieldset>

@@ -22,7 +22,7 @@
 
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
-@main_template("Seller's details", bodyClasses = None) {
+@main_template("Buyer's details", bodyClasses = None) {
   <a class="link-back" href="@{routes.GenericController.displayForm("seller-details").url}" >@messages("common.back")</a>
 
   @if(errors) {

@@ -22,8 +22,8 @@
 
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
-@main_template("Seller's details", bodyClasses = None) {
-  <a class="link-back" href="@{routes.GenericController.displayForm("additional-supply-chain-actors").url}" >@messages("common.back")</a>
+@main_template("Previous Documents", bodyClasses = None) {
+  <a class="link-back" href="@{routes.GenericController.displayForm("additional-fiscal-references").url}" >@messages("common.back")</a>
 
   @if(errors) {
     <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">

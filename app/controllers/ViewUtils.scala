@@ -106,6 +106,10 @@ object ViewUtils {
   val previousProcedureCode = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_governmentProcedures_previousCode"
   val additionalProcedure = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_governmentProcedures_additionalProcedure"
 
+  //Additional fiscal references fields
+  val additionalFiscalReferencesId = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_domesticDutyTaxParties_id"
+  val additionalFiscalReferencesRoleCode = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_domesticDutyTaxParties_roleCode"
+
   def getError(key: String, errors: Map[String, ValidationError])(implicit messages: Messages) = {
     if(errors.get(key).isDefined) {
       errors.get(key).get.messages.map(messages(_))}
