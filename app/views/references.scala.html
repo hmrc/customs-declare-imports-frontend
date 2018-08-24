@@ -20,15 +20,15 @@
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
 
-@(fieldsMap: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@(data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
     @main_template("Reference numbers", bodyClasses = None) {
         @helpers.form(routes.GenericController.displayForm("declarant-details"), "references", "exporter-details", Some(messages("referencepage.heading"))) {
-            @helpers.inputField(messages("referencepage.referenceNumber"), referenceNumberUCR1, fieldsMap)
-            @helpers.inputField(messages("referencepage.lrn"), declarantFunctionalReferenceID, fieldsMap, Some(messages("referencepage.lrnHint")))
+            @helpers.inputField(messages("referencepage.referenceNumber"), referenceNumberUCR1, data)
+            @helpers.inputField(messages("referencepage.lrn"), declarantFunctionalReferenceID, data, Some(messages("referencepage.lrnHint")))
             @helpers.radioOptions("DeclarationType", messages("referencepage.declarationType"), Seq(
                 ("DeclarationType-CO", "CO", "2"),
                 ("DeclarationType-IM", "IM", "3")
-            ), declarationType, fieldsMap)
+            ), declarationType, data)
             @helpers.radioOptions("AdditionalDeclarationType", messages("referencepage.addtionalDeclarationType"), Seq(
                 ("AdditionalDeclarationType-A", "A", "A"),
                 ("AdditionalDeclarationType-B", "B", "B"),
@@ -36,7 +36,7 @@
                 ("AdditionalDeclarationType-E", "E", "E"),
                 ("AdditionalDeclarationType-J", "J", "J"),
                 ("AdditionalDeclarationType-K", "K", "K")
-            ), additionalDeclarationType, fieldsMap)
-            <button class="button" type="next" id="next" name="next" value="next">Continue</button>
+            ), additionalDeclarationType, data)
+            @helpers.nextButton()
         }
     }
