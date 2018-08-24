@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 @Singleton
 class LandingController @Inject()(submissionRepository: SubmissionRepository, actions: Actions, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  def displayLandingPage: Action[AnyContent] = (actions.switch(Feature.begin) andThen actions.auth).async { implicit req =>
+  def displayLandingPage: Action[AnyContent] = (actions.switch(Feature.landing) andThen actions.auth).async { implicit req =>
     submissionRepository.findByEori(req.user.eori).map { submissions =>
       Ok(views.html.landing(submissions.sortBy(_.submittedTimestamp)))
     }

@@ -27,19 +27,19 @@ class LandingControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
 
   s"$method $uri" should {
 
-    "return 200" in featureScenario(Feature.begin, FeatureStatus.enabled) {
+    "return 200" in featureScenario(Feature.landing, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri, signedInUser) { wasOk }
       }
     }
 
-    "return HTML" in featureScenario(Feature.begin, FeatureStatus.enabled) {
+    "return HTML" in featureScenario(Feature.landing, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri, signedInUser) { wasHtml }
       }
     }
 
-    "display message" in featureScenario(Feature.begin, FeatureStatus.enabled) {
+    "display message" in featureScenario(Feature.landing, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri, signedInUser) { resp =>
           contentAsHtml(resp) should include element withClass("message").withValue("Well done. You have begun your first step on a long journey.")
@@ -47,13 +47,13 @@ class LandingControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
       }
     }
 
-    "require authentication" in featureScenario(Feature.begin, FeatureStatus.enabled) {
+    "require authentication" in featureScenario(Feature.landing, FeatureStatus.enabled) {
       notSignedInScenario() {
         accessDeniedRequestScenarioTest(method, uri)
       }
     }
 
-    "be behind feature switch" in featureScenario(Feature.begin, FeatureStatus.disabled) {
+    "be behind feature switch" in featureScenario(Feature.landing, FeatureStatus.disabled) {
       signedInScenario() {
         userRequestScenario(method, uri) { wasNotFound }
       }
