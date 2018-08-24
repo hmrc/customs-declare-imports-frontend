@@ -37,7 +37,6 @@ class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(
 
     val cacheId:String  = "submit-declaration"
   def displayForm(name: String): Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
-
     cache.get(req.user.eori.get,cacheId).map { data =>
       Ok(views.html.generic_view(name, data.getOrElse(Map.empty)))
     }
@@ -142,8 +141,14 @@ trait DeclarationValidator extends Constraints{
       previousDocumentsDocumentGoodsItemIdentifier -> numericConstraintMax999
     )
 
+  val procedureCodesValidations: Map[String, (String) => Option[ValidationError]] =
+    Map(requestedProcedureCode -> mandatoryDropdownConstraint,
+      previousProcedureCode -> mandatoryDropdownConstraint,
+      additionalProcedure -> mandatoryDropdownConstraint
+    )
+
   val validations : Map[String, (String) => Option[ValidationError]] =
-    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations ++ representativeDetailsValidations ++ importerDetailsValidations ++ sellerDetailsValidations ++ buyerDetailsValidations ++ additionalSupplyChainActorsValidations ++ additionalSupplyChainActorsValidations ++ previousDocumentsValidations
+    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations ++ representativeDetailsValidations ++ importerDetailsValidations ++ sellerDetailsValidations ++ buyerDetailsValidations ++ additionalSupplyChainActorsValidations ++ additionalSupplyChainActorsValidations ++ previousDocumentsValidations ++ procedureCodesValidations
 
 }
 
@@ -167,6 +172,8 @@ trait Constraints {
   def numericConstraintMax999(input:String) = if (input.isEmpty) None else validator(input,s"""^[0-9]{1,3}""",requiredKey)
   def lrnConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{1,22}""",requiredKey)
   def optionalEoriConstraint(input:String) = if (input.isEmpty) None else validator(input,s"""^[a-zA-Z0-9]{17}""",requiredKey)
+
+  def mandatoryDropdownConstraint(input:String) = validator(input,s"""^.+""",requiredKey)
 
 
   def validator = (text: String, regex:String, errMsgKey:String) => {

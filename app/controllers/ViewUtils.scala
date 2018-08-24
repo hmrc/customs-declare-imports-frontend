@@ -105,7 +105,7 @@ object ViewUtils {
   //Procedure Codes fields
   val requestedProcedureCode = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_governmentProcedures_currentCode"
   val previousProcedureCode = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_governmentProcedures_previousCode"
-  val additionalProcedure = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_governmentProcedures_currentCode"
+  val additionalProcedure = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_governmentProcedures_additionalProcedure"
 
 
 
