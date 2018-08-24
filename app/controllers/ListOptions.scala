@@ -16,19 +16,13 @@
 
 package controllers
 
-import play.api.data.validation.ValidationError
-import play.api.i18n.Messages
-
-import scala.collection.mutable
-
-
 object ListOptions {
 
-  val borderTransportMeansModeCodes = mutable.LinkedHashMap("C"-> "C","F"->"F","Z"-> "Z","Y"->"Y")
+  val borderTransportMeansModeCodes: Seq[(String, String)] = Seq("C" -> "C", "F" -> "F", "Z" -> "Z", "Y" -> "Y")
 
-  val DocumentCategory = mutable.LinkedHashMap("no list data currently"-> "no list data currently")
+  val DocumentCategory: Seq[(String, String)] = Seq("no list data currently" -> "no list data currently")
 
-  val DocumentType = mutable.LinkedHashMap("235" -> "235",
+  val DocumentType: Seq[(String, String)] = Seq("235" -> "235",
     "270" -> "270",
     "271" -> "271",
     "325" -> "325",
@@ -68,315 +62,315 @@ object ListOptions {
     "T2M" -> "T2M",
     "ZZZ" -> "ZZZ")
 
-  val PartySubRoleTypes = mutable.LinkedHashMap("CS"-> "CS",
-    "FR1"-> "FR1",
-    "FR2"-> "FR2",
-    "FR3"-> "FR3",
-    "FR4"-> "FR4",
-    "FW"-> "FW",
-    "MF"-> "MF",
-    "WH"-> "WH")
+  val PartySubRoleTypes: Seq[(String, String)] = Seq("CS" -> "CS",
+    "FR1" -> "FR1",
+    "FR2" -> "FR2",
+    "FR3" -> "FR3",
+    "FR4" -> "FR4",
+    "FW" -> "FW",
+    "MF" -> "MF",
+    "WH" -> "WH")
 
-  val PartyRoleAuthorizationTypes = mutable.LinkedHashMap("ACE"-> "ACE",
-    "ACP"-> "ACP",
-    "ACR"-> "ACR",
-    "ACT"-> "ACT",
-    "AEOC"-> "AEOC",
-    "AEOF"-> "AEOF",
-    "AEOS"-> "AEOS",
-    "APEX"-> "APEX",
-    "AWB"-> "AWB",
-    "BOI"-> "BOI",
-    "BTI"-> "BTI",
-    "CCL"-> "CCL",
-    "CGU"-> "CGU",
-    "CSDR"-> "CSDR",
-    "CSE"-> "CSE",
-    "CVA"-> "CVA",
-    "CW1"-> "CW1",
-    "CW2"-> "CW2",
-    "CWP"-> "CWP",
-    "DEP"-> "DEP",
-    "DPO"-> "DPO",
-    "EIR"-> "EIR",
-    "EORI"-> "EORI",
-    "EPSS"-> "EPSS",
-    "ETD"-> "ETD",
-    "EUS"-> "EUS",
-    "EXEE"-> "EXEE",
-    "EXOR"-> "EXOR",
-    "EXW"-> "EXW",
-    "EXWH"-> "EXWH",
-    "FAS"-> "FAS",
-    "FZ"-> "FZ",
-    "GGA"-> "GGA",
-    "GVS"-> "GVS",
-    "IPO"-> "IPO",
-    "LVBI"-> "LVBI",
-    "OPO"-> "OPO",
-    "REM"-> "REM",
-    "REP"-> "REP",
-    "REX"-> "REX",
-    "RSS"-> "RSS",
-    "SAS"-> "SAS",
-    "SASP"-> "SASP",
-    "SDE"-> "SDE",
-    "SIVA"-> "SIVA",
-    "SSE"-> "SSE",
-    "TEA"-> "TEA",
-    "TEAH"-> "TEAH",
-    "TRD"-> "TRD",
-    "TST"-> "TST",
-    "UKCS"-> "UKCS")
+  val PartyRoleAuthorizationTypes: Seq[(String, String)] = Seq("ACE" -> "ACE",
+    "ACP" -> "ACP",
+    "ACR" -> "ACR",
+    "ACT" -> "ACT",
+    "AEOC" -> "AEOC",
+    "AEOF" -> "AEOF",
+    "AEOS" -> "AEOS",
+    "APEX" -> "APEX",
+    "AWB" -> "AWB",
+    "BOI" -> "BOI",
+    "BTI" -> "BTI",
+    "CCL" -> "CCL",
+    "CGU" -> "CGU",
+    "CSDR" -> "CSDR",
+    "CSE" -> "CSE",
+    "CVA" -> "CVA",
+    "CW1" -> "CW1",
+    "CW2" -> "CW2",
+    "CWP" -> "CWP",
+    "DEP" -> "DEP",
+    "DPO" -> "DPO",
+    "EIR" -> "EIR",
+    "EORI" -> "EORI",
+    "EPSS" -> "EPSS",
+    "ETD" -> "ETD",
+    "EUS" -> "EUS",
+    "EXEE" -> "EXEE",
+    "EXOR" -> "EXOR",
+    "EXW" -> "EXW",
+    "EXWH" -> "EXWH",
+    "FAS" -> "FAS",
+    "FZ" -> "FZ",
+    "GGA" -> "GGA",
+    "GVS" -> "GVS",
+    "IPO" -> "IPO",
+    "LVBI" -> "LVBI",
+    "OPO" -> "OPO",
+    "REM" -> "REM",
+    "REP" -> "REP",
+    "REX" -> "REX",
+    "RSS" -> "RSS",
+    "SAS" -> "SAS",
+    "SASP" -> "SASP",
+    "SDE" -> "SDE",
+    "SIVA" -> "SIVA",
+    "SSE" -> "SSE",
+    "TEA" -> "TEA",
+    "TEAH" -> "TEAH",
+    "TRD" -> "TRD",
+    "TST" -> "TST",
+    "UKCS" -> "UKCS")
 
-  val countryOptions = mutable.LinkedHashMap("AF"->"Afghanistan",
-    "AX"->"Aland Islands",
-    "AL"->"Albania",
-    "DZ"->"Algeria",
-    "AS"->"American Samoa",
-    "AD"->"Andorra",
-    "AO"->"Angola",
-    "AI"->"Anguilla",
-    "AQ"->"Antarctica",
-    "AG"->"Antigua and Barbuda",
-    "AR"->"Argentina",
-    "AM"->"Armenia",
-    "AW"->"Aruba",
-    "AU"->"Australia",
-    "AT"->"Austria",
-    "AZ"->"Azerbaijan",
-    "BS"->"Bahamas",
-    "BH"->"Bahrain",
-    "BD"->"Bangladesh",
-    "BB"->"Barbados",
-    "BY"->"Belarus",
-    "BE"->"Belgium",
-    "BZ"->"Belize",
-    "BJ"->"Benin",
-    "BM"->"Bermuda",
-    "BT"->"Bhutan",
-    "BO"->"Bolivia",
-    "BA"->"Bosnia and Herzegovina",
-    "BW"->"Botswana",
-    "BV"->"Bouvet Island",
-    "BR"->"Brazil",
-    "IO"->"British Indian Ocean Territory"
-    ,"BN"->"Brunei Darussalam"
-    ,"BG"->"Bulgaria"
-    ,"BF"->"Burkina Faso"
-    ,"BI"->"Burundi"
-    ,"KH"->"Cambodia"
-    ,"CM"->"Cameroon"
-    ,"CA"->"Canada"
-    ,"CV"->"Cape Verde"
-    ,"KY"->"Cayman Islands"
-    ,"CF"->"Central African Republic"
-    ,"TD"->"Chad"
-    ,"CL"->"Chile"
-    ,"CN"->"China"
-    ,"HK"->"Hong Kong, SAR China"
-    ,"MO"->"Macao, SAR China"
-    ,"CX"->"Christmas Island"
-    ,"CC"->"Cocos (Keeling) Islands"
-    ,"CO"->"Colombia"
-    ,"KM"->"Comoros"
-    ,"CG"->"Congo (Brazzaville)"
-    ,"CD"->"Congo, (Kinshasa)"
-    ,"CK"->"Cook Islands"
-    ,"CR"->"Costa Rica"
-    ,"CI"->"Côte d'Ivoire"
-    ,"HR"->"Croatia"
-    ,"CU"->"Cuba"
-    ,"CY"->"Cyprus"
-    ,"CZ"->"Czech Republic"
-    ,"DK"->"Denmark"
-    ,"DJ"->"Djibouti"
-    ,"DM"->"Dominica"
-    ,"DO"->"Dominican Republic"
-    ,"EC"->"Ecuador"
-    ,"EG"->"Egypt"
-    ,"SV"->"El Salvador"
-    ,"GQ"->"Equatorial Guinea"
-    ,"ER"->"Eritrea"
-    ,"EE"->"Estonia"
-    ,"ET"->"Ethiopia"
-    ,"FK"->"Falkland Islands (Malvinas)"
-    ,"FO"->"Faroe Islands"
-    ,"FJ"->"Fiji"
-    ,"FI"->"Finland"
-    ,"FR"->"France"
-    ,"GF"->"French Guiana"
-    ,"PF"->"French Polynesia"
-    ,"TF"->"French Southern Territories"
-    ,"GA"->"Gabon"
-    ,"GM"->"Gambia"
-    ,"GE"->"Georgia"
-    ,"DE"->"Germany"
-    ,"GH"->"Ghana"
-    ,"GI"->"Gibraltar"
-    ,"GR"->"Greece"
-    ,"GL"->"Greenland"
-    ,"GD"->"Grenada"
-    ,"GP"->"Guadeloupe"
-    ,"GU"->"Guam"
-    ,"GT"->"Guatemala"
-    ,"GG"->"Guernsey"
-    ,"GN"->"Guinea"
-    ,"GW"->"Guinea-Bissau"
-    ,"GY"->"Guyana"
-    ,"HT"->"Haiti"
-    ,"HM"->"Heard and Mcdonald Islands"
-    ,"VA"->"Holy See (Vatican City State)"
-    ,"HN"->"Honduras"
-    ,"HU"->"Hungary"
-    ,"IS"->"Iceland"
-    ,"IN"->"India"
-    ,"ID"->"Indonesia"
-    ,"IR"->"Iran, Islamic Republic of"
-    ,"IQ"->"Iraq"
-    ,"IE"->"Ireland"
-    ,"IM"->"Isle of Man"
-    ,"IL"->"Israel"
-    ,"IT"->"Italy"
-    ,"JM"->"Jamaica"
-    ,"JP"->"Japan"
-    ,"JE"->"Jersey"
-    ,"JO"->"Jordan"
-    ,"KZ"->"Kazakhstan"
-    ,"KE"->"Kenya"
-    ,"KI"->"Kiribati"
-    ,"KP"->"Korea (North)"
-    ,"KR"->"Korea (South)"
-    ,"KW"->"Kuwait"
-    ,"KG"->"Kyrgyzstan"
-    ,"LA"->"Lao PDR"
-    ,"LV"->"Latvia"
-    ,"LB"->"Lebanon"
-    ,"LS"->"Lesotho"
-    ,"LR"->"Liberia"
-    ,"LY"->"Libya"
-    ,"LI"->"Liechtenstein"
-    ,"LT"->"Lithuania"
-    ,"LU"->"Luxembourg"
-    ,"MK"->"Macedonia, Republic of"
-    ,"MG"->"Madagascar"
-    ,"MW"->"Malawi"
-    ,"MY"->"Malaysia"
-    ,"MV"->"Maldives"
-    ,"ML"->"Mali"
-    ,"MT"->"Malta"
-    ,"MH"->"Marshall Islands"
-    ,"MQ"->"Martinique"
-    ,"MR"->"Mauritania"
-    ,"MU"->"Mauritius"
-    ,"YT"->"Mayotte"
-    ,"MX"->"Mexico"
-    ,"FM"->"Micronesia, Federated States of"
-    ,"MD"->"Moldova"
-    ,"MC"->"Monaco"
-    ,"MN"->"Mongolia"
-    ,"ME"->"Montenegro"
-    ,"MS"->"Montserrat"
-    ,"MA"->"Morocco"
-    ,"MZ"->"Mozambique"
-    ,"MM"->"Myanmar"
-    ,"NA"->"Namibia"
-    ,"NR"->"Nauru"
-    ,"NP"->"Nepal"
-    ,"NL"->"Netherlands"
-    ,"AN"->"Netherlands Antilles"
-    ,"NC"->"New Caledonia"
-    ,"NZ"->"New Zealand"
-    ,"NI"->"Nicaragua"
-    ,"NE"->"Niger"
-    ,"NG"->"Nigeria"
-    ,"NU"->"Niue"
-    ,"NF"->"Norfolk Island"
-    ,"MP"->"Northern Mariana Islands"
-    ,"NO"->"Norway"
-    ,"OM"->"Oman"
-    ,"PK"->"Pakistan"
-    ,"PW"->"Palau"
-    ,"PS"->"Palestinian Territory"
-    ,"PA"->"Panama"
-    ,"PG"->"Papua New Guinea"
-    ,"PY"->"Paraguay"
-    ,"PE"->"Peru"
-    ,"PH"->"Philippines"
-    ,"PN"->"Pitcairn"
-    ,"PL"->"Poland"
-    ,"PT"->"Portugal"
-    ,"PR"->"Puerto Rico"
-    ,"QA"->"Qatar"
-    ,"RE"->"Réunion"
-    ,"RO"->"Romania"
-    ,"RU"->"Russian Federation"
-    ,"RW"->"Rwanda"
-    ,"BL"->"Saint-Barthélemy"
-    ,"SH"->"Saint Helena"
-    ,"KN"->"Saint Kitts and Nevis"
-    ,"LC"->"Saint Lucia"
-    ,"MF"->"Saint-Martin (French part)"
-    ,"PM"->"Saint Pierre and Miquelon"
-    ,"VC"->"Saint Vincent and Grenadines"
-    ,"WS"->"Samoa"
-    ,"SM"->"San Marino"
-    ,"ST"->"Sao Tome and Principe"
-    ,"SA"->"Saudi Arabia"
-    ,"SN"->"Senegal"
-    ,"RS"->"Serbia"
-    ,"SC"->"Seychelles"
-    ,"SL"->"Sierra Leone"
-    ,"SG"->"Singapore"
-    ,"SK"->"Slovakia"
-    ,"SI"->"Slovenia"
-    ,"SB"->"Solomon Islands"
-    ,"SO"->"Somalia"
-    ,"ZA"->"South Africa"
-    ,"GS"->"South Georgia and the South Sandwich Islands"
-    ,"SS"->"South Sudan"
-    ,"ES"->"Spain"
-    ,"LK"->"Sri Lanka"
-    ,"SD"->"Sudan"
-    ,"SR"->"Suriname"
-    ,"SJ"->"Svalbard and Jan Mayen Islands"
-    ,"SZ"->"Swaziland"
-    ,"SE"->"Sweden"
-    ,"CH"->"Switzerland"
-    ,"SY"->"Syrian Arab Republic (Syria)"
-    ,"TW"->"Taiwan, Republic of China"
-    ,"TJ"->"Tajikistan"
-    ,"TZ"->"Tanzania, United Republic of"
-    ,"TH"->"Thailand"
-    ,"TL"->"Timor-Leste"
-    ,"TG"->"Togo"
-    ,"TK"->"Tokelau"
-    ,"TO"->"Tonga"
-    ,"TT"->"Trinidad and Tobago"
-    ,"TN"->"Tunisia"
-    ,"TR"->"Turkey"
-    ,"TM"->"Turkmenistan"
-    ,"TC"->"Turks and Caicos Islands"
-    ,"TV"->"Tuvalu"
-    ,"UG"->"Uganda"
-    ,"UA"->"Ukraine"
-    ,"AE"->"United Arab Emirates"
-    ,"GB"->"United Kingdom"
-    ,"US"->"United States of America"
-    ,"UM"->"US Minor Outlying Islands"
-    ,"UY"->"Uruguay"
-    ,"UZ"->"Uzbekistan"
-    ,"VU"->"Vanuatu"
-    ,"VE"->"Venezuela (Bolivarian Republic)"
-    ,"VN"->"Viet Nam"
-    ,"VI"->"Virgin Islands, US"
-    ,"WF"->"Wallis and Futuna Islands"
-    ,"EH"->"Western Sahara"
-    ,"YE"->"Yemen"
-    ,"ZM"->"Zambia"
-    ,"ZW"->"Zimbabwe")
+  val countryOptions: Seq[(String, String)] = Seq("AF" -> "Afghanistan",
+    "AX" -> "Aland Islands",
+    "AL" -> "Albania",
+    "DZ" -> "Algeria",
+    "AS" -> "American Samoa",
+    "AD" -> "Andorra",
+    "AO" -> "Angola",
+    "AI" -> "Anguilla",
+    "AQ" -> "Antarctica",
+    "AG" -> "Antigua and Barbuda",
+    "AR" -> "Argentina",
+    "AM" -> "Armenia",
+    "AW" -> "Aruba",
+    "AU" -> "Australia",
+    "AT" -> "Austria",
+    "AZ" -> "Azerbaijan",
+    "BS" -> "Bahamas",
+    "BH" -> "Bahrain",
+    "BD" -> "Bangladesh",
+    "BB" -> "Barbados",
+    "BY" -> "Belarus",
+    "BE" -> "Belgium",
+    "BZ" -> "Belize",
+    "BJ" -> "Benin",
+    "BM" -> "Bermuda",
+    "BT" -> "Bhutan",
+    "BO" -> "Bolivia",
+    "BA" -> "Bosnia and Herzegovina",
+    "BW" -> "Botswana",
+    "BV" -> "Bouvet Island",
+    "BR" -> "Brazil",
+    "IO" -> "British Indian Ocean Territory"
+    , "BN" -> "Brunei Darussalam"
+    , "BG" -> "Bulgaria"
+    , "BF" -> "Burkina Faso"
+    , "BI" -> "Burundi"
+    , "KH" -> "Cambodia"
+    , "CM" -> "Cameroon"
+    , "CA" -> "Canada"
+    , "CV" -> "Cape Verde"
+    , "KY" -> "Cayman Islands"
+    , "CF" -> "Central African Republic"
+    , "TD" -> "Chad"
+    , "CL" -> "Chile"
+    , "CN" -> "China"
+    , "HK" -> "Hong Kong, SAR China"
+    , "MO" -> "Macao, SAR China"
+    , "CX" -> "Christmas Island"
+    , "CC" -> "Cocos (Keeling) Islands"
+    , "CO" -> "Colombia"
+    , "KM" -> "Comoros"
+    , "CG" -> "Congo (Brazzaville)"
+    , "CD" -> "Congo, (Kinshasa)"
+    , "CK" -> "Cook Islands"
+    , "CR" -> "Costa Rica"
+    , "CI" -> "Côte d'Ivoire"
+    , "HR" -> "Croatia"
+    , "CU" -> "Cuba"
+    , "CY" -> "Cyprus"
+    , "CZ" -> "Czech Republic"
+    , "DK" -> "Denmark"
+    , "DJ" -> "Djibouti"
+    , "DM" -> "Dominica"
+    , "DO" -> "Dominican Republic"
+    , "EC" -> "Ecuador"
+    , "EG" -> "Egypt"
+    , "SV" -> "El Salvador"
+    , "GQ" -> "Equatorial Guinea"
+    , "ER" -> "Eritrea"
+    , "EE" -> "Estonia"
+    , "ET" -> "Ethiopia"
+    , "FK" -> "Falkland Islands (Malvinas)"
+    , "FO" -> "Faroe Islands"
+    , "FJ" -> "Fiji"
+    , "FI" -> "Finland"
+    , "FR" -> "France"
+    , "GF" -> "French Guiana"
+    , "PF" -> "French Polynesia"
+    , "TF" -> "French Southern Territories"
+    , "GA" -> "Gabon"
+    , "GM" -> "Gambia"
+    , "GE" -> "Georgia"
+    , "DE" -> "Germany"
+    , "GH" -> "Ghana"
+    , "GI" -> "Gibraltar"
+    , "GR" -> "Greece"
+    , "GL" -> "Greenland"
+    , "GD" -> "Grenada"
+    , "GP" -> "Guadeloupe"
+    , "GU" -> "Guam"
+    , "GT" -> "Guatemala"
+    , "GG" -> "Guernsey"
+    , "GN" -> "Guinea"
+    , "GW" -> "Guinea-Bissau"
+    , "GY" -> "Guyana"
+    , "HT" -> "Haiti"
+    , "HM" -> "Heard and Mcdonald Islands"
+    , "VA" -> "Holy See (Vatican City State)"
+    , "HN" -> "Honduras"
+    , "HU" -> "Hungary"
+    , "IS" -> "Iceland"
+    , "IN" -> "India"
+    , "ID" -> "Indonesia"
+    , "IR" -> "Iran, Islamic Republic of"
+    , "IQ" -> "Iraq"
+    , "IE" -> "Ireland"
+    , "IM" -> "Isle of Man"
+    , "IL" -> "Israel"
+    , "IT" -> "Italy"
+    , "JM" -> "Jamaica"
+    , "JP" -> "Japan"
+    , "JE" -> "Jersey"
+    , "JO" -> "Jordan"
+    , "KZ" -> "Kazakhstan"
+    , "KE" -> "Kenya"
+    , "KI" -> "Kiribati"
+    , "KP" -> "Korea (North)"
+    , "KR" -> "Korea (South)"
+    , "KW" -> "Kuwait"
+    , "KG" -> "Kyrgyzstan"
+    , "LA" -> "Lao PDR"
+    , "LV" -> "Latvia"
+    , "LB" -> "Lebanon"
+    , "LS" -> "Lesotho"
+    , "LR" -> "Liberia"
+    , "LY" -> "Libya"
+    , "LI" -> "Liechtenstein"
+    , "LT" -> "Lithuania"
+    , "LU" -> "Luxembourg"
+    , "MK" -> "Macedonia, Republic of"
+    , "MG" -> "Madagascar"
+    , "MW" -> "Malawi"
+    , "MY" -> "Malaysia"
+    , "MV" -> "Maldives"
+    , "ML" -> "Mali"
+    , "MT" -> "Malta"
+    , "MH" -> "Marshall Islands"
+    , "MQ" -> "Martinique"
+    , "MR" -> "Mauritania"
+    , "MU" -> "Mauritius"
+    , "YT" -> "Mayotte"
+    , "MX" -> "Mexico"
+    , "FM" -> "Micronesia, Federated States of"
+    , "MD" -> "Moldova"
+    , "MC" -> "Monaco"
+    , "MN" -> "Mongolia"
+    , "ME" -> "Montenegro"
+    , "MS" -> "Montserrat"
+    , "MA" -> "Morocco"
+    , "MZ" -> "Mozambique"
+    , "MM" -> "Myanmar"
+    , "NA" -> "Namibia"
+    , "NR" -> "Nauru"
+    , "NP" -> "Nepal"
+    , "NL" -> "Netherlands"
+    , "AN" -> "Netherlands Antilles"
+    , "NC" -> "New Caledonia"
+    , "NZ" -> "New Zealand"
+    , "NI" -> "Nicaragua"
+    , "NE" -> "Niger"
+    , "NG" -> "Nigeria"
+    , "NU" -> "Niue"
+    , "NF" -> "Norfolk Island"
+    , "MP" -> "Northern Mariana Islands"
+    , "NO" -> "Norway"
+    , "OM" -> "Oman"
+    , "PK" -> "Pakistan"
+    , "PW" -> "Palau"
+    , "PS" -> "Palestinian Territory"
+    , "PA" -> "Panama"
+    , "PG" -> "Papua New Guinea"
+    , "PY" -> "Paraguay"
+    , "PE" -> "Peru"
+    , "PH" -> "Philippines"
+    , "PN" -> "Pitcairn"
+    , "PL" -> "Poland"
+    , "PT" -> "Portugal"
+    , "PR" -> "Puerto Rico"
+    , "QA" -> "Qatar"
+    , "RE" -> "Réunion"
+    , "RO" -> "Romania"
+    , "RU" -> "Russian Federation"
+    , "RW" -> "Rwanda"
+    , "BL" -> "Saint-Barthélemy"
+    , "SH" -> "Saint Helena"
+    , "KN" -> "Saint Kitts and Nevis"
+    , "LC" -> "Saint Lucia"
+    , "MF" -> "Saint-Martin (French part)"
+    , "PM" -> "Saint Pierre and Miquelon"
+    , "VC" -> "Saint Vincent and Grenadines"
+    , "WS" -> "Samoa"
+    , "SM" -> "San Marino"
+    , "ST" -> "Sao Tome and Principe"
+    , "SA" -> "Saudi Arabia"
+    , "SN" -> "Senegal"
+    , "RS" -> "Serbia"
+    , "SC" -> "Seychelles"
+    , "SL" -> "Sierra Leone"
+    , "SG" -> "Singapore"
+    , "SK" -> "Slovakia"
+    , "SI" -> "Slovenia"
+    , "SB" -> "Solomon Islands"
+    , "SO" -> "Somalia"
+    , "ZA" -> "South Africa"
+    , "GS" -> "South Georgia and the South Sandwich Islands"
+    , "SS" -> "South Sudan"
+    , "ES" -> "Spain"
+    , "LK" -> "Sri Lanka"
+    , "SD" -> "Sudan"
+    , "SR" -> "Suriname"
+    , "SJ" -> "Svalbard and Jan Mayen Islands"
+    , "SZ" -> "Swaziland"
+    , "SE" -> "Sweden"
+    , "CH" -> "Switzerland"
+    , "SY" -> "Syrian Arab Republic (Syria)"
+    , "TW" -> "Taiwan, Republic of China"
+    , "TJ" -> "Tajikistan"
+    , "TZ" -> "Tanzania, United Republic of"
+    , "TH" -> "Thailand"
+    , "TL" -> "Timor-Leste"
+    , "TG" -> "Togo"
+    , "TK" -> "Tokelau"
+    , "TO" -> "Tonga"
+    , "TT" -> "Trinidad and Tobago"
+    , "TN" -> "Tunisia"
+    , "TR" -> "Turkey"
+    , "TM" -> "Turkmenistan"
+    , "TC" -> "Turks and Caicos Islands"
+    , "TV" -> "Tuvalu"
+    , "UG" -> "Uganda"
+    , "UA" -> "Ukraine"
+    , "AE" -> "United Arab Emirates"
+    , "GB" -> "United Kingdom"
+    , "US" -> "United States of America"
+    , "UM" -> "US Minor Outlying Islands"
+    , "UY" -> "Uruguay"
+    , "UZ" -> "Uzbekistan"
+    , "VU" -> "Vanuatu"
+    , "VE" -> "Venezuela (Bolivarian Republic)"
+    , "VN" -> "Viet Nam"
+    , "VI" -> "Virgin Islands, US"
+    , "WF" -> "Wallis and Futuna Islands"
+    , "EH" -> "Western Sahara"
+    , "YE" -> "Yemen"
+    , "ZM" -> "Zambia"
+    , "ZW" -> "Zimbabwe")
 
-  val GovernmentProcedureTypes = mutable.LinkedHashMap(
+  val GovernmentProcedureTypes: Seq[(String, String)] = Seq(
     "10" -> "10",
     "11" -> "11",
     "21" -> "21",
@@ -406,12 +400,12 @@ object ListOptions {
     "95" -> "95",
     "96" -> "96")
 
-  val ImportPreviousProcedures = mutable.LinkedHashMap(
+  val ImportPreviousProcedures: Seq[(String, String)] = Seq(
     "23" -> "23",
     "71" -> "71",
     "00" -> "00")
 
-  val SpecialProcedureTypes = mutable.LinkedHashMap(
+  val SpecialProcedureTypes: Seq[(String, String)] = Seq(
     "000" -> "000",
     "1IL" -> "1IL",
     "A04" -> "A04",
@@ -551,7 +545,7 @@ object ListOptions {
     "F65" -> "F65",
     "F75" -> "F75")
 
-    val CurrencyTypes = mutable.LinkedHashMap(
+  val CurrencyTypes: Seq[(String, String)] = Seq(
     "AED" -> "AED",
     "AFN" -> "AFN",
     "ALL" -> "ALL",
@@ -706,9 +700,9 @@ object ListOptions {
     "ZAR" -> "ZAR",
     "ZMW" -> "ZMW",
     "ZWL" -> "ZWL"
-)
+  )
 
-  val ValuationIndicatorTypes = mutable.LinkedHashMap(
+  val ValuationIndicatorTypes: Seq[(String, String)] = Seq(
     "0000" -> "0000",
     "0001" -> "0001",
     "0010" -> "0010",
@@ -725,18 +719,18 @@ object ListOptions {
     "1101" -> "1101",
     "1110" -> "1110",
     "1111" -> "1111"
-)
+  )
 
-  val ValuationMethodTypes = mutable.LinkedHashMap(
+  val ValuationMethodTypes: Seq[(String, String)] = Seq(
     "1" -> "1",
     "2" -> "2",
     "3" -> "3",
     "4" -> "4",
     "5" -> "5",
     "6" -> "6"
-)
+  )
 
-  val DutyTaxFeeTypes = mutable.LinkedHashMap(
+  val DutyTaxFeeTypes: Seq[(String, String)] = Seq(
     "611" -> "611",
     "A00" -> "A00",
     "A30" -> "A30",
@@ -749,7 +743,7 @@ object ListOptions {
     "E00" -> "E00",
     "T00" -> "T00")
 
-    val MeasureUnitTypes = mutable.LinkedHashMap(
+  val MeasureUnitTypes: Seq[(String, String)] = Seq(
     "ASV" -> "ASV",
     "CCT" -> "CCT",
     "CEN" -> "CEN",
@@ -797,7 +791,6 @@ object ListOptions {
     "TNE" -> "TNE",
     "WAT" -> "WAT")
 
-    val PaymentMethodTypes = mutable.LinkedHashMap(
-    "E" -> "E")
+  val PaymentMethodTypes: Seq[(String, String)] = Seq("E" -> "E")
 }
 

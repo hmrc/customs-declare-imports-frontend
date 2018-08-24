@@ -14,53 +14,25 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
-
-@import views.html.helper.CSRF
-@import play.api.data.validation.ValidationError
 @import ViewUtils._
+@import config.AppConfig
+@import play.api.data.validation.ValidationError
 
-@(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@(fieldsMap: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Exporter's details", bodyClasses = None) {
-  <a class="link-back" href="@{routes.GenericController.displayForm("references").url}">@messages("common.back")</a>
 
-  @if(errors) {
-    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-      <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
-
-      <ul class="error-summary-list">
-        @for(element <- errors) {
-          <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
-        }
-      </ul>
-    </div>
-  }
-
-  <fieldset>
-    <legend>
-      <h1 class="heading-large">@messages("exporter.details")</h1>
-    </legend>
-
-    <form method="post" action="/customs-declare-imports/submit-declaration/exporter-details/representative-details">
-    @{
-      play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
+    @helpers.form(routes.GenericController.displayForm("references"), "exporter-details", "representative-details", Some(messages("exporter.details"))) {
+        @helpers.inputField(messages("exporter.name"), exporterName, fieldsMap)
+        @helpers.inputField(messages("peoplepage.common.firstLineAddress"), exporterAddressLine, fieldsMap)
+        @helpers.inputField(messages("peoplepage.common.city"), exporterAddressCityName, fieldsMap)
+        @helpers.selectField(label = messages("peoplepage.common.country"), fieldsMap, exporterAddressCountryCode, ListOptions.countryOptions)
+        @helpers.inputField(messages("peoplepage.common.postcode"), exporterAddressPostcode, fieldsMap)
+        @helpers.inputField(messages("peoplepage.common.eoriNumber"),
+            exporterEori, fieldsMap,
+            Some(messages("peoplepage.common.eoriNumberHint"))
+        )
+        @helpers.nextButton()
     }
-      @helpers.inputField(messages("exporter.name"), exporterName,fieldsMap)
-      @helpers.inputField(messages("peoplepage.common.firstLineAddress"), exporterAddressLine,fieldsMap)
-      @helpers.inputField(messages("peoplepage.common.city"), exporterAddressCityName,fieldsMap)
-      @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap, exporterAddressCountryCode,ListOptions.countryOptions)
-      @helpers.inputField(messages("peoplepage.common.postcode"), exporterAddressPostcode,fieldsMap)
-      @helpers.inputField(messages("peoplepage.common.eoriNumber"),
-        exporterEori,fieldsMap,
-        Some(messages("peoplepage.common.eoriNumberHint"))
-    )
-
-    <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
-
-    <input type="hidden" id=="next-page" name="next-page" value="representative-details"/>
-
-    </form>
-  </fieldset>
 
 }

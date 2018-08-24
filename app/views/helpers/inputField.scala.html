@@ -17,24 +17,15 @@
 @import ViewUtils._
 @import play.api.data.validation.ValidationError
 
-@(label: String, name: String, fieldsMap: Map[String, Seq[String]], spanText: Option[String] = None)(implicit messages: Messages, errors: Map[String, ValidationError])
+@(label: String, name: String, data: Map[String, Seq[String]], spanText: Option[String] = None, id: Option[String] = None)(implicit messages: Messages, errors: Map[String, ValidationError])
 
+<div class="form-group@if(errors.get(name).isDefined) { form-group-error}">
+    <label class="form-label" for="@name">
+        @label
+        @spanText.map { text => <span class="form-hint">@text</span> }
+    </label>
     @if(errors.get(name).isDefined) {
-        <div class="form-group form-group-error">
-            <label class="form-label" for=@name>
-                @label
-                @spanText.map { text => <span class="form-hint">@text</span> }
-            </label>
-            <span class="error-message">@getError(name, errors)</span>
-            <input class="form-control" name=@name id=@name type="text" value=@fieldsMap.get(name)>
-        </div>
-    } else {
-        <div class="form-group">
-            <label class="form-label" for=@name>
-                @label
-                @spanText.map { text => <span class="form-hint">@text</span> }
-            </label>
-            <input class="form-control" name=@name id=@name type="text" value=@fieldsMap.get(name)>
-        </div>
-
+        <span class="error-message">@getError(name, errors)</span>
     }
+    <input class="form-control" name="@name" id="@id.getOrElse(name)" type="text" value="@data.get(name)">
+</div>
