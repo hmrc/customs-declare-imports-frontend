@@ -107,6 +107,9 @@ object ViewUtils {
   val additionalProcedure = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_governmentProcedures_additionalProcedure"
 
   //Additional fiscal references fields
+
+  // TODO these are left as optional until the question re the "OSR" status is answered.  Possibly that by choosing a "free circulation" 
+  // code earlier might make this mandatory, and therefore require conditional validation
   val additionalFiscalReferencesId = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_domesticDutyTaxParties_id"
   val additionalFiscalReferencesRoleCode = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_domesticDutyTaxParties_roleCode"
 
