@@ -49,7 +49,7 @@
         @helpers.inputField(messages("buyer.name"),buyerName,fieldsMap)
         @helpers.inputField(messages("peoplepage.common.firstLineAddress"),buyerAddressLine,fieldsMap)
         @helpers.inputField(messages("peoplepage.common.city"),buyerAddressCityName,fieldsMap)
-        @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap,buyerAddressCountryCode,ViewUtils.countryOptions)
+        @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap,buyerAddressCountryCode,ListOptions.countryOptions)
         @helpers.inputField(messages("peoplepage.common.postcode"),buyerAddressPostcode,fieldsMap)
         @helpers.inputField(messages("peoplepage.common.phoneNumber"),buyerCommunicationID,fieldsMap)
         @helpers.inputField(messages("peoplepage.common.eoriNumber"),
@@ -59,6 +59,8 @@
         )
 
       <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
+
+      <input type="hidden" id=="next-page" name="next-page" value="additional-supply-chain-actors"/>
     </form>
   </fieldset>
 

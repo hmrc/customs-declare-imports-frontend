@@ -50,16 +50,19 @@
         @helpers.selectField(label=messages("additionalSupplyChainActors.roleCode"),
           fieldsMap,
           aeoMutualRecognitionPartyRoleCode,
-          PartySubRoleTypes,
+          ListOptions.PartySubRoleTypes,
           Some(messages("additionalSupplyChainActors.roleCodeHint"))
         )
         @helpers.inputField(messages("additionalSupplyChainActors.holderID"),authorisationHolderID,fieldsMap)
         @helpers.selectField(label=messages("additionalSupplyChainActors.holderAuthTypeCode"),
           fieldsMap,
           authorisationHolderCategoryCode,
-          PartyRoleAuthorizationTypes)
+          ListOptions.PartyRoleAuthorizationTypes)
 
       <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
+
+      <input type="hidden" id=="next-page" name="next-page" value="previous-documents"/>
+
     </form>
   </fieldset>
 

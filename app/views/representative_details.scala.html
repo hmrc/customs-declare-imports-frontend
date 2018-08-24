@@ -49,7 +49,7 @@
       @helpers.inputField(messages("representative.name"),agentName,fieldsMap)
       @helpers.inputField(messages("peoplepage.common.firstLineAddress"),agentAddressLine,fieldsMap)
       @helpers.inputField(messages("peoplepage.common.city"),agentAddressCityName,fieldsMap)
-      @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap,agentAddressCountryCode,ViewUtils.countryOptions)
+      @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap,agentAddressCountryCode,ListOptions.countryOptions)
       @helpers.inputField(messages("peoplepage.common.postcode"),agentAddressPostcode,fieldsMap)
       @helpers.inputField(messages("peoplepage.common.eoriNumber"),
         agentEori,
@@ -80,6 +80,8 @@
       </div>
 
       <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
+
+      <input type="hidden" id=="next-page" name="next-page" value="importer-details"/>
     </form>
   </fieldset>
 }

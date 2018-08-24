@@ -49,7 +49,7 @@
       @helpers.inputField(messages("exporter.name"), exporterName,fieldsMap)
       @helpers.inputField(messages("peoplepage.common.firstLineAddress"), exporterAddressLine,fieldsMap)
       @helpers.inputField(messages("peoplepage.common.city"), exporterAddressCityName,fieldsMap)
-      @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap, exporterAddressCountryCode,ViewUtils.countryOptions)
+      @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap, exporterAddressCountryCode,ListOptions.countryOptions)
       @helpers.inputField(messages("peoplepage.common.postcode"), exporterAddressPostcode,fieldsMap)
       @helpers.inputField(messages("peoplepage.common.eoriNumber"),
         exporterEori,fieldsMap,
@@ -57,6 +57,8 @@
     )
 
     <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
+
+    <input type="hidden" id=="next-page" name="next-page" value="representative-details"/>
 
     </form>
   </fieldset>

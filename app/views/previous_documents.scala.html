@@ -50,18 +50,20 @@
         @helpers.selectField(label=messages("previousDocuments.documentCategory"),
           fieldsMap,
           previousDocumentsDocumentCategory,
-          DocumentCategory
+          ListOptions.DocumentCategory
         )
         @helpers.selectField(label=messages("previousDocuments.documentType"),
           fieldsMap,
           previousDocumentsDocumentTypeCode,
-          DocumentType
+          ListOptions.DocumentType
         )
 
         @helpers.inputField(messages("previousDocuments.documentReference"),previousDocumentsPreviousDocumentReference,fieldsMap)
         @helpers.inputField(messages("previousDocuments.goodsItemIdentifier"),previousDocumentsDocumentGoodsItemIdentifier,fieldsMap)
 
       <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
+
+      <input type="hidden" id=="next-page" name="next-page" value="procedure-codes"/>
     </form>
   </fieldset>
 

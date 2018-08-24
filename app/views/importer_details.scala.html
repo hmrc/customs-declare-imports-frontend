@@ -49,7 +49,7 @@
       @helpers.inputField(messages("importer.name"),importerName,fieldsMap)
       @helpers.inputField(messages("peoplepage.common.firstLineAddress"),importerAddressLine,fieldsMap)
       @helpers.inputField(messages("peoplepage.common.city"),importerAddressCityName,fieldsMap)
-      @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap,importerAddressCountryCode,ViewUtils.countryOptions)
+      @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap,importerAddressCountryCode,ListOptions.countryOptions)
       @helpers.inputField(messages("peoplepage.common.postcode"),importerAddressPostcode,fieldsMap)
       @helpers.inputField(messages("peoplepage.common.eoriNumber"),
         importerEori,
@@ -58,6 +58,9 @@
       )
 
       <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
+
+      <input type="hidden" id=="next-page" name="next-page" value="seller-details"/>
+
     </form>
   </fieldset>
 

@@ -46,11 +46,11 @@
     @{
       play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
     }
-      @helpers.selectField(label=messages("procedure.codes.requestedProcedureCode"),fieldsMap, requestedProcedureCode,ViewUtils.GovernmentProcedureTypes)
+      @helpers.selectField(label=messages("procedure.codes.requestedProcedureCode"),fieldsMap, requestedProcedureCode,ListOptions.GovernmentProcedureTypes)
 
-      @helpers.selectField(label=messages("procedure.codes.previousProcedureCode"),fieldsMap, previousProcedureCode,ViewUtils.ImportPreviousProcedures)
+      @helpers.selectField(label=messages("procedure.codes.previousProcedureCode"),fieldsMap, previousProcedureCode,ListOptions.ImportPreviousProcedures)
 
-      @helpers.selectField(label=messages("procedure.codes.additionalProcedure"),fieldsMap, additionalProcedure,ViewUtils.SpecialProcedureTypes)
+      @helpers.selectField(label=messages("procedure.codes.additionalProcedure"),fieldsMap, additionalProcedure,ListOptions.SpecialProcedureTypes)
 
 
     <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
