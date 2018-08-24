@@ -181,21 +181,14 @@ trait Constraints {
 
   def textConstraintMax35(input: String): Option[ValidationError] = validator(input,s"""^[a-zA-Z0-9 ]{1,35}""", requiredKey)
 
+  def textConstraintMax512(input: String): Option[ValidationError] = validator(input,s"""^[a-zA-Z0-9 ]{1,512}""", requiredKey)
+
   def numericConstraintMax999(input: String): Option[ValidationError] = if (input.isEmpty) None else validator(input,s"""^[0-9]{1,3}""", requiredKey)
 
-<<<<<<< HEAD
+
   def lrnConstraint(input: String): Option[ValidationError] = validator(input,s"""^[a-zA-Z0-9 ]{1,22}""", requiredKey)
-=======
-  def countryConstraint(input:String) = if (input.isEmpty) None else validator(input,s"""^[A-Z]{2}""",requiredKey)
-  def postcodeConstraint(input:String) = lettersDigitPattern(input=input,max=9)
-  def textInputConstraint(input:String) = validator(input,s""""^[a-zA-Z0-9 ]""",requiredKey)
-  def eoriConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{17}""",requiredKey)
-  def textConstraintMax35(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{1,35}""",requiredKey)
-  def textConstraintMax512(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{1,512}""",requiredKey)
-  def numericMax999No0Constraint(input:String) = if (Integer.parseInt(input) < 1) Some(ValidationError(cannotBeZero)) else validator(input,s"""^[0-9]{3}""",requiredKey)
-  def lrnConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{1,22}""",requiredKey)
-  def optionalEoriConstraint(input:String) = if (input.isEmpty) None else validator(input,s"""^[a-zA-Z0-9]{17}""",requiredKey)
->>>>>>> changes to previous documents pages and beginnings of identification of goods page (now blocked)
+
+  def numericMax999No0Constraint(input:String): Option[ValidationError] = if (Integer.parseInt(input) < 1) Some(ValidationError(cannotBeZero)) else validator(input,s"""^[0-9]{1,3}""",requiredKey)
 
   def optionalEoriConstraint(input: String): Option[ValidationError] = if (input.isEmpty) None else validator(input,s"""^[a-zA-Z0-9]{17}""", requiredKey)
 
