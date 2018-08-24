@@ -42,15 +42,15 @@
       <h1 class="heading-large">@messages("procedureCodes.heading")</h1>
     </legend>
 
-    <form method="post" action="/customs-declare-imports/submit-declaration/procedure-codes/declarant-details">
+    <form method="post" action="/customs-declare-imports/submit-declaration/procedure-codes/valuation">
     @{
       play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
     }
-      @helpers.selectField(label=messages("procedure.codes.requestedProcedureCode"),fieldsMap, requestedProcedureCode,ListOptions.GovernmentProcedureTypes)
+      @helpers.selectField(label=messages("procedureCodes.requestedProcedureCode"),fieldsMap, requestedProcedureCode,ListOptions.GovernmentProcedureTypes)
 
-      @helpers.selectField(label=messages("procedure.codes.previousProcedureCode"),fieldsMap, previousProcedureCode,ListOptions.ImportPreviousProcedures)
+      @helpers.selectField(label=messages("procedureCodes.previousProcedureCode"),fieldsMap, previousProcedureCode,ListOptions.ImportPreviousProcedures)
 
-      @helpers.selectField(label=messages("procedure.codes.additionalProcedure"),fieldsMap, additionalProcedure,ListOptions.SpecialProcedureTypes)
+      @helpers.selectField(label=messages("procedureCodes.additionalProcedure"),fieldsMap, additionalProcedure,ListOptions.SpecialProcedureTypes)
 
 
     <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>

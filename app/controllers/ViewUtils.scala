@@ -117,6 +117,15 @@ object ViewUtils {
   val goodsShipmentGovernmentAgencyGoodsItemCommodityDescription = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_commodity_description"
   val goodsShipmentGovernmentAgencyGoodsItemPackagingMarksNumbersID = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_packagings_marksNumbersId"
 
+  //Valuation fields
+  val valuationIndicators = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_valuationAdjustment_additionCode" 
+  val valuationItemPrice = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_commodity_invoiceLine_itemChargeAmount_value"
+  val valuationItemPriceCurrency = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_commodity_invoiceLine_itemChargeAmount_currencyId"
+
+  // TODO blocked until clarified
+//  val valuationExchangeRate = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_"
+//  val valuationMethodType = ?
+// val valuationPreference = ?
 
   def getError(key: String, errors: Map[String, ValidationError])(implicit messages: Messages) = {
     if(errors.get(key).isDefined) {

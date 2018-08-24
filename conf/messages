@@ -93,14 +93,18 @@ additionalFiscalReferences.heading			                            =Additional fis
 additionalFiscalReferences.ID                                       =Identifier
 additionalFiscalReferences.roleCode                                 =Role Code
 
-procedure.codes                                                     =Procedure codes
-procedure.codes.requestedProcedureCode								              =Requested procedure code
-procedure.codes.previousProcedureCode								                =Previous procedure code
-procedure.codes.additionalProcedure									                =Additional procedure
-
 ## Identification of goods page
 identificationOfGoods.heading                                       =Identification of goods
 identificationOfGoods.descriptionOfGoodsPart1                       =Description of Goods (part 1 optional if CUS code provided)
 identificationOfGoods.descriptionOfGoodsPart1Hint                   =The normal trade description. Except for non-Union goods placed under the customs warehousing procedure in a public customs warehouse type I, II or III or a private customs warehouse, this description must be expressed in terms sufficiently precise to enable immediate and unambiguous identification and classification of the goods.
 identificationOfGoods.shippingMarks                                 =Shipping Marks
 identificationOfGoods.shippingMarksHint                             =For unpackaged goods, enter ‘Unpackaged’.
+
+## Valuation page
+valuation.heading			                                        =Valuation
+valuation.indicators												=Valuation indicators
+valuation.itemPrice													=Item price/amount
+valuation.itemCurrency												=Currency
+valuation.exchangeRate												=Exchange rate
+valuation.method													=Valuation method
+valuation.preference												=Preference
