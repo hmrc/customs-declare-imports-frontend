@@ -134,11 +134,11 @@ trait DeclarationValidator extends Constraints {
       authorisationHolderCategoryCode -> optionalText70MaxConstraint
     )
 
-  val previousDocumentsValidations: Map[String, String => Option[ValidationError]] =
-    Map(previousDocumentsDocumentCategory -> countryConstraint,
-      previousDocumentsDocumentTypeCode -> countryConstraint,
+  val previousDocumentsValidations: Map[String, (String) => Option[ValidationError]] =
+    Map(previousDocumentsDocumentCategory -> mandatoryDropdownConstraint,
+      previousDocumentsDocumentTypeCode -> mandatoryDropdownConstraint,
       previousDocumentsPreviousDocumentReference -> textConstraintMax35,
-      previousDocumentsDocumentGoodsItemIdentifier -> numericConstraintMax999
+      previousDocumentsDocumentGoodsItemIdentifier -> numericMax999No0Constraint
     )
 
   val procedureCodesValidations: Map[String, String => Option[ValidationError]] =
@@ -147,14 +147,20 @@ trait DeclarationValidator extends Constraints {
       additionalProcedure -> mandatoryDropdownConstraint
     )
 
-  val validations: Map[String, String => Option[ValidationError]] =
-    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations ++ representativeDetailsValidations ++ importerDetailsValidations ++ sellerDetailsValidations ++ buyerDetailsValidations ++ additionalSupplyChainActorsValidations ++ additionalSupplyChainActorsValidations ++ previousDocumentsValidations ++ procedureCodesValidations
+  val identificationOfGoodsValidations: Map[String, (String) => Option[ValidationError]] =
+    Map(goodsShipmentGovernmentAgencyGoodsItemCommodityDescription -> textConstraintMax512,
+      goodsShipmentGovernmentAgencyGoodsItemPackagingMarksNumbersID -> textConstraintMax512
+    )
+
+  val validations : Map[String, (String) => Option[ValidationError]] =
+    declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations ++ representativeDetailsValidations ++ importerDetailsValidations ++ sellerDetailsValidations ++ buyerDetailsValidations ++ additionalSupplyChainActorsValidations ++ additionalSupplyChainActorsValidations ++ previousDocumentsValidations ++ procedureCodesValidations ++ identificationOfGoodsValidations
 
 }
 
 trait Constraints {
 
   val requiredKey = "input.required"
+  val cannotBeZero = "input.cannotBeZero"
 
   private def lettersDigitPattern(input: String, min: Int = 1, max: Int = 35): Option[ValidationError] =
     if (input.isEmpty) None else validator(input, s"""^[a-zA-Z0-9 ]{$min,$max}$$""", requiredKey)
@@ -177,7 +183,19 @@ trait Constraints {
 
   def numericConstraintMax999(input: String): Option[ValidationError] = if (input.isEmpty) None else validator(input,s"""^[0-9]{1,3}""", requiredKey)
 
+<<<<<<< HEAD
   def lrnConstraint(input: String): Option[ValidationError] = validator(input,s"""^[a-zA-Z0-9 ]{1,22}""", requiredKey)
+=======
+  def countryConstraint(input:String) = if (input.isEmpty) None else validator(input,s"""^[A-Z]{2}""",requiredKey)
+  def postcodeConstraint(input:String) = lettersDigitPattern(input=input,max=9)
+  def textInputConstraint(input:String) = validator(input,s""""^[a-zA-Z0-9 ]""",requiredKey)
+  def eoriConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{17}""",requiredKey)
+  def textConstraintMax35(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{1,35}""",requiredKey)
+  def textConstraintMax512(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{1,512}""",requiredKey)
+  def numericMax999No0Constraint(input:String) = if (Integer.parseInt(input) < 1) Some(ValidationError(cannotBeZero)) else validator(input,s"""^[0-9]{3}""",requiredKey)
+  def lrnConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{1,22}""",requiredKey)
+  def optionalEoriConstraint(input:String) = if (input.isEmpty) None else validator(input,s"""^[a-zA-Z0-9]{17}""",requiredKey)
+>>>>>>> changes to previous documents pages and beginnings of identification of goods page (now blocked)
 
   def optionalEoriConstraint(input: String): Option[ValidationError] = if (input.isEmpty) None else validator(input,s"""^[a-zA-Z0-9]{17}""", requiredKey)
 

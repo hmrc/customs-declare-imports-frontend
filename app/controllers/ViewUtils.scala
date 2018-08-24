@@ -113,6 +113,11 @@ object ViewUtils {
   val additionalFiscalReferencesId = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_domesticDutyTaxParties_id"
   val additionalFiscalReferencesRoleCode = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_domesticDutyTaxParties_roleCode"
 
+  //Identification of goods fields
+  val goodsShipmentGovernmentAgencyGoodsItemCommodityDescription = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_commodity_description"
+  val goodsShipmentGovernmentAgencyGoodsItemPackagingMarksNumbersID = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_packagings_marksNumbersId"
+
+
   def getError(key: String, errors: Map[String, ValidationError])(implicit messages: Messages) = {
     if(errors.get(key).isDefined) {
       errors.get(key).get.messages.map(messages(_))}

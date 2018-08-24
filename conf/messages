@@ -28,6 +28,7 @@ common.button.ConfirmAndContinue                                    = Confirm an
 
 ## Validations
 input.required                                                      =This is a mandatory field.
+input.cannotBeZero                                                  =This field cannot be zero
 
 ## Declarant Details fields
 DeclarantName                                                       =DeclarantName
@@ -82,13 +83,24 @@ previousDocuments.documentReference                                 =Document re
 previousDocuments.goodsItemIdentifier                               =Goods Item Identifier (optional)
 
 ## Procedure codes page
-procedureCodes.heading			                                    =Procedure codes
-procedureCodes.requestedProcedureCode								=Requested procedure code
-procedureCodes.previousProcedureCode								=Previous procedure code
-procedureCodes.additionalProcedure									=Additional procedure
+procedureCodes.heading			                                        =Procedure codes
+procedureCodes.requestedProcedureCode								                =Requested procedure code
+procedureCodes.previousProcedureCode							                	=Previous procedure code
+procedureCodes.additionalProcedure									                =Additional procedure
 
 ## Additional fiscal references page
-additionalFiscalReferences.heading			                        =Additional fiscal references
-additionalFiscalReferences.ID                                      =Identifier
-additionalFiscalReferences.roleCode                                =Role Code
+additionalFiscalReferences.heading			                            =Additional fiscal references
+additionalFiscalReferences.ID                                       =Identifier
+additionalFiscalReferences.roleCode                                 =Role Code
 
+procedure.codes                                                     =Procedure codes
+procedure.codes.requestedProcedureCode								              =Requested procedure code
+procedure.codes.previousProcedureCode								                =Previous procedure code
+procedure.codes.additionalProcedure									                =Additional procedure
+
+## Identification of goods page
+identificationOfGoods.heading                                       =Identification of goods
+identificationOfGoods.descriptionOfGoodsPart1                       =Description of Goods (part 1 optional if CUS code provided)
+identificationOfGoods.descriptionOfGoodsPart1Hint                   =The normal trade description. Except for non-Union goods placed under the customs warehousing procedure in a public customs warehouse type I, II or III or a private customs warehouse, this description must be expressed in terms sufficiently precise to enable immediate and unambiguous identification and classification of the goods.
+identificationOfGoods.shippingMarks                                 =Shipping Marks
+identificationOfGoods.shippingMarksHint                             =For unpackaged goods, enter ‘Unpackaged’.

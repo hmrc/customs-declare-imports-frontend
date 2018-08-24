@@ -1,0 +1,65 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+
+@import views.html.helper.CSRF
+@import play.api.data.validation.ValidationError
+@import ViewUtils._
+
+@(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+
+@main_template("Seller's details", bodyClasses = None) {
+  <a class="link-back" href="@{routes.GenericController.displayForm("procedure-codes").url}" >@messages("common.back")</a>
+
+  @if(errors) {
+    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+      <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
+
+      <ul class="error-summary-list">
+        @for(element <- errors) {
+          <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
+        }
+      </ul>
+    </div>
+  }
+
+  <fieldset>
+    <legend>
+      <h1 class="heading-large">@messages("identificationOfGoods.heading")</h1>
+    </legend>
+
+    <form method="post" action="/customs-declare-imports/submit-declaration/identification-of-goods/previous-documents">
+        @{
+            play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
+        }
+
+        @helpers.inputTextareaField(messages("identificationOfGoods.descriptionOfGoodsPart1"),
+          goodsShipmentGovernmentAgencyGoodsItemCommodityDescription,
+          fieldsMap,
+          Some(messages("identificationOfGoods.descriptionOfGoodsPart1Hint"))
+        )
+        @helpers.inputField(messages("identificationOfGoods.shippingMarks"),
+          goodsShipmentGovernmentAgencyGoodsItemPackagingMarksNumbersID,
+          fieldsMap,
+          Some(messages("identificationOfGoods.shippingMarksHint"))
+        )
+
+      <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
+    </form>
+  </fieldset>
+
+}
