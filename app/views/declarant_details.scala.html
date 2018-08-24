@@ -22,8 +22,6 @@
 @(fieldsMap: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Declarant details", bodyClasses = None) {
-    <a class="link-back" href="@{routes.StartController.displayStartPage.url}" >@messages("common.back")</a>
-
     @helpers.form(routes.StartController.displayStartPage, "declarant-details", "references", Some(messages("declarant.details"))) {
         @helpers.inputField(messages("declarant.name"), declarantName, fieldsMap)
         @helpers.inputField(messages("peoplepage.common.firstLineAddress"), declarantAddressLine, fieldsMap)
