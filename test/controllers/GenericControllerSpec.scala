@@ -20,9 +20,7 @@ import domain.features.{Feature, FeatureStatus}
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours}
 import uk.gov.hmrc.http.HeaderCarrier
 
-
-
-class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours  {
+class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours {
 
   val method = "GET"
   val handleMethod = "POST"
@@ -31,7 +29,7 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
 
   s"$method $uri" should {
 
-    "return 200" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+    "return 200" in featureScenario(Feature.prototype, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
         userRequestScenario(method, uri, signedInUser) {
           wasOk
@@ -39,7 +37,7 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
       }
     }
 
-    "return HTML" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+    "return HTML" in featureScenario(Feature.prototype, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
         userRequestScenario(method, uri, signedInUser) {
           wasHtml
@@ -47,13 +45,13 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
       }
     }
 
-    "require authentication" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+    "require authentication" in featureScenario(Feature.prototype, FeatureStatus.enabled) {
       notSignedInScenario() {
         accessDeniedRequestScenarioTest(method, uri)
       }
     }
 
-    "be behind a feature switch" in featureScenario(Feature.declaration, FeatureStatus.disabled) {
+    "be behind a feature switch" in featureScenario(Feature.prototype, FeatureStatus.disabled) {
       signedInScenario(signedInUser) {
         userRequestScenario(method, uri, signedInUser) {
           wasNotFound
@@ -65,30 +63,30 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
 
   s"$handleMethod $uri" should {
     val payload =
-      Map("MetaData_declaration_declarant_name"-> "name1",
-        "MetaData_declaration_declarant_address_line"-> "Address1","MetaData_declaration_declarant_id"->"12345678912341234")
+      Map("MetaData_declaration_declarant_name" -> "name1",
+        "MetaData_declaration_declarant_address_line" -> "Address1", "MetaData_declaration_declarant_id" -> "12345678912341234")
     implicit val hc = HeaderCarrier()
 
-    "return 303" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+    "return 303" in featureScenario(Feature.prototype, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(handleMethod, submitUri, signedInUser,Map.empty, payload) {
+        userRequestScenario(handleMethod, submitUri, signedInUser, Map.empty, payload) {
           wasRedirected
         }
       }
     }
     val errorsPayload =
-      Map("MetaData_declaration_declarant_name"-> "name1",
-        "MetaData_declaration_declarant_address_line"-> "Address1","MetaData_declaration_declarant_id"->"41234")
+      Map("MetaData_declaration_declarant_name" -> "name1",
+        "MetaData_declaration_declarant_address_line" -> "Address1", "MetaData_declaration_declarant_id" -> "41234")
 
-    "return to same page with errors" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
+    "return to same page with errors" in featureScenario(Feature.prototype, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(handleMethod, submitUri, signedInUser,Map.empty, errorsPayload) {
+        userRequestScenario(handleMethod, submitUri, signedInUser, Map.empty, errorsPayload) {
           wasHtml
         }
       }
     }
 
-    "be behind a feature switch" in featureScenario(Feature.declaration, FeatureStatus.disabled) {
+    "be behind a feature switch" in featureScenario(Feature.prototype, FeatureStatus.disabled) {
       signedInScenario(signedInUser) {
         userRequestScenario(handleMethod, submitUri, signedInUser) {
           wasNotFound

@@ -16,64 +16,63 @@
 
 package controllers
 
-import javax.inject.{Singleton, Inject}
-
 import config.AppConfig
+import controllers.ViewUtils._
 import domain.features.Feature
+import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.data.validation.ValidationError
-import play.api.i18n.{MessagesApi, I18nSupport}
-import play.api.mvc.{AnyContent, Action}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent}
 import services.SessionCacheService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.{Future, ExecutionContext}
-import controllers.ViewUtils._
-import controllers.ListOptions._
-
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GenericController @Inject()(actions: Actions, cache: SessionCacheService)(implicit val messagesApi: MessagesApi,
-                    val appConfig: AppConfig, val ec: ExecutionContext) extends FrontendController with I18nSupport with DeclarationValidator{
+class GenericController @Inject()(actions: Actions, cache: SessionCacheService)
+                                 (implicit val messagesApi: MessagesApi, val appConfig: AppConfig, val ec: ExecutionContext)
+  extends FrontendController with I18nSupport with DeclarationValidator {
 
-    val cacheId:String  = "submit-declaration"
-  def displayForm(name: String): Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
-    cache.get(req.user.eori.get,cacheId).map { data =>
+  val cacheId: String = "submit-declaration"
+
+  def displayForm(name: String): Action[AnyContent] = (actions.switch(Feature.prototype) andThen actions.auth).async { implicit req =>
+    cache.get(req.user.eori.get, cacheId).map { data =>
       Ok(views.html.generic_view(name, data.getOrElse(Map.empty)))
     }
   }
 
-  def handleForm(current: String, next: String): Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
+  def handleForm(current: String, next: String): Action[AnyContent] = (actions.switch(Feature.prototype) andThen actions.auth).async { implicit req =>
     val payload = req.body.asFormUrlEncoded.get
-    implicit val errors = validatePayload(payload)
+    implicit val errors: Map[String, ValidationError] = validatePayload(payload)
     errors.size match {
-      case 0 => cache.get(req.user.eori.get,cacheId).flatMap { cachedData =>
+      case 0 => cache.get(req.user.eori.get, cacheId).flatMap { cachedData =>
         val allData = cachedData.getOrElse(payload) ++ payload
-        cache.put(req.user.eori.get, cacheId, (allData)).map(res => Redirect(routes.GenericController.displayForm(next)))
+        cache.put(req.user.eori.get, cacheId, allData).map(res => Redirect(routes.GenericController.displayForm(next)))
       }
-      case _ => Logger.debug("validation errors are --> { " + errors.mkString("} {") )
-        Future.successful(BadRequest(views.html.generic_view(current,payload)))
+      case _ => Logger.debug("validation errors are --> { " + errors.mkString("} {"))
+        Future.successful(BadRequest(views.html.generic_view(current, payload)))
     }
   }
 
 }
 
-trait DeclarationValidator extends Constraints{
+trait DeclarationValidator extends Constraints {
 
-  def validatePayload(payload: Map[String, Seq[String]]) = {
+  def validatePayload(payload: Map[String, Seq[String]]): Map[String, ValidationError] = {
     val filteredPayload = payload.filter(element => validations.get(element._1).isDefined)
     val results = for (element <- filteredPayload) yield {
-      element._1 -> validations.get(element._1).get.apply(element._2.headOption.getOrElse(""))
+      element._1 -> validations(element._1).apply(element._2.headOption.getOrElse(""))
     }
-    results.collect{case (key, Some(value)) => key -> value}
+    results.collect { case (key, Some(value)) => key -> value }
   }
 
-  val refValidations : Map[String, (String) => Option[ValidationError]] =
+  val refValidations: Map[String, String => Option[ValidationError]] =
     Map(referenceNumberUCR1 -> optionalText35MaxConstraint,
       declarantFunctionalReferenceID -> lrnConstraint)
 
 
-  val declarantDetailsValidations: Map[String, (String) => Option[ValidationError]] =
+  val declarantDetailsValidations: Map[String, String => Option[ValidationError]] =
     Map(declarantName -> optionalText70MaxConstraint,
       declarantAddressLine -> optionalText70MaxConstraint,
       declarantAddressCityName -> optionalText35MaxConstraint,
@@ -81,7 +80,7 @@ trait DeclarationValidator extends Constraints{
       declarantAddressPostcode -> postcodeConstraint,
       declarantEori -> eoriConstraint)
 
-  val exporterDetailsValidations: Map[String, (String) => Option[ValidationError]] =
+  val exporterDetailsValidations: Map[String, String => Option[ValidationError]] =
     Map(exporterName -> optionalText70MaxConstraint,
       exporterAddressLine -> optionalText70MaxConstraint,
       exporterAddressCityName -> optionalText35MaxConstraint,
@@ -90,7 +89,7 @@ trait DeclarationValidator extends Constraints{
       exporterEori -> optionalEoriConstraint
     )
 
-  val representativeDetailsValidations: Map[String, (String) => Option[ValidationError]] =
+  val representativeDetailsValidations: Map[String, String => Option[ValidationError]] =
     Map(agentName -> optionalText70MaxConstraint,
       agentAddressLine -> optionalText70MaxConstraint,
       agentAddressCityName -> optionalText35MaxConstraint,
@@ -99,7 +98,7 @@ trait DeclarationValidator extends Constraints{
       agentEori -> optionalEoriConstraint
     )
 
-  val importerDetailsValidations: Map[String, (String) => Option[ValidationError]] =
+  val importerDetailsValidations: Map[String, String => Option[ValidationError]] =
     Map(importerName -> optionalText70MaxConstraint,
       importerAddressLine -> optionalText70MaxConstraint,
       importerAddressCityName -> optionalText35MaxConstraint,
@@ -108,7 +107,7 @@ trait DeclarationValidator extends Constraints{
       importerEori -> optionalEoriConstraint
     )
 
-  val sellerDetailsValidations: Map[String, (String) => Option[ValidationError]] =
+  val sellerDetailsValidations: Map[String, String => Option[ValidationError]] =
     Map(sellerName -> optionalText70MaxConstraint,
       sellerAddressLine -> optionalText70MaxConstraint,
       sellerAddressCityName -> optionalText35MaxConstraint,
@@ -118,7 +117,7 @@ trait DeclarationValidator extends Constraints{
       sellerEori -> optionalEoriConstraint
     )
 
-  val buyerDetailsValidations: Map[String, (String) => Option[ValidationError]] =
+  val buyerDetailsValidations: Map[String, String => Option[ValidationError]] =
     Map(buyerName -> optionalText70MaxConstraint,
       buyerAddressLine -> optionalText70MaxConstraint,
       buyerAddressCityName -> optionalText35MaxConstraint,
@@ -128,27 +127,27 @@ trait DeclarationValidator extends Constraints{
       buyerEori -> optionalEoriConstraint
     )
 
-  val additionalSupplyChainActorsValidations: Map[String, (String) => Option[ValidationError]] =
+  val additionalSupplyChainActorsValidations: Map[String, String => Option[ValidationError]] =
     Map(aeoMutualRecognitionPartiesID -> optionalEoriConstraint,
       aeoMutualRecognitionPartyRoleCode -> optionalText70MaxConstraint,
       authorisationHolderID -> optionalEoriConstraint,
       authorisationHolderCategoryCode -> optionalText70MaxConstraint
     )
 
-  val previousDocumentsValidations: Map[String, (String) => Option[ValidationError]] =
+  val previousDocumentsValidations: Map[String, String => Option[ValidationError]] =
     Map(previousDocumentsDocumentCategory -> countryConstraint,
       previousDocumentsDocumentTypeCode -> countryConstraint,
       previousDocumentsPreviousDocumentReference -> textConstraintMax35,
       previousDocumentsDocumentGoodsItemIdentifier -> numericConstraintMax999
     )
 
-  val procedureCodesValidations: Map[String, (String) => Option[ValidationError]] =
+  val procedureCodesValidations: Map[String, String => Option[ValidationError]] =
     Map(requestedProcedureCode -> mandatoryDropdownConstraint,
       previousProcedureCode -> mandatoryDropdownConstraint,
       additionalProcedure -> mandatoryDropdownConstraint
     )
 
-  val validations : Map[String, (String) => Option[ValidationError]] =
+  val validations: Map[String, String => Option[ValidationError]] =
     declarantDetailsValidations ++ refValidations ++ exporterDetailsValidations ++ representativeDetailsValidations ++ importerDetailsValidations ++ sellerDetailsValidations ++ buyerDetailsValidations ++ additionalSupplyChainActorsValidations ++ additionalSupplyChainActorsValidations ++ previousDocumentsValidations ++ procedureCodesValidations
 
 }
@@ -157,29 +156,36 @@ trait Constraints {
 
   val requiredKey = "input.required"
 
-  private def lettersDigitPattern(input:String,min:Int=1,max:Int=35) =
+  private def lettersDigitPattern(input: String, min: Int = 1, max: Int = 35): Option[ValidationError] =
     if (input.isEmpty) None else validator(input, s"""^[a-zA-Z0-9 ]{$min,$max}$$""", requiredKey)
 
+  def optionalText35MaxConstraint(input: String): Option[ValidationError] = lettersDigitPattern(input)
 
-  def optionalText35MaxConstraint(input:String) = lettersDigitPattern(input)
-  def optionalText50MaxConstraint(input:String) = lettersDigitPattern(input=input,max=50)
-  def optionalText70MaxConstraint(input:String) = lettersDigitPattern(input=input,max=70)
+  def optionalText50MaxConstraint(input: String): Option[ValidationError] = lettersDigitPattern(input = input, max = 50)
 
-  def countryConstraint(input:String) = if (input.isEmpty) None else validator(input,s"""^[A-Z]{2}""",requiredKey)
-  def postcodeConstraint(input:String) = lettersDigitPattern(input=input,max=9)
-  def textInputConstraint(input:String) = validator(input,s""""^[a-zA-Z0-9 ]""",requiredKey)
-  def eoriConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{17}""",requiredKey)
-  def textConstraintMax35(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{1,35}""",requiredKey)
-  def numericConstraintMax999(input:String) = if (input.isEmpty) None else validator(input,s"""^[0-9]{1,3}""",requiredKey)
-  def lrnConstraint(input:String) = validator(input,s"""^[a-zA-Z0-9 ]{1,22}""",requiredKey)
-  def optionalEoriConstraint(input:String) = if (input.isEmpty) None else validator(input,s"""^[a-zA-Z0-9]{17}""",requiredKey)
+  def optionalText70MaxConstraint(input: String): Option[ValidationError] = lettersDigitPattern(input = input, max = 70)
 
-  def mandatoryDropdownConstraint(input:String) = validator(input,s"""^.+""",requiredKey)
+  def countryConstraint(input: String): Option[ValidationError] = if (input.isEmpty) None else validator(input,s"""^[A-Z]{2}""", requiredKey)
 
+  def postcodeConstraint(input: String): Option[ValidationError] = lettersDigitPattern(input = input, max = 9)
 
-  def validator = (text: String, regex:String, errMsgKey:String) => {
-    Logger.debug(s"Validation information :-> input  = ${text}, regex = ${regex}, errMsg = ${errMsgKey} " )
-    if(text.matches(regex)) None
+  def textInputConstraint(input: String): Option[ValidationError] = validator(input,s""""^[a-zA-Z0-9 ]""", requiredKey)
+
+  def eoriConstraint(input: String): Option[ValidationError] = validator(input,s"""^[a-zA-Z0-9 ]{17}""", requiredKey)
+
+  def textConstraintMax35(input: String): Option[ValidationError] = validator(input,s"""^[a-zA-Z0-9 ]{1,35}""", requiredKey)
+
+  def numericConstraintMax999(input: String): Option[ValidationError] = if (input.isEmpty) None else validator(input,s"""^[0-9]{1,3}""", requiredKey)
+
+  def lrnConstraint(input: String): Option[ValidationError] = validator(input,s"""^[a-zA-Z0-9 ]{1,22}""", requiredKey)
+
+  def optionalEoriConstraint(input: String): Option[ValidationError] = if (input.isEmpty) None else validator(input,s"""^[a-zA-Z0-9]{17}""", requiredKey)
+
+  def mandatoryDropdownConstraint(input: String): Option[ValidationError] = validator(input,s"""^.+""", requiredKey)
+
+  def validator: (String, String, String) => Option[ValidationError] = (text: String, regex: String, errMsgKey: String) => {
+    Logger.debug(s"Validation information :-> input  = ${text}, regex = ${regex}, errMsg = ${errMsgKey} ")
+    if (text.matches(regex)) None
     else Some(ValidationError(errMsgKey))
   }
 
