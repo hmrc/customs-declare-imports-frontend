@@ -127,6 +127,13 @@ object ViewUtils {
 //  val valuationMethodType = ?
 // val valuationPreference = ?
 
+  //Tax fields
+  val goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeeTypeCode = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_commodity_dutyTaxFees_typeCode"
+  val goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeeSpecificTaxBaseQuantity = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_commodity_dutyTaxFees_specificTaxBaseQuantity"
+  val goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeePaymentPaymentAmount = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_commodity_dutyTaxFees_payment_paymentAmount"
+  val goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeePaymentTaxAssessedAmount = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_commodity_dutyTaxFees_payment_taxAssessedAmount"
+  val goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeePaymenMethodCode = "MetaData_declaration_goodsShipment_governmentAgencyGoodsItems_commodity_dutyTaxFees_payment_methodCode"
+
   def getError(key: String, errors: Map[String, ValidationError])(implicit messages: Messages) = {
     if(errors.get(key).isDefined) {
       errors.get(key).get.messages.map(messages(_))}

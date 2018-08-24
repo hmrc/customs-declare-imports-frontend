@@ -101,10 +101,24 @@ identificationOfGoods.shippingMarks                                 =Shipping Ma
 identificationOfGoods.shippingMarksHint                             =For unpackaged goods, enter ‘Unpackaged’.
 
 ## Valuation page
-valuation.heading			                                        =Valuation
-valuation.indicators												=Valuation indicators
-valuation.itemPrice													=Item price/amount
-valuation.itemCurrency												=Currency
-valuation.exchangeRate												=Exchange rate
-valuation.method													=Valuation method
-valuation.preference												=Preference
+valuation.heading			                                              =Valuation
+valuation.indicators												                        =Valuation indicators
+valuation.itemPrice									                       			  	=Item price/amount
+valuation.itemCurrency							                       					=Currency
+valuation.exchangeRate							                       					=Exchange rate
+valuation.method										                       			    =Valuation method
+valuation.preference								                       		  		=Preference
+
+## Tax pages
+tax.heading                                                         =Tax
+tax.taxTypeOptional                                                 =Tax type (optional)
+tax.taxTypeOptionalHint                                             =This information is not to be provided when customs administrations calculate duties on behalf of economic operators on the basis of information elsewhere in the declaration. It is otherwise optional for the Member States.
+tax.quantity                                                        =Quantity
+tax.quantityHint                                                    =The composite quantity or amount on which the tax or duty is based. Specifies a ‘third quantity’ for the item if this is required by the Tariff, otherwise it should be omitted.
+tax.unitAndQualifier                                                =Unit and qualifier
+tax.unitAndQualifierHint                                            =This information is not to be provided when customs administrations calculate duties on behalf of economic operators on the basis of information elsewhere in the declaration. It is otherwise optional for the Member States.
+tax.payableTaxAmount                                                =Payable tax amount
+tax.payableTaxAmountHint                                            =Only needed when specified as such in the Tariff Completion notes - usually when manual calculation is performed.
+tax.total                                                           =Total
+tax.totalHint                                                       =Should not be included in the Declaration unless the Tariff Completion notes specify otherwise (usually due to manual calculation).
+tax.methodOfPayment                                                 =Method of payment

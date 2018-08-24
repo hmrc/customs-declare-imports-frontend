@@ -736,5 +736,68 @@ object ListOptions {
     "6" -> "6"
 )
 
+  val DutyTaxFeeTypes = mutable.LinkedHashMap(
+    "611" -> "611",
+    "A00" -> "A00",
+    "A30" -> "A30",
+    "A35" -> "A35",
+    "A40" -> "A40",
+    "A45" -> "A45",
+    "B00" -> "B00",
+    "C00" -> "C00",
+    "C10" -> "C10",
+    "E00" -> "E00",
+    "T00" -> "T00")
+
+    val MeasureUnitTypes = mutable.LinkedHashMap(
+    "ASV" -> "ASV",
+    "CCT" -> "CCT",
+    "CEN" -> "CEN",
+    "CTM" -> "CTM",
+    "DAP" -> "DAP",
+    "DHS" -> "DHS",
+    "DTN" -> "DTN",
+    "EUR" -> "EUR",
+    "FC1" -> "FC1",
+    "GBP" -> "GBP",
+    "GFI" -> "GFI",
+    "GP1" -> "GP1",
+    "GRM" -> "GRM",
+    "GRT" -> "GRT",
+    "HLT" -> "HLT",
+    "HMT" -> "HMT",
+    "KAC" -> "KAC",
+    "KCC" -> "KCC",
+    "KGM" -> "KGM",
+    "KLT" -> "KLT",
+    "KMA" -> "KMA",
+    "KMT" -> "KMT",
+    "KNI" -> "KNI",
+    "KNS" -> "KNS",
+    "KPH" -> "KPH",
+    "KPO" -> "KPO",
+    "KPP" -> "KPP",
+    "KSD" -> "KSD",
+    "KSH" -> "KSH",
+    "KUR" -> "KUR",
+    "KW1" -> "KW1",
+    "LHC" -> "LHC",
+    "LPA" -> "LPA",
+    "LTR" -> "LTR",
+    "MIL" -> "MIL",
+    "MTK" -> "MTK",
+    "MTQ" -> "MTQ",
+    "MTR" -> "MTR",
+    "MWH" -> "MWH",
+    "NAR" -> "NAR",
+    "NCL" -> "NCL",
+    "NPR" -> "NPR",
+    "TCE" -> "TCE",
+    "TJO" -> "TJO",
+    "TNE" -> "TNE",
+    "WAT" -> "WAT")
+
+    val PaymentMethodTypes = mutable.LinkedHashMap(
+    "E" -> "E")
 }
 
