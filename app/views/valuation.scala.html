@@ -23,7 +23,7 @@
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template(messages("valuation.heading"), bodyClasses = None) {
-    @helpers.form(routes.StartController.displayStartPage, "valuation", "tax", Some(messages("valuation.heading"))) {
+    @helpers.form(routes.GenericController.displayForm("procedure-codes"), "valuation", "tax", Some(messages("valuation.heading"))) {
         
         @helpers.selectField(label = messages("valuation.indicators"), fieldsMap, valuationIndicators, ListOptions.ValuationIndicatorTypes)
 
