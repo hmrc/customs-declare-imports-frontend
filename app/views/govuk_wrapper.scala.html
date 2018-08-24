@@ -26,10 +26,9 @@
   serviceInfoContent: Html = HtmlFormat.empty,
   scriptElem: Option[Html] = None)(implicit request: Request[_], messages: Messages)
 
-@import layouts.{govuk_template => hmrcGovUkTemplate}
-@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
-@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers}
 @import domain.auth.AuthenticatedRequest
+@import layouts.{govuk_template => hmrcGovUkTemplate}
+@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
 
 @head = {
     @uiLayouts.head(
@@ -42,8 +41,8 @@
 @headerNavLinks = {
     <li>
       @{request match {
-        case _: AuthenticatedRequest[AnyContent] => <a id="signOut" href="/gg/sign-out" data-journey-click="primary-navigation:Click:Sign out">{Messages("common.sign-out")}</a>
-        case _: Request[AnyContent] => <a id="signIn" href="/gg/sign-in" data-journey-click="primary-navigation:Click:Sign out">{Messages("common.sign-in")}</a>
+        case _: AuthenticatedRequest[_] => <a id="signOut" href="/gg/sign-out" data-journey-click="primary-navigation:Click:Sign out">{messages("common.sign-out")}</a>
+        case _: Request[_] => <a id="signIn" href="/gg/sign-in" data-journey-click="primary-navigation:Click:Sign out">{messages("common.sign-in")}</a>
       }}
     </li>
 }
@@ -78,7 +77,7 @@
     <div class="phase-banner">
       <p>
         <strong class="phase-tag">@Messages("common.phase")</strong>
-        <span>@Messages("common.feedbackFirst") <a href="#">@Messages("common.feedbackSecond")</a> @Messages("common.feedbackThird")</span>
+        <span>@messages("common.feedbackFirst") <a href="#">@messages("common.feedbackSecond")</a> @messages("common.feedbackThird")</span>
       </p>
     </div>
     @if(contentHeader.isDefined) {

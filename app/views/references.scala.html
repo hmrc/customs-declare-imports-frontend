@@ -20,99 +20,23 @@
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
 
-@(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
-
-@main_template("Reference numbers", bodyClasses = None) {
-  <a class="link-back" href="@{routes.GenericController.displayForm("declarant-details").url}">@messages("common.back")</a>
-
-  @if(errors) {
-    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-      <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
-
-      <ul class="error-summary-list">
-        @for(element <- errors) {
-          <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
+@(data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+    @main_template("Reference numbers", bodyClasses = None) {
+        @helpers.form(routes.GenericController.displayForm("declarant-details"), "references", "exporter-details", Some(messages("referencepage.heading"))) {
+            @helpers.inputField(messages("referencepage.referenceNumber"), referenceNumberUCR1, data)
+            @helpers.inputField(messages("referencepage.lrn"), declarantFunctionalReferenceID, data, Some(messages("referencepage.lrnHint")))
+            @helpers.radioOptions("DeclarationType", messages("referencepage.declarationType"), Seq(
+                ("DeclarationType-CO", "CO", "2"),
+                ("DeclarationType-IM", "IM", "3")
+            ), declarationType, data)
+            @helpers.radioOptions("AdditionalDeclarationType", messages("referencepage.addtionalDeclarationType"), Seq(
+                ("AdditionalDeclarationType-A", "A", "A"),
+                ("AdditionalDeclarationType-B", "B", "B"),
+                ("AdditionalDeclarationType-D", "D", "D"),
+                ("AdditionalDeclarationType-E", "E", "E"),
+                ("AdditionalDeclarationType-J", "J", "J"),
+                ("AdditionalDeclarationType-K", "K", "K")
+            ), additionalDeclarationType, data)
+            @helpers.nextButton()
         }
-      </ul>
-    </div>
-  }
-
-  <fieldset>
-    <legend>
-      <h1 class="heading-large">@messages("referencepage.heading")</h1>
-    </legend>
-
-    <form method="post" action="/customs-declare-imports/submit-declaration/references/exporter-details">
-      @{
-        play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
-      }
-      @helpers.inputField(messages("referencepage.referenceNumber"),referenceNumberUCR1,fieldsMap)
-      @helpers.inputField(messages("referencepage.lrn"),declarantFunctionalReferenceID,fieldsMap,Some(messages("referencepage.lrnHint")))
-
-      <div class="form-group">
-        <fieldset>
-          <label class="form-label" for="DeclarationType">
-            @messages("referencepage.declarationType")
-          </label>
-
-          <div class="multiple-choice">
-            <input id="DeclarationType-CO" type="radio" name="DeclarationType" value="2" @if(fieldsMap.isDefinedAt("DeclarationType") && fieldsMap.get("AgentFunctionCode").get.head.equals("co")){ checked}>
-            <label for="DeclarationType-CO">CO</label>
-          </div>
-
-          <div class="multiple-choice">
-            <input id="DeclarationType-IM" type="radio" name="DeclarationType" value="3" @if(fieldsMap.isDefinedAt("DeclarationType") && fieldsMap.get("AgentFunctionCode").get.head.equals("im")) { checked}>
-            <label for="DeclarationType-IM">IM</label>
-          </div>
-          <span class="errors">@ViewUtils.getError(declarationType,errors)</span>
-
-        </fieldset>
-      </div>
-
-
-      <div class="form-group">
-        <fieldset>
-          <label class="form-label" for="AdditionalDeclarationType">
-            @messages("referencepage.addtionalDeclarationType")
-          </label>
-
-          <div class="multiple-choice">
-            <input id="AdditionalDeclarationType-A" type="radio" name="AdditionalDeclarationType" value="A" @if(fieldsMap.isDefinedAt("AdditionalDeclarationType") && fieldsMap.get("AdditionalDeclarationType").get.head.equals("A")){ checked}>
-            <label for="AdditionalDeclarationType-A">A</label>
-          </div>
-
-          <div class="multiple-choice">
-            <input id="AdditionalDeclarationType-B" type="radio" name="AdditionalDeclarationType" value="B" @if(fieldsMap.isDefinedAt("AdditionalDeclarationType") && fieldsMap.get("AdditionalDeclarationType").get.head.equals("B")) { checked}>
-            <label for="AdditionalDeclarationType-B">B</label>
-          </div>
-
-          <div class="multiple-choice">
-            <input id="AdditionalDeclarationType-D" type="radio" name="AdditionalDeclarationType" value="D" @if(fieldsMap.isDefinedAt("AdditionalDeclarationType") && fieldsMap.get("AdditionalDeclarationType").get.head.equals("D")) { checked}>
-            <label for="AdditionalDeclarationType-D">D</label>
-          </div>
-
-          <div class="multiple-choice">
-            <input id="AdditionalDeclarationType-E" type="radio" name="AdditionalDeclarationType" value="E" @if(fieldsMap.isDefinedAt("AdditionalDeclarationType") && fieldsMap.get("AdditionalDeclarationType").get.head.equals("E")) { checked}>
-            <label for="AdditionalDeclarationType-E">E</label>
-          </div>
-
-          <div class="multiple-choice">
-            <input id="AdditionalDeclarationType-J" type="radio" name="AdditionalDeclarationType" value="J" @if(fieldsMap.isDefinedAt("AdditionalDeclarationType") && fieldsMap.get("AdditionalDeclarationType").get.head.equals("J")) { checked}>
-            <label for="AdditionalDeclarationType-J">J</label>
-          </div>
-
-          <div class="multiple-choice">
-            <input id="AdditionalDeclarationType-K" type="radio" name="AdditionalDeclarationType" value="K" @if(fieldsMap.isDefinedAt("AdditionalDeclarationType") && fieldsMap.get("AdditionalDeclarationType").get.head.equals("K")) { checked}>
-            <label for="AdditionalDeclarationType-K">K</label>
-          </div>
-
-          <span class="errors">@ViewUtils.getError(additionalDeclarationType,errors)</span>
-        </fieldset>
-      </div>
-
-      <button class="button" type="next" id="next" name="next" value="next">Continue</button>
-
-      <input type="hidden" id=="next-page" name="next-page" value="exporter-details"/>
-    </form>
-  </fieldset>
-}
+    }
