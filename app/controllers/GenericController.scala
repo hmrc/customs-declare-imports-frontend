@@ -185,10 +185,9 @@ trait Constraints {
 
   def numericConstraintMax999(input: String): Option[ValidationError] = if (input.isEmpty) None else validator(input,s"""^[0-9]{1,3}""", requiredKey)
 
-
   def lrnConstraint(input: String): Option[ValidationError] = validator(input,s"""^[a-zA-Z0-9 ]{1,22}""", requiredKey)
 
-  def numericMax999No0Constraint(input:String): Option[ValidationError] = if (Integer.parseInt(input) < 1) Some(ValidationError(cannotBeZero)) else validator(input,s"""^[0-9]{1,3}""",requiredKey)
+  def numericMax999No0Constraint(input:String): Option[ValidationError] = if (input.toInt < 1) Some(ValidationError(cannotBeZero)) else validator(input,s"""^[0-9]{1,3}""",requiredKey)
 
   def optionalEoriConstraint(input: String): Option[ValidationError] = if (input.isEmpty) None else validator(input,s"""^[a-zA-Z0-9]{17}""", requiredKey)
 
