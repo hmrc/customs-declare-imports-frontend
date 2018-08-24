@@ -19,49 +19,21 @@
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
 
-
 @(fieldsMap: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Declarant details", bodyClasses = None) {
     <a class="link-back" href="@{routes.StartController.displayStartPage.url}" >@messages("common.back")</a>
 
-    @if(errors) {
-        <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-            <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
-
-            <ul class="error-summary-list">
-            @for(element <- errors) {
-                <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
-            }
-            </ul>
-        </div>
+    @helpers.form(routes.StartController.displayStartPage, "declarant-details", "references", Some(messages("declarant.details"))) {
+        @helpers.inputField(messages("declarant.name"), declarantName, fieldsMap)
+        @helpers.inputField(messages("peoplepage.common.firstLineAddress"), declarantAddressLine, fieldsMap)
+        @helpers.inputField(messages("peoplepage.common.city"), declarantAddressCityName, fieldsMap)
+        @helpers.selectField(label = messages("peoplepage.common.country"), fieldsMap, declarantAddressCountryCode, ListOptions.countryOptions)
+        @helpers.inputField(messages("peoplepage.common.postcode"), declarantAddressPostcode, fieldsMap)
+        @helpers.inputField(messages("peoplepage.common.eoriNumber"),
+            declarantEori, fieldsMap,
+            Some(messages("peoplepage.common.eoriNumberHint"))
+        )
+        <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
     }
-
-    <fieldset>
-        <legend>
-            <h1 class="heading-large">@messages("declarant.details")</h1>
-        </legend>
-
-            <form action = "/customs-declare-imports/submit-declaration/declarant-details/references" method="post">
-                @{
-                    play.filters.csrf.CSRF.getToken(request).map { token => CSRF.formField(request) }
-                }
-
-
-                @helpers.inputField(messages("declarant.name"),declarantName,fieldsMap)
-                @helpers.inputField(messages("peoplepage.common.firstLineAddress"),declarantAddressLine,fieldsMap)
-                @helpers.inputField(messages("peoplepage.common.city"),declarantAddressCityName,fieldsMap)
-                @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap,declarantAddressCountryCode,ListOptions.countryOptions)
-                @helpers.inputField(messages("peoplepage.common.postcode"),declarantAddressPostcode,fieldsMap)
-                @helpers.inputField(messages("peoplepage.common.eoriNumber"),
-                    declarantEori,fieldsMap,
-                    Some(messages("peoplepage.common.eoriNumberHint"))
-                )
-
-                <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
-
-                <input type="hidden" id=="next-page" name="next-page" value="references"/>
-            </form>
-    </fieldset>
-
 }

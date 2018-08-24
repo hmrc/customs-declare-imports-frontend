@@ -14,26 +14,27 @@
  * limitations under the License.
  *@
 
-@import play.api.data.validation.ValidationError
 @import ViewUtils._
-@(label: String, name: String,fieldsMap: Map[String, Seq[String]],spanText:Option[String]=None)(implicit messages: Messages,errors: Map[String, ValidationError])
+@import play.api.data.validation.ValidationError
 
-@if(errors.get(name).isDefined) {
-    <div class="form-group form-group-error">
-        <label class="form-label" for=@name>
-            @label
-            @spanText.map{text=> <span class="form-hint">@text</span>}
-        </label>
-        <span class="error-message">@getError(name, errors)</span>
-        <input class="form-control" name=@name id=@name type="text" value=@fieldsMap.get(name)>
-    </div>
-}else{
-    <div class="form-group">
-        <label class="form-label" for=@name>
-            @label
-            @spanText.map{text=> <span class="form-hint">@text</span>}
-        </label>
-        <input class="form-control" name=@name id=@name type="text" value=@fieldsMap.get(name)>
-    </div>
+@(label: String, name: String, fieldsMap: Map[String, Seq[String]], spanText: Option[String] = None)(implicit messages: Messages, errors: Map[String, ValidationError])
 
-}
+    @if(errors.get(name).isDefined) {
+        <div class="form-group form-group-error">
+            <label class="form-label" for=@name>
+                @label
+                @spanText.map { text => <span class="form-hint">@text</span> }
+            </label>
+            <span class="error-message">@getError(name, errors)</span>
+            <input class="form-control" name=@name id=@name type="text" value=@fieldsMap.get(name)>
+        </div>
+    } else {
+        <div class="form-group">
+            <label class="form-label" for=@name>
+                @label
+                @spanText.map { text => <span class="form-hint">@text</span> }
+            </label>
+            <input class="form-control" name=@name id=@name type="text" value=@fieldsMap.get(name)>
+        </div>
+
+    }
