@@ -20,48 +20,27 @@
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
 
-@(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@(data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Importer's details", bodyClasses = None) {
-  <a class="link-back" href="@{routes.GenericController.displayForm("representative-details").url}" >@messages("common.back")</a>
 
-  @if(errors) {
-    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-      <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
-
-      <ul class="error-summary-list">
-        @for(element <- errors) {
-          <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
-        }
-      </ul>
-    </div>
-  }
-
-  <fieldset>
-    <legend>
-      <h1 class="heading-large">@messages("importer.details")</h1>
-    </legend>
-
-    <form method="post" action="/customs-declare-imports/submit-declaration/importer-details/seller-details">
-      @{
-        play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
-      }
-      @helpers.inputField(messages("importer.name"),importerName,fieldsMap)
-      @helpers.inputField(messages("peoplepage.common.firstLineAddress"),importerAddressLine,fieldsMap)
-      @helpers.inputField(messages("peoplepage.common.city"),importerAddressCityName,fieldsMap)
-      @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap,importerAddressCountryCode,ListOptions.countryOptions)
-      @helpers.inputField(messages("peoplepage.common.postcode"),importerAddressPostcode,fieldsMap)
-      @helpers.inputField(messages("peoplepage.common.eoriNumber"),
-        importerEori,
-        fieldsMap,
-        Some(messages("peoplepage.common.eoriNumberHint"))
-      )
-
-      <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
-
-      <input type="hidden" id=="next-page" name="next-page" value="seller-details"/>
-
-    </form>
-  </fieldset>
+    @helpers.form(
+        routes.GenericController.displayForm("representative-details"),
+        "exporter-details",
+        "seller-details",
+        Some(messages("importer.details"))
+    ) {
+        @helpers.inputField(messages("importer.name"), importerName, data)
+        @helpers.inputField(messages("peoplepage.common.firstLineAddress"), importerAddressLine, data)
+        @helpers.inputField(messages("peoplepage.common.city"), importerAddressCityName, data)
+        @helpers.selectField(label = messages("peoplepage.common.country"), data, importerAddressCountryCode, ListOptions.countryOptions)
+        @helpers.inputField(messages("peoplepage.common.postcode"), importerAddressPostcode, data)
+        @helpers.inputField(messages("peoplepage.common.eoriNumber"),
+            importerEori,
+            data,
+            Some(messages("peoplepage.common.eoriNumberHint"))
+        )
+        @helpers.nextButton()
+    }
 
 }
