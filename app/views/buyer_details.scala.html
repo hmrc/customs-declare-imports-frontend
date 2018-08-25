@@ -1,67 +1,44 @@
 @*
- * Copyright 2018 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *@
-
-@import config.AppConfig
-
-@import views.html.helper.CSRF
-@import play.api.data.validation.ValidationError
+* Copyright 2018 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
 @import ViewUtils._
+@import config.AppConfig
+@import play.api.data.validation.ValidationError
 
-@(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@(data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Buyer's details", bodyClasses = None) {
-  <a class="link-back" href="@{routes.GenericController.displayForm("seller-details").url}" >@messages("common.back")</a>
 
-  @if(errors) {
-    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-      <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
-
-      <ul class="error-summary-list">
-        @for(element <- errors) {
-          <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
-        }
-      </ul>
-    </div>
-  }
-
-  <fieldset>
-    <legend>
-      <h1 class="heading-large">@messages("buyer.details")</h1>
-    </legend>
-
-    <form method="post" action="/customs-declare-imports/submit-declaration/buyer-details/additional-supply-chain-actors">
-        @{
-            play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
-        }
-        @helpers.inputField(messages("buyer.name"),buyerName,fieldsMap)
-        @helpers.inputField(messages("peoplepage.common.firstLineAddress"),buyerAddressLine,fieldsMap)
-        @helpers.inputField(messages("peoplepage.common.city"),buyerAddressCityName,fieldsMap)
-        @helpers.selectField(label=messages("peoplepage.common.country"),fieldsMap,buyerAddressCountryCode,ListOptions.countryOptions)
-        @helpers.inputField(messages("peoplepage.common.postcode"),buyerAddressPostcode,fieldsMap)
-        @helpers.inputField(messages("peoplepage.common.phoneNumber"),buyerCommunicationID,fieldsMap)
+    @helpers.form(
+        routes.GenericController.displayForm("seller-details"),
+        "buyer-details",
+        "additional-supply-chain-actors",
+        Some(messages("buyer.details"))
+    ) {
+        @helpers.inputField(messages("buyer.name"), buyerName, data)
+        @helpers.inputField(messages("peoplepage.common.firstLineAddress"), buyerAddressLine, data)
+        @helpers.inputField(messages("peoplepage.common.city"), buyerAddressCityName, data)
+        @helpers.selectField(label = messages("peoplepage.common.country"), data, buyerAddressCountryCode, ListOptions.countryOptions)
+        @helpers.inputField(messages("peoplepage.common.postcode"), buyerAddressPostcode, data)
+        @helpers.inputField(messages("peoplepage.common.phoneNumber"), buyerCommunicationID, data)
         @helpers.inputField(messages("peoplepage.common.eoriNumber"),
-          buyerEori,
-          fieldsMap,
-          Some(messages("peoplepage.common.eoriNumberHint"))
+            buyerEori,
+            data,
+            Some(messages("peoplepage.common.eoriNumberHint"))
         )
-
-      <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
-
-      <input type="hidden" id=="next-page" name="next-page" value="additional-supply-chain-actors"/>
-    </form>
-  </fieldset>
+        @helpers.nextButton()
+    }
 
 }
