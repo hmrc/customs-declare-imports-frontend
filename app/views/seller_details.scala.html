@@ -20,6 +20,7 @@
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
 
+@import config.Lookup
 @(data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Seller's details", bodyClasses = None) {
@@ -33,7 +34,7 @@
         @helpers.inputField(messages("seller.name"), sellerName, data)
         @helpers.inputField(messages("peoplepage.common.firstLineAddress"), sellerAddressLine, data)
         @helpers.inputField(messages("peoplepage.common.city"), sellerAddressCityName, data)
-        @helpers.selectField(label = messages("peoplepage.common.country"), data, sellerAddressCountryCode, ListOptions.countryOptions)
+        @helpers.selectField(label = messages("peoplepage.common.country"), data, sellerAddressCountryCode, appConfig.lookup.countryOptions)
         @helpers.inputField(messages("peoplepage.common.postcode"), sellerAddressPostcode, data)
         @helpers.inputField(messages("peoplepage.common.phoneNumber"), sellerCommunicationID, data)
         @helpers.inputField(messages("peoplepage.common.eoriNumber"),

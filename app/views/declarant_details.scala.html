@@ -19,6 +19,7 @@
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
 
+@import config.Lookup
 @(fieldsMap: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Declarant details", bodyClasses = None) {
@@ -26,7 +27,7 @@
         @helpers.inputField(messages("declarant.name"), declarantName, fieldsMap)
         @helpers.inputField(messages("peoplepage.common.firstLineAddress"), declarantAddressLine, fieldsMap)
         @helpers.inputField(messages("peoplepage.common.city"), declarantAddressCityName, fieldsMap)
-        @helpers.selectField(label = messages("peoplepage.common.country"), fieldsMap, declarantAddressCountryCode, ListOptions.countryOptions)
+        @helpers.selectField(label = messages("peoplepage.common.country"), fieldsMap, declarantAddressCountryCode, appConfig.lookup.countryOptions)
         @helpers.inputField(messages("peoplepage.common.postcode"), declarantAddressPostcode, fieldsMap)
         @helpers.inputField(messages("peoplepage.common.eoriNumber"),
             declarantEori, fieldsMap,

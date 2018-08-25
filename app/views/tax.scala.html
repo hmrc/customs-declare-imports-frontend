@@ -19,17 +19,18 @@
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
 
+@import config.Lookup
 @(fieldsMap: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Declarant details", bodyClasses = None) {
 
     @helpers.form(routes.StartController.displayStartPage, "tax", "additions-and-deductions", Some(messages("tax.heading"))) {
-        @helpers.selectField(label = messages("tax.taxTypeOptional"), fieldsMap, goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeeTypeCode, ListOptions.DutyTaxFeeTypes, Some(messages("tax.taxTypeOptionalHint")))
+        @helpers.selectField(label = messages("tax.taxTypeOptional"), fieldsMap, goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeeTypeCode, appConfig.lookup.dutyTaxFeeTypes, Some(messages("tax.taxTypeOptionalHint")))
         @helpers.inputField(messages("tax.quantity"), goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeeSpecificTaxBaseQuantity, fieldsMap, Some(messages("tax.quantityHint")))
-        @helpers.selectField(label = messages("tax.unitAndQualifier"), fieldsMap, goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeeTypeCode, ListOptions.MeasureUnitTypes, Some(messages("tax.unitAndQualifierHint")))
+        @helpers.selectField(label = messages("tax.unitAndQualifier"), fieldsMap, goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeeTypeCode, appConfig.lookup.measureUnitTypes, Some(messages("tax.unitAndQualifierHint")))
         @helpers.inputField(messages("tax.payableTaxAmount"), goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeePaymentPaymentAmount, fieldsMap, Some(messages("tax.payableTaxAmountHint")))
         @helpers.inputField(messages("tax.total"), goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeePaymentTaxAssessedAmount, fieldsMap, Some(messages("tax.totalHint")))
-        @helpers.selectField(label = messages("tax.methodOfPayment"), fieldsMap, goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeePaymenMethodCode, ListOptions.PaymentMethodTypes)
+        @helpers.selectField(label = messages("tax.methodOfPayment"), fieldsMap, goodsShipmentGovernmentAgencyGoodsItemCommodityDutyTaxFeePaymenMethodCode, appConfig.lookup.paymentMethodTypes)
 
         <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
     }

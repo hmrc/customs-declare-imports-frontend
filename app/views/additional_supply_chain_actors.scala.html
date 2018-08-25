@@ -20,6 +20,7 @@
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
 
+@import config.Lookup
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Additional Supply Chain Actors", bodyClasses = None) {
@@ -50,14 +51,14 @@
         @helpers.selectField(label=messages("additionalSupplyChainActors.roleCode"),
           fieldsMap,
           aeoMutualRecognitionPartyRoleCode,
-          ListOptions.PartySubRoleTypes,
+            appConfig.lookup.partySubRoleTypes,
           Some(messages("additionalSupplyChainActors.roleCodeHint"))
         )
         @helpers.inputField(messages("additionalSupplyChainActors.holderID"),authorisationHolderID,fieldsMap)
         @helpers.selectField(label=messages("additionalSupplyChainActors.holderAuthTypeCode"),
           fieldsMap,
           authorisationHolderCategoryCode,
-          ListOptions.PartyRoleAuthorizationTypes)
+            appConfig.lookup.partyRoleAuthorizationTypes)
 
       <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
 

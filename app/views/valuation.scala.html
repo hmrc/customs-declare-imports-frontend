@@ -20,16 +20,17 @@
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
 
+@import config.Lookup
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template(messages("valuation.heading"), bodyClasses = None) {
     @helpers.form(routes.GenericController.displayForm("procedure-codes"), "valuation", "tax", Some(messages("valuation.heading"))) {
         
-        @helpers.selectField(label = messages("valuation.indicators"), fieldsMap, valuationIndicators, ListOptions.ValuationIndicatorTypes)
+        @helpers.selectField(label = messages("valuation.indicators"), fieldsMap, valuationIndicators, appConfig.lookup.valuationIndicatorTypes)
 
         @helpers.inputField(messages("valuation.itemPrice"), valuationItemPrice, fieldsMap)
 
-        @helpers.selectField(label = messages("valuation.itemCurrency"), fieldsMap, valuationItemPriceCurrency, ListOptions.CurrencyTypes)
+        @helpers.selectField(label = messages("valuation.itemCurrency"), fieldsMap, valuationItemPriceCurrency, appConfig.lookup.currencyTypes)
 
         <!-- TODO - add fields here for exchange rate, valuation method and preference once clarified with team -->
 

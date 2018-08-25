@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package controllers
+package config
 
-object ListOptions {
+object Lookup extends Lookup
+
+class Lookup {
 
   val borderTransportMeansModeCodes: Seq[(String, String)] = Seq("C" -> "C", "F" -> "F", "Z" -> "Z", "Y" -> "Y")
 
-  val DocumentCategory: Seq[(String, String)] = Seq("no list data currently" -> "no list data currently")
+  val documentCategory: Seq[(String, String)] = Seq("no list data currently" -> "no list data currently")
 
-  val DocumentType: Seq[(String, String)] = Seq("235" -> "235",
+  val documentType: Seq[(String, String)] = Seq("235" -> "235",
     "270" -> "270",
     "271" -> "271",
     "325" -> "325",
@@ -62,7 +64,7 @@ object ListOptions {
     "T2M" -> "T2M",
     "ZZZ" -> "ZZZ")
 
-  val PartySubRoleTypes: Seq[(String, String)] = Seq("CS" -> "CS",
+  val partySubRoleTypes: Seq[(String, String)] = Seq("CS" -> "CS",
     "FR1" -> "FR1",
     "FR2" -> "FR2",
     "FR3" -> "FR3",
@@ -71,7 +73,7 @@ object ListOptions {
     "MF" -> "MF",
     "WH" -> "WH")
 
-  val PartyRoleAuthorizationTypes: Seq[(String, String)] = Seq("ACE" -> "ACE",
+  val partyRoleAuthorizationTypes: Seq[(String, String)] = Seq("ACE" -> "ACE",
     "ACP" -> "ACP",
     "ACR" -> "ACR",
     "ACT" -> "ACT",
@@ -370,7 +372,7 @@ object ListOptions {
     , "ZM" -> "Zambia"
     , "ZW" -> "Zimbabwe")
 
-  val GovernmentProcedureTypes: Seq[(String, String)] = Seq(
+  val governmentProcedureTypes: Seq[(String, String)] = Seq(
     "10" -> "10",
     "11" -> "11",
     "21" -> "21",
@@ -400,12 +402,12 @@ object ListOptions {
     "95" -> "95",
     "96" -> "96")
 
-  val ImportPreviousProcedures: Seq[(String, String)] = Seq(
+  val importPreviousProcedures: Seq[(String, String)] = Seq(
     "23" -> "23",
     "71" -> "71",
     "00" -> "00")
 
-  val SpecialProcedureTypes: Seq[(String, String)] = Seq(
+  val specialProcedureTypes: Seq[(String, String)] = Seq(
     "000" -> "000",
     "1IL" -> "1IL",
     "A04" -> "A04",
@@ -545,7 +547,7 @@ object ListOptions {
     "F65" -> "F65",
     "F75" -> "F75")
 
-  val CurrencyTypes: Seq[(String, String)] = Seq(
+  val currencyTypes: Seq[(String, String)] = Seq(
     "AED" -> "AED",
     "AFN" -> "AFN",
     "ALL" -> "ALL",
@@ -702,7 +704,7 @@ object ListOptions {
     "ZWL" -> "ZWL"
   )
 
-  val ValuationIndicatorTypes: Seq[(String, String)] = Seq(
+  val valuationIndicatorTypes: Seq[(String, String)] = Seq(
     "0000" -> "0000",
     "0001" -> "0001",
     "0010" -> "0010",
@@ -721,7 +723,7 @@ object ListOptions {
     "1111" -> "1111"
   )
 
-  val ValuationMethodTypes: Seq[(String, String)] = Seq(
+  val valuationMethodTypes: Seq[(String, String)] = Seq(
     "1" -> "1",
     "2" -> "2",
     "3" -> "3",
@@ -730,7 +732,7 @@ object ListOptions {
     "6" -> "6"
   )
 
-  val DutyTaxFeeTypes: Seq[(String, String)] = Seq(
+  val dutyTaxFeeTypes: Seq[(String, String)] = Seq(
     "611" -> "611",
     "A00" -> "A00",
     "A30" -> "A30",
@@ -743,7 +745,7 @@ object ListOptions {
     "E00" -> "E00",
     "T00" -> "T00")
 
-  val MeasureUnitTypes: Seq[(String, String)] = Seq(
+  val measureUnitTypes: Seq[(String, String)] = Seq(
     "ASV" -> "ASV",
     "CCT" -> "CCT",
     "CEN" -> "CEN",
@@ -791,6 +793,5 @@ object ListOptions {
     "TNE" -> "TNE",
     "WAT" -> "WAT")
 
-  val PaymentMethodTypes: Seq[(String, String)] = Seq("E" -> "E")
+  val paymentMethodTypes: Seq[(String, String)] = Seq("E" -> "E")
 }
-

@@ -20,6 +20,7 @@
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
 
+@import config.Lookup
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Additional Fiscal References", bodyClasses = None) {
@@ -51,7 +52,7 @@
         @helpers.selectField(label=messages("additionalFiscalReferences.roleCode"),
           fieldsMap,
           additionalFiscalReferencesRoleCode,
-          ListOptions.PartySubRoleTypes
+          appConfig.lookup.partySubRoleTypes
           )
         
 

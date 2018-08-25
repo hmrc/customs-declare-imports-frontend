@@ -20,6 +20,7 @@
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
 
+@import config.Lookup
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Previous Documents", bodyClasses = None) {
@@ -50,12 +51,12 @@
         @helpers.selectField(label=messages("previousDocuments.documentCategory"),
           fieldsMap,
           previousDocumentsDocumentCategory,
-          ListOptions.DocumentCategory
+            appConfig.lookup.documentCategory
         )
         @helpers.selectField(label=messages("previousDocuments.documentType"),
           fieldsMap,
           previousDocumentsDocumentTypeCode,
-          ListOptions.DocumentType
+            appConfig.lookup.documentType
         )
 
         @helpers.inputField(messages("previousDocuments.documentReference"),previousDocumentsPreviousDocumentReference,fieldsMap)

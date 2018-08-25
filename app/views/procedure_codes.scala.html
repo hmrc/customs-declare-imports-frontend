@@ -20,6 +20,7 @@
 @import play.api.data.validation.ValidationError
 @import ViewUtils._
 
+@import config.Lookup
 @(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
 
 @main_template("Procedure codes", bodyClasses = None) {
@@ -46,11 +47,11 @@
     @{
       play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
     }
-      @helpers.selectField(label=messages("procedureCodes.requestedProcedureCode"),fieldsMap, requestedProcedureCode,ListOptions.GovernmentProcedureTypes)
+      @helpers.selectField(label=messages("procedureCodes.requestedProcedureCode"),fieldsMap, requestedProcedureCode,appConfig.lookup.governmentProcedureTypes)
 
-      @helpers.selectField(label=messages("procedureCodes.previousProcedureCode"),fieldsMap, previousProcedureCode,ListOptions.ImportPreviousProcedures)
+      @helpers.selectField(label=messages("procedureCodes.previousProcedureCode"),fieldsMap, previousProcedureCode,appConfig.lookup.importPreviousProcedures)
 
-      @helpers.selectField(label=messages("procedureCodes.additionalProcedure"),fieldsMap, additionalProcedure,ListOptions.SpecialProcedureTypes)
+      @helpers.selectField(label=messages("procedureCodes.additionalProcedure"),fieldsMap, additionalProcedure,appConfig.lookup.specialProcedureTypes)
 
 
     <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
