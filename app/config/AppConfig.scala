@@ -58,7 +58,7 @@ class AppConfig @Inject()(val runModeConfiguration: Configuration, val environme
 
   def setFeatureStatus(feature: Feature, status: FeatureStatus): Unit = sys.props += (feature2Key(feature) -> status.toString)
 
-  def lookup: Lookup = Lookup
+  def options: Options = Options
 
   override protected def mode: Mode = environment.mode
 

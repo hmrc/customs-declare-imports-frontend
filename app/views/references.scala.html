@@ -14,29 +14,17 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
+@import config.{AppConfig, ValidationError}
+@import config.Fields._
 
-@import views.html.helper.CSRF
-@import play.api.data.validation.ValidationError
-@import ViewUtils._
+@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
-@(data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
-    @main_template("Reference numbers", bodyClasses = None) {
-        @helpers.form(routes.GenericController.displayForm("declarant-details"), "references", "exporter-details", Some(messages("referencepage.heading"))) {
-            @helpers.inputField(messages("referencepage.referenceNumber"), referenceNumberUCR1, data)
-            @helpers.inputField(messages("referencepage.lrn"), declarantFunctionalReferenceID, data, Some(messages("referencepage.lrnHint")))
-            @helpers.radioOptions("DeclarationType", messages("referencepage.declarationType"), Seq(
-                ("DeclarationType-CO", "CO", "2"),
-                ("DeclarationType-IM", "IM", "3")
-            ), declarationType, data)
-            @helpers.radioOptions("AdditionalDeclarationType", messages("referencepage.addtionalDeclarationType"), Seq(
-                ("AdditionalDeclarationType-A", "A", "A"),
-                ("AdditionalDeclarationType-B", "B", "B"),
-                ("AdditionalDeclarationType-D", "D", "D"),
-                ("AdditionalDeclarationType-E", "E", "E"),
-                ("AdditionalDeclarationType-J", "J", "J"),
-                ("AdditionalDeclarationType-K", "K", "K")
-            ), additionalDeclarationType, data)
-            @helpers.nextButton()
-        }
+@main_template(messages("pages.references.title")) {
+    @helpers.form("references", "pages.references.form.legend") {
+        @helpers.textInput(referenceNumberUcr1, data)
+        @helpers.textInput(declarantFunctionalReferenceId, data)
+        @helpers.radioInput(declarationType, data)
+        @helpers.radioInput(additionalDeclaratonType, data)
+        @helpers.nextButton()
     }
+}

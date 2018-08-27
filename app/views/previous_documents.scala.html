@@ -14,58 +14,19 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
+@import config.{AppConfig, ValidationError}
+@import config.Fields._
 
-@import views.html.helper.CSRF
-@import play.api.data.validation.ValidationError
-@import ViewUtils._
+@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
-@import config.Lookup
-@(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@main_template(messages("pages.previousDocuments.title")) {
 
-@main_template("Previous Documents", bodyClasses = None) {
-  <a class="link-back" href="@{routes.GenericController.displayForm("additional-fiscal-references").url}" >@messages("common.back")</a>
-
-  @if(errors) {
-    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-      <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
-
-      <ul class="error-summary-list">
-        @for(element <- errors) {
-          <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
-        }
-      </ul>
-    </div>
-  }
-
-  <fieldset>
-    <legend>
-      <h1 class="heading-large">@messages("previousDocuments.heading")</h1>
-    </legend>
-
-    <form method="post" action="/customs-declare-imports/submit-declaration/previous-documents/procedure-codes">
-        @{
-            play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
-        }
-
-        @helpers.selectField(label=messages("previousDocuments.documentCategory"),
-          fieldsMap,
-          previousDocumentsDocumentCategory,
-            appConfig.lookup.documentCategory
-        )
-        @helpers.selectField(label=messages("previousDocuments.documentType"),
-          fieldsMap,
-          previousDocumentsDocumentTypeCode,
-            appConfig.lookup.documentType
-        )
-
-        @helpers.inputField(messages("previousDocuments.documentReference"),previousDocumentsPreviousDocumentReference,fieldsMap)
-        @helpers.inputField(messages("previousDocuments.goodsItemIdentifier"),previousDocumentsDocumentGoodsItemIdentifier,fieldsMap)
-
-      <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
-
-      <input type="hidden" id=="next-page" name="next-page" value="procedure-codes"/>
-    </form>
-  </fieldset>
+    @helpers.form("previous-documents", "pages.previousDocuments.form.legend") {
+        @helpers.selectInput(previousDocumentCategoryCode, data)
+        @helpers.selectInput(previousDocumentTypeCode, data)
+        @helpers.textInput(previousDocumentId, data)
+        @helpers.textInput(previousDocumentLineNumeric, data)
+        @helpers.nextButton()
+    }
 
 }

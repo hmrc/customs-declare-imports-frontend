@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import config.{AppConfig, ValidationError}
-@import config.Fields._
+package config
 
-@(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
+import org.scalatest.{MustMatchers, WordSpec}
 
-@main_template(messages("pages.additionalFiscalReferences.title")) {
+class FieldsSpec extends WordSpec with MustMatchers {
 
-    @helpers.form("additional-fiscal-references", "pages.additionalFiscalReferences.form.legend") {
-        @helpers.textInput(domesticTaxPartyId, data)
-        @helpers.selectInput(domesticTaxPartyRoleCode, data)
-        @helpers.nextButton()
+  "definitions" should {
+
+    "include declarant name field" in {
+      Fields.definitions("declaration.declarant.name") must be(Fields.declarantName)
     }
+
+  }
 
 }

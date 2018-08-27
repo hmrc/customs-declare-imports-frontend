@@ -61,13 +61,13 @@ trait AuthenticationBehaviours {
   class UserRequestScenario(method: String = "GET", uri: String = s"/$contextPath/",
                             user: SignedInUser = signedInUser,
                             headers: Map[String, String] = Map.empty) {
-    val req: FakeRequest[AnyContentAsEmpty.type ] = userRequest(method, uri, user, headers)
+    val req: FakeRequest[AnyContentAsEmpty.type] = userRequest(method, uri, user, headers)
   }
 
   class UserRequestSubmitScenario(method: String = "POST", uri: String = s"/$contextPath/",
-                            user: SignedInUser = signedInUser,
-                            headers: Map[String, String] = Map.empty,
-                            payload: Map[String,String]) {
+                                  user: SignedInUser = signedInUser,
+                                  headers: Map[String, String] = Map.empty,
+                                  payload: Map[String, String]) {
 
     val req: FakeRequest[AnyContentAsFormUrlEncoded] =
       userRequest(method, uri, user, headers).withFormUrlEncodedBody(payload.toSeq: _*)
@@ -114,22 +114,22 @@ trait AuthenticationBehaviours {
                                     uri: String = s"/$contextPath/",
                                     user: SignedInUser = signedInUser,
                                     headers: Map[String, String] = Map.empty,
-                                    body: Map[String,String]= Map())(test: Future[Result] => Unit): Unit = {
+                                    body: Map[String, String] = Map.empty)(test: Future[Result] => Unit): Unit = {
 
-    when(sessionCacheServiceMock.put(ArgumentMatchers.any(),ArgumentMatchers.any(),
-      ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(Future.successful(true))
-    when(sessionCacheServiceMock.get(ArgumentMatchers.any(),ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(
+    when(sessionCacheServiceMock.put(ArgumentMatchers.any(), ArgumentMatchers.any(),
+      ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(CacheMap(randomString(80), Map.empty)))
+    when(sessionCacheServiceMock.get(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(
       Future.successful(
-        Some(Map("MetaData_declaration_declarant_name"-> Seq("name1")))
+        Some(Map("declaration.declarant.name" -> "name1"))
       ))
 
-    method match  {
+    method match {
       case "GET" =>
-        new UserRequestScenario(method, uri, user,headers) {
+        new UserRequestScenario(method, uri, user, headers) {
           test(route(app, req).get)
         }
       case _ =>
-        new UserRequestSubmitScenario(uri= uri, user=user,headers=headers, payload = body) {
+        new UserRequestSubmitScenario(uri = uri, user = user, headers = headers, payload = body) {
           test(route(app, req).get)
         }
     }
@@ -143,7 +143,7 @@ trait AuthenticationBehaviours {
   def accessDeniedRequestScenarioTest(method: String, uri: String): Unit = {
     val ex = intercept[NoActiveSession] {
       requestScenario(method, uri) { resp =>
-        status(resp) must be (Status.SEE_OTHER)
+        status(resp) must be(Status.SEE_OTHER)
         header(HeaderNames.LOCATION, resp) must be(Some(s"/gg/sign-in?continue=$uri&origin=customs-declare-imports-frontend"))
       }
     }
@@ -162,9 +162,9 @@ trait AuthenticationBehaviours {
       Token.NameRequestTag -> cfg.tokenName,
       Token.RequestTag -> token
     )
-      FakeRequest(method, uri).
-        withHeaders((Map(cfg.headerName -> token) ++ headers).toSeq: _*).
-        withSession(session.toSeq: _*).copyFakeRequest(tags = tags)
+    FakeRequest(method, uri).
+      withHeaders((Map(cfg.headerName -> token) ++ headers).toSeq: _*).
+      withSession(session.toSeq: _*).copyFakeRequest(tags = tags)
   }
 
 }

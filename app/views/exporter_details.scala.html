@@ -14,25 +14,20 @@
  * limitations under the License.
  *@
 
-@import ViewUtils._
-@import config.AppConfig
-@import play.api.data.validation.ValidationError
+@import config.{AppConfig, ValidationError}
+@import config.Fields._
 
-@import config.Lookup
-@(data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
-@main_template("Exporter's details", bodyClasses = None) {
+@main_template(messages("pages.exporter.details.title")) {
 
-    @helpers.form(routes.GenericController.displayForm("references"), "exporter-details", "representative-details", Some(messages("exporter.details"))) {
-        @helpers.inputField(messages("exporter.name"), exporterName, data)
-        @helpers.inputField(messages("peoplepage.common.firstLineAddress"), exporterAddressLine, data)
-        @helpers.inputField(messages("peoplepage.common.city"), exporterAddressCityName, data)
-        @helpers.selectField(label = messages("peoplepage.common.country"), data, exporterAddressCountryCode, appConfig.lookup.countryOptions)
-        @helpers.inputField(messages("peoplepage.common.postcode"), exporterAddressPostcode, data)
-        @helpers.inputField(messages("peoplepage.common.eoriNumber"),
-            exporterEori, data,
-            Some(messages("peoplepage.common.eoriNumberHint"))
-        )
+    @helpers.form("exporter-details", "pages.exporter.details.form.legend") {
+        @helpers.textInput(exporterName, data)
+        @helpers.textInput(exporterAddressLine, data)
+        @helpers.textInput(exporterAddressCityName, data)
+        @helpers.selectInput(exporterAddressCountryCode, data)
+        @helpers.textInput(exporterAddressPostcode, data)
+        @helpers.textInput(exporterEori, data)
         @helpers.nextButton()
     }
 

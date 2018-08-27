@@ -14,57 +14,19 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
+@import config.{AppConfig, ValidationError}
+@import config.Fields._
 
-@import views.html.helper.CSRF
-@import play.api.data.validation.ValidationError
-@import ViewUtils._
+@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
-@import config.Lookup
-@(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@main_template(messages("pages.additionalSupplyChainActors.title")) {
 
-@main_template("Additional Supply Chain Actors", bodyClasses = None) {
-  <a class="link-back" href="@{routes.GenericController.displayForm("buyer-details").url}" >@messages("common.back")</a>
-
-  @if(errors) {
-    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
-      <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
-
-      <ul class="error-summary-list">
-        @for(element <- errors) {
-          <li><a href="">@element._1 -> @messages(element._2.message)</a></li>
-        }
-      </ul>
-    </div>
-  }
-
-  <fieldset>
-    <legend>
-      <h1 class="heading-large">@messages("additionalSupplyChainActors.heading")</h1>
-    </legend>
-
-    <form method="post" action="/customs-declare-imports/submit-declaration/additional-supply-chain-actors/additional-fiscal-references">
-        @{
-            play.filters.csrf.CSRF.getToken(request).map {token => CSRF.formField(request)}
-        }
-        @helpers.inputField(messages("additionalSupplyChainActors.ID"),aeoMutualRecognitionPartiesID,fieldsMap)
-        @helpers.selectField(label=messages("additionalSupplyChainActors.roleCode"),
-          fieldsMap,
-          aeoMutualRecognitionPartyRoleCode,
-            appConfig.lookup.partySubRoleTypes,
-          Some(messages("additionalSupplyChainActors.roleCodeHint"))
-        )
-        @helpers.inputField(messages("additionalSupplyChainActors.holderID"),authorisationHolderID,fieldsMap)
-        @helpers.selectField(label=messages("additionalSupplyChainActors.holderAuthTypeCode"),
-          fieldsMap,
-          authorisationHolderCategoryCode,
-            appConfig.lookup.partyRoleAuthorizationTypes)
-
-      <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
-
-      <input type="hidden" id=="next-page" name="next-page" value="additional-fiscal-references"/>
-
-    </form>
-  </fieldset>
+    @helpers.form("additional-supply-chain-actors", "pages.additionalSupplyChainActors.form.legend") {
+        @helpers.textInput(mutualRecognitionPartyId, data)
+        @helpers.selectInput(mutualRecognitionPartyRoleCode, data)
+        @helpers.textInput(authorisationHolderId, data)
+        @helpers.selectInput(authorisationHolderCategoryCode, data)
+        @helpers.nextButton()
+    }
 
 }

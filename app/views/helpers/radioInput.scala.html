@@ -1,0 +1,33 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.RadioInput
+@import config.ValidationError
+
+@(input: RadioInput, data: Map[String, String])(implicit messages: Messages, errors: Map[String, Seq[ValidationError]])
+
+<div class="form-group">
+    <fieldset@if(input.inline){ class="inline"}>
+        @helpers.fieldLabel(input)
+        @for(zip <- input.options.zipWithIndex) {
+        <div class="multiple-choice">
+            <input id="@input.id(Some(zip._2))" type="radio" name="@input.name" value="@zip._1._1"@if(data.contains(input.name) && data(input.name) == zip._1._1){ checked}>
+            <label for="@input.id(Some(zip._2))">@zip._1._2</label>
+        </div>
+        }
+        @helpers.fieldErrors(input)
+    </fieldset>
+</div>

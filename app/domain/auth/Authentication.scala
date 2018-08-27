@@ -30,6 +30,9 @@ case class SignedInUser(credentials: Credentials,
 
   lazy val eori: Option[String] = enrolments.getEnrolment(SignedInUser.cdsEnrolmentName).flatMap(_.getIdentifier(SignedInUser.eoriIdentifierKey)).map(_.value)
 
+  // TODO throw custom exception here and handle in ErrorHandler by redirecting to "enrol" page?
+  lazy val requiredEori: String = eori.getOrElse(throw new IllegalStateException("EORI missing"))
+
 }
 
 object SignedInUser {

@@ -14,33 +14,20 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
+@import config.{AppConfig, ValidationError}
+@import config.Fields._
 
-@import views.html.helper.CSRF
-@import play.api.data.validation.ValidationError
-@import ViewUtils._
+@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
-@import config.Lookup
-@(data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@main_template(messages("pages.importer.details.title")) {
 
-@main_template("Importer's details", bodyClasses = None) {
-
-    @helpers.form(
-        routes.GenericController.displayForm("representative-details"),
-        "exporter-details",
-        "seller-details",
-        Some(messages("importer.details"))
-    ) {
-        @helpers.inputField(messages("importer.name"), importerName, data)
-        @helpers.inputField(messages("peoplepage.common.firstLineAddress"), importerAddressLine, data)
-        @helpers.inputField(messages("peoplepage.common.city"), importerAddressCityName, data)
-        @helpers.selectField(label = messages("peoplepage.common.country"), data, importerAddressCountryCode, appConfig.lookup.countryOptions)
-        @helpers.inputField(messages("peoplepage.common.postcode"), importerAddressPostcode, data)
-        @helpers.inputField(messages("peoplepage.common.eoriNumber"),
-            importerEori,
-            data,
-            Some(messages("peoplepage.common.eoriNumberHint"))
-        )
+    @helpers.form("importer-details", "pages.importer.details.form.legend") {
+        @helpers.textInput(importerName, data)
+        @helpers.textInput(importerAddressLine, data)
+        @helpers.textInput(importerAddressCityName, data)
+        @helpers.selectInput(importerAddressCountryCode, data)
+        @helpers.textInput(importerAddressPostcode, data)
+        @helpers.textInput(importerEori, data)
         @helpers.nextButton()
     }
 

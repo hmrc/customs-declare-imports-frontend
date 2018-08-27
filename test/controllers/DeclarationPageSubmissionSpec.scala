@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.SubmissionJourney
 import domain.features.{Feature, FeatureStatus}
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours}
@@ -25,19 +26,19 @@ class DeclarationPageSubmissionSpec extends CustomsPlaySpec with AuthenticationB
   val method = "GET"
   val handleMethod = "POST"
   val uri: String = uriWithContextPath("/submit-declaration/declarant-details")
-  val submitUri: String = uriWithContextPath("/submit-declaration/declarant-details/references")
+  val submitUri: String = uriWithContextPath("/submit-declaration/declarant-details")
 
   "Declarant Page" should {
 
     case class ExpectedField(fieldType: String = "input", fieldName: String)
 
     def declarantScenarios: Map[String, ExpectedField] = {
-      val declarantName = "MetaData_declaration_declarant_name"
-      val declarantAddressLine = "MetaData_declaration_declarant_address_line"
-      val declarantAddressCityName = "MetaData_declaration_declarant_address_cityName"
-      val declarantAddressCountryCode = "MetaData_declaration_declarant_address_countryCode"
-      val declarantAddressPostcode = "MetaData_declaration_declarant_address_postcodeId"
-      val declarantId = "MetaData_declaration_declarant_id"
+      val declarantName = "declaration.declarant.name"
+      val declarantAddressLine = "declaration.declarant.address.line"
+      val declarantAddressCityName = "declaration.declarant.address.cityName"
+      val declarantAddressCountryCode = "declaration.declarant.address.countryCode"
+      val declarantAddressPostcode = "declaration.declarant.address.postcodeId"
+      val declarantId = "declaration.declarant.id"
 
       val declarantPageScenarios: Map[String, ExpectedField] = Map.empty
       declarantPageScenarios + (s"include a text input for  $declarantName" -> ExpectedField(fieldName = declarantName),
@@ -61,7 +62,7 @@ class DeclarationPageSubmissionSpec extends CustomsPlaySpec with AuthenticationB
     "include back link with URL" in featureScenario(Feature.prototype, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri) { resp =>
-          includesHtmlLink(resp, "/customs-declare-imports/start")
+          includesHtmlLink(resp, SubmissionJourney.start.url)
         }
       }
     }

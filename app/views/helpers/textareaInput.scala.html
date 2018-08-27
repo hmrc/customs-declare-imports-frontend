@@ -14,17 +14,12 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
-@import controllers.routes
-@import domain.auth.AuthenticatedRequest
-@import uk.gov.hmrc.play.views.html.helpers
+@import config.{TextInput, ValidationError}
 
-@(success: Boolean)(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
+@(input: TextInput, data: Map[String, String])(implicit messages: Messages, errors: Map[String, Seq[ValidationError]])
 
-@main_template(title = "Import declaration submitted", bodyClasses = None) {
-    <p class="message">@if(success) {
-     Yay. It worked.
-    } else {
-     Boo. It didn't work.
-    }</p>
-}
+<div class="form-group@if(errors.get(input.name).isDefined) { form-group-error}">
+    @helpers.fieldLabel(input)
+    @helpers.fieldErrors(input)
+    <textarea class="form-control form-control-3-4" name="@input.name" id="@input.id()"@if(input.maxLength.isDefined){ maxlength="@input.maxLength.get"}>@data.get(input.name)</textarea>
+</div>

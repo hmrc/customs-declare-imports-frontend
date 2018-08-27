@@ -16,13 +16,26 @@
 
 package config
 
-object Lookup extends Lookup
+object Options extends Options
 
-class Lookup {
+class Options {
 
   val borderTransportMeansModeCodes: Seq[(String, String)] = Seq("C" -> "C", "F" -> "F", "Z" -> "Z", "Y" -> "Y")
 
   val documentCategory: Seq[(String, String)] = Seq("no list data currently" -> "no list data currently")
+
+  val declarationTypes: Seq[(String, String)] = Seq("2" -> "CO", "3" -> "IM")
+
+  val additionalDeclarationTypes: Seq[(String, String)] = Seq(
+    "A" -> "A",
+    "B" -> "B",
+    "D" -> "D",
+    "E" -> "E",
+    "J" -> "J",
+    "K" -> "K"
+  )
+
+  val agentFunctionCodes: Seq[(String, String)] = Seq("2" -> "2", "3" -> "3")
 
   val documentType: Seq[(String, String)] = Seq("235" -> "235",
     "270" -> "270",

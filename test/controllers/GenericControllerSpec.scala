@@ -25,7 +25,7 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
   val method = "GET"
   val handleMethod = "POST"
   val uri = uriWithContextPath("/submit-declaration/declarant-details")
-  val submitUri = uriWithContextPath("/submit-declaration/declarant-details/references")
+  val submitUri = uriWithContextPath("/submit-declaration/declarant-details")
 
   s"$method $uri" should {
 
@@ -62,9 +62,12 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
   }
 
   s"$handleMethod $uri" should {
-    val payload =
-      Map("MetaData_declaration_declarant_name" -> "name1",
-        "MetaData_declaration_declarant_address_line" -> "Address1", "MetaData_declaration_declarant_id" -> "12345678912341234")
+    val payload = Map(
+      "declaration.declarant.name" -> "name1",
+      "declaration.declarant.address.line" -> "Address1",
+      "declaration.declarant.id" -> "12345678912341234",
+      "next-page" -> "references"
+    )
     implicit val hc = HeaderCarrier()
 
     "return 303" in featureScenario(Feature.prototype, FeatureStatus.enabled) {
@@ -74,9 +77,12 @@ class GenericControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
         }
       }
     }
-    val errorsPayload =
-      Map("MetaData_declaration_declarant_name" -> "name1",
-        "MetaData_declaration_declarant_address_line" -> "Address1", "MetaData_declaration_declarant_id" -> "41234")
+    val errorsPayload = Map(
+      "declaration.declarant.name" -> "name1",
+      "declaration.declarant.address.line" -> "Address1",
+      "declaration.declarant.id" -> "41234",
+      "next-page" -> "references"
+    )
 
     "return to same page with errors" in featureScenario(Feature.prototype, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {

@@ -1,124 +1,132 @@
-## Global
-global.error.experiencing-difficulties                              = Sorry, we'’re experiencing technical difficulties
+## common
+common.service.name=Declare an import
+common.sign-in=Sign in
+common.sign-out=Sign out
+common.back=Back
+common.errorSummary.label=This page has errors
+common.err.postcode.required=Please enter a valid postcode
+common.home=Home
+common.phase=Alpha
+common.feedbackFirst=This is a new service - your
+common.feedbackSecond=feedback
+common.feedbackThird=will help us to improve it.
 
-## Common
-common.service.name                                                 = Declare an import
-common.button.next                                                  = Next
-common.button.continue                                              = Continue
-common.button.submit                                                = Submit
-common.button.save                                                  = Save
-common.button.save-and-continue                                     = Save and continue
-common.sign-in                                                      = Sign in
-common.sign-out                                                     = Sign out
-common.back                                                         = Back
-common.start-now.                                                   = Start now
-common.errorSummary.label                                           = This page has errors
-common.err.postcode.required                                        = Please enter a valid postcode
-common.home                                                         = Home
-common.phase                                                        = Alpha
-common.feedbackFirst                                                = This is a new service - your
-common.feedbackSecond                                               = feedback
-common.feedbackThird                                                = will help us to improve it.
-common.day                                                          = Day
-common.month                                                        = Month
-common.year                                                         = Year
-common.dateMessage                                                  = Enter the date in format dd mm yyyy
-common.dateExample                                                  = For example,
-common.button.ConfirmAndContinue                                    = Confirm and continue
+## common buttons with shared labels
+common.button.next=Next
+common.button.continue=Continue
+common.button.submit=Submit
+common.button.save-and-continue=Save and continue
 
-## Validations
-input.required                                                      =This is a mandatory field.
-input.cannotBeZero                                                  =This field cannot be zero
+## common fields with shared labels
+common.fields.eori=EORI number
 
-## Declarant Details fields
-DeclarantName                                                       =DeclarantName
+common.fields.address.line=First line of address
+common.fields.address.cityName=City
+common.fields.address.countryCode=Country
+common.fields.address.postcodeId=Postcode
 
-## People pages
-declarant.details                                                   =Declarant'’s details
-declarant.name                                                      =Declarant'’s name
-representative.details                                              =Representative'’s details
-representative.name                                                 =Representative'’s name
-importer.details                                                    =Importer'’s details
-importer.name                                                       =Importer'’s name
-exporter.details                                                    =Exporter'’s details
-exporter.name                                                       =Exporter'’s name
-buyer.details                                                       =Buyer'’s details
-buyer.name                                                          =Buyer'’s name
-seller.details                                                      =Seller'’s details
-seller.name                                                         =Seller'’s name
+common.fields.communications.id=Phone number (optional)
 
-peoplepage.common.firstLineAddress                                  =First line of address
-peoplepage.common.city                                              =City
-peoplepage.common.country                                           =Country
-peoplepage.common.postcode                                          =Postcode
-peoplepage.common.phoneNumber                                       =Phone number (optional)
-peoplepage.common.eoriNumber                                        =EORI number
-peoplepage.common.eoriNumberHint                             =Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).
+## common field hints
+common.hints.eori=Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).
 
-## Representative page
-representativepage.statusCode                                       =Status code
-representativepage.statusCodeHint                                   =This code declares the way in which the declarant is representing the Importer.
+## specific pages
+# (I noted most use title case for title but not for form heading so have made it consistently that way, for right or wrong - please correct if it is the latter)
+pages.declarant.details.title=Declarant'’s Details
+pages.declarant.details.form.legend=Declarant'’s details
 
-## Reference page
-referencepage.heading                                               =Reference
-referencepage.referenceNumber                                       =Reference Number / UCR (optional)
-referencepage.lrn                                                   =LRN
-referencepage.lrnHint                                               =The reference is unique to the trader and usually provided by the software.
-referencepage.declarationType                                       =Declaration type
-referencepage.addtionalDeclarationType                              =Additional declaration type
+pages.references.title=Reference Numbers
+pages.references.form.legend=References
 
-## Additional supply chain actors page
-additionalSupplyChainActors.heading                                 =Additional supply chain actors
-additionalSupplyChainActors.ID                                      =Additional supply chain actor(s) identification No. - Identifier
-additionalSupplyChainActors.roleCode                                =Additional supply chain actor(s) identification No. - Role Code
-additionalSupplyChainActors.roleCodeHint                            =Specifies the third party's role in the supply chain. Only used in conjunction with the Additional Supply Chain actor identification No. id.
-additionalSupplyChainActors.holderID                                =Holder of the authorisation identification no. - Identifier
-additionalSupplyChainActors.holderAuthTypeCode                      =Holder of the authorisation identification no. - Authorisation type code
+pages.exporter.details.title=Exporter'’s Details
+pages.exporter.details.form.legend=Exporter'’s details
 
-## Previous documents page
-previousDocuments.heading                                           =Previous documents
-previousDocuments.documentCategory                                  =Document Category
-previousDocuments.documentType                                      =Document type
-previousDocuments.documentReference                                 =Document reference
-previousDocuments.goodsItemIdentifier                               =Goods Item Identifier (optional)
+pages.representative.details.title=Representative'’s Details
+pages.representative.details.form.legend=Representative'’s details
 
-## Procedure codes page
-procedureCodes.heading			                                        =Procedure codes
-procedureCodes.requestedProcedureCode								                =Requested procedure code
-procedureCodes.previousProcedureCode							                	=Previous procedure code
-procedureCodes.additionalProcedure									                =Additional procedure
+pages.importer.details.title=Importer'’s Details
+pages.importer.details.form.legend=Importer'’s details
 
-## Additional fiscal references page
-additionalFiscalReferences.heading			                            =Additional fiscal references
-additionalFiscalReferences.ID                                       =Identifier
-additionalFiscalReferences.roleCode                                 =Role Code
+pages.seller.details.title=Seller'’s Details
+pages.seller.details.form.legend=Seller'’s details
 
-## Identification of goods page
-identificationOfGoods.heading                                       =Identification of goods
-identificationOfGoods.descriptionOfGoodsPart1                       =Description of Goods (part 1 optional if CUS code provided)
-identificationOfGoods.descriptionOfGoodsPart1Hint                   =The normal trade description. Except for non-Union goods placed under the customs warehousing procedure in a public customs warehouse type I, II or III or a private customs warehouse, this description must be expressed in terms sufficiently precise to enable immediate and unambiguous identification and classification of the goods.
-identificationOfGoods.shippingMarks                                 =Shipping Marks
-identificationOfGoods.shippingMarksHint                             =For unpackaged goods, enter ‘Unpackaged’.
+pages.buyer.details.title=Buyer'’s Details
+pages.buyer.details.form.legend=Buyer'’s details
 
-## Valuation page
-valuation.heading			                                              =Valuation
-valuation.indicators												                        =Valuation indicators
-valuation.itemPrice									                       			  	=Item price/amount
-valuation.itemCurrency							                       					=Currency
-valuation.exchangeRate							                       					=Exchange rate
-valuation.method										                       			    =Valuation method
-valuation.preference								                       		  		=Preference
+pages.additionalSupplyChainActors.title=Additional Supply Chain Actors
+pages.additionalSupplyChainActors.form.legend=Additional supply chain actors
 
-## Tax pages
-tax.heading                                                         =Tax
-tax.taxTypeOptional                                                 =Tax type (optional)
-tax.taxTypeOptionalHint                                             =This information is not to be provided when customs administrations calculate duties on behalf of economic operators on the basis of information elsewhere in the declaration. It is otherwise optional for the Member States.
-tax.quantity                                                        =Quantity
-tax.quantityHint                                                    =The composite quantity or amount on which the tax or duty is based. Specifies a ‘third quantity’ for the item if this is required by the Tariff, otherwise it should be omitted.
-tax.unitAndQualifier                                                =Unit and qualifier
-tax.unitAndQualifierHint                                            =This information is not to be provided when customs administrations calculate duties on behalf of economic operators on the basis of information elsewhere in the declaration. It is otherwise optional for the Member States.
-tax.payableTaxAmount                                                =Payable tax amount
-tax.payableTaxAmountHint                                            =Only needed when specified as such in the Tariff Completion notes - usually when manual calculation is performed.
-tax.total                                                           =Total
-tax.totalHint                                                       =Should not be included in the Declaration unless the Tariff Completion notes specify otherwise (usually due to manual calculation).
-tax.methodOfPayment                                                 =Method of payment
+pages.additionalFiscalReferences.title=Additional Fiscal References
+pages.additionalFiscalReferences.form.legend=Additional fiscal references
+
+pages.previousDocuments.title=Previous Documents
+pages.previousDocuments.form.legend=Previous documents
+
+pages.procedureCodes.title=Procedure Codes
+pages.procedureCodes.form.legend=Procedure codes
+
+pages.valuation.title=Valuation
+pages.valuation.form.legend=Valuation
+
+pages.tax.title=Tax
+pages.tax.form.legend=Tax
+
+pages.identificationOfGoods.title=Identification of Goods
+pages.identificationOfGoods.form.legend=Identification of goods
+
+## specific fields
+declaration.declarant.name=Declarant'’s name
+declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
+declaration.functionalReferenceID=LRN
+declaration.functionalReferenceID.hint=The reference is unique to the trader and usually provided by the software.
+declaration.typeCode=Declaration type
+declaration.typeCode.additional=Additional declaration type
+declaration.exporter.name=Exporter'’s name
+declaration.agent.name=Representative'’s name
+declaration.agent.functionCode=Status code
+declaration.agent.functionCode.hint=This code declares the way in which the declarant is representing the Importer.
+declaration.importer.name=Importer'’s name
+declaration.goodsShipment.seller.name=Seller'’s name
+declaration.goodsShipment.buyer.name=Buyer'’s name
+declaration.goodsShipment.aeoMutualRecognitionParties.id=Additional supply chain actor(s) identification No. - Identifier
+declaration.goodsShipment.aeoMutualRecognitionParties.roleCode=Additional supply chain actor(s) identification No. - Role Code
+declaration.goodsShipment.aeoMutualRecognitionParties.roleCode.hint=Specifies the third party's role in the supply chain. Only used in conjunction with the Additional Supply Chain actor identification No. id.
+declaration.authorisationHolders.id=Holder of the authorisation identification no. - Identifier
+declaration.authorisationHolders.categoryCode=Holder of the authorisation identification no. - Authorisation type code
+declaration.goodsShipment.governmentAgencyGoodsItems.domesticDutyTaxParties.id=Identifier
+declaration.goodsShipment.governmentAgencyGoodsItems.domesticDutyTaxParties.roleCode=Role code
+declaration.goodsShipment.previousDocuments.categoryCode=Document category
+declaration.goodsShipment.previousDocuments.typeCode=Document type
+declaration.goodsShipment.previousDocuments.id=Document reference
+declaration.goodsShipment.previousDocuments.lineNumeric=Goods Item Identifier (optional)
+declaration.goodsShipment.governmentAgencyGoodsItems.governmentProcedures.currentCode=Requested procedure code
+declaration.goodsShipment.governmentAgencyGoodsItems.governmentProcedures.previousCode=Previous procedure code
+declaration.goodsShipment.governmentAgencyGoodsItems.governmentProcedures.additionalProcedure=Additional procedure
+declaration.goodsShipment.governmentAgencyGoodsItems.valuationAdjustment.additionCode=Valuation indicators
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.invoiceLine.itemChargeAmount.value=Item price/amount
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.invoiceLine.itemChargeAmount.currencyId=Currency
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.typeCode=Tax type (optional)
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.typeCode.hint=This information is not to be provided when customs administrations calculate duties on behalf of economic operators on the basis of information elsewhere in the declaration. It is otherwise optional for the Member States.
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.specificTaxBaseQuantity.value=Quantity
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.specificTaxBaseQuantity.value.hint=The composite quantity or amount on which the tax or duty is based. Specifies a ‘third quantity’ for the item if this is required by the Tariff, otherwise it should be omitted.
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.specificTaxBaseQuantity.unitCode=Unit and qualifier
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.specificTaxBaseQuantity.unitCode.hint=This information is not to be provided when customs administrations calculate duties on behalf of economic operators on the basis of information elsewhere in the declaration. It is otherwise optional for the Member States.
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.paymentAmount.value=Payable tax amount
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.paymentAmount.value.hint=Only needed when specified as such in the Tariff Completion notes - usually when manual calculation is performed.
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.taxAssessedAmount.value=Total
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.taxAssessedAmount.value.hint=Should not be included in the Declaration unless the Tariff Completion notes specify otherwise (usually due to manual calculation).
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.methodCode=Method of payment
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.description=Description of goods (part 1 optional if CUS code provided)
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.description.hint=The normal trade description. Except for non-Union goods placed under the customs warehousing procedure in a public customs warehouse type I, II or III or a private customs warehouse, this description must be expressed in terms sufficiently precise to enable immediate and unambiguous identification and classification of the goods.
+declaration.goodsShipment.governmentAgencyGoodsItems.packagings.marksNumbersId=Shipping marks
+declaration.goodsShipment.governmentAgencyGoodsItems.packagings.marksNumbersId.hint=For unpackaged goods, enter ‘Unpackaged’.
+
+## validations
+alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters
+alphanumeric.optional=When specified, this field cannot be less than {0} or more than {1} characters
+numeric.required=This is a mandatory field. It must be a number with a maximum precision of {0} and scale of {1} that is greater than or equal to {2} and less than or equal to {3}
+numeric.optional=When specified, this field must be a number with a maximum precision of {0} and scale of {1} that is greater than or equal to {2} and less than or equal to {3}
+alpha.required=This is a mandatory field. It must consist of exactly {0} A-Z characters
+alpha.optional=When specified, this field must consist of exactly {0} A-Z characters
+contains.required=This is a mandatory field. Please select from one of the available options
+contains.optional=When specified, the value of this field must be one of the available options

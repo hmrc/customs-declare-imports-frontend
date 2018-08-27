@@ -14,42 +14,21 @@
  * limitations under the License.
  *@
 
-@import ViewUtils._
-@import config.AppConfig
-@import play.api.data.validation.ValidationError
+@import config.{AppConfig, ValidationError}
+@import config.Fields._
 
-@import config.Lookup
-@(data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
-@main_template("Representative's details", bodyClasses = None) {
+@main_template("Representative's details") {
 
-    @helpers.form(routes.GenericController.displayForm("exporter-details"),
-        "representative-details",
-        "importer-details",
-        Some(messages("representative.details"))
-    ) {
-        @helpers.inputField(messages("representative.name"), agentName, data)
-        @helpers.inputField(messages("peoplepage.common.firstLineAddress"), agentAddressLine, data)
-        @helpers.inputField(messages("peoplepage.common.city"), agentAddressCityName, data)
-        @helpers.selectField(label = messages("peoplepage.common.country"), data, agentAddressCountryCode, appConfig.lookup.countryOptions)
-        @helpers.inputField(messages("peoplepage.common.postcode"), agentAddressPostcode, data)
-        @helpers.inputField(messages("peoplepage.common.eoriNumber"),
-            agentEori,
-            data,
-            Some(messages("peoplepage.common.eoriNumberHint"))
-        )
-        @helpers.radioOptions(
-            "AgentFunctionCode",
-            messages("representativepage.statusCode"),
-            Seq(
-                ("AgentFunctionCode-1", "2", "2"),
-                ("AgentFunctionCode-2", "3", "3")
-            ),
-            agentFunctionCode,
-            data,
-            Some(messages("representativepage.statusCodeHint")),
-            true
-        )
+    @helpers.form("representative-details", "pages.representative.details.form.legend") {
+        @helpers.textInput(representativeName, data)
+        @helpers.textInput(representativeAddressLine, data)
+        @helpers.textInput(representativeAddressCityName, data)
+        @helpers.selectInput(representativeAddressCountryCode, data)
+        @helpers.textInput(representativeAddressPostcode, data)
+        @helpers.textInput(representativeEori, data)
+        @helpers.radioInput(representativeFunctionCode, data)
         @helpers.nextButton()
     }
 }

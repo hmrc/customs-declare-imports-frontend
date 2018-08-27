@@ -16,43 +16,32 @@
 
 package services
 
-import com.google.inject.{Singleton, Inject}
+import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import play.api.Logger
-import uk.gov.hmrc.http.{HttpDelete, HttpPut, HttpGet, HeaderCarrier}
-import uk.gov.hmrc.http.cache.client.HttpCaching
+import uk.gov.hmrc.http.cache.client.{CacheMap, HttpCaching}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpDelete, HttpGet, HttpPut}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SessionCacheService @Inject()(appConfig: AppConfig, httpClient: HttpClient)extends HttpCaching  {
+class SessionCacheService @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends HttpCaching {
 
-    override def defaultSource: String = appConfig.keyStoreSource
+  override def defaultSource: String = appConfig.keyStoreSource
 
-    override def baseUri: String = appConfig.keyStoreUrl
+  override def baseUri: String = appConfig.keyStoreUrl
 
-    override def domain: String = appConfig.sessionCacheDomain
+  override def domain: String = appConfig.sessionCacheDomain
 
   override def http: HttpGet with HttpPut with HttpDelete = httpClient
 
+  // TODO rename cacheId as "cacheName" and "id" as "eori" then store cache name under eori
+  def get(cacheId: String, id: String)
+         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, String]]] =
+    fetchAndGetEntry[Map[String, String]](defaultSource, cacheId, id)
 
-  def get(cacheId:String, id: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, Seq[String]]]] = {
-    fetchAndGetEntry[Map[String, Seq[String]]](defaultSource, cacheId, id).recover {
-      case ex: Throwable => Logger.error(s"cannot fetch  data from Session Cache => " +
-        s"cacheId ($cacheId) , id : ${id} ,  \n Exception is ${ex.getMessage}" )
-        None
-    }
-  }
-
-   def put(cacheId:String, id: String, data: Map[String, Seq[String]])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    cache(defaultSource, cacheId, id, data).map { res =>
-      true
-    }.recover {
-      case ex: Throwable => Logger.error(s"cannot save  data to Session Cache => " +
-        s"cacheId ($cacheId) , id : ${id} ,  \n Exception is ${ex.getMessage}" )
-        throw new RuntimeException(s"Error in caching ${ex.getMessage}")
-    }
-  }
+  def put(cacheId: String, id: String, data: Map[String, String])
+         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = cache(defaultSource, cacheId, id, data)
 
 }

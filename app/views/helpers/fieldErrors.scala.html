@@ -14,17 +14,14 @@
  * limitations under the License.
  *@
 
-@import config.{AppConfig, ValidationError}
-@import config.Fields._
+@import config.{FieldDefinition, ValidationError}
 
-@(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
+@(input: FieldDefinition)(implicit messages: Messages, errors: Map[String, Seq[ValidationError]])
 
-@main_template(messages("pages.additionalFiscalReferences.title")) {
-
-    @helpers.form("additional-fiscal-references", "pages.additionalFiscalReferences.form.legend") {
-        @helpers.textInput(domesticTaxPartyId, data)
-        @helpers.selectInput(domesticTaxPartyRoleCode, data)
-        @helpers.nextButton()
-    }
-
+@for(errs <- errors.get(input.name)) {
+    <ul class="error-messages">
+        @for(err <- errs) {
+            <li class="error-message">@err.message</li>
+        }
+    </ul>
 }

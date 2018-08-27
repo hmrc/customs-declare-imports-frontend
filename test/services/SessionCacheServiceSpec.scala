@@ -16,7 +16,7 @@
 
 package services
 
-import play.api.libs.json.{JsString, JsObject, Reads}
+import play.api.libs.json.{JsObject, JsString, Reads, Writes}
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -25,22 +25,21 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SessionCacheServiceSpec extends CustomsPlaySpec with XmlBehaviours  {
+class SessionCacheServiceSpec extends CustomsPlaySpec with XmlBehaviours {
 
-  val expected = Map("DeclarantName" -> List("Declarant1"),
-    "DeclarantAddressLine" -> List("AddressLine1"))
+  val expected = Map("DeclarantName" -> "Declarant1", "DeclarantAddressLine" -> "AddressLine1")
   val mockresult = Some(expected)
 
   val data = CacheMap("id1", Map("form1" -> new JsObject(Map("field1" -> JsString("value1")))))
 
   "SessionCacheService" should {
 
-    "get data from SessionCache" in cacheFetchScenario("submit-declaration","submit-declaration") { resp =>
+    "get data from SessionCache" in cacheFetchScenario("submit-declaration", "submit-declaration") { resp =>
       resp.futureValue.get must be(expected)
     }
 
-      "save data to SessionCache" in cacheDataScenario("submit-declaration","submit-declaration") { resp =>
-        resp.futureValue must be(true)
+    "save data to SessionCache" in cacheDataScenario("submit-declaration", "submit-declaration") { resp =>
+      resp.futureValue must be(data)
     }
 
   }
@@ -51,32 +50,30 @@ class SessionCacheServiceSpec extends CustomsPlaySpec with XmlBehaviours  {
       if (cacheId == "submit-declaration") Future.successful(mockresult.asInstanceOf[Option[T]])
       else Future.successful(None.asInstanceOf[Option[T]])
 
-    override def cache[A](source : scala.Predef.String, cacheId : scala.Predef.String, formId : scala.Predef.
-    String, body : A)(implicit wts : play.api.libs.json.Writes[A], hc : uk.gov.hmrc.http.HeaderCarrier, executionContext : scala.concurrent.ExecutionContext) : scala.concurrent.Future[uk.gov.hmrc.http.cache.client.CacheMap]
-    = if (cacheId == "submit-declaration") Future.successful(data)
-    else Future.failed(throw new RuntimeException("Error processing"))
+    override def cache[A](source: String, cacheId: String, formId: String, body: A)
+                         (implicit wts: Writes[A], hc: HeaderCarrier, executionContext: ExecutionContext): Future[CacheMap] =
+      if (cacheId == "submit-declaration") Future.successful(data)
+      else Future.failed(throw new RuntimeException("Error processing"))
   }
 
-  def cacheFetchScenario(cacheId:String, id: String,
-                                forceServerError: Boolean = false,
-                                hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
-                               (test: Future[Option[Map[String, Seq[String]]]] => Unit): Unit = {
-    val expectedCacheId: String = "submit-declaration"
-
-    test(service.get(cacheId,id)(hc, ec))
-  }
-
-  def cacheDataScenario(cacheId:String, id: String,
+  def cacheFetchScenario(cacheId: String, id: String,
                          forceServerError: Boolean = false,
                          hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
-                        (test: Future[Boolean] => Unit): Unit = {
+                        (test: Future[Option[Map[String, String]]] => Unit): Unit = {
     val expectedCacheId: String = "submit-declaration"
 
-    val testDataToCache = Map("DeclarantName" -> List("Declarant1"),"DeclarantAddressLine" -> List("AddressLine1"))
-    test(service.put(cacheId,id,testDataToCache)(hc, ec))
+    test(service.get(cacheId, id)(hc, ec))
   }
 
+  def cacheDataScenario(cacheId: String, id: String,
+                        forceServerError: Boolean = false,
+                        hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
+                       (test: Future[CacheMap] => Unit): Unit = {
+    val expectedCacheId: String = "submit-declaration"
 
+    val testDataToCache = Map("DeclarantName" -> "Declarant1", "DeclarantAddressLine" -> "AddressLine1")
+    test(service.put(cacheId, id, testDataToCache)(hc, ec))
+  }
 
 
 }

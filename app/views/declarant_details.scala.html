@@ -14,25 +14,19 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
-@import views.html.helper.CSRF
-@import play.api.data.validation.ValidationError
-@import ViewUtils._
+@import config.{AppConfig, ValidationError}
+@import config.Fields._
 
-@import config.Lookup
-@(fieldsMap: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
+@(data: Map[String, String])(implicit request: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
-@main_template("Declarant details", bodyClasses = None) {
-    @helpers.form(routes.StartController.displayStartPage, "declarant-details", "references", Some(messages("declarant.details"))) {
-        @helpers.inputField(messages("declarant.name"), declarantName, fieldsMap)
-        @helpers.inputField(messages("peoplepage.common.firstLineAddress"), declarantAddressLine, fieldsMap)
-        @helpers.inputField(messages("peoplepage.common.city"), declarantAddressCityName, fieldsMap)
-        @helpers.selectField(label = messages("peoplepage.common.country"), fieldsMap, declarantAddressCountryCode, appConfig.lookup.countryOptions)
-        @helpers.inputField(messages("peoplepage.common.postcode"), declarantAddressPostcode, fieldsMap)
-        @helpers.inputField(messages("peoplepage.common.eoriNumber"),
-            declarantEori, fieldsMap,
-            Some(messages("peoplepage.common.eoriNumberHint"))
-        )
+@main_template(messages("pages.declarant.details.title")) {
+    @helpers.form("declarant-details", "pages.declarant.details.form.legend") {
+        @helpers.textInput(declarantName, data)
+        @helpers.textInput(declarantAddressLine, data)
+        @helpers.textInput(declarantAddressCityName, data)
+        @helpers.selectInput(declarantAddressCountryCode, data)
+        @helpers.textInput(declarantAddressPostcode, data)
+        @helpers.textInput(declarantEori, data)
         @helpers.nextButton()
     }
 }

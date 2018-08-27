@@ -14,25 +14,24 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
+@import config.{AppConfig, ValidationError}
 
-@import play.api.data.validation.ValidationError
-@(templateName: String, data: Map[String, Seq[String]])(implicit request: Request[_], messages: Messages, appConfig: AppConfig,errors:Map[String,ValidationError] = Map.empty)
+@(current: String, data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]] = Map.empty)
 
-@templateName match {
-    case "declarant-details" => {@declarant_details(data) }
+@current match {
+    case "declarant-details" => { @declarant_details(data) }
     case "references" => { @references(data) }
-    case "exporter-details" => { @exporter_details(data)}
-    case "representative-details" => { @representative_details(data)}
-    case "importer-details" => { @importer_details(data)}
-    case "seller-details" => { @seller_details(data)}
-    case "buyer-details" => { @buyer_details(data)}
-    case "additional-supply-chain-actors" => { @additional_supply_chain_actors(data)}
-    case "additional-fiscal-references" => { @additional_fiscal_references(data)}
-    case "previous-documents" => { @previous_documents(data)}
-    case "procedure-codes" => { @procedure_codes(data)}
-    case "identification-of-goods" => { @identification_of_goods(data)}
-    case "valuation" => { @valuation(data)}
-    case "tax" => { @tax(data)}
+    case "exporter-details" => { @exporter_details(data) }
+    case "representative-details" => { @representative_details(data) }
+    case "importer-details" => { @importer_details(data) }
+    case "seller-details" => { @seller_details(data) }
+    case "buyer-details" => { @buyer_details(data) }
+    case "additional-supply-chain-actors" => { @additional_supply_chain_actors(data) }
+    case "additional-fiscal-references" => { @additional_fiscal_references(data) }
+    case "previous-documents" => { @previous_documents(data) }
+    case "procedure-codes" => { @procedure_codes(data) }
+    case "identification-of-goods" => { @identification_of_goods(data) }
+    case "valuation" => { @valuation(data) }
+    case "tax" => { @tax(data) }
 
 }

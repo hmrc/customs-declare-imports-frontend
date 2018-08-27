@@ -19,56 +19,16 @@ package controllers
 import domain.features.{Feature, FeatureStatus}
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours, WiremockBehaviours}
 
-class DeclarationControllerSpec
-  extends CustomsPlaySpec
-    with AuthenticationBehaviours
-    with FeatureSwitchBehaviours
-    with WiremockBehaviours {
+class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours with WiremockBehaviours {
 
   val get = "GET"
-  val post = "POST"
-  val submitUri = uriWithContextPath("/declaration")
-  val cancelUri = uriWithContextPath("/cancel-declaration")
+  val uri = uriWithContextPath("/cancel-declaration")
 
-  s"$get $submitUri" should {
-
-    "return 200" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(get, submitUri, signedInUser) {
-          wasOk
-        }
-      }
-    }
-
-    "return HTML" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(get, submitUri, signedInUser) {
-          wasHtml
-        }
-      }
-    }
-
-    "require authentication" in featureScenario(Feature.declaration, FeatureStatus.enabled) {
-      notSignedInScenario() {
-        accessDeniedRequestScenarioTest(get, submitUri)
-      }
-    }
-
-    "be behind a feature switch" in featureScenario(Feature.declaration, FeatureStatus.disabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(get, submitUri, signedInUser) {
-          wasNotFound
-        }
-      }
-    }
-
-  }
-
-  s"$get $cancelUri" should {
+  s"$get $uri" should {
 
     "return 200" in featureScenario(Feature.cancel, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(get, cancelUri, signedInUser) {
+        userRequestScenario(get, uri, signedInUser) {
           wasOk
         }
       }
@@ -76,7 +36,7 @@ class DeclarationControllerSpec
 
     "return HTML" in featureScenario(Feature.cancel, FeatureStatus.enabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(get, cancelUri, signedInUser) {
+        userRequestScenario(get, uri, signedInUser) {
           wasHtml
         }
       }
@@ -84,13 +44,13 @@ class DeclarationControllerSpec
 
     "require authentication" in featureScenario(Feature.cancel, FeatureStatus.enabled) {
       notSignedInScenario() {
-        accessDeniedRequestScenarioTest(get, cancelUri)
+        accessDeniedRequestScenarioTest(get, uri)
       }
     }
 
     "be behind a feature switch" in featureScenario(Feature.cancel, FeatureStatus.disabled) {
       signedInScenario(signedInUser) {
-        userRequestScenario(get, cancelUri, signedInUser) {
+        userRequestScenario(get, uri, signedInUser) {
           wasNotFound
         }
       }

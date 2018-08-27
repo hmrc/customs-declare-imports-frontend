@@ -18,7 +18,10 @@ package controllers
 
 import config.AppConfig
 import domain.features.Feature
+import domain.wco.{AdditionalInformation, Amendment, Declaration, MetaData}
 import javax.inject.{Inject, Singleton}
+import play.api.data.Form
+import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsDeclarationsConnector
@@ -29,29 +32,36 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport {
 
-  def showSubmitForm: Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
-    Future.successful(Ok(views.html.submit_form(Forms.submit)))
-  }
+  val cancel: Form[CancelForm] = Form(
+    mapping(
+      "metaData" -> mapping(
+        "wcoDataModelVersionCode" -> nonEmptyText,
+        "wcoTypeName" -> nonEmptyText,
+        "responsibleCountryCode" -> nonEmptyText,
+        "responsibleAgencyName" -> nonEmptyText,
+        "agencyAssignedCustomizationVersionCode" -> nonEmptyText,
+        "declaration" -> mapping(
+          "typeCode" -> nonEmptyText(maxLength = 3).verifying("Type Code must be 'INV'", str => "INV" == str),
+          "functionCode" -> number(min = 13, max = 13),
+          "functionalReferenceId" -> optional(text(maxLength = 35)),
+          "id" -> nonEmptyText(maxLength = 70),
+          "additionalInformation" -> mapping(
+            "statementDescription" -> nonEmptyText(maxLength = 512)
+          )(CancelAdditionalInformationForm.apply)(CancelAdditionalInformationForm.unapply),
+          "amendment" -> mapping(
+            "changeReasonCode" -> nonEmptyText
+          )(CancelAmendmentForm.apply)(CancelAmendmentForm.unapply)
+        )(CancelDeclarationForm.apply)(CancelDeclarationForm.unapply)
+      )(CancelMetaDataForm.apply)(CancelMetaDataForm.unapply)
+    )(CancelForm.apply)(CancelForm.unapply)
+  )
 
   def showCancelForm: Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
-    Future.successful(Ok(views.html.cancel_form(Forms.cancel)))
-  }
-
-  def handleSubmitForm: Action[AnyContent] = (actions.switch(Feature.declaration) andThen actions.auth).async { implicit req =>
-    implicit val user = req.user
-    val submission = Forms.submit.bindFromRequest()
-    submission.fold(
-      errors => Future.successful(BadRequest(views.html.submit_form(errors))),
-      success => {
-        client.submitImportDeclaration(success.toMetaData).map { b =>
-          Ok(views.html.submit_confirmation(b))
-        }
-      }
-    )
+    Future.successful(Ok(views.html.cancel_form(cancel)))
   }
 
   def handleCancelForm: Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
-    val resultForm = Forms.cancel.bindFromRequest()
+    val resultForm = cancel.bindFromRequest()
     resultForm.fold(
       errorsWithErrors => Future.successful(BadRequest(views.html.cancel_form(errorsWithErrors))),
       success => {
@@ -63,3 +73,51 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
   }
 
 }
+
+// cancel declaration form objects
+
+case class CancelForm(metaData: CancelMetaDataForm) {
+
+  def toMetaData: MetaData = metaData.toCancelMetaData
+
+}
+
+case class CancelMetaDataForm(wcoDataModelVersionCode: String,
+                              wcoTypeName: String,
+                              responsibleCountryCode: String,
+                              responsibleAgencyName: String,
+                              agencyAssignedCustomizationVersionCode: String,
+                              declaration: CancelDeclarationForm) {
+
+  def toCancelMetaData: MetaData = MetaData(
+    wcoDataModelVersionCode = Some(wcoDataModelVersionCode),
+    wcoTypeName = Some(wcoTypeName),
+    responsibleCountryCode = Some(responsibleCountryCode),
+    responsibleAgencyName = Some(responsibleAgencyName),
+    agencyAssignedCustomizationVersionCode = Some(agencyAssignedCustomizationVersionCode),
+    declaration = declaration.toDeclaration
+  )
+
+}
+
+case class CancelDeclarationForm(typeCode: String = "INV",
+                                 functionCode: Int = 13,
+                                 functionalReferenceId: Option[String] = None,
+                                 id: String,
+                                 additionalInformation: CancelAdditionalInformationForm,
+                                 amendment: CancelAmendmentForm) {
+
+  def toDeclaration: Declaration = Declaration(
+    typeCode = Some(typeCode),
+    functionCode = Some(functionCode),
+    functionalReferenceId = functionalReferenceId,
+    id = Some(id),
+    additionalInformations = Seq(AdditionalInformation(statementDescription = Some(additionalInformation.statementDescription))),
+    amendments = Seq(Amendment(Some(amendment.changeReasonCode)))
+  )
+
+}
+
+case class CancelAdditionalInformationForm(statementDescription: String)
+
+case class CancelAmendmentForm(changeReasonCode: String)

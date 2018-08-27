@@ -14,27 +14,18 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
+@import config.{AppConfig, ValidationError}
+@import config.Fields._
 
-@import views.html.helper.CSRF
-@import play.api.data.validation.ValidationError
-@import ViewUtils._
+@(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
-@import config.Lookup
-@(fieldsMap:Map[String,Seq[String]])(implicit request:  Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, ValidationError])
-
-@main_template(messages("valuation.heading"), bodyClasses = None) {
-    @helpers.form(routes.GenericController.displayForm("procedure-codes"), "valuation", "tax", Some(messages("valuation.heading"))) {
-        
-        @helpers.selectField(label = messages("valuation.indicators"), fieldsMap, valuationIndicators, appConfig.lookup.valuationIndicatorTypes)
-
-        @helpers.inputField(messages("valuation.itemPrice"), valuationItemPrice, fieldsMap)
-
-        @helpers.selectField(label = messages("valuation.itemCurrency"), fieldsMap, valuationItemPriceCurrency, appConfig.lookup.currencyTypes)
-
+@main_template(messages("pages.valuation.title")) {
+    @helpers.form("valuation", "pages.valuation.form.legend") {
+        @helpers.selectInput(valuationAdjustmentAdditionCode, data)
+        @helpers.textInput(commodityInvoiceLineAmount, data)
+        @helpers.selectInput(commodityInvoiceLineCurrency, data)
         <!-- TODO - add fields here for exchange rate, valuation method and preference once clarified with team -->
-
-        <button class="button" type="next" id="next" name="next" value="next">@messages("common.button.continue")</button>
+        @helpers.nextButton()
     }
 }
 
