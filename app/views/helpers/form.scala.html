@@ -20,7 +20,7 @@
 
 @(name: String, legendKey: String)(body: => Html)(implicit req: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, Seq[ValidationError]])
 
-<a class="link-back" href="@prev(name).fold(call => call, view => routes.GenericController.displayForm(view)).url">@messages("common.back")</a>
+<a class="link-back" href="@prev(name).fold(call => call, view => routes.DeclarationController.displaySubmitForm(view)).url">@messages("common.back")</a>
 
 @if(errors.nonEmpty) {
     <pre>@errors</pre>
@@ -36,7 +36,7 @@
     </div>
 }
 
-<form action="@next(name).fold(call => call, _ => routes.GenericController.handleForm(name)).url" method="post">
+<form action="@next(name).fold(call => call, _ => routes.DeclarationController.handleSubmitForm(name)).url" method="post">
     <fieldset>
         <legend>
             <h1>@messages(legendKey)</h1>
