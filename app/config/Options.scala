@@ -961,7 +961,7 @@ class Options {
     "SHNMO" -> "SHNMO",
     "TAPAR" -> "TAPAR",
     "TOR01" -> "TOR01",
-    "WHSRP" -> "WHSRP")
+    "WHSRP" -> "WHSRP"
     )
 
   val countryRegionSubRoleTypes: Seq[(String, String)] = Seq(
