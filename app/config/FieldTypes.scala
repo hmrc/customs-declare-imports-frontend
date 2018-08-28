@@ -68,3 +68,8 @@ case class RadioInput(name: String,
                       validators: Seq[Validator] = Seq.empty) extends FieldDefinition with MultipleChoice with DefaultValue {
   override val optional = false
 }
+
+// this is a marker interface which can be used in HTML to drive incorporation of maxLength attribute via FieldDefinition.maxLength
+trait MaxLength {
+  val maxLength: Int
+}
