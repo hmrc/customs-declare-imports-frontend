@@ -20,15 +20,14 @@ import java.util.UUID
 
 import config._
 import domain.features.Feature
-import domain.wco.{AdditionalInformation, Amendment, Declaration, MetaData}
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import services.{CustomsDeclarationsConnector, SessionCacheService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.wco.dec.{AdditionalInformation, Amendment, Declaration, MetaData}
 
 import scala.concurrent.{ExecutionContext, Future}
 

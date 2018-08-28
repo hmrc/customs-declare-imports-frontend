@@ -18,7 +18,6 @@ package services
 
 import java.util.UUID
 
-import domain.wco._
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.{ContentTypes, HeaderNames}
 import play.api.mvc.Codec
@@ -29,6 +28,7 @@ import uk.gov.hmrc.http.hooks.HttpHook
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.play.http.ws._
+import uk.gov.hmrc.wco.dec.{Declaration, MetaData}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._

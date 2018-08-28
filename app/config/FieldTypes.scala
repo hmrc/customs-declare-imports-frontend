@@ -16,7 +16,7 @@
 
 package config
 
-import domain.wco.MetaData
+import uk.gov.hmrc.wco.dec.MetaData
 
 trait FieldDefinition {
   val name: String

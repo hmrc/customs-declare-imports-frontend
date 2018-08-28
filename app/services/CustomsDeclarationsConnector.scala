@@ -19,13 +19,13 @@ package services
 import com.google.inject.Inject
 import config.AppConfig
 import domain.auth.SignedInUser
-import domain.wco._
 import javax.inject.Singleton
 import play.api.http.{ContentTypes, HeaderNames, Status}
 import play.api.mvc.Codec
 import repositories.declaration.{Submission, SubmissionRepository}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._

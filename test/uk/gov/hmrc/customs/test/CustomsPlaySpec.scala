@@ -21,7 +21,6 @@ import akka.util.Timeout
 import com.gu.scalatest.JsoupShouldMatchers
 import config.AppConfig
 import domain.auth.SignedInUser
-import domain.wco._
 import org.jsoup.nodes.Element
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
@@ -34,6 +33,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup.Individual
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
+import uk.gov.hmrc.wco.dec.{AdditionalInformation, Amendment, Declaration, MetaData}
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
