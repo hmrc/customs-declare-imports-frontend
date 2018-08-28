@@ -599,7 +599,7 @@ class Constraints {
 
   def contains(options: Set[String]): String => Boolean = str => options.contains(str)
 
-  def range(min: Long, max: Long): String => Boolean = str => matches(numeric)(str) && str.toLong >= min && str.toLong <= max
+  def range(min: Long, max: Long): String => Boolean = str => matches(numeric)(str) && str.toDouble.longValue() >= min && str.toDouble.longValue() <= max
 
   def matches(regex: Regex): String => Boolean = str => regex.pattern.matcher(str).matches()
 
