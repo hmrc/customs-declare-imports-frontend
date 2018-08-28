@@ -962,4 +962,10 @@ class Options {
     "TAPAR" -> "TAPAR",
     "TOR01" -> "TOR01",
     "WHSRP" -> "WHSRP")
+    )
+
+  val countryRegionSubRoleTypes: Seq[(String, String)] = Seq(
+    "1" -> "Non-preferential origin",
+    "2" -> "Preferential origin"
+    )
 }

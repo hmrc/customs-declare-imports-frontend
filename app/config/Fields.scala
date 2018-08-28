@@ -450,6 +450,21 @@ class Fields extends Options {
     validators = Seq(OptionalAlphaNumericValidator(512))
   )
 
+
+  // country of origin form fields
+  val originCountry: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].origins.countryCode",
+    options = countryOptions,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.origins.countryCode"),
+    validators = Seq(RequiredContainsValidator(countryOptions.map(_._1).toSet))
+  )
+
+  val originType: RadioInput = RadioInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].origins.typeCode",
+    options = countryRegionSubRoleTypes,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.origins.typeCode"),
+    default = Some("1")
+  )
 }
 
 object Fields extends Fields {

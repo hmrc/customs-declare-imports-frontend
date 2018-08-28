@@ -80,6 +80,9 @@ pages.additionsAndDeductions.form.legend=Additions and deductions
 pages.additionalInformation.title=Additional information
 pages.additionalInformation.form.legend=Additional information
 
+pages.countryOfOrigin.title=Country of origin
+pages.countryOfOrigin.form.legend=Country of origin
+
 ## specific fields
 declaration.declarant.name=Declarant'’s name
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
@@ -131,6 +134,8 @@ declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDedu
 declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.chargesTypeCode=Type
 declaration.goodsShipment.governmentAgencyGoodsItems.additionalInformations.statementCode=Additional information code
 declaration.goodsShipment.governmentAgencyGoodsItems.additionalInformations.statementDescription=Description
+declaration.goodsShipment.governmentAgencyGoodsItems.origins.countryCode=Country of origin
+declaration.goodsShipment.governmentAgencyGoodsItems.origins.typeCode=Origin type
 
 ## validations
 alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters

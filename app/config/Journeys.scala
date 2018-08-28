@@ -39,6 +39,8 @@ class SubmissionJourney {
     "tax",
     "additions-and-deductions",
     "additional-information"
+    "additions-and-deductions",
+    "country-of-origin"
   )
 
   // this is where we go "back" to from screen 1
