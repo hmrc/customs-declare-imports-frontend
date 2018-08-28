@@ -1,12 +1,13 @@
 # microservice specific routes
 
-GET         /assets/*file                    controllers.Assets.at(path="/public", file)
-GET         /                                controllers.LandingController.displayLandingPage
-GET         /start                           controllers.StartController.displayStartPage
-GET         /enrol                           controllers.UnauthorisedController.enrol
+GET         /assets/*file                                      controllers.Assets.at(path="/public", file)
+GET         /                                                  controllers.LandingController.displayLandingPage
+GET         /start                                             controllers.StartController.displayStartPage
+GET         /enrol                                             controllers.UnauthorisedController.enrol
 
-POST        /submit-declaration/submit       controllers.DeclarationController.onSubmitComplete
-GET         /submit-declaration/:name        controllers.DeclarationController.displaySubmitForm(name)
-POST        /submit-declaration/:name        controllers.DeclarationController.handleSubmitForm(name)
-GET         /cancel-declaration              controllers.DeclarationController.showCancelForm
-POST        /cancel-declaration              controllers.DeclarationController.handleCancelForm
+POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
+GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)
+GET         /submit-declaration/:name                          controllers.DeclarationController.displaySubmitForm(name)
+POST        /submit-declaration/:name                          controllers.DeclarationController.handleSubmitForm(name)
+GET         /cancel-declaration                                controllers.DeclarationController.showCancelForm
+POST        /cancel-declaration                                controllers.DeclarationController.handleCancelForm

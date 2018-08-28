@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.util.UUID
+
 import config._
 import domain.features.Feature
 import domain.wco.{AdditionalInformation, Amendment, Declaration, MetaData}
@@ -39,6 +41,10 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     cache.get(appConfig.submissionCacheId, req.user.eori.get).map { data =>
       Ok(views.html.generic_view(name, data.getOrElse(Map.empty)))
     }
+  }
+
+  def displaySubmitConfirmation(conversationId: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
+    Future.successful(Ok(views.html.submit_confirmation(conversationId)))
   }
 
   def handleSubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
@@ -68,7 +74,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
 
   // TODO implement onComplete handler in GenericController
   def onSubmitComplete: Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
-    Future.successful(Ok)
+    Future.successful(Redirect(routes.DeclarationController.displaySubmitConfirmation(UUID.randomUUID().toString)))
   }
 
   def showCancelForm: Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
