@@ -356,12 +356,12 @@ class Fields extends Options {
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.invoiceLine.itemChargeAmount.value"),
     validators = Seq(OptionalNumericValidator(16, 2))
   )
-  // TODO amend the below to take into account the new "default value" option being added
   val commodityInvoiceLineCurrency: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.invoiceLine.itemChargeAmount.currencyId",
     options = currencyTypes,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.invoiceLine.itemChargeAmount.currencyId"),
-    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet))
+    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet)),
+    default = Some("GBP")
   )
   // TODO blocked until clarified
 //  val valuationExchangeRate: TextInput = ???
@@ -457,8 +457,8 @@ class SubmissionJourney {
     "previous-documents",
     "procedure-codes",
     "valuation",
-    "tax"//,
-    //"additions-and-deductions" // TODO restore when additions and deductions form is ready
+    "tax",
+    "additions-and-deductions"
   )
 
   // this is where we go "back" to from screen 1
