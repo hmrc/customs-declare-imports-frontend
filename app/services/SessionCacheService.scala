@@ -26,22 +26,21 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SessionCacheService @Inject()(appConfig: AppConfig, httpClient: HttpClient) extends HttpCaching {
+class SessionCacheService @Inject()(cfg: AppConfig, httpClient: HttpClient) extends HttpCaching {
 
-  override def defaultSource: String = appConfig.keyStoreSource
+  override def defaultSource: String = cfg.keyStoreSource
 
-  override def baseUri: String = appConfig.keyStoreUrl
+  override def baseUri: String = cfg.keyStoreUrl
 
-  override def domain: String = appConfig.sessionCacheDomain
+  override def domain: String = cfg.sessionCacheDomain
 
   override def http: HttpGet with HttpPut with HttpDelete = httpClient
 
-  // TODO rename cacheId as "cacheName" and "id" as "eori" then store cache name under eori
-  def get(cacheId: String, id: String)
+  def get(cacheName: String, eori: String)
          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, String]]] =
-    fetchAndGetEntry[Map[String, String]](defaultSource, cacheId, id)
+    fetchAndGetEntry[Map[String, String]](defaultSource, cacheName, eori)
 
-  def put(cacheId: String, id: String, data: Map[String, String])
-         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = cache(defaultSource, cacheId, id, data)
+  def put(cacheName: String, eori: String, data: Map[String, String])
+         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = cache(defaultSource, cacheName, eori, data)
 
 }

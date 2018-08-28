@@ -16,64 +16,60 @@
 
 package services
 
-import play.api.libs.json.{JsObject, JsString, Reads, Writes}
-import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
+import play.api.libs.json.{Reads, Writes}
+import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SessionCacheServiceSpec extends CustomsPlaySpec with XmlBehaviours {
+class SessionCacheServiceSpec extends CustomsPlaySpec with AuthenticationBehaviours {
 
-  val expected = Map("DeclarantName" -> "Declarant1", "DeclarantAddressLine" -> "AddressLine1")
-  val mockresult = Some(expected)
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val data = CacheMap("id1", Map("form1" -> new JsObject(Map("field1" -> JsString("value1")))))
+  val aKey = randomString(16)
+  val aValue = randomString(48)
 
-  "SessionCacheService" should {
+  class CacheScenario[E](cacheSource: String = appConfig.keyStoreSource, cacheName: String = appConfig.submissionCacheId, eori: String = signedInUser.requiredEori, cachedData: Map[String, String] = Map.empty) {
 
-    "get data from SessionCache" in cacheFetchScenario("submit-declaration", "submit-declaration") { resp =>
-      resp.futureValue.get must be(expected)
+    var putData: Option[Map[String, Map[String, Map[String, Map[String, String]]]]] = None
+
+    val service = new SessionCacheService(appConfig, component[HttpClient]) {
+
+      override def fetchAndGetEntry[T](source: String, cacheId: String, key: String)
+                                      (implicit hc: HeaderCarrier, rds: Reads[T], executionContext: ExecutionContext): Future[Option[T]] = (source, cacheId, key) match {
+        case legit if (source == cacheSource && cacheId == cacheName && key == eori) => Future.successful(Some(cachedData.asInstanceOf[T]))
+        case _ => super.fetchAndGetEntry(source, cacheId, key)(hc, rds, executionContext)
+      }
+
+      override def cache[A](source: String, cacheId: String, formId: String, body: A)
+                           (implicit wts: Writes[A], hc: HeaderCarrier, executionContext: ExecutionContext): Future[CacheMap] = (source, cacheId, formId) match {
+        case legit if (source == cacheSource && cacheId == cacheName && formId == eori) => {
+          putData = Some(Map(source -> Map(cacheId -> Map(formId -> body.asInstanceOf[Map[String, String]]))))
+          Future.successful(CacheMap(randomString(8), Map.empty))
+        }
+        case _ => super.cache(source, cacheId, formId, body)(wts, hc, executionContext)
+      }
+    }
+  }
+
+  "get" should {
+
+    "return existing data from cache" in new CacheScenario[Map[String, String]](cachedData = Map(aKey -> aValue)) {
+      service.get(appConfig.submissionCacheId, signedInUser.requiredEori).futureValue.get(aKey) must be(aValue)
     }
 
-    "save data to SessionCache" in cacheDataScenario("submit-declaration", "submit-declaration") { resp =>
-      resp.futureValue must be(data)
+  }
+
+  "put" should {
+
+    "place given data in named cache for identified user" in new CacheScenario[Map[String, String]]() {
+      whenReady(service.put(appConfig.submissionCacheId, signedInUser.requiredEori, Map(aKey -> aValue))) { _ =>
+        putData.get(appConfig.keyStoreSource)(appConfig.submissionCacheId)(signedInUser.requiredEori)(aKey) must be(aValue)
+      }
     }
 
   }
-
-  val service = new SessionCacheService(appConfig, app.injector.instanceOf[HttpClient]) {
-    override def fetchAndGetEntry[T](source: String, cacheId: String, key: String)
-                                    (implicit hc: HeaderCarrier, rds: Reads[T], executionContext: ExecutionContext): Future[Option[T]] =
-      if (cacheId == "submit-declaration") Future.successful(mockresult.asInstanceOf[Option[T]])
-      else Future.successful(None.asInstanceOf[Option[T]])
-
-    override def cache[A](source: String, cacheId: String, formId: String, body: A)
-                         (implicit wts: Writes[A], hc: HeaderCarrier, executionContext: ExecutionContext): Future[CacheMap] =
-      if (cacheId == "submit-declaration") Future.successful(data)
-      else Future.failed(throw new RuntimeException("Error processing"))
-  }
-
-  def cacheFetchScenario(cacheId: String, id: String,
-                         forceServerError: Boolean = false,
-                         hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
-                        (test: Future[Option[Map[String, String]]] => Unit): Unit = {
-    val expectedCacheId: String = "submit-declaration"
-
-    test(service.get(cacheId, id)(hc, ec))
-  }
-
-  def cacheDataScenario(cacheId: String, id: String,
-                        forceServerError: Boolean = false,
-                        hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
-                       (test: Future[CacheMap] => Unit): Unit = {
-    val expectedCacheId: String = "submit-declaration"
-
-    val testDataToCache = Map("DeclarantName" -> "Declarant1", "DeclarantAddressLine" -> "AddressLine1")
-    test(service.put(cacheId, id, testDataToCache)(hc, ec))
-  }
-
 
 }

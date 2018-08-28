@@ -18,7 +18,7 @@ package config
 
 import org.scalatest.{MustMatchers, WordSpec}
 
-class RequiredAlphaNumericValidatorSpec extends WordSpec with MustMatchers {
+class OptionalAlphaNumericValidatorSpec extends WordSpec with MustMatchers {
 
   "validate" should {
 
@@ -52,15 +52,15 @@ class RequiredAlphaNumericValidatorSpec extends WordSpec with MustMatchers {
       }
     }
 
-    "fail given an empty string" in {
+    "pass given an empty string" in {
       withValidator(5) { validator =>
-        validator.validate("   ").valid must be(false)
+        validator.validate("   ").valid must be(true)
       }
     }
 
     "have default error message key" in {
       withValidator(3) { validator =>
-        validator.validate("foo").defaultErrorKey must be("alphanumeric.required")
+        validator.validate("foo").defaultErrorKey must be("alphanumeric.optional")
       }
     }
 
@@ -72,8 +72,8 @@ class RequiredAlphaNumericValidatorSpec extends WordSpec with MustMatchers {
 
   }
 
-  def withValidator(maxLength: Int, minLength: Int = 1)(test: RequiredAlphaNumericValidator => Unit): Unit = {
-    test(RequiredAlphaNumericValidator(maxLength, minLength))
+  def withValidator(maxLength: Int, minLength: Int = 1)(test: OptionalAlphaNumericValidator => Unit): Unit = {
+    test(OptionalAlphaNumericValidator(maxLength, minLength))
   }
 
 }

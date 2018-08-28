@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.util.UUID
+
 import config._
 import domain.features.Feature
 import domain.wco.{AdditionalInformation, Amendment, Declaration, MetaData}
@@ -41,6 +43,10 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     }
   }
 
+  def displaySubmitConfirmation(conversationId: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
+    Future.successful(Ok(views.html.submit_confirmation(conversationId)))
+  }
+
   def handleSubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
     val data: Map[String, String] = req.body.asFormUrlEncoded.map { form =>
       form.
@@ -48,9 +54,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
         filter(_._2.isDefined).
         map(field => field._1 -> field._2.get)
     }.getOrElse(Map.empty)
-    Logger.info("Data: " + data.mkString("\n"))
     implicit val errors: Map[String, Seq[ValidationError]] = validate(data)
-    Logger.info("Errs: " + errors.mkString("\n"))
     errors.isEmpty match {
       case true => {
         cache.get(appConfig.submissionCacheId, req.user.requiredEori).flatMap { cached =>
@@ -68,7 +72,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
 
   // TODO implement onComplete handler in GenericController
   def onSubmitComplete: Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
-    Future.successful(Ok)
+    Future.successful(Redirect(routes.DeclarationController.displaySubmitConfirmation(UUID.randomUUID().toString)))
   }
 
   def showCancelForm: Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
