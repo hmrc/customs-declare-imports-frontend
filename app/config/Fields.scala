@@ -337,7 +337,6 @@ class Fields extends Options {
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.governmentProcedures.previousCode"),
     validators = Seq(RequiredContainsValidator(importPreviousProcedures.map(_._1).toSet))
   )
-  // TODO amend the below to take into account the new "default value" option being added
   val additionalProcedureCode: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].additionalProcedure", // FIXME not currently in model - does it exist in schema??
     options = specialProcedureTypes,
@@ -357,6 +356,7 @@ class Fields extends Options {
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.invoiceLine.itemChargeAmount.value"),
     validators = Seq(OptionalNumericValidator(16, 2))
   )
+  // TODO amend the below to take into account the new "default value" option being added
   val commodityInvoiceLineCurrency: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.invoiceLine.itemChargeAmount.currencyId",
     options = currencyTypes,
