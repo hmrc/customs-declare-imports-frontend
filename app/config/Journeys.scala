@@ -40,7 +40,8 @@ class SubmissionJourney {
     "additions-and-deductions",
     "additional-information",
     "country-of-origin",
-    "summary-of-goods"
+    "summary-of-goods",
+    "place-of-despatch"
   )
 
   // this is where we go "back" to from screen 1

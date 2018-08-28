@@ -86,6 +86,9 @@ pages.countryOfOrigin.form.legend=Country of origin
 pages.summaryOfGoods.title=Summary of goods
 pages.summaryOfGoods.form.legend=About the goods
 
+pages.placeOfDespatch.title=Place of despatch
+pages.placeOfDespatch.form.legend=Place of despatch
+
 ## specific fields
 declaration.declarant.name=Declarant'’s name
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
@@ -141,6 +144,8 @@ declaration.goodsShipment.governmentAgencyGoodsItems.origins.countryCode=Country
 declaration.goodsShipment.governmentAgencyGoodsItems.origins.typeCode=Origin type
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.grossMassMeasure.value=Gross mass
 declaration.totalPackageQuantity=Total packages
+declaration.goodsShipment.governmentAgencyGoodsItems.exportCountry.id=Country of dispatch
+declaration.goodsShipment.consignment.loadingLocation.id=Place of loading - airport code
 
 ## validations
 alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters

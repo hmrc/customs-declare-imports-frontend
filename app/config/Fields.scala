@@ -477,6 +477,20 @@ class Fields extends Options {
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.grossMassMeasure.value"),
     validators = Seq(RequiredNumericValidator(16, 6))
   )
+
+  // place of despatch form fields
+  val exportCountry: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].exportCountry.id",
+    options = countryOptions,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.exportCountry.id"),
+    validators = Seq(RequiredContainsValidator(countryOptions.map(_._1).toSet))
+  )
+  val loadingLocation: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.consignment.loadingLocation.id",
+    options = airportCodes,
+    labelKey = Some("declaration.goodsShipment.consignment.loadingLocation.id"),
+    validators = Seq(RequiredContainsValidator(countryOptions.map(_._1).toSet))
+  )
 }
 
 object Fields extends Fields {
