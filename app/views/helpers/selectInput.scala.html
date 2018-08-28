@@ -26,7 +26,7 @@
                 <option value="">Please Select</option>
             }
             @for(opt <- input.options) {
-                <option value="@opt._1"@if(data.contains(input.name) && data(input.name) == opt._1){ selected}>@opt._2</option>
+                <option value="@opt._1"@if((data.contains(input.name) && data(input.name) == opt._1) || (data.get(input.name).isEmpty && input.default.isDefined && input.default.get == opt._1)){ selected}>@opt._2</option>
             }
         </select>
     </div>
