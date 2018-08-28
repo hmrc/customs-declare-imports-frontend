@@ -435,6 +435,21 @@ class Fields extends Options {
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.chargesTypeCode"),
     validators = Seq(OptionalContainsValidator(GoodsItemValuationAdjustmentTypes.map(_._1).toSet))
   )
+
+  // Additional information form fields
+  val additionalInformationStatementCode: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].additionalInformations[0].statementCode",
+    options = specialMentionTypes,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.additionalInformations.statementCode"),
+    validators = Seq(OptionalContainsValidator(paymentMethodTypes.map(_._1).toSet))
+  )
+
+  val additionalInformationStatementDescription: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].additionalInformations[0].statementDescription",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.additionalInformations.statementDescription"),
+    validators = Seq(OptionalAlphaNumericValidator(512))
+  )
+
 }
 
 object Fields extends Fields {

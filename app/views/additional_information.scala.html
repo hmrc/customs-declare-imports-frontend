@@ -17,16 +17,14 @@
 @import config.{AppConfig, ValidationError}
 @import config.Fields._
 
-@(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
+@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
-@main_template(messages("pages.additionsAndDeductions.title")) {
-    @helpers.form("additions-and-deductions", "pages.additionsAndDeductions.form.legend") {
-        @helpers.textInput(otherChargeDeductionAmount, data)
-        @helpers.selectInput(otherChargeDeductionCurrency, data)
-        @helpers.selectInput(otherChargeDeductionType, data)
+@main_template(messages("pages.additionalInformation.title")) {
+
+    @helpers.form("additional-information", "pages.additionalInformation.form.legend") {
+        @helpers.selectInput(additionalInformationStatementCode, data)
+        @helpers.textInput(additionalInformationStatementDescription, data)
         @helpers.nextButton()
     }
+
 }
-
-
-

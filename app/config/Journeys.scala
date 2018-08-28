@@ -37,7 +37,8 @@ class SubmissionJourney {
     "procedure-codes",
     "valuation",
     "tax",
-    "additions-and-deductions"
+    "additions-and-deductions",
+    "additional-information"
   )
 
   // this is where we go "back" to from screen 1

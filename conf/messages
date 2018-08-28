@@ -77,6 +77,9 @@ pages.identificationOfGoods.form.legend=Identification of goods
 pages.additionsAndDeductions.title=Additions and deductions
 pages.additionsAndDeductions.form.legend=Additions and deductions
 
+pages.additionalInformation.title=Additional information
+pages.additionalInformation.form.legend=Additional information
+
 ## specific fields
 declaration.declarant.name=Declarant'’s name
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
@@ -126,6 +129,8 @@ declaration.goodsShipment.governmentAgencyGoodsItems.packagings.marksNumbersId.h
 declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.otherChargeDeductionAmount.value=Value
 declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.otherChargeDeductionAmount.currencyId=Currency
 declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.chargesTypeCode=Type
+declaration.goodsShipment.governmentAgencyGoodsItems.additionalInformations.statementCode=Additional information code
+declaration.goodsShipment.governmentAgencyGoodsItems.additionalInformations.statementDescription=Description
 
 ## validations
 alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters
