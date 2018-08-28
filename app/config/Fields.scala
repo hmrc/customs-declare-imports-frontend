@@ -504,6 +504,10 @@ trait MultipleChoice {
   val options: Seq[(String, String)]
 }
 
+trait DefaultValue {
+  val default: Option[String]
+}
+
 case class TextInput(name: String,
                      labelKey: Option[String] = None,
                      htmlId: Option[String] = None,
@@ -513,18 +517,20 @@ case class TextInput(name: String,
 case class SelectInput(name: String,
                        options: Seq[(String, String)],
                        optional: Boolean = true,
+                       default: Option[String]= None,
                        labelKey: Option[String] = None,
                        htmlId: Option[String] = None,
                        hintKey: Option[String] = None,
-                       validators: Seq[Validator] = Seq.empty) extends FieldDefinition with MultipleChoice
+                       validators: Seq[Validator] = Seq.empty) extends FieldDefinition with MultipleChoice with DefaultValue
 
 case class RadioInput(name: String,
                       options: Seq[(String, String)],
                       inline: Boolean = false,
+                      default: Option[String] = None,
                       labelKey: Option[String] = None,
                       htmlId: Option[String] = None,
                       hintKey: Option[String] = None,
-                      validators: Seq[Validator] = Seq.empty) extends FieldDefinition with MultipleChoice {
+                      validators: Seq[Validator] = Seq.empty) extends FieldDefinition with MultipleChoice with DefaultValue {
   override val optional = false
 }
 
@@ -600,7 +606,7 @@ class Constraints {
 
   def contains(options: Set[String]): String => Boolean = str => options.contains(str)
 
-  def range(min: Long, max: Long): String => Boolean = str => matches(numeric)(str) && str.toLong >= min && str.toLong <= max
+  def range(min: Long, max: Long): String => Boolean = str => matches(numeric)(str) && str.toDouble.longValue() >= min && str.toDouble.longValue() <= max
 
   def matches(regex: Regex): String => Boolean = str => regex.pattern.matcher(str).matches()
 
