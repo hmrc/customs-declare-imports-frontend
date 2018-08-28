@@ -807,4 +807,35 @@ class Options {
     "WAT" -> "WAT")
 
   val paymentMethodTypes: Seq[(String, String)] = Seq("E" -> "E")
+
+  val GoodsItemValuationAdjustmentTypes: Seq[(String, String)] = Seq(
+    "AB" -> "AB",
+    "AC" -> "AC",
+    "AD" -> "AD",
+    "AE" -> "AE",
+    "AF" -> "AF",
+    "AG" -> "AG",
+    "AH" -> "AH",
+    "AI" -> "AI",
+    "AJ" -> "AJ",
+    "AL" -> "AL",
+    "AM" -> "AM",
+    "AN" -> "AN",
+    "AO" -> "AO",
+    "AT" -> "AT",
+    "AX" -> "AX",
+    "AZ" -> "AZ",
+    "BB" -> "BB",
+    "BC" -> "BC",
+    "BD" -> "BD",
+    "BE" -> "BE",
+    "BF" -> "BF",
+    "BG" -> "BG",
+    "BH" -> "BH",
+    "BI" -> "BI",
+    "BK" -> "BK",
+    "BL" -> "BL",
+    "BM" -> "BM",
+    "BT" -> "BT"
+)
 }

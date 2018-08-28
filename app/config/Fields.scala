@@ -417,6 +417,24 @@ class Fields extends Options {
     validators = Seq(OptionalAlphaNumericValidator(512))
   )
 
+  // additions and deductions form fields
+  val otherChargeDeductionAmount: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].customsValuation.chargeDeductions.otherChargeDeductionAmount.value",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.otherChargeDeductionAmount.value"),
+    validators = Seq(OptionalNumericValidator(16, 2))
+  )
+  val otherChargeDeductionCurrency: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].customsValuation.chargeDeductions.otherChargeDeductionAmount.currencyId",
+    options = currencyTypes,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.otherChargeDeductionAmount.currencyId"),
+    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet))
+  )
+  val otherChargeDeductionType: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].customsValuation.chargeDeductions.chargesTypeCode",
+    options = GoodsItemValuationAdjustmentTypes,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.chargesTypeCode"),
+    validators = Seq(OptionalContainsValidator(GoodsItemValuationAdjustmentTypes.map(_._1).toSet))
+  )
 }
 
 object Fields extends Fields {

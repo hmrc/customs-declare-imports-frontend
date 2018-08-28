@@ -36,8 +36,8 @@ class SubmissionJourney {
     "previous-documents",
     "procedure-codes",
     "valuation",
-    "tax"//,
-    //"additions-and-deductions" // TODO restore when additions and deductions form is ready
+    "tax",
+    "additions-and-deductions"
   )
 
   // this is where we go "back" to from screen 1

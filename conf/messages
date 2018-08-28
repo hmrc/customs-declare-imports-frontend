@@ -74,6 +74,9 @@ pages.tax.form.legend=Tax
 pages.identificationOfGoods.title=Identification of Goods
 pages.identificationOfGoods.form.legend=Identification of goods
 
+pages.additionsAndDeductions.title=Additions and deductions
+pages.additionsAndDeductions.form.legend=Additions and deductions
+
 ## specific fields
 declaration.declarant.name=Declarant'’s name
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
@@ -120,6 +123,9 @@ declaration.goodsShipment.governmentAgencyGoodsItems.commodity.description=Descr
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.description.hint=The normal trade description. Except for non-Union goods placed under the customs warehousing procedure in a public customs warehouse type I, II or III or a private customs warehouse, this description must be expressed in terms sufficiently precise to enable immediate and unambiguous identification and classification of the goods.
 declaration.goodsShipment.governmentAgencyGoodsItems.packagings.marksNumbersId=Shipping marks
 declaration.goodsShipment.governmentAgencyGoodsItems.packagings.marksNumbersId.hint=For unpackaged goods, enter ‘Unpackaged’.
+declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.otherChargeDeductionAmount.value=Value
+declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.otherChargeDeductionAmount.currencyId=Currency
+declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.chargesTypeCode=Type
 
 ## validations
 alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters
