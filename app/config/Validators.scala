@@ -22,11 +22,6 @@ case class ValidationResult(valid: Boolean, defaultErrorKey: String, args: Seq[A
 
 case class ValidationError(message: String, field: FieldDefinition)
 
-// this is a marker interface which can be used in HTML to drive incorporation of maxLength attribute via FieldDefinition.maxLength
-trait MaxLength {
-  val maxLength: Int
-}
-
 // counter-intuitively, args take max first because min is usually 1, so can be optional
 case class RequiredAlphaNumericValidator(maxLength: Int, minLength: Int = 1) extends Validator with MaxLength {
   override def validate(value: String): ValidationResult = ValidationResult(an(maxLength)(value) && min(minLength)(value), "alphanumeric.required", Seq(minLength, maxLength))
