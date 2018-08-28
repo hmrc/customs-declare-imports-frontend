@@ -16,13 +16,8 @@
 
 package config
 
-import controllers.routes
-import domain.wco.MetaData
-import play.api.mvc.Call
-
 import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe._
-import scala.util.matching.Regex
 
 class Fields extends Options {
 
