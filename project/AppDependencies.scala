@@ -19,6 +19,7 @@ object AppDependencies {
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
     "com.fasterxml.jackson.dataformat" % "jackson-dataformat-xml" % jacksonVersion,
+    "com.fasterxml.jackson.dataformat" % "jackson-dataformat-properties" % jacksonVersion,
     "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion
   )
 

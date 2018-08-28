@@ -17,16 +17,20 @@
 package domain.wco
 
 import java.io.StringWriter
+import java.util.Properties
 
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonInclude}
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.{DeserializationContext, DeserializationFeature, JsonNode}
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.{ObjectNode, TextNode}
+import com.fasterxml.jackson.databind.{DeserializationContext, DeserializationFeature, JsonNode}
+import com.fasterxml.jackson.dataformat.javaprop.{JavaPropsMapper, JavaPropsSchema}
 import com.fasterxml.jackson.dataformat.xml.annotation.{JacksonXmlProperty, JacksonXmlRootElement, JacksonXmlText}
 import com.fasterxml.jackson.dataformat.xml.{JacksonXmlModule, XmlMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+
+import scala.collection.JavaConverters._
 
 /*
 MetaData and Declaration schema generally consists of xsd:sequence definitions the order of which is reflected in the
@@ -43,18 +47,22 @@ private[wco] object NS {
 
 trait JacksonMapper {
 
-  private val _module = new JacksonXmlModule()
-  _module.setDefaultUseWrapper(false)
-  protected val _mapper = new XmlMapper(_module)
-  _mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-  _mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-  _mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-  _mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-  _mapper.registerModule(DefaultScalaModule)
+  private val _modxml = new JacksonXmlModule()
+  _modxml.setDefaultUseWrapper(false)
+  protected val _schema = JavaPropsSchema.emptySchema().withWriteIndexUsingMarkers(true)
+  protected val _xml = new XmlMapper(_modxml)
+  _xml.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+  _xml.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+  _xml.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+  _xml.setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
+  _xml.registerModule(DefaultScalaModule)
+  protected val _props = new JavaPropsMapper()
+  _props.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+  _props.registerModule(DefaultScalaModule)
 
 }
 
-@JsonIgnoreProperties(Array("_mapper"))
+@JsonIgnoreProperties(Array("_xml", "_schema", "_props"))
 @JacksonXmlRootElement(namespace = NS.dms, localName = "MetaData")
 case class MetaData(@JacksonXmlProperty(localName = "WCODataModelVersionCode", namespace = NS.dms)
                     wcoDataModelVersionCode: Option[String] = None, // max 6 chars
@@ -79,7 +87,7 @@ case class MetaData(@JacksonXmlProperty(localName = "WCODataModelVersionCode", n
 
   def toXml: String = {
     val sw = new StringWriter()
-    _mapper.writeValue(sw, this)
+    _xml.writeValue(sw, this)
     sw.toString
   }
 
@@ -87,7 +95,13 @@ case class MetaData(@JacksonXmlProperty(localName = "WCODataModelVersionCode", n
 
 object MetaData extends JacksonMapper {
 
-  def fromXml(xml: String): MetaData = _mapper.readValue(xml, classOf[MetaData])
+  def fromXml(xml: String): MetaData = _xml.readValue(xml, classOf[MetaData])
+
+  def fromProperties(props: Map[String, String]): MetaData = {
+    val p = new Properties()
+    p.putAll(props.asJava)
+    _props.readPropertiesAs(p, _schema, classOf[MetaData])
+  }
 
 }
 

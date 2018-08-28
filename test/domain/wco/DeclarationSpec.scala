@@ -1592,6 +1592,22 @@ class DeclarationSpec extends CustomsPlaySpec with XmlBehaviours {
 
   }
 
+  "from properties" should {
+
+    "read WCO data model version code" in {
+      val code = Some(randomString(6))
+      val props = Map("wcoDataModelVersionCode" -> code.get)
+      MetaData.fromProperties(props).wcoDataModelVersionCode must be(code)
+    }
+
+    "read declaration additional documents id" in {
+      val id = Some(randomString(70))
+      val props = Map("declaration.additionalDocuments[0].id" -> id.get)
+      MetaData.fromProperties(props).declaration.additionalDocuments(0).id must be(id)
+    }
+
+  }
+
   def hasExpectedOutput[T](meta: MetaData, expected: T)(extractor: Elem => T): Elem = {
     val xml = XML.loadString(meta.toXml)
     extractor(xml) must be(expected)
