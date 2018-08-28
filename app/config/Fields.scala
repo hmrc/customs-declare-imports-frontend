@@ -450,7 +450,6 @@ class Fields extends Options {
     validators = Seq(OptionalAlphaNumericValidator(512))
   )
 
-
   // country of origin form fields
   val originCountry: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].origins.countryCode",
@@ -464,6 +463,19 @@ class Fields extends Options {
     options = countryRegionSubRoleTypes,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.origins.typeCode"),
     default = Some("1")
+  )
+
+  // summary of goods form fields
+  val declarationTotalPackageQuantity: TextInput = TextInput(
+    name = "declaration.totalPackageQuantity",
+    labelKey = Some("declaration.totalPackageQuantity"),
+    validators = Seq(RequiredNumericValidator(8))
+  )
+
+  val goodsMeasureGrossMassMeasure: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.goodsMeasure.grossMassMeasure.value",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.grossMassMeasure.value"),
+    validators = Seq(RequiredNumericValidator(16, 6))
   )
 }
 

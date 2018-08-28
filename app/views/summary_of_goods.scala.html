@@ -19,10 +19,10 @@
 
 @(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
-@main_template(messages("pages.countryOfOrigin.title")) {
-    @helpers.form("country-of-origin", "pages.countryOfOrigin.form.legend") {
-        @helpers.selectInput(originCountry, data)
-        @helpers.radioInput(originType, data)
+@main_template(messages("pages.summaryOfGoods.title")) {
+    @helpers.form("summary-of-goods", "pages.summaryOfGoods.form.legend") {
+        @helpers.textInput(declarationTotalPackageQuantity, data)
+        @helpers.textInput(goodsMeasureGrossMassMeasure, data)
         @helpers.nextButton()
     }
 }
