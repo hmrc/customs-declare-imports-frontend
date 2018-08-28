@@ -329,19 +329,20 @@ class Fields extends Options {
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].currentCode",
     options = governmentProcedureTypes,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.governmentProcedures.currentCode"),
-    validators = Seq(OptionalContainsValidator(governmentProcedureTypes.map(_._1).toSet))
+    validators = Seq(RequiredContainsValidator(governmentProcedureTypes.map(_._1).toSet))
   )
   val previousProcedureCode: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].previousCode",
     options = importPreviousProcedures,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.governmentProcedures.previousCode"),
-    validators = Seq(OptionalContainsValidator(importPreviousProcedures.map(_._1).toSet))
+    validators = Seq(RequiredContainsValidator(importPreviousProcedures.map(_._1).toSet))
   )
+  // TODO amend the below to take into account the new "default value" option being added
   val additionalProcedureCode: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].additionalProcedure", // FIXME not currently in model - does it exist in schema??
     options = specialProcedureTypes,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.governmentProcedures.additionalProcedure"),
-    validators = Seq(OptionalContainsValidator(specialProcedureTypes.map(_._1).toSet))
+    validators = Seq(RequiredContainsValidator(specialProcedureTypes.map(_._1).toSet))
   )
 
   // valuation form fields
@@ -349,12 +350,12 @@ class Fields extends Options {
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].valuationAdjustment.additionCode",
     options = valuationIndicatorTypes,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.valuationAdjustment.additionCode"),
-    validators = Seq(OptionalContainsValidator(valuationIndicatorTypes.map(_._1).toSet))
+    validators = Seq(RequiredContainsValidator(valuationIndicatorTypes.map(_._1).toSet))
   )
   val commodityInvoiceLineAmount: TextInput = TextInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.invoiceLine.itemChargeAmount.value",
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.invoiceLine.itemChargeAmount.value"),
-    validators = Seq(OptionalNumericValidator(16, 3))
+    validators = Seq(OptionalNumericValidator(16, 2))
   )
   val commodityInvoiceLineCurrency: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.invoiceLine.itemChargeAmount.currencyId",
