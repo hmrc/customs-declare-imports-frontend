@@ -38,7 +38,7 @@ class SubmissionJourney {
     "valuation",
     "tax",
     "additions-and-deductions",
-    "additional-information"
+    "additional-information",
     "additions-and-deductions",
     "country-of-origin"
   )
