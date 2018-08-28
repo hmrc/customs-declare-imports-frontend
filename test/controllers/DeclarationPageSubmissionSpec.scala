@@ -50,7 +50,7 @@ class DeclarationPageSubmissionSpec extends CustomsPlaySpec with AuthenticationB
     }
 
     declarantScenarios.foreach(scenario =>
-      scenario._1 in featureScenario(Feature.prototype, FeatureStatus.enabled) {
+      scenario._1 in featureScenario(Feature.submit, FeatureStatus.enabled) {
         signedInScenario() {
           userRequestScenario(method, uri) { resp =>
             includesHtmlField(resp, scenario._2.fieldType, scenario._2.fieldName)
@@ -59,7 +59,7 @@ class DeclarationPageSubmissionSpec extends CustomsPlaySpec with AuthenticationB
       }
     )
 
-    "include back link with URL" in featureScenario(Feature.prototype, FeatureStatus.enabled) {
+    "include back link with URL" in featureScenario(Feature.submit, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri) { resp =>
           includesHtmlLink(resp, SubmissionJourney.start.url)

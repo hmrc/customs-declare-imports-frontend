@@ -464,7 +464,7 @@ class SubmissionJourney {
   val start: Call = routes.LandingController.displayLandingPage()
 
   // this is where we submit the form to after the final screen
-  val end: Call = routes.GenericController.onComplete()
+  val end: Call = routes.DeclarationController.onSubmitComplete()
 
   def prev(current: String): Either[Call, String] = current match {
     case left if current == screens.head => Left(start)

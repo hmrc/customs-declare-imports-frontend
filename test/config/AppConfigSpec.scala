@@ -82,6 +82,9 @@ class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
     "have sessionCacheDomain" in {
       cfg.sessionCacheDomain must be ("keystore")
     }
+    "have submission cache ID" in {
+      cfg.submissionCacheId must be("submit-declaration")
+    }
   }
 
   "feature status" should {

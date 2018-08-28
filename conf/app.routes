@@ -5,8 +5,8 @@ GET         /                                controllers.LandingController.displ
 GET         /start                           controllers.StartController.displayStartPage
 GET         /enrol                           controllers.UnauthorisedController.enrol
 
-POST        /submit-declaration/submit       controllers.GenericController.onComplete
-GET         /submit-declaration/:name        controllers.GenericController.displayForm(name)
-POST        /submit-declaration/:name        controllers.GenericController.handleForm(name)
+POST        /submit-declaration/submit       controllers.DeclarationController.onSubmitComplete
+GET         /submit-declaration/:name        controllers.DeclarationController.displaySubmitForm(name)
+POST        /submit-declaration/:name        controllers.DeclarationController.handleSubmitForm(name)
 GET         /cancel-declaration              controllers.DeclarationController.showCancelForm
 POST        /cancel-declaration              controllers.DeclarationController.handleCancelForm

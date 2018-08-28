@@ -16,52 +16,67 @@
 
 package controllers
 
-import config.AppConfig
+import config._
 import domain.features.Feature
 import domain.wco.{AdditionalInformation, Amendment, Declaration, MetaData}
 import javax.inject.{Inject, Singleton}
+import play.api.Logger
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
-import services.CustomsDeclarationsConnector
+import services.{CustomsDeclarationsConnector, SessionCacheService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController with I18nSupport {
+class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: SessionCacheService)
+                                     (implicit val messagesApi: MessagesApi, val appConfig: AppConfig, ec: ExecutionContext)
+  extends FrontendController with I18nSupport {
 
-  val cancel: Form[CancelForm] = Form(
-    mapping(
-      "metaData" -> mapping(
-        "wcoDataModelVersionCode" -> nonEmptyText,
-        "wcoTypeName" -> nonEmptyText,
-        "responsibleCountryCode" -> nonEmptyText,
-        "responsibleAgencyName" -> nonEmptyText,
-        "agencyAssignedCustomizationVersionCode" -> nonEmptyText,
-        "declaration" -> mapping(
-          "typeCode" -> nonEmptyText(maxLength = 3).verifying("Type Code must be 'INV'", str => "INV" == str),
-          "functionCode" -> number(min = 13, max = 13),
-          "functionalReferenceId" -> optional(text(maxLength = 35)),
-          "id" -> nonEmptyText(maxLength = 70),
-          "additionalInformation" -> mapping(
-            "statementDescription" -> nonEmptyText(maxLength = 512)
-          )(CancelAdditionalInformationForm.apply)(CancelAdditionalInformationForm.unapply),
-          "amendment" -> mapping(
-            "changeReasonCode" -> nonEmptyText
-          )(CancelAmendmentForm.apply)(CancelAmendmentForm.unapply)
-        )(CancelDeclarationForm.apply)(CancelDeclarationForm.unapply)
-      )(CancelMetaDataForm.apply)(CancelMetaDataForm.unapply)
-    )(CancelForm.apply)(CancelForm.unapply)
-  )
+  def displaySubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
+    cache.get(appConfig.submissionCacheId, req.user.eori.get).map { data =>
+      Ok(views.html.generic_view(name, data.getOrElse(Map.empty)))
+    }
+  }
+
+  def handleSubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
+    val data: Map[String, String] = req.body.asFormUrlEncoded.map { form =>
+      form.
+        map(field => field._1 -> field._2.headOption).
+        filter(_._2.isDefined).
+        map(field => field._1 -> field._2.get)
+    }.getOrElse(Map.empty)
+    Logger.info("Data: " + data.mkString("\n"))
+    implicit val errors: Map[String, Seq[ValidationError]] = validate(data)
+    Logger.info("Errs: " + errors.mkString("\n"))
+    errors.isEmpty match {
+      case true => {
+        cache.get(appConfig.submissionCacheId, req.user.requiredEori).flatMap { cached =>
+          val merged = cached.getOrElse(Map.empty) ++ data
+          cache.put(appConfig.submissionCacheId, req.user.requiredEori, merged).map { _ =>
+            Redirect(routes.DeclarationController.displaySubmitForm(data("next-page")))
+          }
+        }
+      }
+      case false => {
+        Future.successful(BadRequest(views.html.generic_view(name, data)))
+      }
+    }
+  }
+
+  // TODO implement onComplete handler in GenericController
+  def onSubmitComplete: Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
+    Future.successful(Ok)
+  }
 
   def showCancelForm: Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
-    Future.successful(Ok(views.html.cancel_form(cancel)))
+    Future.successful(Ok(views.html.cancel_form(Cancel.form)))
   }
 
   def handleCancelForm: Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
-    val resultForm = cancel.bindFromRequest()
+    val resultForm = Cancel.form.bindFromRequest()
     resultForm.fold(
       errorsWithErrors => Future.successful(BadRequest(views.html.cancel_form(errorsWithErrors))),
       success => {
@@ -72,9 +87,45 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     )
   }
 
+  private def validate(data: Map[String, String]): Map[String, Seq[ValidationError]] = data.filter(entry => Fields.definitions.keySet.contains(entry._1)).map { field =>
+    val maybeField = Fields.definitions.get(field._1)
+    val validators = maybeField.map(_.validators).getOrElse(Seq.empty)
+    val results = validators.map(_.validate(field._2))
+    val failures = results.filterNot(_.valid)
+    val fieldErrors: Seq[ValidationError] = failures.
+      map(err => ValidationError(errorMessageKey(Fields.definitions(field._1), err), Fields.definitions(field._1)))
+    field._1 -> fieldErrors
+  }.filterNot(_._2.isEmpty)
+
+  private def errorMessageKey(field: FieldDefinition, result: ValidationResult): String = messagesApi(Seq(s"${field.labelKey}.${result.defaultErrorKey}", result.defaultErrorKey), result.args:_*)
+
 }
 
 // cancel declaration form objects
+
+object Cancel {
+  val form: Form[CancelForm] = Form[CancelForm](mapping(
+    "metaData" -> mapping(
+      "wcoDataModelVersionCode" -> nonEmptyText,
+      "wcoTypeName" -> nonEmptyText,
+      "responsibleCountryCode" -> nonEmptyText,
+      "responsibleAgencyName" -> nonEmptyText,
+      "agencyAssignedCustomizationVersionCode" -> nonEmptyText,
+      "declaration" -> mapping(
+        "typeCode" -> nonEmptyText(maxLength = 3).verifying("Type Code must be 'INV'", str => "INV" == str),
+        "functionCode" -> number(min = 13, max = 13),
+        "functionalReferenceId" -> optional(text(maxLength = 35)),
+        "id" -> nonEmptyText(maxLength = 70),
+        "additionalInformation" -> mapping(
+          "statementDescription" -> nonEmptyText(maxLength = 512)
+        )(CancelAdditionalInformationForm.apply)(CancelAdditionalInformationForm.unapply),
+        "amendment" -> mapping(
+          "changeReasonCode" -> nonEmptyText
+        )(CancelAmendmentForm.apply)(CancelAmendmentForm.unapply)
+      )(CancelDeclarationForm.apply)(CancelDeclarationForm.unapply)
+    )(CancelMetaDataForm.apply)(CancelMetaDataForm.unapply)
+  )(CancelForm.apply)(CancelForm.unapply))
+}
 
 case class CancelForm(metaData: CancelMetaDataForm) {
 
