@@ -392,13 +392,13 @@ class Fields extends Options {
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].payment.paymentAmount.value",
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.paymentAmount.value"),
     hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.paymentAmount.value.hint"),
-    validators = Seq(OptionalNumericValidator(16, 3))
+    validators = Seq(OptionalNumericValidator(16, 2))
   )
   val commodityDutyTaxFeesTaxAssessedAmount: TextInput = TextInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].payment.taxAssessedAmount.value",
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.taxAssessedAmount.value"),
     hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.taxAssessedAmount.value.hint"),
-    validators = Seq(OptionalNumericValidator(16, 3))
+    validators = Seq(OptionalNumericValidator(16, 2))
   )
   val commodityDutyTaxFeesPaymentMethodCode: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].payment.methodCode", // originally, this duplicated property path for type code (above) - I assumed that was a mistake
