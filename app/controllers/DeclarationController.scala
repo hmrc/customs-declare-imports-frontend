@@ -54,9 +54,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
         filter(_._2.isDefined).
         map(field => field._1 -> field._2.get)
     }.getOrElse(Map.empty)
-    Logger.info("Data: " + data.mkString("\n"))
     implicit val errors: Map[String, Seq[ValidationError]] = validate(data)
-    Logger.info("Errs: " + errors.mkString("\n"))
     errors.isEmpty match {
       case true => {
         cache.get(appConfig.submissionCacheId, req.user.requiredEori).flatMap { cached =>
