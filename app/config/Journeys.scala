@@ -32,17 +32,18 @@ class SubmissionJourney {
     "buyer-details",
     "additional-supply-chain-actors",
     "additional-fiscal-references",
-    "identification-of-goods", // TODO from what I could gather, this wanted procedure-codes as prev and previous-documents as next, which can't be satisified
     "previous-documents",
     "procedure-codes",
+    "identification-of-goods", // TODO from what I could gather, this wanted procedure-codes as prev and previous-documents as next, which can't be satisified
     "valuation",
     "tax",
     "additions-and-deductions",
     "additional-information",
     "country-of-origin",
+    "other-data-elements",
     "summary-of-goods",
     "place-of-despatch",
-    "other-data-elements"
+    "transport"
   )
 
   // this is where we go "back" to from screen 1

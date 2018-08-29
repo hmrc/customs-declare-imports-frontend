@@ -573,6 +573,33 @@ class Fields extends Options {
     validators = Seq(OptionalContainsValidator(measureUnitTypes.map(_._1).toSet))
   )
 
+  // transport form fields
+  val containerCode: TextInput = TextInput(
+    name = "declaration.goodsShipment.consignment.containerCode",
+    labelKey = Some("declaration.goodsShipment.consignment.containerCode"),
+    validators = Seq(RequiredNumericValidator(1, 0))
+  )
+
+  val borderTransportMeans: SelectInput = SelectInput(
+    name = "declaration.borderTransportMeans.modeCode",
+    options = transportModeTypes,
+    labelKey = Some("declaration.borderTransportMeans.modeCode"),
+    validators = Seq(RequiredContainsValidator(transportModeTypes.map(_._1).toSet))
+  )
+
+  val arrivalTransportMeans: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.consignment.arrivalTransportMeans.modeCode",
+    options = transportModeTypes,
+    labelKey = Some("declaration.goodsShipment.consignment.arrivalTransportMeans.modeCode"),
+    validators = Seq(RequiredContainsValidator(transportModeTypes.map(_._1).toSet))
+  )
+
+  val arrivalTransportMeansId: TextInput = TextInput(
+    name = "declaration.goodsShipment.consignment.arrivalTransportMeans.id",
+    labelKey = Some("declaration.goodsShipment.consignment.arrivalTransportMeans.id"),
+    validators = Seq(RequiredAlphaNumericValidator(35, 1))
+  )
+
 }
 
 object Fields extends Fields {
