@@ -517,6 +517,7 @@ class Fields extends Options {
     options = countryOptions,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.destination.countryCode"),
     validators = Seq(RequiredContainsValidator(countryOptions.map(_._1).toSet))
+  )
 
   // other data elements
   val dutyTaxFeeQuotaOrderID: TextInput = TextInput(
