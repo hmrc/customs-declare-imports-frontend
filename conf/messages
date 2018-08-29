@@ -19,6 +19,7 @@ common.button.save-and-continue=Save and continue
 
 ## common fields with shared labels
 common.fields.eori=EORI number
+common.fields.currency=Currency
 
 common.fields.address.line=First line of address
 common.fields.address.cityName=City
@@ -89,6 +90,10 @@ pages.summaryOfGoods.form.legend=About the goods
 pages.placeOfDespatch.title=Place of despatch
 pages.placeOfDespatch.form.legend=Place of despatch
 
+pages.otherDataElements.title=Other data elements
+pages.otherDataElements.form.legend=Other data elements
+pages.otherDataElements.form.h2.WritingOff=Writing off
+
 ## specific fields
 declaration.declarant.name=Declarant'’s name
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
@@ -147,6 +152,15 @@ declaration.totalPackageQuantity=Total packages
 declaration.goodsShipment.governmentAgencyGoodsItems.exportCountry.id=Country of dispatch
 declaration.goodsShipment.consignment.loadingLocation.id=Place of loading - airport code
 declaration.goodsShipment.governmentAgencyGoodsItems.destination.countryCode=Country of destination code
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.quotaOrderId=Quote order number
+declaration.goodsShipment.transactionNatureCode=Nature of transaction
+declaration.goodsShipment.governmentAgencyGoodsItems.statisticalValueAmount=Statistical value
+declaration.goodsShipment.governmentAgencyGoodsItems.statisticalValueAmount.hint=Enter the statistical value for the goods item in GBP (£ sterling), irrespective of the currency used in Invoice Currency.
+declaration.goodsShipment.governmentAgencyGoodsItems.statisticalValueAmount.currencyId=Statistical value - currency
+declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.submitter.name=Issuing authority
+declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.effectiveDateTime=Date of validity
+declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.writeOff.quantity=Quantity
+declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.writeOff.quantity.unitCode=Measurement unit and qualifier
 
 ## validations
 alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters

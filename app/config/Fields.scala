@@ -371,12 +371,14 @@ class Fields extends Options {
     hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.typeCode.hint"),
     validators = Seq(OptionalContainsValidator(dutyTaxFeeTypes.map(_._1).toSet))
   )
+
   val commodityDutyTaxFeesQuantity: TextInput = TextInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].specificTaxBaseQuantity.value",
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.specificTaxBaseQuantity.value"),
     hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.specificTaxBaseQuantity.value.hint"),
     validators = Seq(OptionalNumericValidator(16, 6))
   )
+
   val commodityDutyTaxFeesUnitCode: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].specificTaxBaseQuantity.unitCode", // originally, this duplicated property path for type code (above) - I assumed that was a mistake
     options = measureUnitTypes,
@@ -384,18 +386,37 @@ class Fields extends Options {
     hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.specificTaxBaseQuantity.unitCode.hint"),
     validators = Seq(OptionalContainsValidator(measureUnitTypes.map(_._1).toSet))
   )
+
   val commodityDutyTaxFeesPaymentAmount: TextInput = TextInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].payment.paymentAmount.value",
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.paymentAmount.value"),
     hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.paymentAmount.value.hint"),
     validators = Seq(OptionalNumericValidator(16, 2))
   )
+
+  val payabletaxamountCurrency: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].payment.paymentAmount.currencyId",
+    options = currencyTypes,
+    labelKey = Some("common.fields.currency"),
+    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet)),
+    default = Some("GBP")
+  )
+
   val commodityDutyTaxFeesTaxAssessedAmount: TextInput = TextInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].payment.taxAssessedAmount.value",
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.taxAssessedAmount.value"),
     hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.payment.taxAssessedAmount.value.hint"),
     validators = Seq(OptionalNumericValidator(16, 2))
   )
+
+  val calculationOfTaxesTotalCurrency: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].payment.taxAssessedAmount.currencyId",
+    options = currencyTypes,
+    labelKey = Some("common.fields.currency"),
+    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet)),
+    default = Some("GBP")
+  )
+
   val commodityDutyTaxFeesPaymentMethodCode: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].payment.methodCode", // originally, this duplicated property path for type code (above) - I assumed that was a mistake
     options = paymentMethodTypes,
@@ -436,7 +457,7 @@ class Fields extends Options {
     validators = Seq(OptionalContainsValidator(GoodsItemValuationAdjustmentTypes.map(_._1).toSet))
   )
 
-  // Additional information form fields
+  // additional information form fields
   val additionalInformationStatementCode: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].additionalInformations[0].statementCode",
     options = specialMentionTypes,
@@ -496,6 +517,59 @@ class Fields extends Options {
     options = countryOptions,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.destination.countryCode"),
     validators = Seq(RequiredContainsValidator(countryOptions.map(_._1).toSet))
+
+  // other data elements
+  val dutyTaxFeeQuotaOrderID: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0],quotaOrderId",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.quotaOrderId"),
+    validators = Seq(OptionalAlphaNumericValidator(6))
+  )
+
+  val natureOfTransaction: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.transactionNatureCode",
+    options = transactionNatureTypes,
+    labelKey = Some("declaration.goodsShipment.transactionNatureCode"),
+    validators = Seq(RequiredContainsValidator(transactionNatureTypes.map(_._1).toSet))
+  )
+
+  val statisticalValue: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].statisticalValueAmount",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.statisticalValueAmount"),
+    hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.statisticalValueAmount.hint"),
+    validators = Seq(OptionalNumericValidator(16, 2))
+  )
+
+  val statisticalValueCurrency: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].statisticalValueAmount.currencyId",
+    options = currencyTypes,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.statisticalValueAmount.currencyId"),
+    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet)),
+    default = Some("GBP")
+  )
+
+  val writingOffIssuingAuthority: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].additionalDocuments[0].submitter.name",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.submitter.name"),
+    validators = Seq(OptionalAlphaNumericValidator(70))
+  )
+
+  val writingOffDateOfValidity: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].additionalDocuments[0].effectiveDateTime",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.effectiveDateTime"),
+    validators = Seq(OptionalAlphaNumericValidator(8))
+  )
+
+  val writingOffQuantity: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].additionalDocuments[0].writeOff.quantity",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.writeOff.quantity"),
+    validators = Seq(OptionalNumericValidator(16, 6))
+  )
+
+  val writingOffMeasurementUnitQualifier: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].additionalDocuments[0].writeOff.quantity.unitCode",
+    options = measureUnitTypes,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.writeOff.quantity.unitCode"),
+    validators = Seq(OptionalContainsValidator(measureUnitTypes.map(_._1).toSet))
   )
 
 }

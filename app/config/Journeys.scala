@@ -41,7 +41,8 @@ class SubmissionJourney {
     "additional-information",
     "country-of-origin",
     "summary-of-goods",
-    "place-of-despatch"
+    "place-of-despatch",
+    "other-data-elements"
   )
 
   // this is where we go "back" to from screen 1
