@@ -441,7 +441,7 @@ class Fields extends Options {
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].additionalInformations[0].statementCode",
     options = specialMentionTypes,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.additionalInformations.statementCode"),
-    validators = Seq(OptionalContainsValidator(paymentMethodTypes.map(_._1).toSet))
+    validators = Seq(OptionalContainsValidator(specialMentionTypes.map(_._1).toSet))
   )
 
   val additionalInformationStatementDescription: TextInput = TextInput(
@@ -489,8 +489,15 @@ class Fields extends Options {
     name = "declaration.goodsShipment.consignment.loadingLocation.id",
     options = airportCodes,
     labelKey = Some("declaration.goodsShipment.consignment.loadingLocation.id"),
+    validators = Seq(RequiredContainsValidator(airportCodes.map(_._1).toSet))
+  )
+  val destinationCountry: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].destination.countryCode",
+    options = countryOptions,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.destination.countryCode"),
     validators = Seq(RequiredContainsValidator(countryOptions.map(_._1).toSet))
   )
+
 }
 
 object Fields extends Fields {

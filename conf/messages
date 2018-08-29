@@ -146,6 +146,7 @@ declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.gros
 declaration.totalPackageQuantity=Total packages
 declaration.goodsShipment.governmentAgencyGoodsItems.exportCountry.id=Country of dispatch
 declaration.goodsShipment.consignment.loadingLocation.id=Place of loading - airport code
+declaration.goodsShipment.governmentAgencyGoodsItems.destination.countryCode=Country of destination code
 
 ## validations
 alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters
