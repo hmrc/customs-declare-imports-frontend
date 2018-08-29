@@ -18,8 +18,10 @@ package services
 
 import java.util.UUID
 
+import domain.auth.SignedInUser
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.{ContentTypes, HeaderNames}
+import play.api.http.Status._
 import play.api.mvc.Codec
 import repositories.declaration.SubmissionRepository
 import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
@@ -37,18 +39,18 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
 
   val eori = Some(randomString(16))
   val lrn = Some(randomString(35))
-  val repo = component[SubmissionRepository]
-  val conversationId = randomString(80)
-  implicit val user = userFixture(eori = eori)
+  val repo: SubmissionRepository = component[SubmissionRepository]
+  val conversationId: String = randomString(80)
+  implicit val user: SignedInUser = userFixture(eori = eori)
 
   "CustomsDeclarationsConnector " should {
 
     "POST metadata to Customs Declarations" in submitDeclarationScenario(MetaData(declaration = Declaration())) { resp =>
-      resp.futureValue must be(true)
+      resp.futureValue.status must be(ACCEPTED)
     }
 
     "POST declaration cancellation payload successfully" in cancelDeclarationScenario(randomCancelDeclaration) { resp =>
-      resp.futureValue must be(true)
+      resp.futureValue.status must be(ACCEPTED)
     }
 
     "save declaration on acceptance" in submitDeclarationScenario(metaData = MetaData(declaration = Declaration(
@@ -57,9 +59,9 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
       Await.result(resp, 1.second)
       val found = repo.findByEori(eori).futureValue
       found.length must be(1)
-      found(0).eori must be(eori)
-      found(0).lrn must be(lrn)
-      found(0).conversationId must be(Some(conversationId))
+      found.head.eori must be(eori)
+      found.head.lrn must be(lrn)
+      found.head.conversationId must be(Some(conversationId))
     }
 
   }
@@ -71,7 +73,7 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
                                 forceServerError: Boolean = false,
                                 hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))),
                                 conversationId: String = UUID.randomUUID().toString)
-                               (test: Future[Boolean] => Unit): Unit = {
+                               (test: Future[CustomsDeclarationsResponse] => Unit): Unit = {
     val expectedUrl: String = s"${appConfig.customsDeclarationsEndpoint}${appConfig.submitImportDeclarationUri}"
     val expectedBody: String = metaData.toXml
     val expectedHeaders: Map[String, String] = Map(
@@ -88,7 +90,7 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
                                 badgeIdentifier: Option[String] = None,
                                 forceServerError: Boolean = false,
                                 hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(randomString(255)))))
-                               (test: Future[Boolean] => Unit): Unit = {
+                               (test: Future[CustomsDeclarationsResponse] => Unit): Unit = {
     val expectedUrl: String = s"${appConfig.customsDeclarationsEndpoint}${appConfig.cancelImportDeclarationUri}"
     val expectedBody: String = metaData.toXml
     val expectedHeaders: Map[String, String] = Map(

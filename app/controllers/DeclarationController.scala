@@ -16,16 +16,17 @@
 
 package controllers
 
-import java.util.UUID
-
 import config._
+import domain.auth.AuthenticatedRequest
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
+import play.api.Logger
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{CustomsDeclarationsConnector, SessionCacheService}
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.wco.dec.{AdditionalInformation, Amendment, Declaration, MetaData}
 
@@ -35,6 +36,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: SessionCacheService)
                                      (implicit val messagesApi: MessagesApi, val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController with I18nSupport {
+
+  private val permissibleKeys: Set[String] = Fields.definitions.keySet ++ Set("next-page", "last-page")
 
   def displaySubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
     cache.get(appConfig.submissionCacheId, req.user.eori.get).map { data =>
@@ -47,31 +50,27 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
   }
 
   def handleSubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
-    val data: Map[String, String] = req.body.asFormUrlEncoded.map { form =>
-      form.
-        map(field => field._1 -> field._2.headOption).
-        filter(_._2.isDefined).
-        map(field => field._1 -> field._2.get)
-    }.getOrElse(Map.empty)
+    val data: Map[String, String] = formDataAsMap()
     implicit val errors: Map[String, Seq[ValidationError]] = validate(data)
-    errors.isEmpty match {
-      case true => {
-        cache.get(appConfig.submissionCacheId, req.user.requiredEori).flatMap { cached =>
-          val merged = cached.getOrElse(Map.empty) ++ data
-          cache.put(appConfig.submissionCacheId, req.user.requiredEori, merged).map { _ =>
-            Redirect(routes.DeclarationController.displaySubmitForm(data("next-page")))
-          }
-        }
+    Logger.info("Errors: " + errors.mkString("\n"))
+    if (errors.isEmpty) {
+      cacheSubmission(data) { (_, _) =>
+        Future.successful(Redirect(routes.DeclarationController.displaySubmitForm(data("next-page"))))
       }
-      case false => {
-        Future.successful(BadRequest(views.html.generic_view(name, data)))
-      }
-    }
+    } else invalid(name, data)
   }
 
-  // TODO implement onComplete handler in GenericController
   def onSubmitComplete: Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
-    Future.successful(Redirect(routes.DeclarationController.displaySubmitConfirmation(UUID.randomUUID().toString)))
+    val data: Map[String, String] = formDataAsMap()
+    implicit val user = req.user
+    implicit val errors: Map[String, Seq[ValidationError]] = validate(data)
+    if (errors.isEmpty) {
+      cacheSubmission(data) { (merged, _) =>
+        client.submitImportDeclaration(MetaData.fromProperties(merged.filterNot(_._2.trim.isEmpty))).map { resp =>
+          Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId.get))
+        }
+      }
+    } else invalid(data("last-page"), data)
   }
 
   def showCancelForm: Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
@@ -83,11 +82,20 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     resultForm.fold(
       errorsWithErrors => Future.successful(BadRequest(views.html.cancel_form(errorsWithErrors))),
       success => {
-        client.cancelImportDeclaration(success.toMetaData).map { b =>
-          Ok(views.html.cancel_confirmation(b))
+        client.cancelImportDeclaration(success.toMetaData).map { resp =>
+          Ok(views.html.cancel_confirmation(resp.status == ACCEPTED))
         }
       }
     )
+  }
+
+  private def invalid(name: String, data: Map[String, String])(implicit req: AuthenticatedRequest[AnyContent], errors: Map[String, Seq[ValidationError]]): Future[Result] = Future.successful(BadRequest(views.html.generic_view(name, data)))
+
+  private def cacheSubmission(data: Map[String, String])(f: (Map[String, String], CacheMap) => Future[Result])(implicit req: AuthenticatedRequest[AnyContent]): Future[Result] = cache.get(appConfig.submissionCacheId, req.user.requiredEori).flatMap { existing =>
+    val merged = existing.getOrElse(Map.empty) ++ data
+    cache.put(appConfig.submissionCacheId, req.user.requiredEori, merged).flatMap { cached =>
+      f(merged, cached)
+    }
   }
 
   private def validate(data: Map[String, String]): Map[String, Seq[ValidationError]] = data.filter(entry => Fields.definitions.keySet.contains(entry._1)).map { field =>
@@ -101,6 +109,13 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
   }.filterNot(_._2.isEmpty)
 
   private def errorMessageKey(field: FieldDefinition, result: ValidationResult): String = messagesApi(Seq(s"${field.labelKey}.${result.defaultErrorKey}", result.defaultErrorKey), result.args:_*)
+
+  private def formDataAsMap()(implicit req: Request[AnyContent]): Map[String, String] = req.body.asFormUrlEncoded.map { form =>
+    form.
+      map(field => field._1 -> field._2.headOption).
+      filter(entry => permissibleKeys.contains(entry._1) && entry._2.isDefined).
+      map(field => field._1 -> field._2.get)
+  }.getOrElse(Map.empty)
 
 }
 

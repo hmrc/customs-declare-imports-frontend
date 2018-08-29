@@ -100,8 +100,8 @@ pages.transport.form.legend=Transport
 ## specific fields
 declaration.declarant.name=Declarant'’s name
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
-declaration.functionalReferenceID=LRN
-declaration.functionalReferenceID.hint=The reference is unique to the trader and usually provided by the software.
+declaration.functionalReferenceId=LRN
+declaration.functionalReferenceId.hint=The reference is unique to the trader and usually provided by the software.
 declaration.typeCode=Declaration type
 declaration.typeCode.additional=Additional declaration type
 declaration.exporter.name=Exporter'’s name

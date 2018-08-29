@@ -23,7 +23,6 @@
 <a class="link-back" href="@prev(name).fold(call => call, view => routes.DeclarationController.displaySubmitForm(view)).url">@messages("common.back")</a>
 
 @if(errors.nonEmpty) {
-    <pre>@errors</pre>
     <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
         <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
         <ul class="error-summary-list">
@@ -42,7 +41,7 @@
             <h1>@messages(legendKey)</h1>
         </legend>
         @{play.filters.csrf.CSRF.getToken(req).map { token => CSRF.formField(req)}}
-        @next(name).fold(call => None, view => Some(view)).map { view => <input type="hidden" id="next-page" name="next-page" value="@view"> }
+        @next(name).fold(call => Some(("last-page", name)), str => Some(("next-page", str))).map { view => <input type="hidden" name="@view._1" value="@view._2"> }
         @body
     </fieldset>
 </form>

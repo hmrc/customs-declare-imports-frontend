@@ -20,32 +20,32 @@ import com.google.inject.Inject
 import config.AppConfig
 import domain.auth.SignedInUser
 import javax.inject.Singleton
-import play.api.http.{ContentTypes, HeaderNames, Status}
+import play.api.http.{ContentTypes, HeaderNames}
 import play.api.mvc.Codec
 import repositories.declaration.{Submission, SubmissionRepository}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
 
-import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Singleton
 class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient, declarationRepository: SubmissionRepository) {
 
   def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[Boolean] =
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
     postMetaData(appConfig.submitImportDeclarationUri, metaData, badgeIdentifier, saveSubmission)
 
   def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
     postMetaData(appConfig.cancelImportDeclarationUri, metaData, badgeIdentifier)
 
   private def postMetaData(uri: String,
                            metaData: MetaData,
                            badgeIdentifier: Option[String] = None,
-                           onSuccess: (MetaData, CustomsDeclarationsResponse) => Boolean = { (metaData, resp) => resp.status == Status.ACCEPTED })
-                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+                           onSuccess: (MetaData, CustomsDeclarationsResponse) => CustomsDeclarationsResponse = { (metaData, resp) => resp })
+                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
     post(uri, metaData.toXml, badgeIdentifier).map(onSuccess(metaData, _))
 
   //noinspection ConvertExpressionToSAM
@@ -56,8 +56,8 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: H
     )
   }
 
-  private def saveSubmission(meta: MetaData, resp: CustomsDeclarationsResponse)(implicit ec: ExecutionContext, user: SignedInUser): Boolean =
-    Await.result(declarationRepository.insert(Submission(user.eori, resp.conversationId, meta.declaration.functionalReferenceId)).map(_.ok), 3.seconds)
+  private def saveSubmission(meta: MetaData, resp: CustomsDeclarationsResponse)(implicit ec: ExecutionContext, user: SignedInUser): CustomsDeclarationsResponse =
+    Await.result(declarationRepository.insert(Submission(user.eori, resp.conversationId, meta.declaration.functionalReferenceId)).map(_ => resp), 3.seconds)
 
   private[services] def post(uri: String, body: String, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
     val headers: Seq[(String, String)] = Seq(

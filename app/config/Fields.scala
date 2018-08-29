@@ -61,8 +61,8 @@ class Fields extends Options {
     validators = Seq(OptionalAlphaNumericValidator(35))
   )
   val declarantFunctionalReferenceId: TextInput = TextInput(
-    name = "declaration.functionalReferenceID",
-    hintKey = Some("declaration.functionalReferenceID.hint"),
+    name = "declaration.functionalReferenceId",
+    hintKey = Some("declaration.functionalReferenceId.hint"),
     validators = Seq(RequiredAlphaNumericValidator(22))
   )
   val declarationType: RadioInput = RadioInput(
@@ -473,14 +473,14 @@ class Fields extends Options {
 
   // country of origin form fields
   val originCountry: SelectInput = SelectInput(
-    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].origins.countryCode",
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].origins[0].countryCode",
     options = countryOptions,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.origins.countryCode"),
     validators = Seq(RequiredContainsValidator(countryOptions.map(_._1).toSet))
   )
 
   val originType: RadioInput = RadioInput(
-    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].origins.typeCode",
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].origins[0].typeCode",
     options = countryRegionSubRoleTypes,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.origins.typeCode"),
     default = Some("1")
