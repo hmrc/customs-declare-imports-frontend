@@ -43,7 +43,8 @@ class SubmissionJourney {
     "other-data-elements",
     "summary-of-goods",
     "place-of-despatch",
-    "transport"
+    "transport",
+    "location-of-goods"
   )
 
   // this is where we go "back" to from screen 1

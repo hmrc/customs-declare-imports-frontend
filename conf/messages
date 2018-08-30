@@ -97,6 +97,9 @@ pages.otherDataElements.form.h2.WritingOff=Writing off
 pages.transport.title=Transport
 pages.transport.form.legend=Transport
 
+pages.locationOfGoods.title=Location of goods
+pages.locationOfGoods.form.legend=Location of goods
+
 ## specific fields
 declaration.declarant.name=Declarant'’s name
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
@@ -169,6 +172,11 @@ declaration.goodsShipment.consignment.containerCode=Container
 declaration.borderTransportMeans.modeCode=Mode of Transport at border
 declaration.goodsShipment.consignment.arrivalTransportMeans.modeCode=Inland mode of transport
 declaration.goodsShipment.consignment.arrivalTransportMeans.id=Means of Transport on Arrival - Identification number
+declaration.goodsShipment.consignment.goodsLocation.name=Identification of Location
+declaration.goodsShipment.consignment.goodsLocation.id=Location of goods - Additional identifier
+declaration.goodsShipment.consignment.goodsLocation.typeCode=Type of Location
+declaration.goodsShipment.consignment.goodsLocation.address.line=Street and number
+declaration.goodsShipment.consignment.goodsLocation.address.typeCode=Qualifier of the identification
 
 ## validations
 alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters

@@ -600,6 +600,57 @@ class Fields extends Options {
     validators = Seq(RequiredAlphaNumericValidator(35, 1))
   )
 
+  // Location of goods form fields
+  val locationOfGoodsIdentificationOfLocation: TextInput = TextInput(
+    name = "declaration.goodsShipment.consignment.goodsLocation.name",
+    labelKey = Some("declaration.goodsShipment.consignment.goodsLocation.name"),
+    validators = Seq(OptionalAlphaNumericValidator(35))
+  )
+
+  val locationOfGoodsAdditionalIdentifier: TextInput = TextInput(
+    name = "declaration.goodsShipment.consignment.goodsLocation.id",
+    labelKey = Some("declaration.goodsShipment.consignment.goodsLocation.id"),
+    validators = Seq(OptionalNumericValidator(3))
+  )
+
+  val locationOfGoodsTypeOfLocation: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.consignment.goodsLocation.typeCode",
+    options = goodsLocationTypeCode,
+    labelKey = Some("declaration.goodsShipment.consignment.goodsLocation.typeCode"),
+    validators = Seq(RequiredContainsValidator(goodsLocationTypeCode.map(_._1).toSet))
+  )
+
+  val locationOfGoodsStreetAndNumber: TextInput = TextInput(
+    name = "declaration.goodsShipment.consignment.goodsLocation.address.line",
+    labelKey = Some("declaration.goodsShipment.consignment.goodsLocation.address.line"),
+    validators = Seq(OptionalAlphaNumericValidator(70))
+  )
+
+  val locationOfGoodsPostcode: TextInput = TextInput(
+    name = "declaration.goodsShipment.consignment.goodsLocation.address.postcodeId",
+    labelKey = Some("common.fields.address.postcodeId"),
+    validators = Seq(OptionalAlphaNumericValidator(9))
+  )
+
+  val locationOfGoodsCity: TextInput = TextInput(
+    name = "declaration.goodsShipment.consignment.goodsLocation.address.cityName",
+    labelKey = Some("common.fields.address.cityName"),
+    validators = Seq(OptionalAlphaNumericValidator(35))
+  )
+
+  val locationOfGoodsCountry: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.consignment.goodsLocation.address.countryCode",
+    options = countryOptions,
+    labelKey = Some("common.fields.address.countryCode"),
+    validators = Seq(OptionalContainsValidator(countryOptions.map(_._1).toSet))
+  )
+
+  val locationOfGoodsQualifierOfTheIdentification: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.consignment.goodsLocation.address.typeCode",
+    options = goodsLocationTypeCode,
+    labelKey = Some("declaration.goodsShipment.consignment.goodsLocation.address.typeCode"),
+    validators = Seq(RequiredContainsValidator(goodsLocationTypeCode.map(_._1).toSet))
+  )
 }
 
 object Fields extends Fields {

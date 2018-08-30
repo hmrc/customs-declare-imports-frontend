@@ -1845,5 +1845,12 @@ class Options {
     "81" -> "81"
     )
 
+  val goodsLocationTypeCode: Seq[(String, String)] = Seq(
+    "A" -> "Designated",
+    "B" -> "Authorised",
+    "C" -> "Approved",
+    "D" -> "Other"
+  )
+
 
 }
