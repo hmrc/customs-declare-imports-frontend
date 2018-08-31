@@ -100,6 +100,11 @@ pages.transport.form.legend=Transport
 pages.locationOfGoods.title=Location of goods
 pages.locationOfGoods.form.legend=Location of goods
 
+pages.warehouseAndCustomsOffices.title=Warehouse and customs offices
+pages.warehouseAndCustomsOffices.form.legend=Warehouse and customs offices
+pages.warehouseAndCustomsOffices.h2.warehouseDetails=Details of warehouse goods are being held
+pages.warehouseAndCustomsOffices.h2.customsOfficeDetails=Details of customs office
+
 ## specific fields
 declaration.declarant.name=Declarant'’s name
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
@@ -177,6 +182,10 @@ declaration.goodsShipment.consignment.goodsLocation.id=Location of goods - Addit
 declaration.goodsShipment.consignment.goodsLocation.typeCode=Type of Location
 declaration.goodsShipment.consignment.goodsLocation.address.line=Street and number
 declaration.goodsShipment.consignment.goodsLocation.address.typeCode=Qualifier of the identification
+declaration.goodsShipment.warehouse.typeCode=Warehouse Type
+declaration.goodsShipment.warehouse.id=Warehouse identifier
+declaration.presentationOffice.id=Details of customs office
+declaration.supervisingOffice.id=Supervising Customs Office
 
 ## validations
 alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters

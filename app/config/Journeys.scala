@@ -44,7 +44,8 @@ class SubmissionJourney {
     "summary-of-goods",
     "place-of-despatch",
     "transport",
-    "location-of-goods"
+    "location-of-goods",
+    "warehouse-and-customs-offices"
   )
 
   // this is where we go "back" to from screen 1

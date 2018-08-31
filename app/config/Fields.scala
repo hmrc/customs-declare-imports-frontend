@@ -651,6 +651,35 @@ class Fields extends Options {
     labelKey = Some("declaration.goodsShipment.consignment.goodsLocation.address.typeCode"),
     validators = Seq(RequiredContainsValidator(goodsLocationTypeCode.map(_._1).toSet))
   )
+
+  // Warehouse and customs offices form fields
+  val identificationOfWarehouseWarehouseType: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.warehouse.typeCode",
+    options = customsWareHouseTypes,
+    labelKey = Some("declaration.goodsShipment.warehouse.typeCode"),
+    validators = Seq(OptionalContainsValidator(customsWareHouseTypes.map(_._1).toSet))
+  )
+
+  val identificationOfWarehouseWarehouseIdentifier: TextInput = TextInput(
+    name = "declaration.goodsShipment.warehouse.id",
+    labelKey = Some("declaration.goodsShipment.warehouse.id"),
+    validators = Seq(OptionalAlphaNumericValidator(35))
+  )
+
+  val customsOfficeOfPresentation: SelectInput = SelectInput(
+    name = "declaration.presentationOffice.id",
+    options = supervisingCustomsOffices,
+    labelKey = Some("declaration.presentationOffice.id"),
+    validators = Seq(OptionalContainsValidator(supervisingCustomsOffices.map(_._1).toSet))
+  )
+
+  val superivisingCustomsOffice: SelectInput = SelectInput(
+    name = "declaration.supervisingOffice.id",
+    options = supervisingCustomsOffices,
+    labelKey = Some("declaration.supervisingOffice.id"),
+    validators = Seq(OptionalContainsValidator(supervisingCustomsOffices.map(_._1).toSet))
+  )
+
 }
 
 object Fields extends Fields {
