@@ -694,6 +694,28 @@ class Fields extends Options {
     validators = Seq(OptionalContainsValidator(supervisingCustomsOffices.map(_._1).toSet))
   )
 
+  // Delivery term form fields
+  val deliveryTermsIncotermCode: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.tradeTerms.conditionCode",
+    options = incoTermCodes,
+    labelKey = Some("declaration.goodsShipment.tradeTerms.conditionCode"),
+    hintKey = Some("declaration.goodsShipment.tradeTerms.conditionCode.hint"),
+    validators = Seq(OptionalContainsValidator(incoTermCodes.map(_._1).toSet))
+  )
+
+  val deliveryTermsUnlocodeCode: TextInput = TextInput(
+    name = "declaration.goodsShipment.tradeTerms.locationId",
+    labelKey = Some("declaration.goodsShipment.tradeTerms.locationId"),
+    validators = Seq(OptionalAlphaNumericValidator(17))
+  )
+
+  val deliveryTermsCountryCode: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.tradeTerms.locationName",
+    options = countryTypes,
+    labelKey = Some("common.fields.address.countryCode"),
+    validators = Seq(OptionalContainsValidator(countryTypes.map(_._1).toSet))
+  )
+
   // deferred payment form fields
   val declarationAdditionalDocumentId: TextInput = TextInput(
     name = "declaration.additionalDocuments[0].id",

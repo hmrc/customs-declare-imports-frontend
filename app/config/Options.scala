@@ -2300,5 +2300,23 @@ val declaredGuaranteeTypes: Seq[(String, String)] = Seq(
     "Y" -> "Y"
     )
 
+  val incoTermCodes: Seq[(String, String)] = Seq(
+    "CFR" -> "CFR",
+    "CIF" -> "CIF",
+    "CIP" -> "CIP",
+    "CPT" -> "CPT",
+    "DAF" -> "DAF",
+    "DAP" -> "DAP",
+    "DAT" -> "DAT",
+    "DDP" -> "DDP",
+    "DDU" -> "DDU",
+    "DEQ" -> "DEQ",
+    "DES" -> "DES",
+    "EXW" -> "EXW",
+    "FAS" -> "FAS",
+    "FCA" -> "FCA",
+    "FOB" -> "FOB",
+    "XXX" -> "XXX"
+  )
 
 }

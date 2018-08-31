@@ -105,11 +105,16 @@ pages.warehouseAndCustomsOffices.form.legend=Warehouse and customs offices
 pages.warehouseAndCustomsOffices.h2.warehouseDetails=Details of warehouse goods are being held
 pages.warehouseAndCustomsOffices.h2.customsOfficeDetails=Details of customs office
 
+pages.deliveryTerms.title=Delivery terms
+pages.deliveryTerms.form.legend=Delivery terms
+
 pages.deferredPayment.title=Deferred payment, total invoice and currency
 pages.deferredPayment.form.legend=Deferred payment, total invoice and currency
 
 pages.guaranteeType.title=Guarantee types and nature of transactions
 pages.guaranteeType.form.legend=Guarantee types and nature of transactions
+
+
 
 ## specific fields
 declaration.declarant.name=Declarant'’s name
@@ -203,6 +208,9 @@ declaration.invoiceAmount.currencyId=Total Amount Invoiced - Currency
 declaration.obligationGuarantees.securityDetailsCode=Guarantee Type
 declaration.obligationGuarantees.referenceId=Guarantee Reference
 declaration.goodsShipment.governmentAgencyGoodsItems.transactionNatureCode=Nature of Transaction
+declaration.goodsShipment.tradeTerms.conditionCode=INCOTERM code
+declaration.goodsShipment.tradeTerms.conditionCode.hint=International Commercial Terms for the Declaration. Delivery terms code must be provided for declarations using valuation method 1 (transaction value of imported goods).
+declaration.goodsShipment.tradeTerms.locationId=United Nations Code for Trade and Transport Locations (UN/LOCODE code)
 
 ## validations
 alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters

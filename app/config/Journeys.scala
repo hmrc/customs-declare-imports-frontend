@@ -46,6 +46,7 @@ class SubmissionJourney {
     "transport",
     "location-of-goods",
     "warehouse-and-customs-offices",
+    "delivery-terms",
     "deferred-payment",
     "guarantee-type"
   )
