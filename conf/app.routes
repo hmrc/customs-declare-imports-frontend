@@ -4,6 +4,7 @@ GET         /assets/*file                                      controllers.Asset
 GET         /                                                  controllers.LandingController.displayLandingPage
 GET         /start                                             controllers.StartController.displayStartPage
 GET         /enrol                                             controllers.UnauthorisedController.enrol
+POST        /notify                                            controllers.NotificationController.receive()
 
 POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
 GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)
