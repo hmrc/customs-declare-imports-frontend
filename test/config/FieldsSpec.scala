@@ -17,13 +17,33 @@
 package config
 
 import org.scalatest.{MustMatchers, WordSpec}
+import uk.gov.hmrc.customs.test.RandomFixtures
+import uk.gov.hmrc.wco.dec.{JacksonMapper, MetaData}
 
-class FieldsSpec extends WordSpec with MustMatchers {
+class FieldsSpec extends WordSpec with MustMatchers with RandomFixtures with JacksonMapper {
 
   "definitions" should {
 
     "include declarant name field" in {
       Fields.definitions("declaration.declarant.name") must be(Fields.declarantName)
+    }
+
+  }
+
+  Fields.definitions.foreach { entry =>
+
+    s"field '${entry._2.name}'" should {
+
+      "be serializable and deserializable" ignore {
+        val v = randomInt(99).toString
+        val props = Map(entry._2.name -> v)
+        val meta = MetaData.fromProperties(props)
+        val p = _props.writeValueAsProperties(meta)
+        withClue(entry._1) {
+          p.getProperty(entry._1) must be(v)
+        }
+      }
+
     }
 
   }
