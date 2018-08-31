@@ -577,7 +577,7 @@ class Fields extends Options {
   val containerCode: TextInput = TextInput(
     name = "declaration.goodsShipment.consignment.containerCode",
     labelKey = Some("declaration.goodsShipment.consignment.containerCode"),
-    validators = Seq(RequiredNumericValidator(1, 0))
+    validators = Seq(RequiredAlphaNumericValidator(17, 17))
   )
 
   val borderTransportMeans: SelectInput = SelectInput(
@@ -590,14 +590,29 @@ class Fields extends Options {
   val arrivalTransportMeans: SelectInput = SelectInput(
     name = "declaration.goodsShipment.consignment.arrivalTransportMeans.modeCode",
     options = transportModeTypes,
-    labelKey = Some("declaration.goodsShipment.consignment.arrivalTransportMeans.modeCode"),
-    validators = Seq(RequiredContainsValidator(transportModeTypes.map(_._1).toSet))
+    labelKey = Some("declaration.goodsShipment.consignment.arrivalTransportMeans.modeCode")
   )
 
-  val arrivalTransportMeansId: TextInput = TextInput(
+  val arrivalTransportMeansIdentificationTypeCode: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.consignment.arrivalTransportMeans.identificationTypeCode",
+    options = transportMeansIdentificationTypes,
+    labelKey = Some("declaration.goodsShipment.consignment.arrivalTransportMeans.identificationTypeCode")
+  )
+
+  val arrivalTransportMeansIdentificationId: TextInput = TextInput(
     name = "declaration.goodsShipment.consignment.arrivalTransportMeans.id",
-    labelKey = Some("declaration.goodsShipment.consignment.arrivalTransportMeans.id"),
-    validators = Seq(RequiredAlphaNumericValidator(35, 1))
+    labelKey = Some("declaration.goodsShipment.consignment.arrivalTransportMeans.id")
+  )
+
+  val transportEquipmentId: TextInput = TextInput(
+    name = "declaration.goodsShipment.consignment.transportEquipments[0].id",
+    labelKey = Some("declaration.goodsShipment.consignment.transportEquipments.id")
+  )
+
+  val borderTransportMeansRegistrationNationalityCode: SelectInput = SelectInput(
+    name = "declaration.borderTransportMeans.registrationNationalityCode",
+    options = countryTypes,
+    labelKey = Some("declaration.borderTransportMeans.registrationNationalityCode")
   )
 
   // Location of goods form fields
