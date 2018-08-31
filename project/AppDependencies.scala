@@ -15,7 +15,7 @@ object AppDependencies {
     "uk.gov.hmrc" %% "auth-client" % "2.6.0",
     "uk.gov.hmrc" %% "http-caching-client" % "7.1.0",
     "uk.gov.hmrc" %% "play-reactivemongo" % "6.2.0",
-    "uk.gov.hmrc" %% "wco-dec" % "0.4.0",
+    "uk.gov.hmrc" %% "wco-dec" % "0.5.0",
     "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
     "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,

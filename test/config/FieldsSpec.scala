@@ -22,6 +22,11 @@ import uk.gov.hmrc.wco.dec.{JacksonMapper, MetaData}
 
 class FieldsSpec extends WordSpec with MustMatchers with RandomFixtures with JacksonMapper {
 
+  private val knownBad: Set[String] = Set(
+    "declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].additionalProcedure",
+    "declaration.typeCode.additional"
+  )
+
   "definitions" should {
 
     "include declarant name field" in {
@@ -30,17 +35,17 @@ class FieldsSpec extends WordSpec with MustMatchers with RandomFixtures with Jac
 
   }
 
-  Fields.definitions.foreach { entry =>
+  Fields.definitions.filterNot(d => knownBad.contains(d._2.name)).foreach { entry =>
 
     s"field '${entry._2.name}'" should {
 
-      "be serializable and deserializable" ignore {
+      "be serializable and deserializable" in {
         val v = randomInt(99).toString
         val props = Map(entry._2.name -> v)
         val meta = MetaData.fromProperties(props)
-        val p = _props.writeValueAsProperties(meta)
+        val p = meta.toProperties
         withClue(entry._1) {
-          p.getProperty(entry._1) must be(v)
+          p(entry._1) must be(v)
         }
       }
 

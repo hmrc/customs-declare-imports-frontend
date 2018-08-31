@@ -149,32 +149,32 @@ class Fields extends Options {
 
   // importer details form fields
   val importerName: TextInput = TextInput(
-    name = "declaration.importer.name",
+    name = "declaration.goodsShipment.importer.name",
     validators = Seq(OptionalAlphaNumericValidator(70))
   )
   val importerAddressLine: TextInput = TextInput(
-    name = "declaration.importer.address.line",
+    name = "declaration.goodsShipment.importer.address.line",
     labelKey = Some("common.fields.address.line"),
     validators = Seq(OptionalAlphaNumericValidator(70))
   )
   val importerAddressCityName: TextInput = TextInput(
-    name = "declaration.importer.address.cityName",
+    name = "declaration.goodsShipment.importer.address.cityName",
     labelKey = Some("common.fields.address.cityName"),
     validators = Seq(OptionalAlphaNumericValidator(30))
   )
   val importerAddressCountryCode: SelectInput = SelectInput(
-    name = "declaration.importer.address.countryCode",
+    name = "declaration.goodsShipment.importer.address.countryCode",
     options = countryTypes,
     labelKey = Some("common.fields.address.countryCode"),
     validators = Seq(OptionalContainsValidator(countryTypes.map(_._1).toSet))
   )
   val importerAddressPostcode: TextInput = TextInput(
-    name = "declaration.importer.address.postcodeId",
+    name = "declaration.goodsShipment.importer.address.postcodeId",
     labelKey = Some("common.fields.address.postcodeId"),
     validators = Seq(OptionalAlphaNumericValidator(9))
   )
   val importerEori: TextInput = TextInput(
-    name = "declaration.importer.id",
+    name = "declaration.goodsShipment.importer.id",
     labelKey = Some("common.fields.eori"),
     hintKey = Some("common.hints.eori"),
     validators = Seq(OptionalAlphaNumericValidator(17, 17))
@@ -440,18 +440,18 @@ class Fields extends Options {
 
   // additions and deductions form fields
   val otherChargeDeductionAmount: TextInput = TextInput(
-    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].customsValuation.chargeDeductions.otherChargeDeductionAmount.value",
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].customsValuation.chargeDeductions[0].otherChargeDeductionAmount.value",
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.otherChargeDeductionAmount.value"),
     validators = Seq(OptionalNumericValidator(16, 2))
   )
   val otherChargeDeductionCurrency: SelectInput = SelectInput(
-    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].customsValuation.chargeDeductions.otherChargeDeductionAmount.currencyId",
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].customsValuation.chargeDeductions[0].otherChargeDeductionAmount.currencyId",
     options = currencyTypes,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.otherChargeDeductionAmount.currencyId"),
     validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet))
   )
   val otherChargeDeductionType: SelectInput = SelectInput(
-    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].customsValuation.chargeDeductions.chargesTypeCode",
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].customsValuation.chargeDeductions[0].chargesTypeCode",
     options = GoodsItemValuationAdjustmentTypes,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.chargeDeductions.chargesTypeCode"),
     validators = Seq(OptionalContainsValidator(GoodsItemValuationAdjustmentTypes.map(_._1).toSet))
@@ -522,7 +522,7 @@ class Fields extends Options {
 
   // other data elements
   val dutyTaxFeeQuotaOrderID: TextInput = TextInput(
-    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0],quotaOrderId",
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].quotaOrderId",
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.quotaOrderId"),
     validators = Seq(OptionalAlphaNumericValidator(6))
   )
@@ -535,7 +535,7 @@ class Fields extends Options {
   )
 
   val statisticalValue: TextInput = TextInput(
-    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].statisticalValueAmount",
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].statisticalValueAmount.value",
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.statisticalValueAmount"),
     hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.statisticalValueAmount.hint"),
     validators = Seq(OptionalNumericValidator(16, 2))
@@ -556,13 +556,13 @@ class Fields extends Options {
   )
 
   val writingOffDateOfValidity: TextInput = TextInput(
-    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].additionalDocuments[0].effectiveDateTime",
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].additionalDocuments[0].effectiveDateTime.dateTimeString.value",
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.effectiveDateTime"),
     validators = Seq(OptionalAlphaNumericValidator(8))
   )
 
   val writingOffQuantity: TextInput = TextInput(
-    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].additionalDocuments[0].writeOff.quantity",
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].additionalDocuments[0].writeOff.quantity.value",
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.writeOff.quantity"),
     validators = Seq(OptionalNumericValidator(16, 6))
   )
