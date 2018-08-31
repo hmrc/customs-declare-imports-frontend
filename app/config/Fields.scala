@@ -694,6 +694,36 @@ class Fields extends Options {
     validators = Seq(OptionalContainsValidator(supervisingCustomsOffices.map(_._1).toSet))
   )
 
+  // deferred payment form fields
+  val declarationAdditionalDocumentId: TextInput = TextInput(
+    name = "declaration.additionalDocuments[0].id",
+    labelKey = Some("declaration.additionalDocuments.id"),
+    validators = Seq(OptionalNumericValidator(7, 0))
+  )
+
+  val declarationAdditionalDocumentCategoryCode: SelectInput = SelectInput(
+    name = "declaration.additionalDocuments[0].categoryCode",
+    options = paymentMethodTypes,
+    labelKey = Some("declaration.additionalDocuments.categoryCode")
+  )
+
+  val declarationAdditionalDocumentTypeCode: TextInput = TextInput(
+    name = "declaration.additionalDocuments[0].typeCode",
+    labelKey = Some("declaration.additionalDocuments.typeCode"),
+    validators = Seq(OptionalAlphaNumericValidator(3))
+  )
+
+  val invoiceAmountValue: TextInput = TextInput(
+    name = "declaration.invoiceAmount.value",
+    labelKey = Some("declaration.invoiceAmount.value"),
+    validators = Seq(OptionalNumericValidator(16,2))
+  )
+
+  val invoiceAmountCurrency: SelectInput = SelectInput(
+    name = "declaration.invoiceAmount.currencyId",
+    options = currencyTypes,
+    labelKey = Some("declaration.invoiceAmount.currencyId")
+  )
 }
 
 object Fields extends Fields {

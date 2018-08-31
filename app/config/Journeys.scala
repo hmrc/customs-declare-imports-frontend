@@ -45,7 +45,8 @@ class SubmissionJourney {
     "place-of-despatch",
     "transport",
     "location-of-goods",
-    "warehouse-and-customs-offices"
+    "warehouse-and-customs-offices",
+    "deferred-payment"
   )
 
   // this is where we go "back" to from screen 1

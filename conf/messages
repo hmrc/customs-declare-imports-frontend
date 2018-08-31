@@ -105,6 +105,9 @@ pages.warehouseAndCustomsOffices.form.legend=Warehouse and customs offices
 pages.warehouseAndCustomsOffices.h2.warehouseDetails=Details of warehouse goods are being held
 pages.warehouseAndCustomsOffices.h2.customsOfficeDetails=Details of customs office
 
+pages.deferredPayment.title=Deferred payment, total invoice and currency
+pages.deferredPayment.form.legend=Deferred payment, total invoice and currency
+
 ## specific fields
 declaration.declarant.name=Declarant'’s name
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
@@ -189,6 +192,11 @@ declaration.goodsShipment.warehouse.typeCode=Warehouse Type
 declaration.goodsShipment.warehouse.id=Warehouse identifier
 declaration.presentationOffice.id=Details of customs office
 declaration.supervisingOffice.id=Supervising Customs Office
+declaration.additionalDocuments.id=Deferred Payment - Deferred Payment ID
+declaration.additionalDocuments.categoryCode=Deferred Payment - Deferred Payment Category
+declaration.additionalDocuments.typeCode=Deferred Payment - Deferred Payment Type
+declaration.invoiceAmount.value=Total Amount Invoiced
+declaration.invoiceAmount.currencyId=Total Amount Invoiced - Currency
 
 ## validations
 alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters
