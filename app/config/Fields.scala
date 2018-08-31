@@ -576,8 +576,7 @@ class Fields extends Options {
   // transport form fields
   val containerCode: TextInput = TextInput(
     name = "declaration.goodsShipment.consignment.containerCode",
-    labelKey = Some("declaration.goodsShipment.consignment.containerCode"),
-    validators = Seq(RequiredAlphaNumericValidator(17, 17))
+    labelKey = Some("declaration.goodsShipment.consignment.containerCode")
   )
 
   val borderTransportMeans: SelectInput = SelectInput(
