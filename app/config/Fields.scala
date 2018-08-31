@@ -38,9 +38,9 @@ class Fields extends Options {
   )
   val declarantAddressCountryCode: SelectInput = SelectInput(
     name = "declaration.declarant.address.countryCode",
-    options = countryOptions,
+    options = countryTypes,
     labelKey = Some("common.fields.address.countryCode"),
-    validators = Seq(OptionalContainsValidator(countryOptions.map(_._1).toSet))
+    validators = Seq(OptionalContainsValidator(countryTypes.map(_._1).toSet))
   )
   val declarantAddressPostcode: TextInput = TextInput(
     name = "declaration.declarant.address.postcodeId",
@@ -92,9 +92,9 @@ class Fields extends Options {
   )
   val exporterAddressCountryCode: SelectInput = SelectInput(
     name = "declaration.exporter.address.countryCode",
-    options = countryOptions,
+    options = countryTypes,
     labelKey = Some("common.fields.address.countryCode"),
-    validators = Seq(OptionalContainsValidator(countryOptions.map(_._1).toSet))
+    validators = Seq(OptionalContainsValidator(countryTypes.map(_._1).toSet))
   )
   val exporterAddressPostcode: TextInput = TextInput(
     name = "declaration.exporter.address.postcodeId",
@@ -125,9 +125,9 @@ class Fields extends Options {
   )
   val representativeAddressCountryCode: SelectInput = SelectInput(
     name = "declaration.agent.address.countryCode",
-    options = countryOptions,
+    options = countryTypes,
     labelKey = Some("common.fields.address.countryCode"),
-    validators = Seq(OptionalContainsValidator(countryOptions.map(_._1).toSet))
+    validators = Seq(OptionalContainsValidator(countryTypes.map(_._1).toSet))
   )
   val representativeAddressPostcode: TextInput = TextInput(
     name = "declaration.agent.address.postcodeId",
@@ -164,9 +164,9 @@ class Fields extends Options {
   )
   val importerAddressCountryCode: SelectInput = SelectInput(
     name = "declaration.importer.address.countryCode",
-    options = countryOptions,
+    options = countryTypes,
     labelKey = Some("common.fields.address.countryCode"),
-    validators = Seq(OptionalContainsValidator(countryOptions.map(_._1).toSet))
+    validators = Seq(OptionalContainsValidator(countryTypes.map(_._1).toSet))
   )
   val importerAddressPostcode: TextInput = TextInput(
     name = "declaration.importer.address.postcodeId",
@@ -197,9 +197,9 @@ class Fields extends Options {
   )
   val sellerAddressCountryCode: SelectInput = SelectInput(
     name = "declaration.goodsShipment.seller.address.countryCode",
-    options = countryOptions,
+    options = countryTypes,
     labelKey = Some("common.fields.address.countryCode"),
-    validators = Seq(OptionalContainsValidator(countryOptions.map(_._1).toSet))
+    validators = Seq(OptionalContainsValidator(countryTypes.map(_._1).toSet))
   )
   val sellerAddressPostcode: TextInput = TextInput(
     name = "declaration.goodsShipment.seller.address.postcodeId",
@@ -235,9 +235,9 @@ class Fields extends Options {
   )
   val buyerAddressCountryCode: SelectInput = SelectInput(
     name = "declaration.goodsShipment.buyer.address.countryCode",
-    options = countryOptions,
+    options = countryTypes,
     labelKey = Some("common.fields.address.countryCode"),
-    validators = Seq(OptionalContainsValidator(countryOptions.map(_._1).toSet))
+    validators = Seq(OptionalContainsValidator(countryTypes.map(_._1).toSet))
   )
   val buyerAddressPostcode: TextInput = TextInput(
     name = "declaration.goodsShipment.buyer.address.postcodeId",
@@ -474,9 +474,9 @@ class Fields extends Options {
   // country of origin form fields
   val originCountry: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].origins[0].countryCode",
-    options = countryOptions,
+    options = countryTypes,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.origins.countryCode"),
-    validators = Seq(RequiredContainsValidator(countryOptions.map(_._1).toSet))
+    validators = Seq(RequiredContainsValidator(countryTypes.map(_._1).toSet))
   )
 
   val originType: RadioInput = RadioInput(
@@ -502,9 +502,9 @@ class Fields extends Options {
   // place of despatch form fields
   val exportCountry: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].exportCountry.id",
-    options = countryOptions,
+    options = thirdSpecialTerritoriesCategories,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.exportCountry.id"),
-    validators = Seq(RequiredContainsValidator(countryOptions.map(_._1).toSet))
+    validators = Seq(RequiredContainsValidator(thirdSpecialTerritoriesCategories.map(_._1).toSet))
   )
   val loadingLocation: SelectInput = SelectInput(
     name = "declaration.goodsShipment.consignment.loadingLocation.id",
@@ -514,10 +514,11 @@ class Fields extends Options {
   )
   val destinationCountry: SelectInput = SelectInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].destination.countryCode",
-    options = countryOptions,
+    options = euCountries,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.destination.countryCode"),
-    validators = Seq(RequiredContainsValidator(countryOptions.map(_._1).toSet))
+    validators = Seq(RequiredContainsValidator(euCountries.map(_._1).toSet))
   )
+// TODO - Set to "euCountries" assuming this is an H1 type, but for I1, needs to be "NonThirdCountries"
 
   // other data elements
   val dutyTaxFeeQuotaOrderID: TextInput = TextInput(
