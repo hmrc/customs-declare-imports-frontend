@@ -2595,4 +2595,43 @@ val euCountries: Seq[(String, String)] = Seq(
     "SI" -> "SI",
     "SK" -> "SK"
     )
+
+val nonThirdCountries: Seq[(String, String)] = Seq(
+    "AT" -> "AT",
+    "BE" -> "BE",
+    "BG" -> "BG",
+    "CY" -> "CY",
+    "CZ" -> "CZ",
+    "DE" -> "DE",
+    "DK" -> "DK",
+    "EE" -> "EE",
+    "ES" -> "ES",
+    "FI" -> "FI",
+    "FR" -> "FR",
+    "GB" -> "GB",
+    "GF" -> "GF",
+    "GG" -> "GG",
+    "GI" -> "GI",
+    "GP" -> "GP",
+    "GR" -> "GR",
+    "HR" -> "HR",
+    "HU" -> "HU",
+    "IE" -> "IE",
+    "IT" -> "IT",
+    "JE" -> "JE",
+    "LT" -> "LT",
+    "LU" -> "LU",
+    "LV" -> "LV",
+    "MQ" -> "MQ",
+    "MT" -> "MT",
+    "NL" -> "NL",
+    "PL" -> "PL",
+    "PT" -> "PT",
+    "RE" -> "RE",
+    "RO" -> "RO",
+    "SE" -> "SE",
+    "SI" -> "SI",
+    "SK" -> "SK",
+    "YT" -> "YT"
+    )
 }
