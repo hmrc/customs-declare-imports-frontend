@@ -46,7 +46,8 @@ class SubmissionJourney {
     "transport",
     "location-of-goods",
     "warehouse-and-customs-offices",
-    "deferred-payment"
+    "deferred-payment",
+    "guarantee-type"
   )
 
   // this is where we go "back" to from screen 1

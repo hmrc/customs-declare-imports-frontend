@@ -724,6 +724,27 @@ class Fields extends Options {
     options = currencyTypes,
     labelKey = Some("declaration.invoiceAmount.currencyId")
   )
+
+  // guarantee type form fields
+  val securityDetailsCode: SelectInput = SelectInput(
+    name = "declaration.obligationGuarantees[0].securityDetailsCode",
+    options = declaredGuaranteeTypes,
+    labelKey = Some("declaration.obligationGuarantees.securityDetailsCode")
+  )
+
+  val guaranteeReferenceId: TextInput = TextInput(
+    name = "declaration.obligationGuarantees[0].referenceId",
+    labelKey = Some("declaration.obligationGuarantees.referenceId"),
+    validators = Seq(OptionalAlphaNumericValidator(35))
+  )
+
+  val transactionNatureCode: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].transactionNatureCode",
+    options = transactionNatureTypes,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.transactionNatureCode"),
+    validators = Seq(RequiredContainsValidator(transactionNatureTypes.map(_._1).toSet))
+  )
+
 }
 
 object Fields extends Fields {
