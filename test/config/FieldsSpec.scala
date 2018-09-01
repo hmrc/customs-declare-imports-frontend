@@ -22,12 +22,16 @@ import play.api.i18n.Messages.UrlMessageSource
 import uk.gov.hmrc.customs.test.RandomFixtures
 import uk.gov.hmrc.wco.dec.{JacksonMapper, MetaData}
 
+import scala.util.matching.Regex
+
 class FieldsSpec extends WordSpec with MustMatchers with RandomFixtures with JacksonMapper {
 
   private val knownBad: Set[String] = Set(
     "declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].additionalProcedure",
     "declaration.typeCode.additional"
   )
+
+  private val acceptableId: Regex = "^[a-zA-Z]+[a-zA-Z0-9_-]*$".r
 
   "definitions" should {
 
@@ -59,6 +63,17 @@ class FieldsSpec extends WordSpec with MustMatchers with RandomFixtures with Jac
           }
         )
 
+      }
+
+      // HTML5 allows practically anything as an ID attribute value. However, for the sake of sanity (giving due
+      // consideration to things like CSS and JavaScript which might want to reference them), we should be a little
+      // more strict. The HTML4 defintion which stipulates that ID tokens must begin with a letter ([A-Za-z])
+      // and may be followed by any number of letters, digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"),
+      // and periods ("."). For our purposes, we should go also exclude periods and colons.
+      "have a sane ID attribute value" in {
+        withClue(s"ID attribute value '${entry._2.id()}' matches required regex") {
+          acceptableId.pattern.matcher(entry._2.id()).matches() must be(true)
+        }
       }
 
     }
