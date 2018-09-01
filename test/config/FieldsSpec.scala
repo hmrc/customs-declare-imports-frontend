@@ -16,8 +16,6 @@
 
 package config
 
-import java.util.ResourceBundle
-
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.UrlMessageSource
