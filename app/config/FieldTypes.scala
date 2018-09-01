@@ -25,8 +25,6 @@ trait FieldDefinition {
   val hintKey: Option[String]
   val validators: Seq[Validator]
 
-  def applyValue(value: String, metaData: MetaData): MetaData = metaData // for now, by default, do nothing (use JUEL to implement?)
-
   def maxLength: Option[Int] = validators.filter(_.isInstanceOf[MaxLength]).map(_.asInstanceOf[MaxLength].maxLength).reduceLeftOption(_ min _)
 
   def id(num: Option[Int] = None): String = htmlId.getOrElse(name.replaceAll("[.\\[\\]]", "_")) + num.map(n => "_" + n).getOrElse("")
