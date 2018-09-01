@@ -16,7 +16,11 @@
 
 package config
 
+import java.util.ResourceBundle
+
 import org.scalatest.{MustMatchers, WordSpec}
+import play.api.i18n.Messages
+import play.api.i18n.Messages.UrlMessageSource
 import uk.gov.hmrc.customs.test.RandomFixtures
 import uk.gov.hmrc.wco.dec.{JacksonMapper, MetaData}
 
@@ -47,6 +51,16 @@ class FieldsSpec extends WordSpec with MustMatchers with RandomFixtures with Jac
         withClue(entry._1) {
           p(entry._1) must be(v)
         }
+      }
+
+      s"contains message for key '${entry._2.labelMessageKey}'" in {
+        Messages.parse(UrlMessageSource(getClass.getResource("/messages")), "messages").fold(
+          ex => throw ex,
+          messages => withClue(s"message 'entry._2.labelMessageKey' is blank") {
+            messages(entry._2.labelMessageKey).trim.isEmpty must be(false)
+          }
+        )
+
       }
 
     }

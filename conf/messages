@@ -127,7 +127,7 @@ declaration.exporter.name=Exporter'’s name
 declaration.agent.name=Representative'’s name
 declaration.agent.functionCode=Status code
 declaration.agent.functionCode.hint=This code declares the way in which the declarant is representing the Importer.
-declaration.importer.name=Importer'’s name
+declaration.goodsShipment.importer.name=Importer'’s name
 declaration.goodsShipment.seller.name=Seller'’s name
 declaration.goodsShipment.buyer.name=Buyer'’s name
 declaration.goodsShipment.aeoMutualRecognitionParties.id=Additional supply chain actor(s) identification No. - Identifier
@@ -183,7 +183,6 @@ declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.submitt
 declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.effectiveDateTime=Date of validity
 declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.writeOff.quantity=Quantity
 declaration.goodsShipment.governmentAgencyGoodsItems.additionalDocuments.writeOff.quantity.unitCode=Measurement unit and qualifier
-declaration.goodsShipment.governmentAgencyGoodsItems.destination.countryCode=Country of destination code
 declaration.goodsShipment.consignment.containerCode=Container
 declaration.borderTransportMeans.modeCode=Mode of Transport at border
 declaration.goodsShipment.consignment.arrivalTransportMeans.modeCode=Inland mode of transport
