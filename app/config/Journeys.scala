@@ -48,7 +48,8 @@ class SubmissionJourney {
     "warehouse-and-customs-offices",
     "delivery-terms",
     "deferred-payment",
-    "guarantee-type"
+    "guarantee-type",
+    "check-your-answers"
   )
 
   // this is where we go "back" to from screen 1

@@ -15,19 +15,13 @@
  *@
 
 @import config.{AppConfig, ValidationError}
-@import config.Fields._
+@import config.SubmissionJourney._
+@import views.html.helper.CSRF
 
-@(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
-
-@main_template(messages("pages.guaranteeType.title")) {
-    @helpers.form("guarantee-type", "pages.guaranteeType.form.legend", data) {
-        @helpers.selectInput(securityDetailsCode, data)
-        @helpers.textInput(guaranteeReferenceId, data)
-        @helpers.selectInput(transactionNatureCode, data)
-        <input type="hidden" name="force-last" value="true"/>
-        @helpers.nextButton()
-    }
-}
-
-
+@(label: String, fieldValue: String)(implicit req: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, Seq[ValidationError]])
+    <div>
+      <dt class="cya-question">@label</dt>
+      <dd class="cya-answer">@Html(fieldValue)</dd>
+      <dd class="cya-change">&nbsp;</dd>
+    </div>
 

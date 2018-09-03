@@ -19,14 +19,12 @@
 
 @(data: Map[String, String])(implicit request: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
-@main_template(messages("pages.declarant.details.title")) {
-    @helpers.form("declarant-details", "pages.declarant.details.form.legend", data) {
-        @helpers.textInput(declarantName, data)
-        @helpers.textInput(declarantAddressLine, data)
-        @helpers.textInput(declarantAddressCityName, data)
-        @helpers.selectInput(declarantAddressCountryCode, data)
-        @helpers.textInput(declarantAddressPostcode, data)
-        @helpers.textInput(declarantEori, data)
+@main_template(messages("pages.checkYourAnswers.title")) {
+    @helpers.form("check-your-answers", "pages.checkYourAnswers.form.legend") {
+	    @helpers.checkYourAnswersSection("pages.declarant.details.form.legend", "declarant-details"){
+	        @helpers.cyaField(messages("declaration.declarant.name"), data(declarantName.name))
+	        @helpers.cyaField(messages("common.fields.address.multiLine"), data(declarantAddressLine.name) + "<br/>" + data(declarantAddressCityName.name))
+	    }
         @helpers.nextButton()
     }
 }

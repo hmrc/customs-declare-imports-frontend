@@ -16,6 +16,7 @@ common.button.next=Next
 common.button.continue=Continue
 common.button.submit=Submit
 common.button.save-and-continue=Save and continue
+common.button.change=Change
 
 ## common fields with shared labels
 common.fields.eori=EORI number
@@ -25,6 +26,7 @@ common.fields.address.line=First line of address
 common.fields.address.cityName=City
 common.fields.address.countryCode=Country
 common.fields.address.postcodeId=Postcode
+common.fields.address.multiLine=Address
 
 common.fields.communications.id=Phone number (optional)
 
@@ -113,6 +115,9 @@ pages.deferredPayment.form.legend=Deferred payment, total invoice and currency
 
 pages.guaranteeType.title=Guarantee types and nature of transactions
 pages.guaranteeType.form.legend=Guarantee types and nature of transactions
+
+pages.checkYourAnswers.title=Check your answers
+pages.checkYourAnswers.form.legend=Check your answers
 
 
 
