@@ -50,6 +50,10 @@ class SubmissionJourneySpec extends WordSpec with MustMatchers {
     "return last item given forced override" in {
       journey.next(journey.screens.head, true).right.get must be(journey.screens.last)
     }
+
+    "return end point given final screen and forced override" in {
+      journey.next(journey.screens.last, true).left.get must be(journey.end)
+    }
   }
 
 }

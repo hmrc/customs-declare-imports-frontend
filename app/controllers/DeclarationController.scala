@@ -65,7 +65,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     implicit val user = req.user
     implicit val errors: Map[String, Seq[ValidationError]] = validate(data)
     if (errors.isEmpty) {
-      cacheSubmission(data) { (merged, _) =>
+      cacheSubmission(data ++ Map("force-last" -> "false")) { (merged, _) =>
         client.submitImportDeclaration(MetaData.fromProperties(merged.filterNot(_._2.trim.isEmpty))).map { resp =>
           Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId.get))
         }
