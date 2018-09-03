@@ -355,8 +355,7 @@ class Fields extends Options {
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.invoiceLine.itemChargeAmount.currencyId",
     options = currencyTypes,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.invoiceLine.itemChargeAmount.currencyId"),
-    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet)),
-    default = Some("GBP")
+    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet))
   )
   // TODO blocked until clarified
 //  val valuationExchangeRate: TextInput = ???
@@ -398,8 +397,7 @@ class Fields extends Options {
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].payment.paymentAmount.currencyId",
     options = currencyTypes,
     labelKey = Some("common.fields.currency"),
-    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet)),
-    default = Some("GBP")
+    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet))
   )
 
   val commodityDutyTaxFeesTaxAssessedAmount: TextInput = TextInput(
@@ -413,8 +411,7 @@ class Fields extends Options {
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].payment.taxAssessedAmount.currencyId",
     options = currencyTypes,
     labelKey = Some("common.fields.currency"),
-    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet)),
-    default = Some("GBP")
+    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet))
   )
 
   val commodityDutyTaxFeesPaymentMethodCode: SelectInput = SelectInput(
@@ -482,8 +479,7 @@ class Fields extends Options {
   val originType: RadioInput = RadioInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].origins[0].typeCode",
     options = countryRegionSubRoleTypes,
-    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.origins.typeCode"),
-    default = Some("1")
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.origins.typeCode")
   )
 
   // summary of goods form fields
@@ -545,8 +541,7 @@ class Fields extends Options {
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].statisticalValueAmount.currencyId",
     options = currencyTypes,
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.statisticalValueAmount.currencyId"),
-    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet)),
-    default = Some("GBP")
+    validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet))
   )
 
   val writingOffIssuingAuthority: TextInput = TextInput(
