@@ -18,15 +18,15 @@ package services
 
 import com.google.inject.{Inject, Singleton}
 import config.AppConfig
-import play.api.Logger
-import uk.gov.hmrc.http.cache.client.{CacheMap, HttpCaching}
+import uk.gov.hmrc.crypto.{ApplicationCrypto, CompositeSymmetricCrypto}
+import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpDelete, HttpGet, HttpPut}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SessionCacheService @Inject()(cfg: AppConfig, httpClient: HttpClient) extends HttpCaching {
+class CustomsHttpCaching @Inject()(cfg: AppConfig, httpClient: HttpClient) extends ShortLivedHttpCaching {
 
   override def defaultSource: String = cfg.keyStoreSource
 
@@ -36,11 +36,19 @@ class SessionCacheService @Inject()(cfg: AppConfig, httpClient: HttpClient) exte
 
   override def http: HttpGet with HttpPut with HttpDelete = httpClient
 
+}
+
+@Singleton
+class CustomsCacheService @Inject()(caching: CustomsHttpCaching, applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
+
+  override implicit val crypto: CompositeSymmetricCrypto = applicationCrypto.JsonCrypto
+
+  override def shortLiveCache: ShortLivedHttpCaching = caching
+
   def get(cacheName: String, eori: String)
          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, String]]] =
-    fetchAndGetEntry[Map[String, String]](defaultSource, cacheName, eori)
+    fetchAndGetEntry[Map[String, String]](cacheName, eori)
 
   def put(cacheName: String, eori: String, data: Map[String, String])
-         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = cache(defaultSource, cacheName, eori, data)
-
+         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = cache(cacheName, eori, data)
 }

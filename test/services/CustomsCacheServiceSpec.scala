@@ -17,6 +17,7 @@
 package services
 
 import play.api.libs.json.{Reads, Writes}
+import uk.gov.hmrc.crypto.{ApplicationCrypto, Protected}
 import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -24,7 +25,7 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SessionCacheServiceSpec extends CustomsPlaySpec with AuthenticationBehaviours {
+class CustomsCacheServiceSpec extends CustomsPlaySpec with AuthenticationBehaviours {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -35,23 +36,22 @@ class SessionCacheServiceSpec extends CustomsPlaySpec with AuthenticationBehavio
 
     var putData: Option[Map[String, Map[String, Map[String, Map[String, String]]]]] = None
 
-    val service = new SessionCacheService(appConfig, component[HttpClient]) {
-
+    val service = new CustomsCacheService(new CustomsHttpCaching(appConfig, component[HttpClient]) {
       override def fetchAndGetEntry[T](source: String, cacheId: String, key: String)
                                       (implicit hc: HeaderCarrier, rds: Reads[T], executionContext: ExecutionContext): Future[Option[T]] = (source, cacheId, key) match {
-        case legit if (source == cacheSource && cacheId == cacheName && key == eori) => Future.successful(Some(cachedData.asInstanceOf[T]))
+        case legit if (source == cacheSource && cacheId == cacheName && key == eori) => Future.successful(Some(Protected(cachedData).asInstanceOf[T]))
         case _ => super.fetchAndGetEntry(source, cacheId, key)(hc, rds, executionContext)
       }
 
       override def cache[A](source: String, cacheId: String, formId: String, body: A)
                            (implicit wts: Writes[A], hc: HeaderCarrier, executionContext: ExecutionContext): Future[CacheMap] = (source, cacheId, formId) match {
         case legit if (source == cacheSource && cacheId == cacheName && formId == eori) => {
-          putData = Some(Map(source -> Map(cacheId -> Map(formId -> body.asInstanceOf[Map[String, String]]))))
+          putData = Some(Map(source -> Map(cacheId -> Map(formId -> body.asInstanceOf[Protected[Map[String, String]]].decryptedValue))))
           Future.successful(CacheMap(randomString(8), Map.empty))
         }
         case _ => super.cache(source, cacheId, formId, body)(wts, hc, executionContext)
       }
-    }
+    }, component[ApplicationCrypto])
   }
 
   "get" should {

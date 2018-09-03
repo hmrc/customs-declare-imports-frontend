@@ -25,7 +25,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import services.{CustomsDeclarationsConnector, SessionCacheService}
+import services.{CustomsDeclarationsConnector, CustomsCacheService}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.wco.dec.{AdditionalInformation, Amendment, Declaration, MetaData}
@@ -33,7 +33,7 @@ import uk.gov.hmrc.wco.dec.{AdditionalInformation, Amendment, Declaration, MetaD
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: SessionCacheService)
+class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: CustomsCacheService)
                                      (implicit val messagesApi: MessagesApi, val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController with I18nSupport {
 

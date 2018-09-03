@@ -21,17 +21,16 @@ import java.util.UUID
 import domain.auth.SignedInUser
 import org.mockito.Mockito.when
 import org.mockito.{ArgumentMatcher, ArgumentMatchers}
-import play.api.libs.json.{JsString, JsObject}
-import play.api.{Logger, Application}
+import play.api.Application
 import play.api.http.{HeaderNames, Status}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsEmpty, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.filters.csrf.CSRF.Token
 import play.filters.csrf.{CSRFConfigProvider, CSRFFilter}
-import services.SessionCacheService
+import services.CustomsCacheService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrievals.{credentials, _}
@@ -50,12 +49,12 @@ trait AuthenticationBehaviours {
 
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
-  lazy val sessionCacheServiceMock = mock[SessionCacheService]
+  lazy val sessionCacheServiceMock = mock[CustomsCacheService]
 
 
   override lazy val app: Application = GuiceApplicationBuilder()
     .overrides(bind[AuthConnector].to(mockAuthConnector))
-    .overrides(bind[SessionCacheService].to(sessionCacheServiceMock))
+    .overrides(bind[CustomsCacheService].to(sessionCacheServiceMock))
     .build()
 
   class UserRequestScenario(method: String = "GET", uri: String = s"/$contextPath/",
