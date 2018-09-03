@@ -34,7 +34,8 @@ class SubmissionJourney {
     "additional-fiscal-references",
     "previous-documents",
     "procedure-codes",
-    "identification-of-goods", // TODO from what I could gather, this wanted procedure-codes as prev and previous-documents as next, which can't be satisified
+    "identification-of-goods-shipping-marks-and-codes",
+    "identification-of-goods-units",
     "valuation",
     "tax",
     "additions-and-deductions",

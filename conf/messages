@@ -215,6 +215,26 @@ declaration.goodsShipment.governmentAgencyGoodsItems.transactionNatureCode=Natur
 declaration.goodsShipment.tradeTerms.conditionCode=INCOTERM code
 declaration.goodsShipment.tradeTerms.conditionCode.hint=International Commercial Terms for the Declaration. Delivery terms code must be provided for declarations using valuation method 1 (transaction value of imported goods).
 declaration.goodsShipment.tradeTerms.locationId=United Nations Code for Trade and Transport Locations (UN/LOCODE code)
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.cusCode=Customs Union and statistics (CUS) Code
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.combinedNomenclatureCode=Combined Nomenclature code
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeTaricCode=TARIC code
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeTaricAdditionalCodes=TARIC Additional code(s)
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeNationalAdditionalCodes=National Additional code(s)
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeCombinedNomenclatureTypeCode=Combined Nomenclature type code
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeTaricTypeCode=TARIC type code
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeTaricAdditionalTypeCodes=TARIC Additional type code(s)
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeNationalAdditionalTypeCodes=National Additional type code(s)
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.tariffQuantity=Supplementary units
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.tariffQuantityHint=The quantity can be expressed up to 6 decimal places.
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netNetWeightMeasure=Net mass
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netNetWeightMeasureHint=The net mass is the mass of the goods without any packaging and must be given in kilograms. The quantity can be expressed up to 6 decimal places.
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.grossMassMeasure=Gross mass
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.grossMassMeasureHint=The gross mass, given in kilograms, of the goods concerned by the relevant item of goods.
+declaration.goodsShipment.governmentAgencyGoodsItems.packagings.typeCode=Type of packages
+declaration.goodsShipment.governmentAgencyGoodsItems.packagings.quantity=Number of packages
+declaration.goodsShipment.governmentAgencyGoodsItems.packagings.quantityHint=This is the number of individual items packaged in such a way that they cannot be divided without first undoing the packing, or the number of pieces, if unpackaged.
+declaration.goodsShipment.consignment.transportEquipments.id=Container identification number
+declaration.goodsShipment.consignment.transportEquipments.idHint=Marks (letters and/or numbers) which identify the transport container.
 
 ## validations
 alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters

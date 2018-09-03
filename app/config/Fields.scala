@@ -435,6 +435,107 @@ class Fields extends Options {
     validators = Seq(OptionalAlphaNumericValidator(512))
   )
 
+  val cusCode: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].id",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.cusCode"),
+    validators = Seq(OptionalAlphaNumericValidator(8))
+  )
+
+  val commodityCodeCombinedNomenclatureCode: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].id",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.combinedNomenclatureCode"),
+    validators = Seq(OptionalAlphaNumericValidator(8))
+  )
+
+  val commodityCodeTaricCode: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].id",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeTaricCode"),
+    validators = Seq(OptionalAlphaNumericValidator(2))
+  )
+
+  val commodityCodeTaricAdditionalCodes: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].id",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeTaricAdditionalCodes"),
+    validators = Seq(OptionalAlphaNumericValidator(4))
+  )
+
+  val commodityCodeNationalAdditionalCodes: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].id",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeNationalAdditionalCodes"),
+    validators = Seq(OptionalAlphaNumericValidator(4))
+  )
+
+  val commodityCodeCombinedNomenclatureTypeCode: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].identificationTypeCode",
+    options = commodityClassificationType,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeCombinedNomenclatureTypeCode"),
+    validators = Seq(OptionalContainsValidator(commodityClassificationType.map(_._1).toSet))
+  )
+
+  val commodityCodeTaricTypeCode: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].identificationTypeCode",
+    options = commodityClassificationType,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeTaricTypeCode"),
+    validators = Seq(OptionalContainsValidator(commodityClassificationType.map(_._1).toSet))
+  )
+
+  val commodityCodeTaricAdditionalTypeCodes: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].identificationTypeCode",
+    options = commodityClassificationType,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeTaricAdditionalTypeCodes"),
+    validators = Seq(OptionalContainsValidator(commodityClassificationType.map(_._1).toSet))
+  )
+
+  val commodityCodeNationalAdditionalTypeCodes: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].identificationTypeCode",
+    options = commodityClassificationType,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeNationalAdditionalTypeCodes"),
+    validators = Seq(OptionalContainsValidator(commodityClassificationType.map(_._1).toSet))
+  )
+
+
+  val supplementaryUnits: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.goodsMeasure.tariffQuantity.value",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.tariffQuantity"),
+    hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.tariffQuantityHint"),
+    validators = Seq(OptionalNumericValidator(16, 6))
+  )
+
+  val netMass: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.goodsMeasure.netNetWeightMeasure.value",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netNetWeightMeasure"),
+    hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netNetWeightMeasureHint"),
+    validators = Seq(RequiredNumericValidator(16, 6))
+  )
+
+  val grossMass: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.goodsMeasure.grossMassMeasure.value",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.grossMassMeasure"),
+    hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.grossMassMeasureHint"),
+    validators = Seq(RequiredNumericValidator(16, 6))
+  )
+
+  val typeOfPackages: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].packagings[0].typeCode",
+    options = MoreOptions.packageTypes,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.packagings.typeCode"),
+    validators = Seq(RequiredContainsValidator(MoreOptions.packageTypes.map(_._1).toSet))
+  )
+
+  val numberOfPackages: TextInput = TextInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].packagings[0].quantity",
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.packagings.quantity"),
+    hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.packagings.quantityHint"),
+    validators = Seq(RequiredNumericValidator(8))
+  )
+
+  val containerIdentificationNumber: TextInput = TextInput(
+    name = "declaration.goodsShipment.consignment.transportEquipments[0].id",
+    labelKey = Some("declaration.goodsShipment.consignment.transportEquipments.id"),
+    hintKey = Some("declaration.goodsShipment.consignment.transportEquipments.idHint"),
+    validators = Seq(OptionalNumericValidator(17))
+  )
+
   // additions and deductions form fields
   val otherChargeDeductionAmount: TextInput = TextInput(
     name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].customsValuation.chargeDeductions[0].otherChargeDeductionAmount.value",

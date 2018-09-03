@@ -21,9 +21,18 @@
 
 @main_template(messages("pages.identificationOfGoods.title")) {
 
-    @helpers.form("identification-of-goods", "pages.identificationOfGoods.form.legend") {
+    @helpers.form("identification-of-goods-shipping-marks-and-codes", "pages.identificationOfGoods.form.legend") {
         @helpers.textareaInput(commodityDescription, data)
         @helpers.textInput(packagingMarksNumbersId, data)
+        @helpers.textInput(cusCode, data)
+        @helpers.textInput(commodityCodeCombinedNomenclatureCode, data)
+        @helpers.textInput(commodityCodeTaricCode, data)
+        @helpers.textInput(commodityCodeTaricAdditionalCodes, data)
+        @helpers.textInput(commodityCodeNationalAdditionalCodes, data)
+        @helpers.selectInput(commodityCodeCombinedNomenclatureTypeCode, data)
+        @helpers.selectInput(commodityCodeTaricTypeCode, data)
+        @helpers.selectInput(commodityCodeTaricAdditionalTypeCodes, data)
+        @helpers.selectInput(commodityCodeNationalAdditionalTypeCodes, data)
         @helpers.nextButton()
     }
 
