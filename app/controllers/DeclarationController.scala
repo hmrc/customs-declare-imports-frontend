@@ -37,7 +37,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
                                      (implicit val messagesApi: MessagesApi, val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController with I18nSupport {
 
-  private val permissibleKeys: Set[String] = Fields.definitions.keySet ++ Set("next-page", "last-page")
+  private val permissibleKeys: Set[String] = Fields.definitions.keySet ++ Set("next-page", "last-page", "force-last")
 
   def displaySubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
     cache.get(appConfig.submissionCacheId, req.user.eori.get).map { data =>

@@ -63,7 +63,9 @@ class SubmissionJourney {
     case _ => Right(screens.sliding(3).filter(window => window(1) == current).map(found => found.head).toSeq.head)
   }
 
-  def next(current: String): Either[Call, String] = current match {
+  def next(current: String, forceLast: Boolean = false): Either[Call, String] = if (forceLast) {
+    Right(screens.last)
+  } else current match {
     case left if current == screens.last => Left(end)
     case right if current == screens.head => Right(screens(1))
     case _ => Right(screens.sliding(3).filter(window => window(1) == current).map(found => found.last).toSeq.head)
