@@ -26,6 +26,7 @@ import scala.util.matching.Regex
 
 class FieldsSpec extends WordSpec with MustMatchers with RandomFixtures with JacksonMapper {
 
+  // FIXME resolve issues around known bad mappings
   private val knownBad: Set[String] = Set(
     "declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].additionalProcedure",
     "declaration.typeCode.additional"

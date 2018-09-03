@@ -49,7 +49,7 @@ class ConstraintsSpec extends CustomsPlaySpec {
     }
 
     "not match non numeric string" in {
-      const.n(2)(randomString(2)) must be(false)
+      const.n(2)(randomFirstName) must be(false)
     }
 
     "match integer within precision" in {
