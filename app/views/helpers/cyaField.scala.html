@@ -18,10 +18,20 @@
 @import config.SubmissionJourney._
 @import views.html.helper.CSRF
 
-@(label: String, fieldValue: String)(implicit req: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, Seq[ValidationError]])
+@(label: String, fields: Seq[String], data: Map[String, String])(implicit req: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, Seq[ValidationError]])
     <div>
       <dt class="cya-question">@label</dt>
-      <dd class="cya-answer">@Html(fieldValue)</dd>
+      <dd class="cya-answer">
+          @for(field <- fields) {
+            @if(!data(field).isEmpty){
+              @if(fields.length > 1){
+                @data.get(field)<br/>
+              } else{
+                @data.get(field)
+              }
+            }
+          }
+      </dd>
       <dd class="cya-change">&nbsp;</dd>
     </div>
 

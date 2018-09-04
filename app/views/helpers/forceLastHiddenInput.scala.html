@@ -14,17 +14,4 @@
  * limitations under the License.
  *@
 
-@import config.{AppConfig, ValidationError}
-@import config.Fields._
-
-@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
-
-@main_template(messages("pages.references.title")) {
-    @helpers.form("references", "pages.references.form.legend", data) {
-        @helpers.textInput(referenceNumberUcr1, data)
-        @helpers.textInput(declarantFunctionalReferenceId, data)
-        @helpers.radioInput(declarationType, data)
-        @helpers.radioInput(additionalDeclaratonType, data)
-        @helpers.nextButton()
-    }
-}
+<input type="hidden" name="force-last" value="true"/>

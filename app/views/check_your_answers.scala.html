@@ -21,10 +21,25 @@
 
 @main_template(messages("pages.checkYourAnswers.title")) {
     @helpers.form("check-your-answers", "pages.checkYourAnswers.form.legend") {
+
+		<!-- Declarant details -->
 	    @helpers.checkYourAnswersSection("pages.declarant.details.form.legend", "declarant-details"){
-	        @helpers.cyaField(messages("declaration.declarant.name"), data(declarantName.name))
-	        @helpers.cyaField(messages("common.fields.address.multiLine"), data(declarantAddressLine.name) + "<br/>" + data(declarantAddressCityName.name))
+	        @helpers.cyaField(messages("declaration.declarant.name"), Seq("declaration.declarant.name"), data)
+	        @helpers.cyaField(messages("common.fields.address.multiLine"), 
+	        	Seq("declaration.declarant.address.line", 
+	       			"declaration.declarant.address.cityName", 
+	       			"declaration.declarant.address.countryCode",
+	       			"declaration.declarant.address.postcodeId"), data)
+	        @helpers.cyaField(messages("common.fields.eori"), Seq("declaration.declarant.id"), data)
 	    }
+
+		<!-- Reference -->
+	    @helpers.checkYourAnswersSection("pages.references.form.legend", "references"){
+	        @helpers.cyaField(messages("declaration.goodsShipment.ucr.traderAssignedReferenceId"), Seq("declaration.goodsShipment.ucr.traderAssignedReferenceId"), data)
+	        @helpers.cyaField(messages("declaration.functionalReferenceId"), Seq("declaration.functionalReferenceId"), data)
+	        @helpers.cyaField(messages("declaration.typeCode"), Seq("declaration.typeCode"), data)
+	    }
+
         @helpers.nextButton()
     }
 }

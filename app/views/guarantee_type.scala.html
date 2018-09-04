@@ -24,7 +24,7 @@
         @helpers.selectInput(securityDetailsCode, data)
         @helpers.textInput(guaranteeReferenceId, data)
         @helpers.selectInput(transactionNatureCode, data)
-        <input type="hidden" name="force-last" value="true"/>
+        @helpers.forceLastHiddenInput()
         @helpers.nextButton()
     }
 }
