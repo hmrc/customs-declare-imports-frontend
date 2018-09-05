@@ -21,7 +21,6 @@
 @(name: String, legendKey: String, data: Map[String, String] = Map.empty)(body: => Html)(implicit req: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, Seq[ValidationError]])
 
 <a class="link-back" href="@prev(name).fold(call => call, view => routes.DeclarationController.displaySubmitForm(view)).url">@messages("common.back")</a>
-<pre>Force: @data.get("force-last")</pre>
 @if(errors.nonEmpty) {
     <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
         <h2 class="heading-medium error-summary-heading">@messages("common.errorSummary.label")</h2>
