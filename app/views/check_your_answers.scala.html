@@ -37,7 +37,8 @@
 	    @helpers.checkYourAnswersSection("pages.references.form.legend", "references"){
 	        @helpers.cyaTextField(messages("declaration.goodsShipment.ucr.traderAssignedReferenceId"), Seq("declaration.goodsShipment.ucr.traderAssignedReferenceId"), data)
 	        @helpers.cyaTextField(messages("declaration.functionalReferenceId"), Seq("declaration.functionalReferenceId"), data)
-	        @helpers.cyaRadioField(messages("declaration.typeCode"), Seq("declaration.typeCode" -> declarationTypes), data)
+	        @helpers.cyaRadioField(messages("declaration.typeCode"), "declaration.typeCode", declarationTypes, data)
+	        @helpers.cyaRadioField(messages("declaration.typeCode.additional"), "declaration.typeCode.additional", additionalDeclarationTypes, data)
 	    }
 
         @helpers.nextButton()
