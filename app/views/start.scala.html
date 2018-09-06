@@ -20,7 +20,7 @@
 @import domain.features.Feature
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-  @main_template(title = messages("Manage my import declarations"), bodyClasses = None) {
+  @main_template(title = messages("startpage.titleAndHeading"), bodyClasses = None) {
 
     @if(appConfig.isFeatureOn(Feature.landing)) {
 			<h1 class="heading-xlarge">@messages("startpage.titleAndHeading")</h1>
@@ -46,7 +46,7 @@
 
       <a role="button" class="button button-start" href="@{routes.LandingController.displayLandingPage().url}">@messages("common.button.startNow")</a>
     } else {
-	    <h1 class="heading-xlarge">Manage my import declarations</h1>
+	    <h1 class="heading-xlarge">@messages("startpage.titleAndHeading")</h1>
       <p class="message">Sorry, you cannot begin today.</p>
     }
   }

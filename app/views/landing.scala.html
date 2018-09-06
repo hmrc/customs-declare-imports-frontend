@@ -21,20 +21,21 @@
 
 @(submissions: Seq[Submission])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-    @main_template(title = "Hello from customs-declare-imports-frontend", bodyClasses = None) {
-        <h1 class="heading-large">@messages("common.importDeclarations")</h1>
-        <!-- <p class="message">Well done. You have begun your first step on a long journey.</p> -->
-        <p><a class="button button-start" href="@routes.DeclarationController.displaySubmitForm("declarant-details")">Begin a new import declaration</a></p>
+    @main_template(title = messages("common.importDeclarations"), bodyClasses = None, mainClass = Some("full-width")) {
+        <div class="form-group">
+            <h1 class="heading-xlarge">@messages("common.importDeclarations")</h1>
+            <p><a class="button button-start" href="@routes.DeclarationController.displaySubmitForm("declarant-details")">@messages("common.button.createNew")</a></p>
+        </div>
         <table>
             <thead>
-                <th>Conversation ID</th>
-                <th>LRN</th>
-                <th>Date Submitted</th>
+                <th scope="col">@messages("landingpage.conversationID")</th>
+                <th scope="col">@messages("landingpage.LRN")</th>
+                <th scope="col">@messages("landingpage.dateSubmitted")</th>
             </thead>
             <tbody>
                 @for(submission <- submissions) {
                     <tr>
-                        <td>@submission.conversationId</td>
+                        <td scope="row">@submission.conversationId</td>
                         <td>@submission.lrn.getOrElse("")</td>
                         <td>@formatDate(new LocalDate(submission.submittedTimestamp))</td>
                     </tr>

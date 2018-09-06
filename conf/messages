@@ -19,6 +19,7 @@ common.button.continue=Continue
 common.button.submit=Submit
 common.button.save-and-continue=Save and continue
 common.button.change=Change
+common.button.createNew=Create new
 
 ## common fields with shared labels
 common.fields.eori=EORI number
@@ -137,6 +138,10 @@ startpage.needList.bullet3=Use this service to:
 startpage.needList.bullet4=procedure codes
 startpage.needList.bullet5=details of your import and where it came from
 
+## landing page
+landingpage.conversationID=Conversation ID
+landingpage.LRN=LRN
+landingpage.dateSubmitted=Date submitted
 
 ## specific fields
 declaration.declarant.name=Declarant'’s name
