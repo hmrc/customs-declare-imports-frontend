@@ -12,6 +12,7 @@ common.feedbackSecond=feedback
 common.feedbackThird=will help us to improve it.
 
 ## common buttons with shared labels
+common.button.startNow=Start now
 common.button.next=Next
 common.button.continue=Continue
 common.button.submit=Submit
@@ -119,6 +120,21 @@ pages.guaranteeType.form.legend=Guarantee types and nature of transactions
 pages.checkYourAnswers.title=Check your answers
 pages.checkYourAnswers.form.legend=Check your answers
 
+
+## start page
+startpage.titleAndHeading=Manage my import declarations
+startpage.p.useThisServiceTo=Use this service to:
+startpage.useList.bullet1=declare your imported goods
+startpage.useList.bullet2=cancel a declaration you have already submitted
+startpage.useList.bullet3=see how your declarations are progressing and check for any problems
+startpage.h2.whoCanUseThis=Who can use this?
+startpage.p.inventoryLinked=Traders who need to declare imported goods. You cannot declare your imports online if you use Community Network Services (CNS) inventory linked software systems.
+startpage.p.youWillNeed=You will need:
+startpage.needList.bullet1=your Government Gateway details
+startpage.needList.bullet2=your EORI number
+startpage.needList.bullet3=Use this service to:
+startpage.needList.bullet4=procedure codes
+startpage.needList.bullet5=details of your import and where it came from
 
 
 ## specific fields
