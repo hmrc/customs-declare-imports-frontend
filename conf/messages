@@ -143,6 +143,10 @@ landingpage.conversationID=Conversation ID
 landingpage.LRN=LRN
 landingpage.dateSubmitted=Date submitted
 
+## enrolment page
+enrolmentpage.titleAndHeading=You need to enrol with Customs Declaration Service (CDS)
+enrolmentpage.p.enrolment=To use this service you need to <a href="https://www.gov.uk/eori">get an EORI number</a>
+
 ## specific fields
 declaration.declarant.name=Declarant'’s name
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)

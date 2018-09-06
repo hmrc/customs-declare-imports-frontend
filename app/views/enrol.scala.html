@@ -17,6 +17,8 @@
 @import config.AppConfig
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@main_template(title = "Insufficient enrolments", bodyClasses = None) {
-    <p class="message">You need to enrol with CDS.</p>
+@main_template(title = messages("enrolmentpage.titleAndHeading"), bodyClasses = None) {
+    <h1 class="heading-xlarge">@messages("enrolmentpage.titleAndHeading")</h1>
+    <p>@Html(messages("enrolmentpage.p.enrolment"))</p>
+
 }
