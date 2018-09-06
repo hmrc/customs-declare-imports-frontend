@@ -31,7 +31,7 @@ class UnauthorisedControllerSpec extends CustomsPlaySpec {
     "return HTML" in requestScenario(method, uri) { wasHtml }
 
     "display message" in requestScenario(method, uri) { resp =>
-      contentAsHtml(resp) should include element withClass("message").withValue("You need to enrol with CDS.")
+      contentAsHtml(resp) should include element withName("h1").withValue("You need to enrol with Customs Declaration Service (CDS)")
     }
 
   }
