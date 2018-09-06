@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.importer.details.title")) {
 
-    @helpers.form("importer-details", "pages.importer.details.form.legend") {
+    @helpers.form("importer-details", "pages.importer.details.form.legend", data) {
         @helpers.textInput(importerName, data)
         @helpers.textInput(importerAddressLine, data)
         @helpers.textInput(importerAddressCityName, data)

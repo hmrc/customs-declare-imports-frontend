@@ -23,12 +23,15 @@
       <dt class="cya-question">@label</dt>
       <dd class="cya-answer">
           @for(field <- fields) {
-            @if(!data(field).isEmpty){
-              @if(fields.length > 1){
-                @data.get(field)<br/>
-              } else{
-                @data.get(field)
+            @if(data.contains(field)){
+              @if(!data(field).isEmpty){
+                @if(fields.length > 1){
+                  @data.get(field)<br/>
+                } else{
+                  @data.get(field)
+                }
               }
+
             }
           }
       </dd>

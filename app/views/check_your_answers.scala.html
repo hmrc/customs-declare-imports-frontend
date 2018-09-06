@@ -41,6 +41,40 @@
 	        @helpers.cyaRadioField(messages("declaration.typeCode.additional"), "declaration.typeCode.additional", additionalDeclarationTypes, data)
 	    }
 
+		<!-- Exporter Details -->
+	    @helpers.checkYourAnswersSection("pages.exporter.details.form.legend", "exporter-details"){
+	        @helpers.cyaTextField(messages("declaration.exporter.name"), Seq("declaration.exporter.name"), data)
+	        @helpers.cyaTextField(messages("common.fields.address.multiLine"), 
+	        	Seq("declaration.exporter.address.line", 
+	       			"declaration.exporter.address.cityName", 
+	       			"declaration.exporter.address.countryCode",
+	       			"declaration.exporter.address.postcodeId"), data)
+	        @helpers.cyaTextField(messages("common.fields.eori"), Seq("declaration.exporter.id"), data)
+	    }
+
+		<!-- Representative Details -->
+	    @helpers.checkYourAnswersSection("pages.representative.details.form.legend", "representative-details"){
+	        @helpers.cyaTextField(messages("declaration.agent.name"), Seq("declaration.agent.name"), data)
+	        @helpers.cyaTextField(messages("common.fields.address.multiLine"), 
+	        	Seq("declaration.agent.address.line", 
+	       			"declaration.agent.address.cityName", 
+	       			"declaration.agent.address.countryCode",
+	       			"declaration.agent.address.postcodeId"), data)
+	        @helpers.cyaTextField(messages("common.fields.eori"), Seq("declaration.agent.id"), data)
+	        @helpers.cyaRadioField(messages("declaration.agent.functionCode"), "declaration.agent.functionCode", agentFunctionCodes, data)
+	    }
+
+		<!-- Importer Details -->
+	    @helpers.checkYourAnswersSection("pages.importer.details.form.legend", "importer-details"){
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.importer.name"), Seq("declaration.goodsShipment.importer.name"), data)
+	        @helpers.cyaTextField(messages("common.fields.address.multiLine"), 
+	        	Seq("declaration.goodsShipment.importer.address.line", 
+	       			"declaration.goodsShipment.importer.address.cityName", 
+	       			"declaration.goodsShipment.importer.address.countryCode",
+	       			"declaration.goodsShipment.importer.address.postcodeId"), data)
+	        @helpers.cyaTextField(messages("common.fields.eori"), Seq("declaration.goodsShipment.importer.id"), data)
+	    }
+
         @helpers.nextButton()
     }
 }

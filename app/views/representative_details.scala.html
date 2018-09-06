@@ -21,7 +21,7 @@
 
 @main_template("Representative's details") {
 
-    @helpers.form("representative-details", "pages.representative.details.form.legend") {
+    @helpers.form("representative-details", "pages.representative.details.form.legend", data) {
         @helpers.textInput(representativeName, data)
         @helpers.textInput(representativeAddressLine, data)
         @helpers.textInput(representativeAddressCityName, data)

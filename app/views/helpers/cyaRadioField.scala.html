@@ -21,8 +21,7 @@
 @(label: String, field: String, options: Seq[(String, String)], data: Map[String, String])(implicit req: Request[_], messages: Messages, appConfig: AppConfig, errors: Map[String, Seq[ValidationError]])
     <div>
       <dt class="cya-question">@label</dt>
-      <dd class="cya-answer"> @data.get(field)
-        <pre>Value? (Get key then filter to get value)</pre>
+      <dd class="cya-answer"> @options.filter(v => Some(v._1) == data.get(field)).headOption.map(_._2)
       </dd>
       <dd class="cya-change">&nbsp;</dd>
     </div>

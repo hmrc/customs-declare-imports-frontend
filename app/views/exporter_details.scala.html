@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.exporter.details.title")) {
 
-    @helpers.form("exporter-details", "pages.exporter.details.form.legend") {
+    @helpers.form("exporter-details", "pages.exporter.details.form.legend", data) {
         @helpers.textInput(exporterName, data)
         @helpers.textInput(exporterAddressLine, data)
         @helpers.textInput(exporterAddressCityName, data)
