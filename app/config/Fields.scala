@@ -502,7 +502,7 @@ class Fields extends Options {
   )
 
   val netMass: TextInput = TextInput(
-    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.goodsMeasure.netNetWeightMeasure.value",
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.goodsMeasure.netWeightMeasure.value",
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netNetWeightMeasure"),
     hintKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netNetWeightMeasureHint"),
     validators = Seq(RequiredNumericValidator(16, 6))
