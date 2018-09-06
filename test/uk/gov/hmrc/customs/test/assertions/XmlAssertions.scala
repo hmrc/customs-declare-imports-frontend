@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customs.test
+package uk.gov.hmrc.customs.test.assertions
 
 import java.io.StringReader
 
@@ -23,33 +23,19 @@ import javax.xml.transform.Source
 import javax.xml.transform.stream.StreamSource
 import javax.xml.validation.{Schema, SchemaFactory}
 
-import scala.xml.{Elem, SAXException}
+import scala.xml.SAXException
 
-trait XmlBehaviours {
-  this: CustomsPlaySpec =>
+trait XmlAssertions extends CustomsAssertions {
 
-  val importDeclarationSchemaResources = Seq("/DocumentMetaData_2_DMS.xsd", "/WCO_DEC_2_DMS.xsd")
+  val submitDeclarationSchemas = Seq("/DocumentMetaData_2_DMS.xsd", "/WCO_DEC_2_DMS.xsd")
 
-  val importDeclarationCancellationSchemas = Seq("/CANCEL_METADATA.xsd","/CANCEL.xsd")
+  val cancelDeclarationSchemas = Seq("/CANCEL_METADATA.xsd","/CANCEL.xsd")
 
-  def validXmlScenario(schemas: Seq[String] = Seq.empty)(test: => Elem): Unit = {
-    validateAgainstSchemaResources(test.mkString, schemas)
-  }
-  def validDeclarationXmlScenario()(test: => Elem): Unit = {
-    validXmlScenario(importDeclarationSchemaResources)(test)
-  }
-
-  def validCancellationDeclarationXml()(test: => Elem): Unit = {
-    validXmlScenario(importDeclarationCancellationSchemas)(test)
-
-  }
-
-  protected def isValidImportDeclarationXml(xml: String): Boolean = {
-    try {
-      validateAgainstSchemaResources(xml, importDeclarationSchemaResources)
-      true
+  def isValidXml(xml: String, schemas: Seq[String]): Unit = {
+     try {
+      validateAgainstSchemaResources(xml, schemas)
     } catch {
-      case _: SAXException => false
+      case e: SAXException => fail(e.getMessage)
     }
   }
 

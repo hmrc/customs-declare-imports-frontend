@@ -142,6 +142,7 @@ startpage.needList.bullet5=details of your import and where it came from
 landingpage.conversationID=Conversation ID
 landingpage.LRN=LRN
 landingpage.dateSubmitted=Date submitted
+landingpage.unavailable=We are sorry but the Customs Imports Declarations Service is currently unavailable. Please try again later.
 
 ## enrolment page
 enrolmentpage.titleAndHeading=You need to enrol with Customs Declaration Service (CDS)
@@ -252,14 +253,13 @@ declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.c
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeNationalAdditionalTypeCodes=National Additional type code(s)
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.tariffQuantity=Supplementary units
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.tariffQuantityHint=The quantity can be expressed up to 6 decimal places.
-declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netNetWeightMeasure=Net mass
-declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netNetWeightMeasureHint=The net mass is the mass of the goods without any packaging and must be given in kilograms. The quantity can be expressed up to 6 decimal places.
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netWeightMeasure=Net mass
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netWeightMeasureHint=The net mass is the mass of the goods without any packaging and must be given in kilograms. The quantity can be expressed up to 6 decimal places.
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.grossMassMeasure=Gross mass
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.grossMassMeasureHint=The gross mass, given in kilograms, of the goods concerned by the relevant item of goods.
 declaration.goodsShipment.governmentAgencyGoodsItems.packagings.typeCode=Type of packages
 declaration.goodsShipment.governmentAgencyGoodsItems.packagings.quantity=Number of packages
 declaration.goodsShipment.governmentAgencyGoodsItems.packagings.quantityHint=This is the number of individual items packaged in such a way that they cannot be divided without first undoing the packing, or the number of pieces, if unpackaged.
-declaration.goodsShipment.consignment.transportEquipments.id=Container identification number
 declaration.goodsShipment.consignment.transportEquipments.idHint=Marks (letters and/or numbers) which identify the transport container.
 
 ## validations
