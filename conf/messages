@@ -132,9 +132,9 @@ startpage.useList.bullet3=see how your declarations are progressing and check fo
 startpage.h2.whoCanUseThis=Who can use this?
 startpage.p.inventoryLinked=Traders who need to declare imported goods. You cannot declare your imports online if you use Community Network Services (CNS) inventory linked software systems.
 startpage.p.youWillNeed=You will need:
-startpage.needList.bullet1=your Government Gateway details
-startpage.needList.bullet2=your EORI number
-startpage.needList.bullet3=Use this service to:
+startpage.needList.bullet1=your <a href="https://www.gov.uk/government-gateway">Government Gateway</a> details
+startpage.needList.bullet2=your <a href="https://www.gov.uk/eori">EORI number</a>
+startpage.needList.bullet3=the <a href="https://www.gov.uk/trade-tariff">commodity codes</a> of your goods
 startpage.needList.bullet4=procedure codes
 startpage.needList.bullet5=details of your import and where it came from
 
