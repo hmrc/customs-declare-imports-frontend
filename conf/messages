@@ -1,5 +1,6 @@
 ## common
 common.service.name=Declare an import
+common.importDeclarations=Your import declarations
 common.sign-in=Sign in
 common.sign-out=Sign out
 common.back=Back

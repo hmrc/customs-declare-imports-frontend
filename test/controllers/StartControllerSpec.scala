@@ -35,9 +35,9 @@ class StartControllerSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
       requestScenario(method, uri) { wasHtml }
     }
 
-    "display 'hello world' message" in featureScenario(Feature.start, FeatureStatus.enabled) {
+    "display 'Manage my import declarations' message" in featureScenario(Feature.start, FeatureStatus.enabled) {
       requestScenario(method, uri) { resp =>
-        contentAsHtml(resp) should include element withName("h1").withValue("Hello from customs-declare-imports-frontend !")
+        contentAsHtml(resp) should include element withName("h1").withValue("Manage my import declarations")
       }
     }
 

@@ -42,7 +42,7 @@ class LandingControllerSpec extends CustomsPlaySpec with AuthenticationBehaviour
     "display message" in featureScenario(Feature.landing, FeatureStatus.enabled) {
       signedInScenario() {
         userRequestScenario(method, uri, signedInUser) { resp =>
-          contentAsHtml(resp) should include element withClass("message").withValue("Well done. You have begun your first step on a long journey.")
+          contentAsHtml(resp) should include element withName("h1").withValue("Your import declarations")
         }
       }
     }
