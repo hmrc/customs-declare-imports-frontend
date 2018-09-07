@@ -19,27 +19,29 @@ package services
 import java.util.UUID
 
 import domain.auth.SignedInUser
-import org.scalatest.BeforeAndAfterEach
-import play.api.http.{ContentTypes, HeaderNames}
 import play.api.http.Status._
+import play.api.http.{ContentTypes, HeaderNames}
 import play.api.mvc.Codec
 import repositories.declaration.SubmissionRepository
-import uk.gov.hmrc.customs.test.{CustomsPlaySpec, XmlBehaviours}
+import uk.gov.hmrc.customs.test.assertions.XmlAssertions
+import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, MongoBehaviours}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.hooks.HttpHook
 import uk.gov.hmrc.http.logging.Authorization
+import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.play.http.ws._
 import uk.gov.hmrc.wco.dec.{Declaration, MetaData}
 
-import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 
-class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviours with BeforeAndAfterEach {
+class CustomsDeclarationsConnectorSpec extends CustomsSpec with MongoBehaviours with XmlAssertions {
 
   val eori = Some(randomString(16))
   val lrn = Some(randomString(35))
   val repo: SubmissionRepository = component[SubmissionRepository]
+  override val repositories: Seq[ReactiveRepository[_, _]] = Seq(repo)
   val conversationId: String = randomString(80)
   implicit val user: SignedInUser = userFixture(eori = eori)
 
@@ -66,8 +68,6 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
 
   }
 
-  override protected def afterEach(): Unit = repo.removeAll()
-
   def submitDeclarationScenario(metaData: MetaData,
                                 badgeIdentifier: Option[String] = None,
                                 forceServerError: Boolean = false,
@@ -81,7 +81,7 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
       HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
     ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
-    val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError, conversationId)
+    val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, submitDeclarationSchemas, forceServerError, conversationId)
     val client = new CustomsDeclarationsConnectorImpl(appConfig, http, component[SubmissionRepository])
     test(client.submitImportDeclaration(metaData, badgeIdentifier)(hc, ec, user))
   }
@@ -98,12 +98,12 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
       HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
     ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
-    val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError)
+    val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, cancelDeclarationSchemas, forceServerError)
     val client = new CustomsDeclarationsConnectorImpl(appConfig, http, component[SubmissionRepository])
     test(client.cancelImportDeclaration(metaData, badgeIdentifier)(hc, ec))
   }
 
-  class MockHttpClient(expectedUrl: String, expectedBody: String, expectedHeaders: Map[String, String], forceServerError: Boolean = false, conversationId: String = UUID.randomUUID().toString) extends HttpClient with WSGet with WSPut with WSPost with WSDelete with WSPatch {
+  class MockHttpClient(expectedUrl: String, expectedBody: String, expectedHeaders: Map[String, String], schemas: Seq[String], forceServerError: Boolean = false, conversationId: String = UUID.randomUUID().toString) extends HttpClient with WSGet with WSPut with WSPost with WSDelete with WSPatch {
     override val hooks: Seq[HttpHook] = Seq.empty
 
     override def POSTString[O](url: String,
@@ -112,7 +112,7 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
                               (implicit rds: HttpReads[O],
                                hc: HeaderCarrier,
                                ec: ExecutionContext): Future[O] = (url, body, headers) match {
-      case _ if !isValidImportDeclarationXml(body) => throw new BadRequestException(s"Expected: valid XML: $expectedBody. \nGot: invalid XML: $body")
+      case _ if !isValidXml(body, schemas) => throw new BadRequestException(s"Expected: valid XML: $expectedBody. \nGot: invalid XML: $body")
       case _ if !isAuthenticated(headers.toMap, hc) => throw new UnauthorizedException("Submission declaration request was not authenticated")
       case _ if forceServerError => throw new InternalServerException("Customs Declarations has gone bad.")
       case _ if url == expectedUrl && body == expectedBody && headers.toMap == expectedHeaders => Future.successful(CustomsDeclarationsResponse(202, Some(conversationId)).asInstanceOf[O])
