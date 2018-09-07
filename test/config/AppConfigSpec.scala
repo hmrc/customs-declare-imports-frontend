@@ -18,11 +18,11 @@ package config
 
 import domain.features.{Feature, FeatureStatus}
 import play.api.Environment
-import uk.gov.hmrc.customs.test.{CustomsPlaySpec, FeatureSwitchBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, FeatureBehaviours}
 
-class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
+class AppConfigSpec extends CustomsSpec with FeatureBehaviours {
 
-  val cfg = app.injector.instanceOf[AppConfig]
+  val cfg = component[AppConfig]
 
   "the config" should {
 
@@ -93,7 +93,7 @@ class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
       cfg.featureStatus(Feature.start) must be (cfg.defaultFeatureStatus)
     }
 
-    "fall back to system properties for unconfigured feature" in featureScenario(Feature.start, FeatureStatus.enabled) {
+    "fall back to system properties for unconfigured feature" in withFeatures(enabled(Feature.start)) {
       cfg.featureStatus(Feature.start) must be (FeatureStatus.enabled)
     }
 
@@ -117,19 +117,19 @@ class AppConfigSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
 
   "is feature on" should {
 
-    "return true for enabled feature" in featureScenario(Feature.start, FeatureStatus.enabled) {
+    "return true for enabled feature" in withFeatures(enabled(Feature.start)) {
       cfg.isFeatureOn(Feature.start) must be (true)
     }
 
-    "return false for disabled feature" in featureScenario(Feature.start, FeatureStatus.disabled) {
+    "return false for disabled feature" in withFeatures(disabled(Feature.start)) {
       cfg.isFeatureOn(Feature.start) must be (false)
     }
 
-    "return false for suspended feature" in featureScenario(Feature.start, FeatureStatus.suspended) {
+    "return false for suspended feature" in withFeatures(suspended(Feature.start)) {
       cfg.isFeatureOn(Feature.start) must be (false)
     }
 
-    "return true for cancel feature enabled" in featureScenario(Feature.cancel, FeatureStatus.enabled) {
+    "return true for cancel feature enabled" in withFeatures(enabled(Feature.cancel)) {
       cfg.isFeatureOn(Feature.cancel) must be (true)
     }
 
