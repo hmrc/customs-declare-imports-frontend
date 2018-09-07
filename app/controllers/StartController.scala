@@ -26,8 +26,8 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import scala.concurrent.Future
 
 @Singleton
-class StartController @Inject()(actions: Actions, val messagesApi: MessagesApi)
-                               (implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
+class StartController @Inject()(actions: Actions)
+                               (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
 
   def displayStartPage: Action[AnyContent] = actions.switch(Feature.start).async { implicit request =>
     Future.successful(Ok(views.html.start()))

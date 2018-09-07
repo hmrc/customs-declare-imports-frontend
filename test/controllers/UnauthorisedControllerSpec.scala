@@ -16,7 +16,6 @@
 
 package controllers
 
-import play.api.i18n.MessagesApi
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, RequestHandlerBehaviours}
 
@@ -27,7 +26,6 @@ class UnauthorisedControllerSpec extends CustomsSpec
 
   val method = "GET"
   val uri = uriWithContextPath("/enrol")
-  val messages = component[MessagesApi]
 
   s"$method $uri" should {
 

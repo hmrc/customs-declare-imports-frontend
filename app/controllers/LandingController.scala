@@ -25,7 +25,8 @@ import repositories.declaration.SubmissionRepository
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 @Singleton
-class LandingController @Inject()(submissionRepository: SubmissionRepository, actions: Actions, val messagesApi: MessagesApi)(implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
+class LandingController @Inject()(submissionRepository: SubmissionRepository, actions: Actions)
+                                 (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
 
   def displayLandingPage: Action[AnyContent] = (actions.switch(Feature.landing) andThen actions.auth).async { implicit req =>
     submissionRepository.findByEori(req.user.eori).map { submissions =>

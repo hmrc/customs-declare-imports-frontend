@@ -18,7 +18,16 @@
 
 @(conversationId: String)(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
-@main_template(title = "Import Declaration Submitted") {
-    <p class="message">Thank you for your import declaration submission. Your conversation ID is: @conversationId</p>
-    <p><a href="@routes.LandingController.displayLandingPage()">Go back to the landing page</a></p>
+@main_template(title = messages("confirmationpage.titleAndHeading")) {
+	<div class="govuk-box-highlight">
+	  <h1 id="heading-application-submitted" class="heading-xlarge">@messages("confirmationpage.titleAndHeading")</h1>
+	  <p class="font-large">
+	    @messages("confirmationpage.yourLRN")<br>
+	    <strong class="bold">(LRN goes here)</strong>
+	  </p>
+	</div>
+
+	<h2 class="heading-medium" id="next-steps">@messages("confirmationpage.whatHappensNext")</h2>
+
+	<p>@messages("confirmationpage.p.part1") <a href="@routes.LandingController.displayLandingPage()">@messages("confirmationpage.p.part3")</a> @messages("confirmationpage.p.part3")</p>
 }

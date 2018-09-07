@@ -17,7 +17,6 @@
 package controllers
 
 import domain.features.Feature
-import play.api.i18n.MessagesApi
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours.{AuthenticationBehaviours, CustomsSpec, FeatureBehaviours, RequestHandlerBehaviours}
 
@@ -30,7 +29,6 @@ class LandingControllerSpec extends CustomsSpec
 
   val method = "GET"
   val uri = uriWithContextPath("/")
-  val messages = component[MessagesApi]
 
   s"$method $uri" should {
 
