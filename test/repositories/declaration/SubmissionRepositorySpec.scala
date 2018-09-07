@@ -16,12 +16,14 @@
 
 package repositories.declaration
 
-import org.scalatest.BeforeAndAfterEach
-import uk.gov.hmrc.customs.test.CustomsPlaySpec
+import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, MongoBehaviours}
+import uk.gov.hmrc.mongo.ReactiveRepository
 
-class SubmissionRepositorySpec extends CustomsPlaySpec with BeforeAndAfterEach {
+class SubmissionRepositorySpec extends CustomsSpec with MongoBehaviours {
 
   val repo = app.injector.instanceOf[SubmissionRepository]
+
+  override val repositories: Seq[ReactiveRepository[_, _]] = Seq(repo)
 
   "repo" should {
 
@@ -53,7 +55,5 @@ class SubmissionRepositorySpec extends CustomsPlaySpec with BeforeAndAfterEach {
     }
 
   }
-
-  override protected def afterEach(): Unit = repo.removeAll()
 
 }
