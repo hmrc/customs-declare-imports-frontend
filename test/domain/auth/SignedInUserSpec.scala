@@ -16,9 +16,10 @@
 
 package domain.auth
 
-import uk.gov.hmrc.customs.test.CustomsPlaySpec
+import org.scalatest.{MustMatchers, WordSpec}
+import uk.gov.hmrc.customs.test.CustomsFixtures
 
-class SignedInUserSpec extends CustomsPlaySpec {
+class SignedInUserSpec extends WordSpec with MustMatchers with CustomsFixtures {
 
   "eori" should {
 
