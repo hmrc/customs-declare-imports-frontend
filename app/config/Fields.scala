@@ -591,8 +591,8 @@ class Fields extends Options {
   )
 
   val goodsMeasureGrossMassMeasure: TextInput = TextInput(
-    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.goodsMeasure.grossMassMeasure.value",
-    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.grossMassMeasure.value"),
+    name = "declaration.totalGrossMassMeasure.value",
+    labelKey = Some("declaration.totalGrossMassMeasure.value"),
     validators = Seq(RequiredNumericValidator(16, 6))
   )
 
