@@ -18,16 +18,16 @@
 
 @(conversationId: String)(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
-@main_template(title = "Import Declaration Submitted") {
+@main_template(title = messages("confirmationpage.titleAndHeading")) {
 	<div class="govuk-box-highlight">
-	  <h1 id="heading-application-submitted" class="heading-xlarge">Declaration submitted</h1>
+	  <h1 id="heading-application-submitted" class="heading-xlarge">@messages("confirmationpage.titleAndHeading")</h1>
 	  <p class="font-large">
-	    Your Local Reference Number (LRN) is<br>
+	    @messages("confirmationpage.yourLRN")<br>
 	    <strong class="bold">(LRN goes here)</strong>
 	  </p>
 	</div>
 
-	<h2 class="heading-medium" id="next-steps">What happens next?</h2>
+	<h2 class="heading-medium" id="next-steps">@messages("confirmationpage.whatHappensNext")</h2>
 
-	<p>Check <a href="@routes.LandingController.displayLandingPage()">your import declarations</a> for progress updates.</p>
+	<p>@messages("confirmationpage.p.part1") <a href="@routes.LandingController.displayLandingPage()">@messages("confirmationpage.p.part3")</a> @messages("confirmationpage.p.part3")</p>
 }
