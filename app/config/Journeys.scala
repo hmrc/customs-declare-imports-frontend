@@ -22,7 +22,7 @@ import play.api.mvc.Call
 class SubmissionJourney {
 
   // list of journey screen names as presented in URLs. Note that "submit" is a reserved word!
-  private[config] val screens: List[String] = List(
+  val screens: List[String] = List(
     "declarant-details",
     "references",
     "exporter-details",

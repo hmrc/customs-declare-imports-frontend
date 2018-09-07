@@ -19,14 +19,13 @@ package config
 import controllers.routes
 import domain.auth.SignedInUser
 import play.api.http.{HeaderNames, Status}
-import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.{InsufficientEnrolments, NoActiveSession}
-import uk.gov.hmrc.customs.test.CustomsPlaySpec
+import uk.gov.hmrc.customs.test.behaviours.CustomsSpec
 
-class ErrorHandlerSpec extends CustomsPlaySpec {
+class ErrorHandlerSpec extends CustomsSpec {
 
-  val handler = new ErrorHandler(app.injector.instanceOf[MessagesApi])
+  val handler = new ErrorHandler(messages)
   val req = FakeRequest("GET", "/foo")
 
   "resolve error" should {

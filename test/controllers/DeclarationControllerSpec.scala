@@ -16,44 +16,57 @@
 
 package controllers
 
-import domain.features.{Feature, FeatureStatus}
-import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours, WiremockBehaviours}
+import config.SubmissionJourney
+import domain.features.Feature
+import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
+import uk.gov.hmrc.customs.test.behaviours._
 import uk.gov.hmrc.http.HeaderCarrier
 
-class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours with WiremockBehaviours {
+class DeclarationControllerSpec extends CustomsSpec
+  with AuthenticationBehaviours
+  with FeatureBehaviours
+  with RequestHandlerBehaviours
+  with CustomsDeclarationsApiBehaviours
+  with CacheBehaviours
+  with HttpAssertions
+  with HtmlAssertions {
 
   val get = "GET"
   val post = "POST"
-  val submitUri = uriWithContextPath("/submit-declaration/declarant-details")
+  val submitUri = journeyUri(SubmissionJourney.screens.head)
   val cancelUri = uriWithContextPath("/cancel-declaration")
+
+  def journeyUri(screen: String): String = uriWithContextPath(s"/submit-declaration/$screen")
 
   s"$get $submitUri" should {
 
-    "return 200" in featureScenario(Feature.submit, FeatureStatus.enabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(get, submitUri, signedInUser) {
+    "return 200" in withFeatures(enabled(Feature.submit)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequest(get, submitUri, headers, session, tags) {
           wasOk
         }
       }
     }
 
-    "return HTML" in featureScenario(Feature.submit, FeatureStatus.enabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(get, submitUri, signedInUser) {
+    "return HTML" in withFeatures(enabled(Feature.submit)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequest(get, submitUri, headers, session, tags) {
           wasHtml
         }
       }
     }
 
-    "require authentication" in featureScenario(Feature.submit, FeatureStatus.enabled) {
-      notSignedInScenario() {
-        accessDeniedRequestScenarioTest(get, submitUri)
+    "require authentication" in withFeatures(enabled(Feature.submit)) {
+      withoutSignedInUser() {
+        withRequest(get, submitUri) { resp =>
+          wasRedirected(ggLoginRedirectUri(submitUri), resp)
+        }
       }
     }
 
-    "be behind a feature switch" in featureScenario(Feature.submit, FeatureStatus.disabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(get, submitUri, signedInUser) {
+    "be behind a feature switch" in withFeatures(disabled(Feature.submit)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequest(get, submitUri, headers, session, tags) {
           wasNotFound
         }
       }
@@ -70,10 +83,11 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
     )
     implicit val hc = HeaderCarrier()
 
-    "return 303" in featureScenario(Feature.submit, FeatureStatus.enabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(post, submitUri, signedInUser, Map.empty, payload) {
-          wasRedirected
+    "return 303" in withFeatures(enabled(Feature.submit)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequestAndFormBody(post, submitUri, headers, session, tags, payload) { resp =>
+          // TODO make assertions about handling of form submission
+          wasRedirected(journeyUri(SubmissionJourney.screens(1)), resp)
         }
       }
     }
@@ -84,17 +98,18 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
       "next-page" -> "references"
     )
 
-    "return to same page with errors" in featureScenario(Feature.submit, FeatureStatus.enabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(post, submitUri, signedInUser, Map.empty, errorsPayload) {
+    "return to same page with errors" in withFeatures(enabled(Feature.submit)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequestAndFormBody(post, submitUri, headers, session, tags, errorsPayload) {
+          // TODO make assertions about form error handling
           wasHtml
         }
       }
     }
 
-    "be behind a feature switch" in featureScenario(Feature.submit, FeatureStatus.disabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(post, submitUri, signedInUser) {
+    "be behind a feature switch" in withFeatures(disabled(Feature.submit)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequest(post, submitUri, headers, session, tags) {
           wasNotFound
         }
       }
@@ -104,31 +119,33 @@ class DeclarationControllerSpec extends CustomsPlaySpec with AuthenticationBehav
 
   s"$get $cancelUri" should {
 
-    "return 200" in featureScenario(Feature.cancel, FeatureStatus.enabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(get, cancelUri, signedInUser) {
+    "return 200" in withFeatures(enabled(Feature.cancel)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequest(get, cancelUri, headers, session, tags) {
           wasOk
         }
       }
     }
 
-    "return HTML" in featureScenario(Feature.cancel, FeatureStatus.enabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(get, cancelUri, signedInUser) {
+    "return HTML" in withFeatures(enabled(Feature.cancel)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequest(get, cancelUri, headers, session, tags) {
           wasHtml
         }
       }
     }
 
-    "require authentication" in featureScenario(Feature.cancel, FeatureStatus.enabled) {
-      notSignedInScenario() {
-        accessDeniedRequestScenarioTest(get, cancelUri)
+    "require authentication" in withFeatures(enabled(Feature.cancel)) {
+      withoutSignedInUser() {
+        withRequest(get, cancelUri) { resp =>
+          wasRedirected(ggLoginRedirectUri(cancelUri), resp)
+        }
       }
     }
 
-    "be behind a feature switch" in featureScenario(Feature.cancel, FeatureStatus.disabled) {
-      signedInScenario(signedInUser) {
-        userRequestScenario(get, cancelUri, signedInUser) {
+    "be behind a feature switch" in withFeatures(disabled(Feature.cancel)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequest(get, cancelUri, headers, session, tags) {
           wasNotFound
         }
       }

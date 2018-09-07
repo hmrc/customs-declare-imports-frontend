@@ -16,63 +16,54 @@
 
 package uk.gov.hmrc.customs.test.behaviours
 
-import config.AppConfig
 import org.scalatest.BeforeAndAfterEach
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{Reads, Writes}
-import services.CustomsHttpCaching
+import play.api.libs.json.Json
+import services.CustomsCacheService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 
 trait CacheBehaviours extends CustomsSpec with BeforeAndAfterEach {
 
-  val httpCaching = new MockCustomsHttpCaching(appConfig, component[HttpClient])
+  private lazy val caching = new MockCustomsCacheService()
 
-  def withCachedData[T](cacheName: String, eori: String, data: T)
+  def withCachedData[T](cacheName: String, eori: String, data: Map[String, String])
                        (test: Future[CacheMap] => Unit)
-                       (implicit wts: Writes[T], hc: HeaderCarrier, executionContext: ExecutionContext): Unit =
-    test(httpCaching.cache(cacheName, eori, data)(wts, hc, executionContext))
+                       (implicit hc: HeaderCarrier, executionContext: ExecutionContext): Unit =
+    test(caching.cache(cacheName, eori, data)(hc, executionContext))
 
   override protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder =
-    super.customise(builder).overrides(bind[CustomsHttpCaching].to(httpCaching))
+    super.customise(builder).overrides(bind[CustomsCacheService].to(caching))
 
-  override protected def afterEach(): Unit = httpCaching.clearCache
+  override protected def afterEach(): Unit = caching.clearCache
 
 }
 
-class MockCustomsHttpCaching(cfg: AppConfig, httpClient: HttpClient) extends CustomsHttpCaching(cfg, httpClient) {
+class MockCustomsCacheService extends CustomsCacheService {
 
   // source -> cacheId -> formId -> value
-  val cache: mutable.Map[String, mutable.Map[String, mutable.Map[String, Any]]] = mutable.Map.empty
+  val cache: mutable.Map[String, mutable.Map[String, Map[String, String]]] = mutable.Map.empty
 
-  override def cache[T](source: String, cacheId: String, formId: String, body: T)
-                       (implicit wts: Writes[T], hc: HeaderCarrier, executionContext: ExecutionContext): Future[CacheMap] = {
+  override def get(cacheName: String, eori: String)
+         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, String]]] = Future.successful(
+    cache.get(cacheName).flatMap(_.get(eori))
+  )
+
+  override def put(cacheName: String, eori: String, data: Map[String, String])
+         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = {
     cache.
-      getOrElseUpdate(source, mutable.Map.empty).
-      getOrElseUpdate(cacheId, mutable.Map.empty).
-      getOrElseUpdate(formId, body)
-    Future.successful(CacheMap(cacheId, Map(formId -> wts.writes(body))))
+      getOrElseUpdate(cacheName, mutable.Map.empty).
+      getOrElseUpdate(eori, data)
+    Future.successful(CacheMap(cacheName, Map(eori -> Json.toJson(data))))
   }
 
-  override def fetchAndGetEntry[T](source: String, cacheId: String, key: String)
-                                  (implicit hc: HeaderCarrier, rds: Reads[T], executionContext: ExecutionContext): Future[Option[T]] =
-    Future.successful(
-      cache.
-        get(source).
-        flatMap(_.get(cacheId)).
-        map(_.get(key)).
-        map(_.asInstanceOf[T])
-    )
+  def clearCache: Iterable[mutable.Map[String, Map[String, String]]] = cache.keys.map(k => cache.remove(k).get)
 
-  def clearCache: Iterable[mutable.Map[String, mutable.Map[String, Any]]] = cache.keys.map(k => cache.remove(k).get)
-
-  def cache[T](cacheName: String, eori: String, data: T)
-              (implicit wts: Writes[T], hc: HeaderCarrier, executionContext: ExecutionContext): Future[CacheMap] =
-    cache(defaultSource, cacheName, eori, data)
+  def cache[T](cacheName: String, eori: String, data: Map[String, String])
+              (implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[CacheMap] = put(cacheName, eori, data)
 
 }

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.customs.test.behaviours
 
+import java.net.URLEncoder
 import java.util.UUID
 
 import domain.auth.SignedInUser
@@ -46,6 +47,8 @@ trait AuthenticationBehaviours extends CustomsSpec with CustomsFixtures with Moc
   private lazy val cfg: CSRFConfig = component[CSRFConfigProvider].get
 
   private lazy val token: String = component[CSRFFilter].tokenProvider.generateToken
+
+  def ggLoginRedirectUri(fromUri: String): String = s"/gg/sign-in?continue=${URLEncoder.encode(fromUri)}&origin=${appConfig.appName}"
 
   lazy val authenticationTags: Map[String, String] = Map(
     Token.NameRequestTag -> cfg.tokenName,

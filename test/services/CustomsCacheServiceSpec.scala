@@ -36,7 +36,7 @@ class CustomsCacheServiceSpec extends CustomsPlaySpec with AuthenticationBehavio
 
     var putData: Option[Map[String, Map[String, Map[String, Map[String, String]]]]] = None
 
-    val service = new CustomsCacheService(new CustomsHttpCaching(appConfig, component[HttpClient]) {
+    val service = new CustomsCacheServiceImpl(new CustomsHttpCaching(appConfig, component[HttpClient]) {
       override def fetchAndGetEntry[T](source: String, cacheId: String, key: String)
                                       (implicit hc: HeaderCarrier, rds: Reads[T], executionContext: ExecutionContext): Future[Option[T]] = (source, cacheId, key) match {
         case legit if (source == cacheSource && cacheId == cacheName && key == eori) => Future.successful(Some(Protected(cachedData).asInstanceOf[T]))

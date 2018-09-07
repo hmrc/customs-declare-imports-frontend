@@ -16,23 +16,97 @@
 
 package uk.gov.hmrc.customs.test.behaviours
 
+import java.io.StringReader
 import java.util.UUID
 
+import domain.auth.SignedInUser
+import javax.xml.XMLConstants
+import javax.xml.transform.Source
+import javax.xml.transform.stream.StreamSource
+import javax.xml.validation.{Schema, SchemaFactory}
 import play.api.http.Status
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import services.{CustomsDeclarationsConnector, CustomsDeclarationsResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.wco.dec.MetaData
+
+import scala.collection.mutable
+import scala.concurrent.{ExecutionContext, Future}
+import scala.xml.SAXException
 
 trait CustomsDeclarationsApiBehaviours extends CustomsSpec {
 
-  def withCustomsDeclarationsApi(request: MetaData, status: Int = Status.ACCEPTED, conversationId: String = UUID.randomUUID().toString)
-                                (test: => Unit): Unit = {
-    // TODO
-    test
+  private lazy val connector = new MockCustomsDeclarationsConnector()
+
+  def withCustomsDeclarationsApiSubmission(request: MetaData)
+                                          (test: Future[CustomsDeclarationsResponse] => Unit): Unit = {
+    test(connector.addExpectedSubmission(request))
   }
 
-  override protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder = {
-    println("Customs Decs API app customisation")
-    super.customise(builder)
+  def withCustomsDeclarationsApiCancellation(request: MetaData)(test: Future[CustomsDeclarationsResponse] => Unit): Unit = {
+    test(connector.addExpectedCancellation(request))
+  }
+
+  override protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder =
+    super.customise(builder).overrides(bind[CustomsDeclarationsConnector].to(connector))
+
+}
+
+class MockCustomsDeclarationsConnector extends CustomsDeclarationsConnector {
+
+  val expectedSubmissions: mutable.Map[MetaData, Future[CustomsDeclarationsResponse]] = mutable.Map.empty
+
+  val expectedCancellations: mutable.Map[MetaData, Future[CustomsDeclarationsResponse]] = mutable.Map.empty
+
+  val submissionSchemas = Seq("/DocumentMetaData_2_DMS.xsd", "/WCO_DEC_2_DMS.xsd")
+
+  val cancellationSchemas = Seq("/CANCEL_METADATA.xsd","/CANCEL.xsd")
+
+  override def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String])
+                                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
+    expectedSubmissions.getOrElse(metaData, throw new IllegalArgumentException("Unexpected API submission call"))
+
+  override def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String])
+                                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
+    expectedCancellations.getOrElse(metaData, throw new IllegalArgumentException("Unexpected API cancellation call"))
+
+  def addExpectedSubmission(meta: MetaData): Future[CustomsDeclarationsResponse] = {
+    val resp = toResponse(meta, submissionSchemas)
+    expectedSubmissions.put(meta, resp)
+    resp
+  }
+
+  def addExpectedCancellation(meta: MetaData): Future[CustomsDeclarationsResponse] = {
+    val resp = toResponse(meta, cancellationSchemas)
+    expectedCancellations.put(meta, resp)
+    resp
+  }
+
+  private def toResponse(meta: MetaData, schemas: Seq[String]): Future[CustomsDeclarationsResponse] = Future.successful(
+    if (isValidImportDeclarationXml(meta.toXml, schemas)) CustomsDeclarationsResponse(Status.ACCEPTED, conversationId)
+    else CustomsDeclarationsResponse(Status.BAD_REQUEST, None)
+  )
+
+
+  private def conversationId: Option[String] = Some(UUID.randomUUID().toString)
+
+  protected def isValidImportDeclarationXml(xml: String, schemas: Seq[String]): Boolean = {
+    try {
+      validateAgainstSchemaResources(xml, schemas)
+      true
+    } catch {
+      case _: SAXException => false
+    }
+  }
+
+  private def validateAgainstSchemaResources(xml: String, schemas: Seq[String]): Unit = {
+    val schema: Schema = {
+      val sources = schemas.map(res => getClass.getResource(res).toString).map(systemId => new StreamSource(systemId)).toArray[Source]
+      SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(sources)
+    }
+    val validator = schema.newValidator()
+    validator.validate(new StreamSource(new StringReader(xml)))
   }
 
 }
