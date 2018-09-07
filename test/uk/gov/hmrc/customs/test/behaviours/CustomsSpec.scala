@@ -20,6 +20,7 @@ import akka.stream.Materializer
 import config.AppConfig
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.Application
+import play.api.i18n.MessagesApi
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.concurrent.Execution.Implicits
 import uk.gov.hmrc.customs.test.{CustomsFixtures, CustomsFutures}
@@ -35,6 +36,7 @@ trait CustomsSpec extends PlaySpec
   implicit lazy val mat: Materializer = app.materializer
   implicit lazy val ec: ExecutionContext = Implicits.defaultContext
   implicit lazy val appConfig: AppConfig = component[AppConfig]
+  implicit lazy val messages: MessagesApi = component[MessagesApi]
 
   override lazy val app: Application = customise(GuiceApplicationBuilder()).build()
 
