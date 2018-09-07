@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.additionalInformation.title")) {
 
-    @helpers.form("additional-information", "pages.additionalInformation.form.legend") {
+    @helpers.form("additional-information", "pages.additionalInformation.form.legend", data) {
         @helpers.selectInput(additionalInformationStatementCode, data)
         @helpers.textInput(additionalInformationStatementDescription, data)
         @helpers.nextButton()

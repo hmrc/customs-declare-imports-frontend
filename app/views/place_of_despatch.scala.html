@@ -20,7 +20,7 @@
 @(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
 @main_template(messages("pages.placeOfDespatch.title")) {
-    @helpers.form("place-of-despatch", "pages.placeOfDespatch.form.legend") {
+    @helpers.form("place-of-despatch", "pages.placeOfDespatch.form.legend", data) {
         @helpers.selectInput(exportCountry, data)
         @helpers.selectInput(loadingLocation, data)
         @helpers.selectInput(destinationCountry, data)

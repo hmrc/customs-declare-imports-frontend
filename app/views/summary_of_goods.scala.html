@@ -20,7 +20,7 @@
 @(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
 @main_template(messages("pages.summaryOfGoods.title")) {
-    @helpers.form("summary-of-goods", "pages.summaryOfGoods.form.legend") {
+    @helpers.form("summary-of-goods", "pages.summaryOfGoods.form.legend", data) {
         @helpers.textInput(declarationTotalPackageQuantity, data)
         @helpers.textInput(goodsMeasureGrossMassMeasure, data)
         @helpers.nextButton()

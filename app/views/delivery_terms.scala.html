@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.deliveryTerms.title")) {
 
-    @helpers.form("delivery-terms", "pages.deliveryTerms.form.legend") {
+    @helpers.form("delivery-terms", "pages.deliveryTerms.form.legend", data) {
         @helpers.selectInput(deliveryTermsIncotermCode, data)
         @helpers.textInput(deliveryTermsUnlocodeCode, data)
         @helpers.selectInput(deliveryTermsCountryCode, data)

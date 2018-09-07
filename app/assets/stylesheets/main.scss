@@ -1,3 +1,7 @@
 // Primary styles for CDS Import Declarations
 
 @import "shame";
+
+.cds-cya-change-row * {
+	border-bottom: none;
+}

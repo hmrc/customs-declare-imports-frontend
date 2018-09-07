@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.locationOfGoods.title")) {
 
-    @helpers.form("location-of-goods", "pages.locationOfGoods.form.legend") {
+    @helpers.form("location-of-goods", "pages.locationOfGoods.form.legend", data) {
         @helpers.textInput(locationOfGoodsIdentificationOfLocation, data)
         @helpers.textInput(locationOfGoodsAdditionalIdentifier, data)
         @helpers.selectInput(locationOfGoodsTypeOfLocation, data)

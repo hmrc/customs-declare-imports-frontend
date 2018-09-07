@@ -20,7 +20,7 @@
 @(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
 @main_template(messages("pages.additionsAndDeductions.title")) {
-    @helpers.form("additions-and-deductions", "pages.additionsAndDeductions.form.legend") {
+    @helpers.form("additions-and-deductions", "pages.additionsAndDeductions.form.legend", data) {
         @helpers.textInput(otherChargeDeductionAmount, data)
         @helpers.selectInput(otherChargeDeductionCurrency, data)
         @helpers.selectInput(otherChargeDeductionType, data)

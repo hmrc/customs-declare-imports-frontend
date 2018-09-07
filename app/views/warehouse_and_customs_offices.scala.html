@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.warehouseAndCustomsOffices.title")) {
 
-    @helpers.form("warehouse-and-customs-offices", "pages.warehouseAndCustomsOffices.form.legend") {
+    @helpers.form("warehouse-and-customs-offices", "pages.warehouseAndCustomsOffices.form.legend", data) {
         <h2 class="heading-medium">@messages("pages.warehouseAndCustomsOffices.h2.warehouseDetails")</h2>
         @helpers.selectInput(identificationOfWarehouseWarehouseType, data)
         @helpers.textInput(identificationOfWarehouseWarehouseIdentifier, data)

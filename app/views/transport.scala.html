@@ -20,7 +20,7 @@
 @(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
 @main_template(messages("pages.transport.title")) {
-    @helpers.form("transport", "pages.transport.form.legend") {
+    @helpers.form("transport", "pages.transport.form.legend", data) {
         @helpers.textInput(containerCode, data)
         @helpers.selectInput(borderTransportMeans, data)
         @helpers.selectInput(arrivalTransportMeans, data)

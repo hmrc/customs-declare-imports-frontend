@@ -20,7 +20,7 @@
 @(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
 @main_template(messages("pages.deferredPayment.title")) {
-    @helpers.form("deferred-payment", "pages.deferredPayment.form.legend") {
+    @helpers.form("deferred-payment", "pages.deferredPayment.form.legend", data) {
         @helpers.textInput(declarationAdditionalDocumentId, data)
         @helpers.selectInput(declarationAdditionalDocumentCategoryCode, data)
         @helpers.textInput(declarationAdditionalDocumentTypeCode, data)

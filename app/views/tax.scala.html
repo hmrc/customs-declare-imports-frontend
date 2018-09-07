@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.tax.title")) {
 
-    @helpers.form("tax", "pages.tax.form.legend") {
+    @helpers.form("tax", "pages.tax.form.legend", data) {
         @helpers.selectInput(commodityDutyTaxFeesTypeCode, data)
         @helpers.textInput(commodityDutyTaxFeesQuantity, data)
         @helpers.selectInput(commodityDutyTaxFeesUnitCode, data)

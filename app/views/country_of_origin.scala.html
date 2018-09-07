@@ -20,7 +20,7 @@
 @(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
 @main_template(messages("pages.countryOfOrigin.title")) {
-    @helpers.form("country-of-origin", "pages.countryOfOrigin.form.legend") {
+    @helpers.form("country-of-origin", "pages.countryOfOrigin.form.legend", data) {
         @helpers.selectInput(originCountry, data)
         @helpers.radioInput(originType, data)
         @helpers.nextButton()

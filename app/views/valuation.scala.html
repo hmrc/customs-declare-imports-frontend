@@ -20,7 +20,7 @@
 @(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
 
 @main_template(messages("pages.valuation.title")) {
-    @helpers.form("valuation", "pages.valuation.form.legend") {
+    @helpers.form("valuation", "pages.valuation.form.legend", data) {
         @helpers.selectInput(valuationAdjustmentAdditionCode, data)
         @helpers.textInput(commodityInvoiceLineAmount, data)
         @helpers.selectInput(commodityInvoiceLineCurrency, data)

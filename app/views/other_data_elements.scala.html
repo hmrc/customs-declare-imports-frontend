@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.otherDataElements.title")) {
 
-    @helpers.form("other-data-elements", "pages.otherDataElements.form.legend") {
+    @helpers.form("other-data-elements", "pages.otherDataElements.form.legend", data) {
         @helpers.textInput(dutyTaxFeeQuotaOrderID, data)
         @helpers.selectInput(natureOfTransaction, data)
         @helpers.textInput(statisticalValue, data)
