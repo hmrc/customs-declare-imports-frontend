@@ -16,22 +16,31 @@
 
 package controllers
 
-import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.CustomsPlaySpec
+import play.api.i18n.MessagesApi
+import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
+import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, RequestHandlerBehaviours}
 
-class UnauthorisedControllerSpec extends CustomsPlaySpec {
+class UnauthorisedControllerSpec extends CustomsSpec
+  with RequestHandlerBehaviours
+  with HttpAssertions
+  with HtmlAssertions {
 
   val method = "GET"
   val uri = uriWithContextPath("/enrol")
+  val messages = component[MessagesApi]
 
   s"$method $uri" should {
 
-    "return 200" in requestScenario(method, uri) { wasOk }
+    "return 200" in withRequest(method, uri) {
+      wasOk
+    }
 
-    "return HTML" in requestScenario(method, uri) { wasHtml }
+    "return HTML" in withRequest(method, uri) {
+      wasHtml
+    }
 
-    "display message" in requestScenario(method, uri) { resp =>
-      contentAsHtml(resp) should include element withClass("message").withValue("You need to enrol with CDS.")
+    "display message" in withRequest(method, uri) { resp =>
+      contentAsHtml(resp) should include element withName("h1").withValue(messages("enrolmentpage.titleAndHeading"))
     }
 
   }

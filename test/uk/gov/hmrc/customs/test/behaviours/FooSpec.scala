@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import config.AppConfig
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+package uk.gov.hmrc.customs.test.behaviours
 
-@main_template(title = messages("enrolmentpage.titleAndHeading"), bodyClasses = None) {
-    <h1 class="heading-xlarge">@messages("enrolmentpage.titleAndHeading")</h1>
-    <p>@Html(messages("enrolmentpage.p.enrolment"))</p>
+class FooSpec extends CustomsSpec with CustomsDeclarationsApiBehaviours with FeatureBehaviours {
+
+  "it" should {
+
+    "do stuff" in {
+      println(new D().toString)
+    }
+
+  }
 
 }
+
+trait Base { override def toString = "Base" }
+class A extends Base { override def toString = "A->" + super.toString }
+trait B extends Base { override def toString = "B->" + super.toString }
+trait C extends Base { override def toString = "C->" + super.toString }
+class D extends A with B with C { override def toString = "D->" + super.toString }

@@ -24,7 +24,7 @@ import uk.gov.hmrc.wco.dec.{AdditionalInformation, Amendment, Declaration, MetaD
 
 import scala.util.Random
 
-trait RandomFixtures {
+trait CustomsFixtures {
 
   protected def userFixture(lastName: String = randomLastName,
                             firstName: Option[String] = Some(randomFirstName),

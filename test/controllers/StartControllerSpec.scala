@@ -16,44 +16,50 @@
 
 package controllers
 
-import domain.features.{Feature, FeatureStatus}
-import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.{CustomsPlaySpec, FeatureSwitchBehaviours}
+import domain.features.Feature
+import play.api.i18n.MessagesApi
+import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
+import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, FeatureBehaviours, RequestHandlerBehaviours}
 
-class StartControllerSpec extends CustomsPlaySpec with FeatureSwitchBehaviours {
+class StartControllerSpec extends CustomsSpec
+  with RequestHandlerBehaviours
+  with FeatureBehaviours
+  with HttpAssertions
+  with HtmlAssertions {
 
   val method = "GET"
   val uri = uriWithContextPath("/start")
+  val messages = component[MessagesApi]
 
   s"$method $uri" should {
 
-    "return 200" in featureScenario(Feature.start, FeatureStatus.enabled) {
-      requestScenario(method, uri) { wasOk }
+    "return 200" in withFeatures(enabled(Feature.start)) {
+      withRequest(method, uri) { wasOk }
     }
 
-    "return HTML" in featureScenario(Feature.start, FeatureStatus.enabled) {
-      requestScenario(method, uri) { wasHtml }
+    "return HTML" in withFeatures(enabled(Feature.start)) {
+      withRequest(method, uri) { wasHtml }
     }
 
-    "display 'Manage my import declarations' message" in featureScenario(Feature.start, FeatureStatus.enabled) {
-      requestScenario(method, uri) { resp =>
-        contentAsHtml(resp) should include element withName("h1").withValue("Manage my import declarations")
+    "display 'Manage my import declarations' message" in withFeatures(enabled(Feature.start)) {
+      withRequest(method, uri) { resp =>
+        contentAsHtml(resp) should include element withName("h1").withValue(messages("startpage.titleAndHeading"))
       }
     }
 
-    "include link to begin page" in featureScenario(Seq(Feature.start, Feature.landing), FeatureStatus.enabled) {
-      requestScenario(method, uri) { resp =>
+    "include link to begin page" in withFeatures(enabled(Feature.start, Feature.landing)) {
+      withRequest(method, uri) { resp =>
         contentAsHtml(resp) should include element withName("a").withClass("button-start").withAttrValue("href", routes.LandingController.displayLandingPage().url)
       }
     }
 
-    "be behind feature switch" in featureScenario(Feature.start, FeatureStatus.disabled) {
-      requestScenario(method, uri) { wasNotFound }
+    "be behind feature switch" in withFeatures(disabled(Feature.start)) {
+      withRequest(method, uri) { wasNotFound }
     }
 
-    "include a message when begin page is not on" in featureScenario(Map(Feature.start -> FeatureStatus.enabled, Feature.landing -> FeatureStatus.disabled)) {
-      requestScenario(method, uri) { resp =>
-        contentAsHtml(resp) should include element withClass("message").withValue("Sorry, you cannot begin today.")
+    "include a message when begin page is not on" in withFeatures(enabled(Feature.start) ++ disabled(Feature.landing)) {
+      withRequest(method, uri) { resp =>
+        contentAsHtml(resp) should include element withClass("message").withValue(messages("landingpage.unavailable"))
       }
     }
 

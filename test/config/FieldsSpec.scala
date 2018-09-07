@@ -19,12 +19,12 @@ package config
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.UrlMessageSource
-import uk.gov.hmrc.customs.test.RandomFixtures
+import uk.gov.hmrc.customs.test.CustomsFixtures
 import uk.gov.hmrc.wco.dec.{JacksonMapper, MetaData}
 
 import scala.util.matching.Regex
 
-class FieldsSpec extends WordSpec with MustMatchers with RandomFixtures with JacksonMapper {
+class FieldsSpec extends WordSpec with MustMatchers with CustomsFixtures with JacksonMapper {
 
   // FIXME resolve issues around known bad mappings
   private val knownBad: Set[String] = Set(

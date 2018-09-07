@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import config.AppConfig
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+package uk.gov.hmrc.customs.test.assertions
 
-@main_template(title = messages("enrolmentpage.titleAndHeading"), bodyClasses = None) {
-    <h1 class="heading-xlarge">@messages("enrolmentpage.titleAndHeading")</h1>
-    <p>@Html(messages("enrolmentpage.p.enrolment"))</p>
+import org.scalatest.MustMatchers
+import play.api.mvc.Codec
+import uk.gov.hmrc.customs.test.CustomsFutures
 
-}
+trait CustomsAssertions extends MustMatchers with CustomsFutures

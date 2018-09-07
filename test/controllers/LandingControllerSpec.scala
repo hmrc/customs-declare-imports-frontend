@@ -16,46 +16,61 @@
 
 package controllers
 
-import domain.features.{Feature, FeatureStatus}
-import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours}
+import domain.features.Feature
+import play.api.i18n.MessagesApi
+import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
+import uk.gov.hmrc.customs.test.behaviours.{AuthenticationBehaviours, CustomsSpec, FeatureBehaviours, RequestHandlerBehaviours}
 
-class LandingControllerSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours {
+class LandingControllerSpec extends CustomsSpec
+  with RequestHandlerBehaviours
+  with AuthenticationBehaviours
+  with FeatureBehaviours
+  with HttpAssertions
+  with HtmlAssertions {
 
   val method = "GET"
   val uri = uriWithContextPath("/")
+  val messages = component[MessagesApi]
 
   s"$method $uri" should {
 
-    "return 200" in featureScenario(Feature.landing, FeatureStatus.enabled) {
-      signedInScenario() {
-        userRequestScenario(method, uri, signedInUser) { wasOk }
-      }
-    }
-
-    "return HTML" in featureScenario(Feature.landing, FeatureStatus.enabled) {
-      signedInScenario() {
-        userRequestScenario(method, uri, signedInUser) { wasHtml }
-      }
-    }
-
-    "display message" in featureScenario(Feature.landing, FeatureStatus.enabled) {
-      signedInScenario() {
-        userRequestScenario(method, uri, signedInUser) { resp =>
-          contentAsHtml(resp) should include element withName("h1").withValue("Your import declarations")
+    "return 200" in withFeatures(enabled(Feature.landing)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequest(method, uri, headers, session, tags) {
+          wasOk
         }
       }
     }
 
-    "require authentication" in featureScenario(Feature.landing, FeatureStatus.enabled) {
-      notSignedInScenario() {
-        accessDeniedRequestScenarioTest(method, uri)
+    "return HTML" in withFeatures(enabled(Feature.landing)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequest(method, uri, headers, session, tags) {
+          wasHtml
+        }
       }
     }
 
-    "be behind feature switch" in featureScenario(Feature.landing, FeatureStatus.disabled) {
-      signedInScenario() {
-        userRequestScenario(method, uri) { wasNotFound }
+    "display message" in withFeatures(enabled(Feature.landing)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequest(method, uri, headers, session, tags) { resp =>
+          contentAsHtml(resp) should include element withName("h1").withValue(messages("common.importDeclarations"))
+        }
+      }
+    }
+
+    "require authentication" in withFeatures(enabled(Feature.landing)) {
+      withoutSignedInUser() {
+        withRequest(method, uri) { resp =>
+          wasAccessDenied(uri, resp)
+        }
+      }
+    }
+
+    "be behind feature switch" in withFeatures(disabled(Feature.landing)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequest(method, uri) {
+          wasNotFound
+        }
       }
     }
 

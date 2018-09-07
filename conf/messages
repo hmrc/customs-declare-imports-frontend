@@ -19,6 +19,7 @@ common.button.continue=Continue
 common.button.submit=Submit
 common.button.save-and-continue=Save and continue
 common.button.change=Change
+common.button.createNew=Create new
 
 ## common fields with shared labels
 common.fields.eori=EORI number
@@ -131,12 +132,21 @@ startpage.useList.bullet3=see how your declarations are progressing and check fo
 startpage.h2.whoCanUseThis=Who can use this?
 startpage.p.inventoryLinked=Traders who need to declare imported goods. You cannot declare your imports online if you use Community Network Services (CNS) inventory linked software systems.
 startpage.p.youWillNeed=You will need:
-startpage.needList.bullet1=your Government Gateway details
-startpage.needList.bullet2=your EORI number
-startpage.needList.bullet3=Use this service to:
+startpage.needList.bullet1=your <a href="https://www.gov.uk/government-gateway">Government Gateway</a> details
+startpage.needList.bullet2=your <a href="https://www.gov.uk/eori">EORI number</a>
+startpage.needList.bullet3=the <a href="https://www.gov.uk/trade-tariff">commodity codes</a> of your goods
 startpage.needList.bullet4=procedure codes
 startpage.needList.bullet5=details of your import and where it came from
 
+## landing page
+landingpage.conversationID=Conversation ID
+landingpage.LRN=LRN
+landingpage.dateSubmitted=Date submitted
+landingpage.unavailable=We are sorry but the Customs Imports Declarations Service is currently unavailable. Please try again later.
+
+## enrolment page
+enrolmentpage.titleAndHeading=You need to enrol with Customs Declaration Service (CDS)
+enrolmentpage.p.enrolment=To use this service you need to <a href="https://www.gov.uk/eori">get an EORI number</a>
 
 ## specific fields
 declaration.declarant.name=Declarant'’s name
@@ -243,14 +253,13 @@ declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.c
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeNationalAdditionalTypeCodes=National Additional type code(s)
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.tariffQuantity=Supplementary units
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.tariffQuantityHint=The quantity can be expressed up to 6 decimal places.
-declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netNetWeightMeasure=Net mass
-declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netNetWeightMeasureHint=The net mass is the mass of the goods without any packaging and must be given in kilograms. The quantity can be expressed up to 6 decimal places.
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netWeightMeasure=Net mass
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.netWeightMeasureHint=The net mass is the mass of the goods without any packaging and must be given in kilograms. The quantity can be expressed up to 6 decimal places.
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.grossMassMeasure=Gross mass
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.goodsMeasure.grossMassMeasureHint=The gross mass, given in kilograms, of the goods concerned by the relevant item of goods.
 declaration.goodsShipment.governmentAgencyGoodsItems.packagings.typeCode=Type of packages
 declaration.goodsShipment.governmentAgencyGoodsItems.packagings.quantity=Number of packages
 declaration.goodsShipment.governmentAgencyGoodsItems.packagings.quantityHint=This is the number of individual items packaged in such a way that they cannot be divided without first undoing the packing, or the number of pieces, if unpackaged.
-declaration.goodsShipment.consignment.transportEquipments.id=Container identification number
 declaration.goodsShipment.consignment.transportEquipments.idHint=Marks (letters and/or numbers) which identify the transport container.
 
 ## validations

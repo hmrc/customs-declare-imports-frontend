@@ -37,7 +37,14 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
                                      (implicit val messagesApi: MessagesApi, val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController with I18nSupport {
 
-  private val permissibleKeys: Set[String] = Fields.definitions.keySet ++ Set("next-page", "last-page", "force-last")
+  private val navigationKeys = Set("next-page", "last-page", "force-last")
+
+  private val permissibleKeys: Set[String] = Fields.definitions.keySet ++ navigationKeys
+
+  private val knownBad: Set[String] = Set(
+    "declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].additionalProcedure",
+    "declaration.typeCode.additional"
+  )
 
   def displaySubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
     cache.get(appConfig.submissionCacheId, req.user.eori.get).map { data =>
@@ -66,7 +73,8 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     implicit val errors: Map[String, Seq[ValidationError]] = validate(data)
     if (errors.isEmpty) {
       cacheSubmission(data ++ Map("force-last" -> "false")) { (merged, _) =>
-        client.submitImportDeclaration(MetaData.fromProperties(merged.filterNot(_._2.trim.isEmpty))).map { resp =>
+        val props = merged.filterNot(entry => navigationKeys.contains(entry._1) || knownBad.contains(entry._1) || entry._2.trim.isEmpty)
+        client.submitImportDeclaration(MetaData.fromProperties(props)).map { resp =>
           Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId.get))
         }
       }

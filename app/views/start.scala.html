@@ -20,33 +20,35 @@
 @import domain.features.Feature
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-  @main_template(title = messages("Manage my import declarations"), bodyClasses = None) {
+    @main_template(title = messages("startpage.titleAndHeading"), bodyClasses = None) {
 
-    @if(appConfig.isFeatureOn(Feature.landing)) {
-			<h1 class="heading-xlarge">@messages("startpage.titleAndHeading")</h1>
+        @if(appConfig.isFeatureOn(Feature.landing)) {
+            <h1 class="heading-xlarge">@messages("startpage.titleAndHeading")</h1>
 
-			<p>@messages("startpage.p.useThisServiceTo")</p>
-			<ul class="list-bullet">
-				<li>@messages("startpage.useList.bullet1")</li>
-				<li>@messages("startpage.useList.bullet2")</li>
-				<li>@messages("startpage.useList.bullet3")</li>
-			</ul>
+            <p>@messages("startpage.p.useThisServiceTo")</p>
+            <ul class="list-bullet">
+                <li>@messages("startpage.useList.bullet1")</li>
+                <li>@messages("startpage.useList.bullet2")</li>
+                <li>@messages("startpage.useList.bullet3")</li>
+            </ul>
 
-			<h2 class="heading-medium">@messages("startpage.h2.whoCanUseThis")</h2>
-			<p>@messages("startpage.p.inventoryLinked")</p>
+            <h2 class="heading-medium">@messages("startpage.h2.whoCanUseThis")</h2>
+            <p>@messages("startpage.p.inventoryLinked")</p>
 
-			<p>@messages("startpage.p.youWillNeed")</p>
-			<ul class="list-bullet form-group">
-				<li>@messages("startpage.needList.bullet1")</li>
-				<li>@messages("startpage.needList.bullet2")</li>
-				<li>@messages("startpage.needList.bullet3")</li>
-				<li>@messages("startpage.needList.bullet4")</li>
-				<li>@messages("startpage.needList.bullet5")</li>
-			</ul>
+            <p>@messages("startpage.p.youWillNeed")</p>
+            <ul class="list-bullet form-group">
+                <li>@Html(messages("startpage.needList.bullet1"))</li>
+                <li>@Html(messages("startpage.needList.bullet2"))</li>
+                <li>@Html(messages("startpage.needList.bullet3"))</li>
+                <li>@messages("startpage.needList.bullet4")</li>
+                <li>@messages("startpage.needList.bullet5")</li>
+            </ul>
 
-      <a role="button" class="button button-start" href="@{routes.LandingController.displayLandingPage().url}">@messages("common.button.startNow")</a>
-    } else {
-	    <h1 class="heading-xlarge">Manage my import declarations</h1>
-      <p class="message">Sorry, you cannot begin today.</p>
+            <a role="button" class="button button-start" href="@{
+                routes.LandingController.displayLandingPage().url
+            }">@messages("common.button.startNow")</a>
+        } else {
+            <h1 class="heading-xlarge">@messages("startpage.titleAndHeading")</h1>
+            <p class="message">@messages("landingpage.unavailable")</p>
+        }
     }
-  }
