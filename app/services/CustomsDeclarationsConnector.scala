@@ -16,7 +16,7 @@
 
 package services
 
-import com.google.inject.Inject
+import com.google.inject.{ImplementedBy, Inject}
 import config.AppConfig
 import domain.auth.SignedInUser
 import javax.inject.Singleton
@@ -30,14 +30,25 @@ import uk.gov.hmrc.wco.dec.MetaData
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-@Singleton
-class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig, httpClient: HttpClient, declarationRepository: SubmissionRepository) {
+@ImplementedBy(classOf[CustomsDeclarationsConnectorImpl])
+trait CustomsDeclarationsConnector {
 
   def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse]
+
+  def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse]
+
+}
+
+@Singleton
+class CustomsDeclarationsConnectorImpl @Inject()(appConfig: AppConfig, httpClient: HttpClient, declarationRepository: SubmissionRepository) extends CustomsDeclarationsConnector {
+
+  override def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
     postMetaData(appConfig.submitImportDeclarationUri, metaData, badgeIdentifier, saveSubmission)
 
-  def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
+  override def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
     postMetaData(appConfig.cancelImportDeclarationUri, metaData, badgeIdentifier)
 

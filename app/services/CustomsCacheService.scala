@@ -16,7 +16,7 @@
 
 package services
 
-import com.google.inject.{Inject, Singleton}
+import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.AppConfig
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CompositeSymmetricCrypto}
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache, ShortLivedHttpCaching}
@@ -38,17 +38,28 @@ class CustomsHttpCaching @Inject()(cfg: AppConfig, httpClient: HttpClient) exten
 
 }
 
+@ImplementedBy(classOf[CustomsCacheServiceImpl])
+trait CustomsCacheService {
+
+  def get(cacheName: String, eori: String)
+         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, String]]]
+
+  def put(cacheName: String, eori: String, data: Map[String, String])
+         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap]
+
+}
+
 @Singleton
-class CustomsCacheService @Inject()(caching: CustomsHttpCaching, applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
+class CustomsCacheServiceImpl @Inject()(caching: CustomsHttpCaching, applicationCrypto: ApplicationCrypto) extends CustomsCacheService with ShortLivedCache {
 
   override implicit val crypto: CompositeSymmetricCrypto = applicationCrypto.JsonCrypto
 
   override def shortLiveCache: ShortLivedHttpCaching = caching
 
-  def get(cacheName: String, eori: String)
+  override def get(cacheName: String, eori: String)
          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, String]]] =
     fetchAndGetEntry[Map[String, String]](cacheName, eori)
 
-  def put(cacheName: String, eori: String, data: Map[String, String])
+  override def put(cacheName: String, eori: String, data: Map[String, String])
          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = cache(cacheName, eori, data)
 }

@@ -59,7 +59,7 @@ class LandingControllerSpec extends CustomsSpec
     "require authentication" in withFeatures(enabled(Feature.landing)) {
       withoutSignedInUser() {
         withRequest(method, uri) { resp =>
-          wasAccessDenied(uri, resp)
+          wasRedirected(ggLoginRedirectUri(uri), resp)
         }
       }
     }

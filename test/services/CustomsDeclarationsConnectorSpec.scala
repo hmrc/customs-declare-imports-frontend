@@ -82,7 +82,7 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
     ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
     val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError, conversationId)
-    val client = new CustomsDeclarationsConnector(appConfig, http, component[SubmissionRepository])
+    val client = new CustomsDeclarationsConnectorImpl(appConfig, http, component[SubmissionRepository])
     test(client.submitImportDeclaration(metaData, badgeIdentifier)(hc, ec, user))
   }
 
@@ -99,7 +99,7 @@ class CustomsDeclarationsConnectorSpec extends CustomsPlaySpec with XmlBehaviour
       HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
     ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
     val http = new MockHttpClient(expectedUrl, expectedBody, expectedHeaders, forceServerError)
-    val client = new CustomsDeclarationsConnector(appConfig, http, component[SubmissionRepository])
+    val client = new CustomsDeclarationsConnectorImpl(appConfig, http, component[SubmissionRepository])
     test(client.cancelImportDeclaration(metaData, badgeIdentifier)(hc, ec))
   }
 

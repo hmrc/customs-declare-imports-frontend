@@ -30,9 +30,9 @@ trait HttpAssertions extends CustomsAssertions {
 
   def wasOk(resp: Future[Result]): Unit = status(resp) must be (Status.OK)
 
-  def wasAccessDenied(toUri: String, resp: Future[Result]): Unit = {
+  def wasRedirected(toUri: String, resp: Future[Result]): Unit = {
     status(resp) must be(Status.SEE_OTHER)
-    header(HeaderNames.LOCATION, resp) must be(Some(s"/gg/sign-in?continue=${URLEncoder.encode(toUri)}&origin=customs-declare-imports-frontend"))
+    header(HeaderNames.LOCATION, resp) must be(Some(toUri))
   }
 
   def wasRedirected(resp: Future[Result], location: Option[String] = None): Unit = {
