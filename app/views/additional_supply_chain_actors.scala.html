@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.additionalSupplyChainActors.title")) {
 
-    @helpers.form("additional-supply-chain-actors", "pages.additionalSupplyChainActors.form.legend") {
+    @helpers.form("additional-supply-chain-actors", "pages.additionalSupplyChainActors.form.legend", data) {
         @helpers.textInput(mutualRecognitionPartyId, data)
         @helpers.selectInput(mutualRecognitionPartyRoleCode, data)
         @helpers.textInput(authorisationHolderId, data)

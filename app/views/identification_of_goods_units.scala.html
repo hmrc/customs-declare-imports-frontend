@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.identificationOfGoods.title")) {
 
-    @helpers.form("identification-of-goods-units", "pages.identificationOfGoods.form.legend") {
+    @helpers.form("identification-of-goods-units", "pages.identificationOfGoods.form.legend", data) {
         @helpers.textInput(supplementaryUnits, data)
         @helpers.textInput(netMass, data)
         @helpers.textInput(grossMass, data)

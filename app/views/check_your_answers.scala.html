@@ -75,6 +75,87 @@
 	        @helpers.cyaTextField(messages("common.fields.eori"), Seq("declaration.goodsShipment.importer.id"), data)
 	    }
 
+		<!-- Seller Details -->
+	    @helpers.checkYourAnswersSection("pages.seller.details.form.legend", "seller-details"){
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.seller.name"), Seq("declaration.goodsShipment.seller.name"), data)
+	        @helpers.cyaTextField(messages("common.fields.address.multiLine"), 
+	        	Seq("declaration.goodsShipment.seller.address.line", 
+	       			"declaration.goodsShipment.seller.address.cityName", 
+	       			"declaration.goodsShipment.seller.address.countryCode",
+	       			"declaration.goodsShipment.seller.address.postcodeId"), data)
+	        @helpers.cyaTextField(messages("common.fields.communications.id"), Seq("declaration.goodsShipment.seller.communications[0].id"), data)
+	        @helpers.cyaTextField(messages("common.fields.eori"), Seq("declaration.goodsShipment.seller.id"), data)
+	    }
+
+		<!-- Buyer Details -->
+	    @helpers.checkYourAnswersSection("pages.buyer.details.form.legend", "buyer-details"){
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.buyer.name"), Seq("declaration.goodsShipment.buyer.name"), data)
+	        @helpers.cyaTextField(messages("common.fields.address.multiLine"), 
+	        	Seq("declaration.goodsShipment.buyer.address.line", 
+	       			"declaration.goodsShipment.buyer.address.cityName", 
+	       			"declaration.goodsShipment.buyer.address.countryCode",
+	       			"declaration.goodsShipment.buyer.address.postcodeId"), data)
+	        @helpers.cyaTextField(messages("common.fields.communications.id"), Seq("declaration.goodsShipment.buyer.communications[0].id"), data)
+	        @helpers.cyaTextField(messages("common.fields.eori"), Seq("declaration.goodsShipment.buyer.id"), data)
+	    }
+
+		<!-- Additional supply chain actors -->
+	    @helpers.checkYourAnswersSection("pages.additionalSupplyChainActors.form.legend", "additional-supply-chain-actors"){
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.aeoMutualRecognitionParties.id"), Seq("declaration.goodsShipment.aeoMutualRecognitionParties[0].id"), data)
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.aeoMutualRecognitionParties.roleCode"), Seq("declaration.goodsShipment.aeoMutualRecognitionParties[0].roleCode"), data)
+	        @helpers.cyaTextField(messages("declaration.authorisationHolders.id"), Seq("declaration.authorisationHolders[0].id"), data)
+	        @helpers.cyaTextField(messages("declaration.authorisationHolders.categoryCode"), Seq("declaration.authorisationHolders[0].categoryCode"), data)
+	    }
+
+		<!-- Additional fiscal references -->
+	    @helpers.checkYourAnswersSection("pages.additionalFiscalReferences.form.legend", "additional-fiscal-references"){
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.domesticDutyTaxParties.id"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].domesticDutyTaxParties[0].id"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.domesticDutyTaxParties.roleCode"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].domesticDutyTaxParties[0].roleCode"), data)
+	    }
+
+		<!-- Previous documents -->
+	    @helpers.checkYourAnswersSection("pages.previousDocuments.form.legend", "previous-documents"){
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.previousDocuments.categoryCode"), Seq("declaration.goodsShipment.previousDocuments[0].categoryCode"), data)
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.previousDocuments.typeCode"), Seq("declaration.goodsShipment.previousDocuments[0].typeCode"), data)
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.previousDocuments.id"), Seq("declaration.goodsShipment.previousDocuments[0].id"), data)
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.previousDocuments.lineNumeric"), Seq("declaration.goodsShipment.previousDocuments[0].lineNumeric"), data)
+	    }
+
+		<!-- Procedure codes -->
+	    @helpers.checkYourAnswersSection("pages.procedureCodes.form.legend", "procedure-codes"){
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.governmentProcedures.currentCode"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].currentCode"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.governmentProcedures.previousCode"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].previousCode"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.governmentProcedures.additionalProcedure"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].additionalProcedure"), data)
+	    }
+
+		<!-- Identification of goods (1) -->
+	    @helpers.checkYourAnswersSection("pages.identificationOfGoods.form.legend", "identification-of-goods-shipping-marks-and-codes"){
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.description"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.description"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.packagings.marksNumbersId"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].packagings[0].marksNumbersId"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.cusCode"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].id"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.combinedNomenclatureCode"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].id"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeTaricCode"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].id"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeTaricAdditionalCodes"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].id"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeNationalAdditionalCodes"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].id"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeCombinedNomenclatureTypeCode"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].identificationTypeCode"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeTaricTypeCode"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].identificationTypeCode"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeTaricAdditionalTypeCodes"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].identificationTypeCode"), data)
+
+	        @helpers.cyaTextField(messages("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.classifications.commodityCodeNationalAdditionalTypeCodes"), Seq("declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.classifications[0].identificationTypeCode"), data)
+	    }
+
         @helpers.nextButton()
     }
 }

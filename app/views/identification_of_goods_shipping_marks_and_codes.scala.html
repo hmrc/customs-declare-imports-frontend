@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.identificationOfGoods.title")) {
 
-    @helpers.form("identification-of-goods-shipping-marks-and-codes", "pages.identificationOfGoods.form.legend") {
+    @helpers.form("identification-of-goods-shipping-marks-and-codes", "pages.identificationOfGoods.form.legend", data) {
         @helpers.textareaInput(commodityDescription, data)
         @helpers.textInput(packagingMarksNumbersId, data)
         @helpers.textInput(cusCode, data)

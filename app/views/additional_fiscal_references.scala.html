@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.additionalFiscalReferences.title")) {
 
-    @helpers.form("additional-fiscal-references", "pages.additionalFiscalReferences.form.legend") {
+    @helpers.form("additional-fiscal-references", "pages.additionalFiscalReferences.form.legend", data) {
         @helpers.textInput(domesticTaxPartyId, data)
         @helpers.selectInput(domesticTaxPartyRoleCode, data)
         @helpers.nextButton()

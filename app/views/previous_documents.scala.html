@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.previousDocuments.title")) {
 
-    @helpers.form("previous-documents", "pages.previousDocuments.form.legend") {
+    @helpers.form("previous-documents", "pages.previousDocuments.form.legend", data) {
         @helpers.selectInput(previousDocumentCategoryCode, data)
         @helpers.selectInput(previousDocumentTypeCode, data)
         @helpers.textInput(previousDocumentId, data)

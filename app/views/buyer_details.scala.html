@@ -21,7 +21,7 @@
 
 @main_template(messages("pages.buyer.details.title")) {
 
-    @helpers.form("buyer-details", "pages.buyer.details.form.legend") {
+    @helpers.form("buyer-details", "pages.buyer.details.form.legend", data) {
         @helpers.textInput(buyerName, data)
         @helpers.textInput(buyerAddressLine, data)
         @helpers.textInput(buyerAddressCityName, data)
