@@ -17,19 +17,20 @@
 package controllers
 
 import config.ErrorHandler
+import domain.features.Feature
 import domain.features.Feature.Feature
-import domain.features.{Feature, FeatureStatus}
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec, FeatureSwitchBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{AuthenticationBehaviours, CustomsSpec, FeatureBehaviours}
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 
 import scala.concurrent.Future
 
-class ActionsSpec extends CustomsPlaySpec with AuthenticationBehaviours with FeatureSwitchBehaviours {
+class ActionsSpec extends CustomsSpec with AuthenticationBehaviours with FeatureBehaviours {
 
-  val actions = new Actions(mockAuthConnector, app.injector.instanceOf[ErrorHandler])
+  val actions = new Actions(authConnector, component[ErrorHandler])
 
   val switchedController = new MySwitchedController(actions, Feature.start)
 
@@ -37,19 +38,19 @@ class ActionsSpec extends CustomsPlaySpec with AuthenticationBehaviours with Fea
 
   "switch action" should {
 
-    "return as normal for enabled feature" in featureScenario(switchedController.feature, FeatureStatus.enabled) {
-      val res = call(switchedController.action, basicRequest())
+    "return as normal for enabled feature" in withFeatures(enabled(switchedController.feature)) {
+      val res = call(switchedController.action, FakeRequest())
       status(res) must be(Status.OK)
       contentAsString(res) must be (s"${switchedController.feature} is enabled")
     }
 
-    "return not found for disabled feature" in featureScenario(switchedController.feature, FeatureStatus.disabled) {
-      val res = call(switchedController.action, basicRequest())
+    "return not found for disabled feature" in withFeatures(disabled(switchedController.feature)) {
+      val res = call(switchedController.action, FakeRequest())
       status(res) must be(Status.NOT_FOUND)
     }
 
-    "return service unavailable for suspended feature" in featureScenario(switchedController.feature, FeatureStatus.suspended) {
-      val res = call(switchedController.action, basicRequest())
+    "return service unavailable for suspended feature" in withFeatures(suspended(switchedController.feature)) {
+      val res = call(switchedController.action, FakeRequest())
       status(res) must be(Status.SERVICE_UNAVAILABLE)
     }
 
@@ -57,10 +58,10 @@ class ActionsSpec extends CustomsPlaySpec with AuthenticationBehaviours with Fea
 
   "auth action" should {
 
-    "return as normal when user signed in with sufficient enrolments" in signedInScenario() {
-      val res = call(authenticatedController.action, basicRequest())
+    "return as normal when user signed in with sufficient enrolments" in withSignedInUser() { (_, _, _) =>
+      val res = call(authenticatedController.action, FakeRequest())
       status(res) must be(Status.OK)
-      contentAsString(res) must be(signedInUser.toString)
+      contentAsString(res) must be(randomUser.toString)
     }
 
   }

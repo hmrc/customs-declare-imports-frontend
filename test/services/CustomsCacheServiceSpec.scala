@@ -18,21 +18,21 @@ package services
 
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.crypto.{ApplicationCrypto, Protected}
-import uk.gov.hmrc.customs.test.{AuthenticationBehaviours, CustomsPlaySpec}
+import uk.gov.hmrc.customs.test.behaviours.{AuthenticationBehaviours, CustomsSpec}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CustomsCacheServiceSpec extends CustomsPlaySpec with AuthenticationBehaviours {
+class CustomsCacheServiceSpec extends CustomsSpec with AuthenticationBehaviours {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val aKey = randomString(16)
   val aValue = randomString(48)
 
-  class CacheScenario[E](cacheSource: String = appConfig.keyStoreSource, cacheName: String = appConfig.submissionCacheId, eori: String = signedInUser.requiredEori, cachedData: Map[String, String] = Map.empty) {
+  class CacheScenario[E](cacheSource: String = appConfig.keyStoreSource, cacheName: String = appConfig.submissionCacheId, eori: String = randomUser.requiredEori, cachedData: Map[String, String] = Map.empty) {
 
     var putData: Option[Map[String, Map[String, Map[String, Map[String, String]]]]] = None
 
@@ -57,7 +57,7 @@ class CustomsCacheServiceSpec extends CustomsPlaySpec with AuthenticationBehavio
   "get" should {
 
     "return existing data from cache" in new CacheScenario[Map[String, String]](cachedData = Map(aKey -> aValue)) {
-      service.get(appConfig.submissionCacheId, signedInUser.requiredEori).futureValue.get(aKey) must be(aValue)
+      service.get(appConfig.submissionCacheId, randomUser.requiredEori).futureValue.get(aKey) must be(aValue)
     }
 
   }
@@ -65,8 +65,8 @@ class CustomsCacheServiceSpec extends CustomsPlaySpec with AuthenticationBehavio
   "put" should {
 
     "place given data in named cache for identified user" in new CacheScenario[Map[String, String]]() {
-      whenReady(service.put(appConfig.submissionCacheId, signedInUser.requiredEori, Map(aKey -> aValue))) { _ =>
-        putData.get(appConfig.keyStoreSource)(appConfig.submissionCacheId)(signedInUser.requiredEori)(aKey) must be(aValue)
+      whenReady(service.put(appConfig.submissionCacheId, randomUser.requiredEori, Map(aKey -> aValue))) { _ =>
+        putData.get(appConfig.keyStoreSource)(appConfig.submissionCacheId)(randomUser.requiredEori)(aKey) must be(aValue)
       }
     }
 

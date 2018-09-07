@@ -16,9 +16,10 @@
 
 package config
 
-import uk.gov.hmrc.customs.test.CustomsPlaySpec
+import org.scalatest.{MustMatchers, WordSpec}
+import uk.gov.hmrc.customs.test.CustomsFixtures
 
-class ConstraintsSpec extends CustomsPlaySpec {
+class ConstraintsSpec extends WordSpec with MustMatchers with CustomsFixtures {
 
   private val const = new Constraints {}
 
