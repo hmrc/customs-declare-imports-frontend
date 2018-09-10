@@ -155,7 +155,8 @@ confirmationpage.whatHappensNext=What happens next?
 confirmationpage.p.part1=Check
 confirmationpage.p.part2=your import declarations
 confirmationpage.p.part3=for progress updates.
-confirmationpage.lrn.missing=No reference provided
+
+lrn.missing=No reference provided
 
 ## specific fields
 declaration.declarant.name=Declarant'’s name

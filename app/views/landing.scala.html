@@ -28,15 +28,13 @@
         </div>
         <table>
             <thead>
-                <th scope="col">@messages("landingpage.conversationID")</th>
                 <th scope="col">@messages("landingpage.LRN")</th>
                 <th scope="col">@messages("landingpage.dateSubmitted")</th>
             </thead>
             <tbody>
                 @for(submission <- submissions) {
                     <tr>
-                        <td scope="row">@submission.conversationId</td>
-                        <td>@submission.lrn.getOrElse("")</td>
+                        <td scope="row">@submission.lrn.getOrElse(messages("lrn.missing"))</td>
                         <td>@formatDate(new LocalDate(submission.submittedTimestamp))</td>
                     </tr>
                 }
