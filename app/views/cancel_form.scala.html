@@ -19,98 +19,21 @@
 @import domain.auth.AuthenticatedRequest
 @import uk.gov.hmrc.play.views.html.helpers
 
+@import repositories.declaration.Submission
 
-@(form: Form[CancelForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
+@(submission: Submission, form: Form[CancelForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(title = "Declare an Import", bodyClasses = None) {
 
-    @helpers.form(routes.DeclarationController.handleCancelForm) {
+    @helpers.form(routes.DeclarationController.handleCancelForm(submission.mrn.getOrElse(""))) {
         <fieldset class="form-section">
-            <legend>Metadata</legend>
-            <div class="form-field">
-            @helpers.input(form("metaData.wcoDataModelVersionCode"),
-                '_label -> "WCO Data Model Version Code",
-                '_inputHint -> "/MetaData/WCODataModelVersionCode in XML (required)",
+            @helpers.textArea(form("statementDescription"),
+                '_label -> "Statement Description",
                 '_inputClass -> "form-control")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.wcoTypeName"),
-                '_label -> "WCO Type Name",
-                '_inputHint -> "/MetaData/WCOTypeName in XML (required)",
+            @helpers.input(form("changeReasonCode"),
+                '_label -> "Change Reason Code",
                 '_inputClass -> "form-control")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.responsibleCountryCode"),
-                '_label -> "Responsible Country Code",
-                '_inputHint -> "/MetaData/ResponsibleCountryCode in XML (required)",
-                '_inputClass -> "form-control")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.responsibleAgencyName"),
-                '_label -> "Responsible Agency Name",
-                '_inputHint -> "/MetaData/ResponsibleAgencyName in XML (required)",
-                '_inputClass -> "form-control")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.agencyAssignedCustomizationVersionCode"),
-                '_label -> "Agency Assigned Customization Version Code",
-                '_inputHint -> "/MetaData/AgencyAssignedCustomizationCode in XML (required)",
-                '_inputClass -> "form-control")
-            </div>
-        </fieldset>
-        <fieldset class="form-section">
-            <legend>Declaration</legend>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.typeCode"),
-                '_label -> "Type Code",
-                '_inputHint -> "/MetaData/Declaration/TypeCode in XML (required). Must be 'INV'",
-                '_inputClass -> "form-control")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.functionCode"),
-                '_label -> "Function Code",
-                '_inputHint -> "/MetaData/Declaration/FunctionCode in XML (required). Must be '13'",
-                '_inputClass -> "form-control")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.functionalReferenceId"),
-                '_label -> "Functional Reference ID",
-                '_inputHint -> "/MetaData/Declaration/FunctionalReferenceID in XML (required). Max 35 chars.",
-                '_inputClass -> "form-control")
-            </div>
-            <div class="form-field">
-            @helpers.input(form("metaData.declaration.id"),
-                '_label -> "ID",
-                '_inputHint -> "/MetaData/Declaration/ID in XML (required). Max 70 chars.",
-                '_inputClass -> "form-control")
-            </div>
-            <fieldset class="form-section">
-                <div class="form-field">
-                    <legend>Additional Information</legend>
-                    <p>There can be 1..* <code>AdditionalInformation</code> elements as a child of a <code>Declaration</code>
-                        element.</p>
-                    @helpers.textArea(form("metaData.declaration.additionalInformation.statementDescription"),
-                        '_label -> "Statement Description",
-                        '_inputHint -> "/MetaData/Declaration/AdditionalInformation/StatementDescription in XML (required). Max 512 chars.",
-                        '_inputClass -> "form-control")
-                </div>
-            </fieldset>
-            <fieldset class="form-section">
-                <div class="form-field">
-                    <legend>Amendment</legend>
-                    <p>There can be 1..* <code>Amendment</code> elements as a child of a <code>Declaration</code>
-                        element</p>
-                    @helpers.input(form("metaData.declaration.amendment.changeReasonCode"),
-                        '_label -> "Change Reason Code",
-                        '_inputHint -> "/MetaData/Declaration/Amendment/ChangeReasonCode in XML (required). Max 3 chars.",
-                        '_inputClass -> "form-control")
-                </div>
-            </fieldset>
-        </fieldset>
-        <fieldset class="form-section">
-            <div class="form-field">
-                <button class="button" type="submit">Cancel Declaration</button>
-            </div>
+            <button class="button" type="submit">Cancel Declaration</button>
         </fieldset>
     }
 }

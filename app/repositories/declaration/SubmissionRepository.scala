@@ -32,18 +32,22 @@ class SubmissionRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: Ex
 
   override def indexes: Seq[Index] = Seq(
     Index(Seq("eori" -> IndexType.Ascending), name = Some("eoriIdx")),
-    Index(Seq("conversationId" -> IndexType.Ascending), unique = true, name = Some("conversationIdIdx"))
+    Index(Seq("conversationId" -> IndexType.Ascending), unique = true, name = Some("conversationIdIdx")),
+    Index(Seq("eori" -> IndexType.Ascending, "mrn" -> IndexType.Ascending), unique = true, name = Some("eoriMrnIdx"))
   )
 
   def findByEori(eori: String): Future[Seq[Submission]] = find("eori" -> JsString(eori))
 
   def getByConversationId(conversationId: String): Future[Option[Submission]] = find("conversationId" -> JsString(conversationId)).map(_.headOption)
 
+  def getByEoriAndMrn(eori: String, mrn: String): Future[Option[Submission]] = find("eori" -> JsString(eori), "mrn" -> JsString(mrn)).map(_.headOption)
+
 }
 
 case class Submission(eori: String,
                       conversationId: String,
                       lrn: Option[String] = None,
+                      mrn: Option[String] = None,
                       submittedTimestamp: Long = System.currentTimeMillis(),
                       id: BSONObjectID = BSONObjectID.generate())
 

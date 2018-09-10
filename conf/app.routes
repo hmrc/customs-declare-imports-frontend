@@ -10,5 +10,5 @@ POST        /submit-declaration/submit                         controllers.Decla
 GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)
 GET         /submit-declaration/:name                          controllers.DeclarationController.displaySubmitForm(name)
 POST        /submit-declaration/:name                          controllers.DeclarationController.handleSubmitForm(name)
-GET         /cancel-declaration                                controllers.DeclarationController.showCancelForm
-POST        /cancel-declaration                                controllers.DeclarationController.handleCancelForm
+GET         /cancel-declaration/:mrn                           controllers.DeclarationController.displayCancelForm(mrn)
+POST        /cancel-declaration/:mrn                           controllers.DeclarationController.handleCancelForm(mrn)

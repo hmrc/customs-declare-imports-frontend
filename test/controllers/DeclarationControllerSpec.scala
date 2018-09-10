@@ -18,9 +18,11 @@ package controllers
 
 import config.SubmissionJourney
 import domain.features.Feature
+import repositories.declaration.{Submission, SubmissionRepository}
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mongo.ReactiveRepository
 
 class DeclarationControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
@@ -28,13 +30,17 @@ class DeclarationControllerSpec extends CustomsSpec
   with RequestHandlerBehaviours
   with CustomsDeclarationsApiBehaviours
   with CacheBehaviours
+  with MongoBehaviours
   with HttpAssertions
   with HtmlAssertions {
 
+  val mrn = randomString(16)
+  val repo = component[SubmissionRepository]
+  override val repositories: Seq[ReactiveRepository[_, _]] = Seq(repo)
   val get = "GET"
   val post = "POST"
   val submitUri = journeyUri(SubmissionJourney.screens.head)
-  val cancelUri = uriWithContextPath("/cancel-declaration")
+  val cancelUri = uriWithContextPath(s"/cancel-declaration/$mrn")
 
   def journeyUri(screen: String): String = uriWithContextPath(s"/submit-declaration/$screen")
 
@@ -120,6 +126,7 @@ class DeclarationControllerSpec extends CustomsSpec
   s"$get $cancelUri" should {
 
     "return 200" in withFeatures(enabled(Feature.cancel)) {
+      repo.insert(Submission(eori = randomUser.requiredEori, conversationId = randomString(16), lrn = None, mrn = Some(mrn)))
       withSignedInUser() { (headers, session, tags) =>
         withRequest(get, cancelUri, headers, session, tags) {
           wasOk

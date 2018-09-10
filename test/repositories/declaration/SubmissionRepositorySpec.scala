@@ -35,12 +35,14 @@ class SubmissionRepositorySpec extends CustomsSpec with MongoBehaviours {
        */
       val eori = randomString(8)
       val lrn = Some(randomString(70))
+      val mrn = randomString(16)
       val conversationId = randomString(80)
       val before = System.currentTimeMillis()
       repo.insert(Submission(
         eori,
         conversationId,
-        lrn
+        lrn,
+        Some(mrn)
       )).futureValue.ok must be(true)
 
       // we can now display a list of all the declarations belonging to the current user, searching by EORI
@@ -49,15 +51,24 @@ class SubmissionRepositorySpec extends CustomsSpec with MongoBehaviours {
       found.head.eori must be(eori)
       found.head.conversationId must be(conversationId)
       found.head.lrn must be(lrn)
+      found.head.mrn must be(Some(mrn))
 
       // a timestamp has been generated representing "creation time" of case class instance
-      found(0).submittedTimestamp must (be >= before).and(be <= System.currentTimeMillis())
+      found.head.submittedTimestamp must (be >= before).and(be <= System.currentTimeMillis())
 
       // we can also retrieve the submission individually by conversation ID
       val got = repo.getByConversationId(conversationId).futureValue
       got.get.eori must be(eori)
       got.get.conversationId must be(conversationId)
       got.get.lrn must be(lrn)
+      got.get.mrn must be(Some(mrn))
+
+      // or we can retrieve it by eori and MRN
+      val gotAgain = repo.getByEoriAndMrn(eori, mrn).futureValue
+      gotAgain.get.eori must be(eori)
+      gotAgain.get.conversationId must be(conversationId)
+      gotAgain.get.lrn must be(lrn)
+      gotAgain.get.mrn must be(Some(mrn))
     }
 
   }
