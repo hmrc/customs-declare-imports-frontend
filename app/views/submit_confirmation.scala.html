@@ -16,14 +16,16 @@
 
 @import config.AppConfig
 
-@(conversationId: String)(implicit req: Request[_], messages: Messages, cfg: AppConfig)
+@import repositories.declaration.Submission
+
+@(submission: Submission)(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
 @main_template(title = messages("confirmationpage.titleAndHeading")) {
 	<div class="govuk-box-highlight">
 	  <h1 id="heading-application-submitted" class="heading-xlarge">@messages("confirmationpage.titleAndHeading")</h1>
 	  <p class="font-large">
 	    @messages("confirmationpage.yourLRN")<br>
-	    <strong class="bold">(LRN goes here)</strong>
+	    <strong class="bold">@{submission.lrn.getOrElse(messages("confirmationpage.lrn.missing"))}</strong>
 	  </p>
 	</div>
 

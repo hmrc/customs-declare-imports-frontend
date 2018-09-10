@@ -29,7 +29,7 @@ class LandingController @Inject()(submissionRepository: SubmissionRepository, ac
                                  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
 
   def displayLandingPage: Action[AnyContent] = (actions.switch(Feature.landing) andThen actions.auth).async { implicit req =>
-    submissionRepository.findByEori(req.user.eori).map { submissions =>
+    submissionRepository.findByEori(req.user.requiredEori).map { submissions =>
       Ok(views.html.landing(submissions.sortBy(_.submittedTimestamp)))
     }
   }

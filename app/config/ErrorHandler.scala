@@ -42,3 +42,5 @@ class ErrorHandler @Inject()(val messagesApi: MessagesApi)(implicit val appConfi
     case _ => super.resolveError(rh, ex)
   }
 }
+
+// TODO implement fine-grained application-specific error handling through extensions of ApplicationException with result

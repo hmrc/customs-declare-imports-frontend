@@ -35,13 +35,14 @@ class SubmissionRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: Ex
     Index(Seq("conversationId" -> IndexType.Ascending), unique = true, name = Some("conversationIdIdx"))
   )
 
-  // TODO enhance query implementation to sensibly handle option
-  def findByEori(eori: Option[String]): Future[Seq[Submission]] = find("eori" -> JsString(eori.getOrElse("")))
+  def findByEori(eori: String): Future[Seq[Submission]] = find("eori" -> JsString(eori))
+
+  def getByConversationId(conversationId: String): Future[Option[Submission]] = find("conversationId" -> JsString(conversationId)).map(_.headOption)
 
 }
 
-case class Submission(eori: Option[String] = None,
-                      conversationId: Option[String] = None,
+case class Submission(eori: String,
+                      conversationId: String,
                       lrn: Option[String] = None,
                       submittedTimestamp: Long = System.currentTimeMillis(),
                       id: BSONObjectID = BSONObjectID.generate())

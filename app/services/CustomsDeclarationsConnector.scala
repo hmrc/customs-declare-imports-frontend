@@ -67,8 +67,9 @@ class CustomsDeclarationsConnectorImpl @Inject()(appConfig: AppConfig, httpClien
     )
   }
 
+  // TODO refine save submission logic to avoid blocking use of Await
   private def saveSubmission(meta: MetaData, resp: CustomsDeclarationsResponse)(implicit ec: ExecutionContext, user: SignedInUser): CustomsDeclarationsResponse =
-    Await.result(declarationRepository.insert(Submission(user.eori, resp.conversationId, meta.declaration.functionalReferenceId)).map(_ => resp), 3.seconds)
+    Await.result(declarationRepository.insert(Submission(user.requiredEori, resp.conversationId.getOrElse(throw new IllegalStateException("Conversation ID missing from Customs Declaration API response")), meta.declaration.functionalReferenceId)).map(_ => resp), 3.seconds)
 
   private[services] def post(uri: String, body: String, badgeIdentifier: Option[String] = None)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
     val headers: Seq[(String, String)] = Seq(

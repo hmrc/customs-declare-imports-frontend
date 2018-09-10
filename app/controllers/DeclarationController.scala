@@ -25,7 +25,8 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import services.{CustomsDeclarationsConnector, CustomsCacheService}
+import repositories.declaration.SubmissionRepository
+import services.{CustomsCacheService, CustomsDeclarationsConnector}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.wco.dec.{AdditionalInformation, Amendment, Declaration, MetaData}
@@ -33,7 +34,7 @@ import uk.gov.hmrc.wco.dec.{AdditionalInformation, Amendment, Declaration, MetaD
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: CustomsCacheService)
+class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: CustomsCacheService, submissionRepository: SubmissionRepository)
                                      (implicit val messagesApi: MessagesApi, val appConfig: AppConfig, ec: ExecutionContext)
   extends FrontendController with I18nSupport {
 
@@ -53,7 +54,10 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
   }
 
   def displaySubmitConfirmation(conversationId: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
-    Future.successful(Ok(views.html.submit_confirmation(conversationId)))
+    submissionRepository.getByConversationId(conversationId).map {
+      case Some(submission) => Ok(views.html.submit_confirmation(submission))
+      case None => NotFound(views.html.error_template("Submission Not Found", "Submission Not Found", "We're sorry but we couldn't find that submission.")) // TODO throw specific ApplicationException type to be handled via ErrorHandler
+    }
   }
 
   def handleSubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>

@@ -38,12 +38,12 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 class CustomsDeclarationsConnectorSpec extends CustomsSpec with MongoBehaviours with XmlAssertions {
 
-  val eori = Some(randomString(16))
+  val eori = randomString(16)
   val lrn = Some(randomString(35))
   val repo: SubmissionRepository = component[SubmissionRepository]
   override val repositories: Seq[ReactiveRepository[_, _]] = Seq(repo)
   val conversationId: String = randomString(80)
-  implicit val user: SignedInUser = userFixture(eori = eori)
+  implicit val user: SignedInUser = userFixture(eori = Some(eori))
 
   "CustomsDeclarationsConnector " should {
 
@@ -63,7 +63,7 @@ class CustomsDeclarationsConnectorSpec extends CustomsSpec with MongoBehaviours 
       found.length must be(1)
       found.head.eori must be(eori)
       found.head.lrn must be(lrn)
-      found.head.conversationId must be(Some(conversationId))
+      found.head.conversationId must be(conversationId)
     }
 
   }
