@@ -139,10 +139,11 @@ startpage.needList.bullet4=procedure codes
 startpage.needList.bullet5=details of your import and where it came from
 
 ## landing page
-landingpage.conversationID=Conversation ID
 landingpage.LRN=LRN
 landingpage.dateSubmitted=Date submitted
 landingpage.unavailable=We are sorry but the Customs Imports Declarations Service is currently unavailable. Please try again later.
+landingpage.submissions.heading=Previously submitted import declarations
+landingpage.submissions.empty=You currently have no submitted import declarations 
 
 ## enrolment page
 enrolmentpage.titleAndHeading=You need to enrol with Customs Declaration Service (CDS)
