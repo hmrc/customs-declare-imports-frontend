@@ -16,24 +16,19 @@
 
 package uk.gov.hmrc.customs.test.behaviours
 
-import java.io.StringReader
 import java.util.UUID
 
 import domain.auth.SignedInUser
-import javax.xml.XMLConstants
-import javax.xml.transform.Source
-import javax.xml.transform.stream.StreamSource
-import javax.xml.validation.{Schema, SchemaFactory}
 import play.api.http.Status
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import services.{CustomsDeclarationsConnector, CustomsDeclarationsResponse}
+import uk.gov.hmrc.customs.test.assertions.XmlAssertions
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
-import scala.xml.SAXException
 
 trait CustomsDeclarationsApiBehaviours extends CustomsSpec {
 
@@ -53,7 +48,7 @@ trait CustomsDeclarationsApiBehaviours extends CustomsSpec {
 
 }
 
-class MockCustomsDeclarationsConnector extends CustomsDeclarationsConnector {
+class MockCustomsDeclarationsConnector extends CustomsDeclarationsConnector with XmlAssertions {
 
   val expectedSubmissions: mutable.Map[MetaData, Future[CustomsDeclarationsResponse]] = mutable.Map.empty
 
@@ -84,29 +79,10 @@ class MockCustomsDeclarationsConnector extends CustomsDeclarationsConnector {
   }
 
   private def toResponse(meta: MetaData, schemas: Seq[String]): Future[CustomsDeclarationsResponse] = Future.successful(
-    if (isValidImportDeclarationXml(meta.toXml, schemas)) CustomsDeclarationsResponse(Status.ACCEPTED, conversationId)
+    if (isValidXml(meta.toXml, schemas)) CustomsDeclarationsResponse(Status.ACCEPTED, conversationId)
     else CustomsDeclarationsResponse(Status.BAD_REQUEST, None)
   )
 
-
   private def conversationId: Option[String] = Some(UUID.randomUUID().toString)
-
-  protected def isValidImportDeclarationXml(xml: String, schemas: Seq[String]): Boolean = {
-    try {
-      validateAgainstSchemaResources(xml, schemas)
-      true
-    } catch {
-      case _: SAXException => false
-    }
-  }
-
-  private def validateAgainstSchemaResources(xml: String, schemas: Seq[String]): Unit = {
-    val schema: Schema = {
-      val sources = schemas.map(res => getClass.getResource(res).toString).map(systemId => new StreamSource(systemId)).toArray[Source]
-      SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(sources)
-    }
-    val validator = schema.newValidator()
-    validator.validate(new StreamSource(new StringReader(xml)))
-  }
 
 }

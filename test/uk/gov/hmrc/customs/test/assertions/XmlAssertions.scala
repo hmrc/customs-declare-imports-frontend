@@ -31,11 +31,20 @@ trait XmlAssertions extends CustomsAssertions {
 
   val cancelDeclarationSchemas = Seq("/CANCEL_METADATA.xsd","/CANCEL.xsd")
 
-  def isValidXml(xml: String, schemas: Seq[String]): Unit = {
+  def beValidXml(xml: String, schemas: Seq[String]): Unit = {
      try {
       validateAgainstSchemaResources(xml, schemas)
     } catch {
       case e: SAXException => fail(e.getMessage)
+    }
+  }
+
+  def isValidXml(xml: String, schemas: Seq[String]): Boolean = {
+    try {
+      validateAgainstSchemaResources(xml, schemas)
+      true
+    } catch {
+      case e: SAXException => false
     }
   }
 
