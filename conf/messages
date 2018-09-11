@@ -173,6 +173,15 @@ cancelpage.cancellationCodeHint=Maximum 3 characters
 cancelconfirmpage.titleAndHeading=Your cancelation request has been submitted
 cancelconfirmpage.h1.issueWithCancelation=There is an issue with your cancelation request
 
+
+## 4xx page
+4xxpage.titleAndHeading=There is an problem with the information you have submitted
+4xxpage.p.tryAgain=and try again.
+
+## 5xx page
+5xxpage.titleAndHeading=Sorry, there is a problem with the service
+5xxpage.p.tryAgain24Hours=and try again within 24 hours.
+
 ## specific fields
 declaration.declarant.name=Declarant'’s name
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
