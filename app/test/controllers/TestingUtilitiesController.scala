@@ -21,11 +21,11 @@ import controllers.Actions
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
-import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString}
+import reactivemongo.bson.{BSONDocument, BSONString}
 import repositories.declaration.SubmissionRepository
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class TestingUtilitiesController @Inject()(actions: Actions, submissionRepository: SubmissionRepository)
