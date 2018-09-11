@@ -10,6 +10,8 @@
 # Failing to follow this rule may result in test routes deployed in production.
 
 # Add all the application routes to the prod.routes file
-->         /                          prod.Routes
+->         /                                                                                         prod.Routes
 
-GET        /customs-declare-imports/test-only/feature/:feature/:status  test.controllers.FeatureSwitchController.set(feature: domain.features.Feature.Feature, status: domain.features.FeatureStatus.FeatureStatus)
+GET        /customs-declare-imports/test-only/feature/:feature/:status                               test.controllers.FeatureSwitchController.set(feature: domain.features.Feature.Feature, status: domain.features.FeatureStatus.FeatureStatus)
+GET        /customs-declare-imports/test-only/user/:eori/submissions                                 test.controllers.TestingUtilitiesController.displaySubmissions(eori)
+GET        /customs-declare-imports/test-only/user/:eori/submissions/:conversationId/mrn/:mrn        test.controllers.TestingUtilitiesController.setMrnOnSubmission(eori, conversationId, mrn)
