@@ -162,6 +162,17 @@ confirmationpage.p.part3=for progress updates.
 
 lrn.missing=No reference provided
 
+## cancel an import pages
+cancelpage.titleAndHeader=Cancel an import declaration
+cancelpage.button.cancel=Cancel Declaration
+cancelpage.tellUsWhy=Tell us why you wish to cancel this declaration
+cancelpage.tellUsWhyHint=Maximum 512 characters
+cancelpage.cancellationCode=Cancellation reason code
+cancelpage.cancellationCodeHint=Maximum 3 characters
+
+cancelconfirmpage.titleAndHeading=Your cancelation request has been submitted
+cancelconfirmpage.h1.issueWithCancelation=There is an issue with your cancelation request
+
 ## specific fields
 declaration.declarant.name=Declarant'’s name
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)

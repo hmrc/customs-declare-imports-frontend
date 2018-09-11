@@ -21,10 +21,18 @@
 
 @(success: Boolean)(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
 
-@main_template(title = "Import declaration cancelled", bodyClasses = None) {
-    <p class="message">@if(success) {
-     Yay. It worked.
+@main_template(title = messages("cancelconfirmpage.titleAndHeading"), bodyClasses = None) {
+    @if(success) {
+        <h1 class="heading-xlarge">@messages("cancelconfirmpage.titleAndHeading")</h1>
+
+        <h2 class="heading-medium">@messages("confirmationpage.whatHappensNext")</h2>
+        <p>@messages("confirmationpage.p.part1") <a href="@routes.LandingController.displayLandingPage()">@messages("confirmationpage.p.part2")</a>
+            @messages("confirmationpage.p.part3")</p>
+
     } else {
-     Boo. It didn't work.
-    }</p>
+        <h1 class="heading-xlarge">@messages("cancelconfirmpage.h1.issueWithCancelation")</h1>
+        <h2 class="heading-medium">What can you do next?</h2>
+        <p>You can contact so and so to find out what went wrong. You more than likely entered invlaid information.</p>
+        <p>View <a href="@routes.LandingController.displayLandingPage()">your import declarations</a>.</p>
+    }
 }

@@ -23,17 +23,29 @@
 
 @(submission: Submission, form: Form[CancelForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
 
-@main_template(title = "Declare an Import", bodyClasses = None) {
+@main_template(title = messages("cancelpage.titleAndHeader"), bodyClasses = None) {
 
     @helpers.form(routes.DeclarationController.handleCancelForm(submission.mrn.getOrElse(""))) {
-        <fieldset class="form-section">
+        <fieldset>
+            <legend>
+                <h1 class="heading-xlarge">@messages("cancelpage.titleAndHeader")</h1>
+            </legend>
+
+            <div class="form-group">
             @helpers.textArea(form("statementDescription"),
-                '_label -> "Statement Description",
+                '_label -> messages("cancelpage.tellUsWhy"),
+                '_inputHint -> messages("cancelpage.tellUsWhyHint"),
                 '_inputClass -> "form-control")
+            </div>
+
+            <div class="form-group">
             @helpers.input(form("changeReasonCode"),
-                '_label -> "Change Reason Code",
+                '_label -> messages("cancelpage.cancellationCode"),
+                '_inputHint -> messages("cancelpage.cancellationCodeHint"),
                 '_inputClass -> "form-control")
-            <button class="button" type="submit">Cancel Declaration</button>
+            </div>
         </fieldset>
+
+        <button class="button" type="submit">@messages("cancelpage.button.cancel")</button>
     }
 }
