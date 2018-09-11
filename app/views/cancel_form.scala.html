@@ -28,7 +28,7 @@
     @helpers.form(routes.DeclarationController.handleCancelForm(submission.mrn.getOrElse(""))) {
         <fieldset>
             <legend>
-                <h1 class="heading-xlarge">@messages("cancelpage.titleAndHeader")</h1>
+                <h1 class="heading-xlarge">@messages("cancelpage.titleAndHeader") @submission.mrn.map { mrn => @mrn }</h1>
             </legend>
 
             <div class="form-group">

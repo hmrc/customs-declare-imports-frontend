@@ -163,7 +163,7 @@ confirmationpage.p.part3=for progress updates.
 lrn.missing=No reference provided
 
 ## cancel an import pages
-cancelpage.titleAndHeader=Cancel an import declaration
+cancelpage.titleAndHeader=Cancel import declaration
 cancelpage.button.cancel=Cancel Declaration
 cancelpage.tellUsWhy=Tell us why you wish to cancel this declaration
 cancelpage.tellUsWhyHint=Maximum 512 characters
