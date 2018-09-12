@@ -21,7 +21,7 @@
 
 <div class="form-group">
     <fieldset@if(input.inline){ class="inline"}>
-        @helpers.fieldLabel(input)
+        @helpers.legend(input)
         @for(zip <- input.options.zipWithIndex) {
         <div class="multiple-choice">
             <input id="@input.id(Some(zip._2))" type="radio" name="@input.name" value="@zip._1._1"@if((data.contains(input.name) && data(input.name) == zip._1._1) || (data.get(input.name).isEmpty && input.default.isDefined && input.default.get == zip._1._1)){ checked}>
