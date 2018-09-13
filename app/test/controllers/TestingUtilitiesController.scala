@@ -19,10 +19,10 @@ package test.controllers
 import config.AppConfig
 import controllers.Actions
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.{Action, AnyContent}
 import reactivemongo.bson.{BSONDocument, BSONString}
-import repositories.declaration.SubmissionRepository
+import repositories.declaration.{Submission, SubmissionRepository}
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 
 import scala.concurrent.ExecutionContext
@@ -37,11 +37,26 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
     }
   }
 
+  def createNewSubmission(eori: String): Action[SubmissionWrapper] = Action.async(parse.json[SubmissionWrapper]) { implicit req =>
+    val s = req.body
+    submissionRepository.insert(Submission(
+      eori = eori, conversationId = s.conversationId, lrn = s.lrn, mrn = s.mrn
+    )).map(res => if (res.ok) Created else InternalServerError)
+  }
+
   def setMrnOnSubmission(eori: String, conversationId: String, mrn: String): Action[AnyContent] = Action.async { implicit req =>
     submissionRepository.atomicUpdate(BSONDocument("conversationId" -> BSONString(conversationId)), BSONDocument("$set" -> BSONDocument("mrn" -> mrn))).map {
       case Some(update) => Accepted(Json.toJson(update.updateType.savedValue))
       case None => NotFound
     }
   }
+
+}
+
+case class SubmissionWrapper(conversationId: String, lrn: Option[String] = None, mrn: Option[String] = None)
+
+object SubmissionWrapper {
+
+  implicit val format: OFormat[SubmissionWrapper] = Json.format[SubmissionWrapper]
 
 }

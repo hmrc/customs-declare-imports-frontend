@@ -17,7 +17,7 @@
 package controllers
 
 import config._
-import domain.auth.AuthenticatedRequest
+import domain.auth.{AuthenticatedRequest, SignedInUser}
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
@@ -73,13 +73,13 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
 
   def onSubmitComplete: Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
     val data: Map[String, String] = formDataAsMap()
-    implicit val user = req.user
+    implicit val user: SignedInUser = req.user
     implicit val errors: Map[String, Seq[ValidationError]] = validate(data)
     if (errors.isEmpty) {
       cacheSubmission(data ++ Map("force-last" -> "false")) { (merged, _) =>
         val props = merged.filterNot(entry => navigationKeys.contains(entry._1) || knownBad.contains(entry._1) || entry._2.trim.isEmpty)
         client.submitImportDeclaration(MetaData.fromProperties(props)).map { resp =>
-          Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId.get))
+          Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId))
         }
       }
     } else invalid(data("last-page"), data)
@@ -95,16 +95,14 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
   def handleCancelForm(mrn: String): Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
     val resultForm = Cancel.form.bindFromRequest()
     submissionRepository.getByEoriAndMrn(req.user.requiredEori, mrn).flatMap {
-      case Some(submission) => {
-        resultForm.fold(
-          errors => Future.successful(BadRequest(views.html.cancel_form(submission, errors))),
-          success => {
-            client.cancelImportDeclaration(success.toMetaData(submission)).map { resp =>
-              Ok(views.html.cancel_confirmation(resp.status == ACCEPTED))
-            }
+      case Some(submission) => resultForm.fold(
+        errors => Future.successful(BadRequest(views.html.cancel_form(submission, errors))),
+        success => {
+          client.cancelImportDeclaration(success.toMetaData(submission)).map { _ =>
+            Ok(views.html.cancel_confirmation())
           }
-        )
-      }
+        }
+      )
       case None => Future.successful(NotFound(views.html.error_template("Submission Not Found", "Submission Not Found", "We're sorry but we couldn't find that submission."))) // TODO throw specific ApplicationException type to be handled via ErrorHandler
     }
   }

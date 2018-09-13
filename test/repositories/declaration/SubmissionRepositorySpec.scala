@@ -21,7 +21,7 @@ import uk.gov.hmrc.mongo.ReactiveRepository
 
 class SubmissionRepositorySpec extends CustomsSpec with MongoBehaviours {
 
-  val repo = app.injector.instanceOf[SubmissionRepository]
+  val repo = component[SubmissionRepository]
 
   override val repositories: Seq[ReactiveRepository[_, _]] = Seq(repo)
 

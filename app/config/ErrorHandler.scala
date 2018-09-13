@@ -43,4 +43,4 @@ class ErrorHandler @Inject()(val messagesApi: MessagesApi)(implicit val appConfi
   }
 }
 
-// TODO implement fine-grained application-specific error handling through extensions of ApplicationException with result
+// TODO handle Upstream4xxResponse and Upstream5xxResponse exceptions (thrown by API connector)

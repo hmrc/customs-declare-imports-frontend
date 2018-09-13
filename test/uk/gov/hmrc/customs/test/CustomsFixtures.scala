@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.customs.test
 
+import java.util.UUID
+
 import domain.auth.SignedInUser
 import uk.gov.hmrc.auth.core.AffinityGroup.Individual
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
@@ -43,6 +45,10 @@ trait CustomsFixtures {
     )
   )
 
+  protected def randomSubmitDeclaration: MetaData = MetaData(declaration = Declaration(
+    functionalReferenceId = Some(randomString(35))
+  ))
+
   protected def randomCancelDeclaration: MetaData = MetaData(
     wcoDataModelVersionCode = Some(randomString(6)),
     wcoTypeName = Some(randomString(712)),
@@ -62,6 +68,8 @@ trait CustomsFixtures {
       ))
     )
   )
+
+  protected def randomConversationId: String = UUID.randomUUID().toString
 
   protected def randomDomainName: String = randomString(8) + tlds(randomInt(tlds.length))
 

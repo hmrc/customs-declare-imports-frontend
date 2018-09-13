@@ -15,3 +15,4 @@
 GET        /customs-declare-imports/test-only/feature/:feature/:status                               test.controllers.FeatureSwitchController.set(feature: domain.features.Feature.Feature, status: domain.features.FeatureStatus.FeatureStatus)
 GET        /customs-declare-imports/test-only/user/:eori/submissions                                 test.controllers.TestingUtilitiesController.displaySubmissions(eori)
 GET        /customs-declare-imports/test-only/user/:eori/submissions/:conversationId/mrn/:mrn        test.controllers.TestingUtilitiesController.setMrnOnSubmission(eori, conversationId, mrn)
+POST       /customs-declare-imports/test-only/user/:eori/submissions                                 test.controllers.TestingUtilitiesController.createNewSubmission(eori)

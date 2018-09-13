@@ -24,7 +24,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import services.{CustomsDeclarationsConnector, CustomsDeclarationsResponse}
 import uk.gov.hmrc.customs.test.assertions.XmlAssertions
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
 import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.collection.mutable
@@ -78,11 +78,10 @@ class MockCustomsDeclarationsConnector extends CustomsDeclarationsConnector with
     resp
   }
 
-  private def toResponse(meta: MetaData, schemas: Seq[String]): Future[CustomsDeclarationsResponse] = Future.successful(
-    if (isValidXml(meta.toXml, schemas)) CustomsDeclarationsResponse(Status.ACCEPTED, conversationId)
-    else CustomsDeclarationsResponse(Status.BAD_REQUEST, None)
-  )
+  private def toResponse(meta: MetaData, schemas: Seq[String]): Future[CustomsDeclarationsResponse] =
+    if (isValidXml(meta.toXml, schemas)) Future.successful(CustomsDeclarationsResponse(conversationId))
+    else Future.failed(Upstream4xxResponse("You sent bad XML", Status.BAD_REQUEST, Status.INTERNAL_SERVER_ERROR))
 
-  private def conversationId: Option[String] = Some(UUID.randomUUID().toString)
+  private def conversationId: String = UUID.randomUUID().toString
 
 }
