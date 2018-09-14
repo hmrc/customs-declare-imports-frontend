@@ -21,7 +21,7 @@ import controllers.Actions
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.{Action, AnyContent}
-import reactivemongo.bson.{BSONDocument, BSONString}
+import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString}
 import repositories.declaration.{Submission, SubmissionRepository}
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 
@@ -48,6 +48,12 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
     submissionRepository.atomicUpdate(BSONDocument("conversationId" -> BSONString(conversationId)), BSONDocument("$set" -> BSONDocument("mrn" -> mrn))).map {
       case Some(update) => Accepted(Json.toJson(update.updateType.savedValue))
       case None => NotFound
+    }
+  }
+
+  def deleteSubmission(id: String): Action[AnyContent] = Action.async { implicit req =>
+    submissionRepository.removeById(BSONObjectID.parse(id).get).map { result =>
+      if (result.ok) Accepted else InternalServerError
     }
   }
 
