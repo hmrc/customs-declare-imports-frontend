@@ -57,6 +57,14 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
     }
   }
 
+  def deleteSubmissionByConversationId(conversationId: String): Action[AnyContent] = Action.async { implicit req =>
+    submissionRepository.getByConversationId(conversationId).flatMap {
+      case Some(submission) => submissionRepository.removeById(submission.id).map { res =>
+        if (res.ok) Accepted else InternalServerError
+      }
+    }
+  }
+
 }
 
 case class SubmissionWrapper(conversationId: String, lrn: Option[String] = None, mrn: Option[String] = None)

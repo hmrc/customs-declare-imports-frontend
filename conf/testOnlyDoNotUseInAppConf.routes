@@ -17,3 +17,4 @@ GET        /customs-declare-imports/test-only/user/:eori/submissions            
 GET        /customs-declare-imports/test-only/user/:eori/submissions/:conversationId/mrn/:mrn        test.controllers.TestingUtilitiesController.setMrnOnSubmission(eori, conversationId, mrn)
 POST       /customs-declare-imports/test-only/user/:eori/submissions                                 test.controllers.TestingUtilitiesController.createNewSubmission(eori)
 DELETE     /customs-declare-imports/test-only/submissions/:id                                        test.controllers.TestingUtilitiesController.deleteSubmission(id)
+DELETE     /customs-declare-imports/test-only/submissions/conversation/:conversationId               test.controllers.TestingUtilitiesController.deleteSubmissionByConversationId(conversationId)
