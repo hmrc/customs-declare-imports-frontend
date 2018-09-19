@@ -357,10 +357,25 @@ class Fields extends Options {
     labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.invoiceLine.itemChargeAmount.currencyId"),
     validators = Seq(OptionalContainsValidator(currencyTypes.map(_._1).toSet))
   )
-  // TODO blocked until clarified
-//  val valuationExchangeRate: TextInput = ???
-//  val valuationMethodType: SelectInput = ???
-//  val valuationPreference: SelectInput = ???
+  val valuationExchangeRate: TextInput = TextInput(
+    name = "declaration.currencyExchanges[0].rateNumeric",
+    labelKey = Some("declaration.currencyExchanges.rateNumeric"),
+    validators = Seq(OptionalNumericValidator(12, 5))
+  )
+
+  val valuationMethodType: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].customsValuation.methodCode",
+    options = valuationMethodTypes,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.methodCode"),
+    validators = Seq(OptionalContainsValidator(valuationMethodTypes.map(_._1).toSet))
+  )
+
+  val valuationPreference: SelectInput = SelectInput(
+    name = "declaration.goodsShipment.governmentAgencyGoodsItems[0].commodity.dutyTaxFees[0].dutyRegimeCode",
+    options = MoreOptions.preferenceTypes,
+    labelKey = Some("declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.dutyRegimeCode"),
+    validators = Seq(OptionalContainsValidator(MoreOptions.preferenceTypes.map(_._1).toSet))
+  )
 
   // tax form fields
   val commodityDutyTaxFeesTypeCode: SelectInput = SelectInput(

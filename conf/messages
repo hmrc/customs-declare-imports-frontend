@@ -213,6 +213,9 @@ declaration.goodsShipment.governmentAgencyGoodsItems.governmentProcedures.additi
 declaration.goodsShipment.governmentAgencyGoodsItems.valuationAdjustment.additionCode=Valuation indicators
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.invoiceLine.itemChargeAmount.value=Item price/amount
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.invoiceLine.itemChargeAmount.currencyId=Currency
+declaration.currencyExchanges.rateNumeric=Exchange rate
+declaration.goodsShipment.governmentAgencyGoodsItems.customsValuation.methodCode=Valuation method
+declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.dutyRegimeCode=Preference
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.typeCode=Tax type (optional)
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.typeCode.hint=This information is not to be provided when customs administrations calculate duties on behalf of economic operators on the basis of information elsewhere in the declaration. It is otherwise optional for the Member States.
 declaration.goodsShipment.governmentAgencyGoodsItems.commodity.dutyTaxFees.specificTaxBaseQuantity.value=Quantity

@@ -24,7 +24,9 @@
         @helpers.selectInput(valuationAdjustmentAdditionCode, data)
         @helpers.textInput(commodityInvoiceLineAmount, data)
         @helpers.selectInput(commodityInvoiceLineCurrency, data)
-        <!-- TODO - add fields here for exchange rate, valuation method and preference once clarified with team -->
+        @helpers.textInput(valuationExchangeRate, data)
+        @helpers.selectInput(valuationMethodType, data)
+        @helpers.selectInput(valuationPreference, data)
         @helpers.nextButton()
     }
 }
