@@ -45,4 +45,7 @@ trait HtmlAssertions extends CustomsAssertions with JsoupShouldMatchers {
       withAttrValue("action", action.url).
       withAttrValue("method", method)
 
+  def includeHtmlTag(in: Future[Result], name: String, value: String): Unit =
+    contentAsHtml(in) should include element withName(name).withValue(value)
+
 }

@@ -23,11 +23,13 @@ import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.api.{Configuration, Environment}
 import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.{InsufficientEnrolments, NoActiveSession}
+import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse}
 import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
+import play.api.mvc.Results.Status
 
 @Singleton
-class ErrorHandler @Inject()(val messagesApi: MessagesApi)(implicit val appConfig: AppConfig) extends FrontendErrorHandler with AuthRedirects {
+class ErrorHandler @Inject()(implicit val messagesApi: MessagesApi, val appConfig: AppConfig) extends FrontendErrorHandler with AuthRedirects {
 
   override def config: Configuration = appConfig.runModeConfiguration
 
@@ -36,10 +38,15 @@ class ErrorHandler @Inject()(val messagesApi: MessagesApi)(implicit val appConfi
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
     views.html.error_template(pageTitle, heading, message)
 
-  override def resolveError(rh: RequestHeader, ex: Throwable): Result = ex match {
-    case _: NoActiveSession => toGGLogin(rh.uri)
-    case _: InsufficientEnrolments => Results.SeeOther(routes.UnauthorisedController.enrol().url)
-    case _ => super.resolveError(rh, ex)
+  override def resolveError(rh: RequestHeader, ex: Throwable): Result = {
+    implicit val req: Request[_] = Request(rh, "")
+    ex match {
+      case _: NoActiveSession => toGGLogin(rh.uri)
+      case _: InsufficientEnrolments => Results.SeeOther(routes.UnauthorisedController.enrol().url)
+      case e: Upstream4xxResponse => new Status(e.reportAs)(views.html.api_4xx_error())
+      case e: Upstream5xxResponse => new Status(e.reportAs)(views.html.api_5xx_error())
+      case _ => super.resolveError(rh, ex)
+    }
   }
 }
 
