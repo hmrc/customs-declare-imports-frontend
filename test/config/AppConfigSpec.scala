@@ -31,7 +31,7 @@ class AppConfigSpec extends CustomsSpec with FeatureBehaviours {
     }
 
     "have analytics token" in {
-      cfg.analyticsToken must be ("GTM-NDJKHWK")
+      cfg.analyticsToken must be ("N/A")
     }
 
     "have analytics host" in {
