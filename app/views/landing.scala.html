@@ -33,7 +33,6 @@
                 <th scope="col">@messages("landingpage.LRN")</th>
                 <th scope="col">@messages("landingpage.MRN")</th>
                 <th scope="col">@messages("landingpage.dateSubmitted")</th>
-                <td><!-- --></td>
             </thead>
             <tbody>
             @for(submission <- submissions) {
@@ -41,9 +40,6 @@
                     <td scope="row">@submission.lrn.getOrElse(messages("lrn.missing"))</td>
                     <td>@submission.mrn.getOrElse(messages("landingpage.MRN.unknown"))</td>
                     <td>@formatDate(new LocalDate(submission.submittedTimestamp))</td>
-                    <td>@submission.mrn.map { mrn =>
-                      <a href="@routes.DeclarationController.displayCancelForm(mrn)">@messages("landingpage.submissions.cancel")</a>
-                    }</td>
                 </tr>
             }
             </tbody>

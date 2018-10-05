@@ -40,7 +40,6 @@ class DeclarationControllerSpec extends CustomsSpec
   val get = "GET"
   val post = "POST"
   val submitUri = journeyUri(SubmissionJourney.screens.head)
-  val cancelUri = uriWithContextPath(s"/cancel-declaration/$mrn")
 
   def journeyUri(screen: String): String = uriWithContextPath(s"/submit-declaration/$screen")
 
@@ -116,43 +115,6 @@ class DeclarationControllerSpec extends CustomsSpec
     "be behind a feature switch" in withFeatures(disabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
         withRequest(post, submitUri, headers, session, tags) {
-          wasNotFound
-        }
-      }
-    }
-
-  }
-
-  s"$get $cancelUri" should {
-
-    "return 200" in withFeatures(enabled(Feature.cancel)) {
-      repo.insert(Submission(eori = randomUser.requiredEori, conversationId = randomString(16), lrn = None, mrn = Some(mrn)))
-      withSignedInUser() { (headers, session, tags) =>
-        withRequest(get, cancelUri, headers, session, tags) {
-          wasOk
-        }
-      }
-    }
-
-    "return HTML" in withFeatures(enabled(Feature.cancel)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withRequest(get, cancelUri, headers, session, tags) {
-          wasHtml
-        }
-      }
-    }
-
-    "require authentication" in withFeatures(enabled(Feature.cancel)) {
-      withoutSignedInUser() {
-        withRequest(get, cancelUri) { resp =>
-          wasRedirected(ggLoginRedirectUri(cancelUri), resp)
-        }
-      }
-    }
-
-    "be behind a feature switch" in withFeatures(disabled(Feature.cancel)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withRequest(get, cancelUri, headers, session, tags) {
           wasNotFound
         }
       }
