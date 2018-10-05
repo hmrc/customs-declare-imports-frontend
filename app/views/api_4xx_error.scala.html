@@ -21,8 +21,5 @@
 
     @main_template(title = messages("4xxpage.titleAndHeading"), bodyClasses = None) {
         <h1 class="heading-xlarge">@messages("4xxpage.titleAndHeading")</h1>
-
-        <p><a href="@{routes.DeclarationController.displaySubmitForm("check-your-answers").url}">@messages("pages.checkYourAnswers.title")</a> @messages("4xxpage.p.tryAgain")</p>
-
     }
 

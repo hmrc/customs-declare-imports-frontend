@@ -24,10 +24,6 @@ import play.api.Configuration
 import play.api.http.{ContentTypes, HeaderNames, HttpVerbs, Status}
 import play.api.libs.ws.WSClient
 import play.modules.reactivemongo.ReactiveMongoComponent
-import reactivemongo.api.ReadPreference
-import reactivemongo.api.commands.{DefaultWriteResult, WriteResult}
-import reactivemongo.bson.BSONObjectID
-import repositories.declaration.{Submission, SubmissionRepository}
 import uk.gov.hmrc.customs.test.behaviours.CustomsSpec
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -35,7 +31,7 @@ import uk.gov.hmrc.play.bootstrap.http.{DefaultHttpClient, HttpClient}
 import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.collection.mutable
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class CustomsDeclarationsConnectorImplSpec extends CustomsSpec {
 
@@ -86,44 +82,35 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec {
 
   "submit import declaration" should {
 
-    "specify X-Client-ID in request headers" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, http, _, _, _) =>
+    "specify X-Client-ID in request headers" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, http, _, _) =>
       http.requests.head.headers("X-Client-ID") must be(appConfig.developerHubClientId)
     }
 
-    "specify correct Accept value in request headers" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, http, _, _, _) =>
+    "specify correct Accept value in request headers" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, http, _, _) =>
       http.requests.head.headers(HeaderNames.ACCEPT) must be(acceptContentType)
     }
 
-    "specify Content-Type as XML in request headers" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, http, _, _, _) =>
+    "specify Content-Type as XML in request headers" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, http, _, _) =>
       http.requests.head.headers(HeaderNames.CONTENT_TYPE) must be(ContentTypes.XML)
     }
 
-    "specify X-Badge-Identifier in request headers" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration, Some(aRandomBadgeId)) { (_, http, _, _, _) =>
+    "specify X-Badge-Identifier in request headers" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration, Some(aRandomBadgeId)) { (_, http, _, _) =>
       http.requests.head.headers("X-Badge-Identifier") must be(aRandomBadgeId)
     }
 
-    "send metadata as XML in request body" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, http, _, _, _) =>
+    "send metadata as XML in request body" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, http, _, _) =>
       http.requests.head.body must be(aRandomSubmitDeclaration.toXml.mkString)
-    }
-
-    "save successfully submitted declaration" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, _, expectation, repo, _) =>
-      val saved = repo.findAll().futureValue.head
-      saved.lrn must be(aRandomSubmitDeclaration.declaration.functionalReferenceId)
-      saved.eori must be(user.requiredEori)
-      saved.conversationId must be(expectation.resp.header("X-Conversation-ID").get)
     }
 
     "throw gateway timeout exception when request times out" in withoutBadgeId() { _ =>
       val ex = new TimeoutException("API is not responding")
       withHttpClient(expectingFailure(ex)) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            connector.
-              submitImportDeclaration(aRandomSubmitDeclaration).
-              failed.futureValue.
-              asInstanceOf[GatewayTimeoutException].
-              message must be(http.gatewayTimeoutMessage(HttpVerbs.POST, submitUrl, ex))
-          }
+        withCustomsDeclarationsConnector(http) { connector =>
+          connector.
+            submitImportDeclaration(aRandomSubmitDeclaration).
+            failed.futureValue.
+            asInstanceOf[GatewayTimeoutException].
+            message must be(http.gatewayTimeoutMessage(HttpVerbs.POST, submitUrl, ex))
         }
       }
     }
@@ -131,50 +118,42 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec {
     "throw bad gateway exception when request cannot connect" in withoutBadgeId() { _ =>
       val ex = new ConnectException("API is down")
       withHttpClient(expectingFailure(ex)) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            connector.
-              submitImportDeclaration(aRandomSubmitDeclaration).
-              failed.futureValue.
-              asInstanceOf[BadGatewayException].
-              message must be(http.badGatewayMessage(HttpVerbs.POST, submitUrl, ex))
-          }
+        withCustomsDeclarationsConnector(http) { connector =>
+          connector.
+            submitImportDeclaration(aRandomSubmitDeclaration).
+            failed.futureValue.
+            asInstanceOf[BadGatewayException].
+            message must be(http.badGatewayMessage(HttpVerbs.POST, submitUrl, ex))
         }
       }
     }
 
     "throw upstream 5xx exception when API responds with internal server error" in withoutBadgeId() { headers =>
       withHttpClient(expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.INTERNAL_SERVER_ERROR, headers)) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration).failed.futureValue.asInstanceOf[Upstream5xxResponse]
-            ex.upstreamResponseCode must be(Status.INTERNAL_SERVER_ERROR)
-            ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
-          }
+        withCustomsDeclarationsConnector(http) { connector =>
+          val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration).failed.futureValue.asInstanceOf[Upstream5xxResponse]
+          ex.upstreamResponseCode must be(Status.INTERNAL_SERVER_ERROR)
+          ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
         }
       }
     }
 
     "throw upstream 4xx exception when API responds with bad request" in withoutBadgeId() { headers =>
       withHttpClient(expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.BAD_REQUEST, headers)) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration).failed.futureValue.asInstanceOf[Upstream4xxResponse]
-            ex.upstreamResponseCode must be(Status.BAD_REQUEST)
-            ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
-          }
+        withCustomsDeclarationsConnector(http) { connector =>
+          val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration).failed.futureValue.asInstanceOf[Upstream4xxResponse]
+          ex.upstreamResponseCode must be(Status.BAD_REQUEST)
+          ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
         }
       }
     }
 
     "throw upstream 4xx exception when API responds with unauthhorised" in withoutBadgeId() { headers =>
       withHttpClient(expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.UNAUTHORIZED, headers)) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration).failed.futureValue.asInstanceOf[Upstream4xxResponse]
-            ex.upstreamResponseCode must be(Status.UNAUTHORIZED)
-            ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
-          }
+        withCustomsDeclarationsConnector(http) { connector =>
+          val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration).failed.futureValue.asInstanceOf[Upstream4xxResponse]
+          ex.upstreamResponseCode must be(Status.UNAUTHORIZED)
+          ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
         }
       }
     }
@@ -183,37 +162,35 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec {
 
   "cancel import declaration" should {
 
-    "specify X-Client-ID in request headers" in simpleAcceptedCancellationScenario(aRandomCancelDeclaration) { (_, http, _, _, _) =>
+    "specify X-Client-ID in request headers" in simpleAcceptedCancellationScenario(aRandomCancelDeclaration) { (_, http, _, _) =>
       http.requests.head.headers("X-Client-ID") must be(appConfig.developerHubClientId)
     }
 
-    "specify correct Accept value in request headers" in simpleAcceptedCancellationScenario(aRandomCancelDeclaration) { (_, http, _, _, _) =>
+    "specify correct Accept value in request headers" in simpleAcceptedCancellationScenario(aRandomCancelDeclaration) { (_, http, _, _) =>
       http.requests.head.headers(HeaderNames.ACCEPT) must be(acceptContentType)
     }
 
-    "specify Content-Type as XML in request headers" in simpleAcceptedCancellationScenario(aRandomCancelDeclaration) { (_, http, _, _, _) =>
+    "specify Content-Type as XML in request headers" in simpleAcceptedCancellationScenario(aRandomCancelDeclaration) { (_, http, _, _) =>
       http.requests.head.headers(HeaderNames.CONTENT_TYPE) must be(ContentTypes.XML)
     }
 
-    "specify X-Badge-Identifier in request headers" in simpleAcceptedCancellationScenario(aRandomCancelDeclaration, Some(aRandomBadgeId)) { (_, http, _, _, _) =>
+    "specify X-Badge-Identifier in request headers" in simpleAcceptedCancellationScenario(aRandomCancelDeclaration, Some(aRandomBadgeId)) { (_, http, _, _) =>
       http.requests.head.headers("X-Badge-Identifier") must be(aRandomBadgeId)
     }
 
-    "send metadata as XML in request body" in simpleAcceptedCancellationScenario(aRandomCancelDeclaration) { (_, http, _, _, _) =>
+    "send metadata as XML in request body" in simpleAcceptedCancellationScenario(aRandomCancelDeclaration) { (_, http, _, _) =>
       http.requests.head.body must be(aRandomCancelDeclaration.toXml.mkString)
     }
 
     "throw gateway timeout exception when request times out" in withoutBadgeId() { _ =>
       val ex = new TimeoutException("API is not responding")
       withHttpClient(expectingFailure(ex)) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            connector.
-              cancelImportDeclaration(aRandomCancelDeclaration).
-              failed.futureValue.
-              asInstanceOf[GatewayTimeoutException].
-              message must be(http.gatewayTimeoutMessage(HttpVerbs.POST, cancelUrl, ex))
-          }
+        withCustomsDeclarationsConnector(http) { connector =>
+          connector.
+            cancelImportDeclaration(aRandomCancelDeclaration).
+            failed.futureValue.
+            asInstanceOf[GatewayTimeoutException].
+            message must be(http.gatewayTimeoutMessage(HttpVerbs.POST, cancelUrl, ex))
         }
       }
     }
@@ -221,50 +198,42 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec {
     "throw bad gateway exception when request cannot connect" in withoutBadgeId() { _ =>
       val ex = new ConnectException("API is down")
       withHttpClient(expectingFailure(ex)) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            connector.
-              cancelImportDeclaration(aRandomCancelDeclaration).
-              failed.futureValue.
-              asInstanceOf[BadGatewayException].
-              message must be(http.badGatewayMessage(HttpVerbs.POST, cancelUrl, ex))
-          }
+        withCustomsDeclarationsConnector(http) { connector =>
+          connector.
+            cancelImportDeclaration(aRandomCancelDeclaration).
+            failed.futureValue.
+            asInstanceOf[BadGatewayException].
+            message must be(http.badGatewayMessage(HttpVerbs.POST, cancelUrl, ex))
         }
       }
     }
 
     "throw upstream 5xx exception when API responds with internal server error" in withoutBadgeId() { headers =>
       withHttpClient(expectingOtherResponse(cancelRequest(aRandomCancelDeclaration, headers), Status.INTERNAL_SERVER_ERROR, headers)) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            val ex = connector.cancelImportDeclaration(aRandomCancelDeclaration).failed.futureValue.asInstanceOf[Upstream5xxResponse]
-            ex.upstreamResponseCode must be(Status.INTERNAL_SERVER_ERROR)
-            ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
-          }
+        withCustomsDeclarationsConnector(http) { connector =>
+          val ex = connector.cancelImportDeclaration(aRandomCancelDeclaration).failed.futureValue.asInstanceOf[Upstream5xxResponse]
+          ex.upstreamResponseCode must be(Status.INTERNAL_SERVER_ERROR)
+          ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
         }
       }
     }
 
     "throw upstream 4xx exception when API responds with bad request" in withoutBadgeId() { headers =>
       withHttpClient(expectingOtherResponse(cancelRequest(aRandomCancelDeclaration, headers), Status.BAD_REQUEST, headers)) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            val ex = connector.cancelImportDeclaration(aRandomCancelDeclaration).failed.futureValue.asInstanceOf[Upstream4xxResponse]
-            ex.upstreamResponseCode must be(Status.BAD_REQUEST)
-            ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
-          }
+        withCustomsDeclarationsConnector(http) { connector =>
+          val ex = connector.cancelImportDeclaration(aRandomCancelDeclaration).failed.futureValue.asInstanceOf[Upstream4xxResponse]
+          ex.upstreamResponseCode must be(Status.BAD_REQUEST)
+          ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
         }
       }
     }
 
     "throw upstream 4xx exception when API responds with unauthhorised" in withoutBadgeId() { headers =>
       withHttpClient(expectingOtherResponse(cancelRequest(aRandomCancelDeclaration, headers), Status.UNAUTHORIZED, headers)) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            val ex = connector.cancelImportDeclaration(aRandomCancelDeclaration).failed.futureValue.asInstanceOf[Upstream4xxResponse]
-            ex.upstreamResponseCode must be(Status.UNAUTHORIZED)
-            ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
-          }
+        withCustomsDeclarationsConnector(http) { connector =>
+          val ex = connector.cancelImportDeclaration(aRandomCancelDeclaration).failed.futureValue.asInstanceOf[Upstream4xxResponse]
+          ex.upstreamResponseCode must be(Status.UNAUTHORIZED)
+          ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
         }
       }
     }
@@ -274,27 +243,23 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec {
   // the test scenario builders
 
   def simpleAcceptedSubmissionScenario(submission: MetaData, maybeBadgeId: Option[String] = None)
-                                      (test: (Map[String, String], MockHttpClient, HttpExpectation, SubmissionRepository, CustomsDeclarationsConnector) => Unit): Unit = maybeBadgeId match {
+                                      (test: (Map[String, String], MockHttpClient, HttpExpectation, CustomsDeclarationsConnector) => Unit): Unit = maybeBadgeId match {
     case Some(badgeId) => withBadgeId(badgeId) { headers =>
       val expectation = expectingAcceptedResponse(submitRequest(submission, headers), headers)
       withHttpClient(expectation) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
+          withCustomsDeclarationsConnector(http) { connector =>
             whenReady(connector.submitImportDeclaration(submission, Some(badgeId))) { _ =>
-              test(headers, http, expectation.right.get, repo, connector)
+              test(headers, http, expectation.right.get, connector)
             }
           }
-        }
       }
     }
     case None => withoutBadgeId() { headers =>
       val expectation = expectingAcceptedResponse(submitRequest(submission, headers), headers)
       withHttpClient(expectation) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            whenReady(connector.submitImportDeclaration(submission)) { _ =>
-              test(headers, http, expectation.right.get, repo, connector)
-            }
+        withCustomsDeclarationsConnector(http) { connector =>
+          whenReady(connector.submitImportDeclaration(submission)) { _ =>
+            test(headers, http, expectation.right.get, connector)
           }
         }
       }
@@ -302,15 +267,13 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec {
   }
 
   def simpleAcceptedCancellationScenario(cancellation: MetaData, maybeBadgeId: Option[String] = None)
-                                        (test: (Map[String, String], MockHttpClient, HttpExpectation, SubmissionRepository, CustomsDeclarationsConnector) => Unit): Unit = maybeBadgeId match {
+                                        (test: (Map[String, String], MockHttpClient, HttpExpectation, CustomsDeclarationsConnector) => Unit): Unit = maybeBadgeId match {
     case Some(badgeId) => withBadgeId(badgeId) { headers =>
       val expectation = expectingAcceptedResponse(cancelRequest(cancellation, headers), headers)
       withHttpClient(expectation) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            whenReady(connector.cancelImportDeclaration(cancellation, Some(badgeId))) { _ =>
-              test(headers, http, expectation.right.get, repo, connector)
-            }
+        withCustomsDeclarationsConnector(http) { connector =>
+          whenReady(connector.cancelImportDeclaration(cancellation, Some(badgeId))) { _ =>
+            test(headers, http, expectation.right.get, connector)
           }
         }
       }
@@ -318,11 +281,9 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec {
     case None => withoutBadgeId() { headers =>
       val expectation = expectingAcceptedResponse(cancelRequest(cancellation, headers), headers)
       withHttpClient(expectation) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            whenReady(connector.cancelImportDeclaration(cancellation)) { _ =>
-              test(headers, http, expectation.right.get, repo, connector)
-            }
+        withCustomsDeclarationsConnector(http) { connector =>
+          whenReady(connector.cancelImportDeclaration(cancellation)) { _ =>
+            test(headers, http, expectation.right.get, connector)
           }
         }
       }
@@ -346,32 +307,9 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec {
     test(new MockHttpClient(throwOrRespond, component[Configuration], component[AuditConnector], component[WSClient]))
   }
 
-  def withSubmissionRepository()(test: SubmissionRepository => Unit): Unit = test(new SubmissionRepository() {
-
-    val inserted: mutable.Buffer[Submission] = mutable.Buffer.empty
-
-    // abuse findAll function for testing purposes :)
-    override def findAll(readPreference: ReadPreference = ReadPreference.primaryPreferred)
-                        (implicit ec: ExecutionContext): Future[List[Submission]] = Future.successful(inserted.toList)
-
-    override def findByEori(eori: String): Future[Seq[Submission]] = throw new IllegalArgumentException("Unexpected call")
-
-    override def getByConversationId(conversationId: String): Future[Option[Submission]] = throw new IllegalArgumentException("Unexpected call")
-
-    override def getByEoriAndMrn(eori: String, mrn: String): Future[Option[Submission]] = throw new IllegalArgumentException("Unexpected call")
-
-    override def insert(entity: Submission)(implicit ec: ExecutionContext): Future[WriteResult] = {
-      inserted += entity
-      Future.successful(DefaultWriteResult(ok = true, 1, Seq.empty, None, None, None))
-    }
-
-    override def isInsertion(newRecordId: BSONObjectID, oldRecord: Submission): Boolean = throw new IllegalArgumentException("Unexpected call")
-
-  })
-
-  def withCustomsDeclarationsConnector(httpClient: HttpClient, submissionRepository: SubmissionRepository)
+  def withCustomsDeclarationsConnector(httpClient: HttpClient)
                                       (test: CustomsDeclarationsConnector => Unit): Unit = {
-    test(new CustomsDeclarationsConnectorImpl(appConfig, httpClient, submissionRepository))
+    test(new CustomsDeclarationsConnectorImpl(appConfig, httpClient))
   }
 
 }

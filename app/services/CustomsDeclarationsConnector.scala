@@ -22,7 +22,6 @@ import domain.auth.SignedInUser
 import javax.inject.Singleton
 import play.api.http.{ContentTypes, HeaderNames, Status}
 import play.api.mvc.Codec
-import repositories.declaration.{Submission, SubmissionRepository}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
@@ -42,13 +41,12 @@ trait CustomsDeclarationsConnector {
 
 @Singleton
 class CustomsDeclarationsConnectorImpl @Inject()(appConfig: AppConfig,
-                                                 httpClient: HttpClient,
-                                                 submissionRepository: SubmissionRepository)
+                                                 httpClient: HttpClient)
   extends CustomsDeclarationsConnector {
 
   override def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
                                       (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
-    postMetaData(appConfig.submitImportDeclarationUri, metaData, badgeIdentifier, onSuccessfulSubmission)
+    postMetaData(appConfig.submitImportDeclarationUri, metaData, badgeIdentifier)
 
   override def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
                                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
@@ -88,16 +86,6 @@ class CustomsDeclarationsConnectorImpl @Inject()(appConfig: AppConfig,
   }
 
   private def onSuccess(meta: MetaData, resp: CustomsDeclarationsResponse): Future[CustomsDeclarationsResponse] = Future.successful(resp)
-
-  private def onSuccessfulSubmission(meta: MetaData, resp: CustomsDeclarationsResponse)
-                                    (implicit ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
-    submissionRepository.insert(
-      Submission(
-        eori = user.requiredEori,
-        conversationId = resp.conversationId,
-        meta.declaration.functionalReferenceId
-      )
-    ).map(_ => resp)
 
   private def doPost(uri: String, body: String, badgeIdentifier: Option[String] = None)
                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =

@@ -15,36 +15,12 @@
  *@
 
 @import config.AppConfig
-@import repositories.declaration.Submission
-@import uk.gov.hmrc.play.views.formatting.Dates._
-@import org.joda.time.LocalDate
 
-@(submissions: Seq[Submission])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
     @main_template(title = messages("common.importDeclarations"), bodyClasses = None, mainClass = Some("full-width")) {
         <div class="form-group">
             <h1 class="heading-xlarge">@messages("common.importDeclarations")</h1>
-            <p><a class="button button-start" href="@routes.DeclarationController.displaySubmitForm("declarant-details")">@messages("common.button.createNew")</a></p>
         </div>
-        <h2 class="heading-medium">@messages("landingpage.submissions.heading")</h2>
-        @if(submissions.nonEmpty) {
-        <table>
-            <thead>
-                <th scope="col">@messages("landingpage.LRN")</th>
-                <th scope="col">@messages("landingpage.MRN")</th>
-                <th scope="col">@messages("landingpage.dateSubmitted")</th>
-            </thead>
-            <tbody>
-            @for(submission <- submissions) {
-                <tr>
-                    <td scope="row">@submission.lrn.getOrElse(messages("lrn.missing"))</td>
-                    <td>@submission.mrn.getOrElse(messages("landingpage.MRN.unknown"))</td>
-                    <td>@formatDate(new LocalDate(submission.submittedTimestamp))</td>
-                </tr>
-            }
-            </tbody>
-        </table>
-        } else {
-        <p>@messages("landingpage.submissions.empty")</p>
-        }
+
     }
