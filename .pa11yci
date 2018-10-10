@@ -1,49 +1,27 @@
 {
   "defaults": {
     "chromeLaunchConfig": {
-        "args": ["--no-sandbox"]
+      "args": [
+        "--no-sandbox"
+      ]
     },
-	  "hideElements": "#footer, #global-header, #global-cookie-message, .phase-banner, a, button.button, .form-hint",
+    "hideElements": "#footer, #global-header, #global-cookie-message, .phase-banner, a, button.button, .form-hint",
     "standard": "WCAG2AAA"
   },
-
-	"urls": [
-	    {
-        "url": "http://localhost:9949/auth-login-stub/gg-sign-in",
-        "actions": [
-					"set field input[name=redirectionUrl] to http://localhost:6789/customs-declare-imports/enrol",
-					"set field #affinityGroupSelect to Organisation",
-					"set field #js-enrolments-table tbody tr:nth-child(2) td:nth-child(1) input[type=text] to HMRC-CUS-ORG",
-					"set field #input-0-0-name to EORINumber",
-					"set field #input-0-0-value to 89weiuvubiu",
-					"click element .form-field-group input[type=submit].button"
-        ]
-	    },
-	    "http://localhost:6789/customs-declare-imports/start",
-	    "http://localhost:6789/customs-declare-imports/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/declarant-details/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/references/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/exporter-details/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/representative-details/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/importer-details/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/seller-details/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/additional-supply-chain-actors/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/additional-fiscal-references/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/previous-documents/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/procedure-codes/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/identification-of-goods-shipping-marks-and-codes/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/identification-of-goods-units/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/valuation/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/tax/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/additions-and-deductions/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/additional-information/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/country-of-origin/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/other-data-elements/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/summary-of-goods/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/warehouse-and-customs-offices/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/delivery-terms/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/deferred-payment/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/guarantee-type/",
-	    "http://localhost:6789/customs-declare-imports/submit-declaration/check-your-answers/"
-	]
+  "urls": [
+    "http://localhost:6789/customs-declare-imports/start",
+    {
+      "url": "http://localhost:9949/auth-login-stub/gg-sign-in",
+      "actions": [
+        "set field input[name=redirectionUrl] to http://localhost:6789/customs-declare-imports/",
+        "set field #affinityGroupSelect to Organisation",
+        "set field #js-enrolments-table tbody tr:nth-child(2) td:nth-child(1) input[type=text] to HMRC-CUS-ORG",
+        "set field #input-0-0-name to EORINumber",
+        "set field #input-0-0-value to 89weiuvubiu",
+        "click element .form-field-group input[type=submit].button",
+        "wait for url to be http://localhost:6789/customs-declare-imports/",
+        "navigate to http://localhost:6789/customs-declare-imports/enrol"
+      ]
+    }
+  ]
 }

@@ -129,10 +129,6 @@ class AppConfigSpec extends CustomsSpec with FeatureBehaviours {
       cfg.isFeatureOn(Feature.start) must be (false)
     }
 
-    "return true for cancel feature enabled" in withFeatures(enabled(Feature.cancel)) {
-      cfg.isFeatureOn(Feature.cancel) must be (true)
-    }
-
   }
 
 }
