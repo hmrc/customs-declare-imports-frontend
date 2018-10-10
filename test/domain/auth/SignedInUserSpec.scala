@@ -16,8 +16,11 @@
 
 package domain.auth
 
+import controllers.routes
 import org.scalatest.{MustMatchers, WordSpec}
+import play.api.mvc.Results
 import uk.gov.hmrc.customs.test.CustomsFixtures
+import uk.gov.hmrc.play.bootstrap.http.ApplicationException
 
 class SignedInUserSpec extends WordSpec with MustMatchers with CustomsFixtures {
 
@@ -30,6 +33,17 @@ class SignedInUserSpec extends WordSpec with MustMatchers with CustomsFixtures {
     "be SOME for user with CDS enrollment" in {
       val eori = randomString(8)
       userFixture(eori = Some(eori)).eori must be (Some(eori))
+    }
+
+  }
+
+  "required EORI" should {
+
+    "throw application exception when not present" in {
+      val ex = intercept[ApplicationException] {
+        userFixture(eori = None).requiredEori
+      }
+      ex.result must be(Results.SeeOther(routes.UnauthorisedController.enrol().url))
     }
 
   }

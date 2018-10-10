@@ -16,10 +16,12 @@
 
 package domain.auth
 
-import play.api.mvc.{Request, WrappedRequest}
+import controllers.routes
+import play.api.mvc.{Request, Results, WrappedRequest}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments}
+import uk.gov.hmrc.play.bootstrap.http.ApplicationException
 
 case class SignedInUser(credentials: Credentials,
                         name: Name,
@@ -30,8 +32,7 @@ case class SignedInUser(credentials: Credentials,
 
   lazy val eori: Option[String] = enrolments.getEnrolment(SignedInUser.cdsEnrolmentName).flatMap(_.getIdentifier(SignedInUser.eoriIdentifierKey)).map(_.value)
 
-  // TODO throw custom exception here and handle in ErrorHandler by redirecting to "enrol" page?
-  lazy val requiredEori: String = eori.getOrElse(throw new IllegalStateException("EORI missing"))
+  lazy val requiredEori: String = eori.getOrElse(throw ApplicationException("CDS", Results.SeeOther(routes.UnauthorisedController.enrol().url), s"CDS enroled user ${internalId} has no EORI identifier"))
 
 }
 
