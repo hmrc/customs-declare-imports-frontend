@@ -43,11 +43,9 @@ class ErrorHandler @Inject()(implicit val messagesApi: MessagesApi, val appConfi
     ex match {
       case _: NoActiveSession => toGGLogin(rh.uri)
       case _: InsufficientEnrolments => Results.SeeOther(routes.UnauthorisedController.enrol().url)
-      case e: Upstream4xxResponse => new Status(e.reportAs)(views.html.api_4xx_error())
-      case e: Upstream5xxResponse => new Status(e.reportAs)(views.html.api_5xx_error())
+      case e: Upstream4xxResponse => new Status(e.reportAs)(views.html.upstream_4xx_response())
+      case e: Upstream5xxResponse => new Status(e.reportAs)(views.html.upstream_5xx_response())
       case _ => super.resolveError(rh, ex)
     }
   }
 }
-
-// TODO handle Upstream4xxResponse and Upstream5xxResponse exceptions (thrown by API connector)
