@@ -14,10 +14,10 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
+@import config.ApplicationConfig
 @import controllers.routes
 
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
     @main_template(title = messages("4xxpage.titleAndHeading"), bodyClasses = None) {
         <h1 class="heading-xlarge">@messages("4xxpage.titleAndHeading")</h1>

@@ -70,3 +70,21 @@ class AppConfig @Inject()(val runModeConfiguration: Configuration, val environme
   private def str2FeatureStatus(str: String): FeatureStatus = FeatureStatus.withName(str)
 
 }
+
+case class ApplicationConfig(contactFrontend: ContactFrontend, googleAnalytics: GoogleAnalytics, assets: Assets)
+
+case class ContactFrontend(host: String) {
+
+  private val contactFormServiceIdentifier = "MyService"
+  lazy val reportAProblemPartialUrl: String = s"$host/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
+  lazy val reportAProblemNonJSUrl: String = s"$host/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+
+}
+
+case class GoogleAnalytics(token: String, host: String)
+
+case class Assets(version: String, url: String) {
+
+  lazy val assetsPrefix: String = s"$url$version"
+
+}

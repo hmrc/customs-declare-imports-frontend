@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import config.ApplicationConfig
+import com.google.inject.{AbstractModule, Provides}
+import config.ApplicationConfig
+import javax.inject.Singleton
 
-@()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+class Module extends AbstractModule {
 
-    @main_template(title = messages("common.importDeclarations"), bodyClasses = None, mainClass = Some("full-width")) {
-        <div class="form-group">
-            <h1 class="heading-xlarge">@messages("common.importDeclarations")</h1>
-        </div>
+  private lazy val config: ApplicationConfig = pureconfig.loadConfigOrThrow[ApplicationConfig]
 
-    }
+  override def configure(): Unit = {}
+
+  @Provides @Singleton
+  def applicationConfig: ApplicationConfig = config
+
+}

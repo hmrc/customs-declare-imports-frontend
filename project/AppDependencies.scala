@@ -13,7 +13,8 @@ object AppDependencies {
     "uk.gov.hmrc" %% "auth-client" % "2.9.0-play-25",
     "uk.gov.hmrc" %% "http-caching-client" % "7.1.0",
     "uk.gov.hmrc" %% "play-reactivemongo" % "6.2.0",
-    "uk.gov.hmrc" %% "wco-dec" % "0.6.0"
+    "uk.gov.hmrc" %% "wco-dec" % "0.6.0",
+    "com.github.pureconfig" %% "pureconfig" % "0.9.2"
   )
 
   def test(scope: String = "test") = Seq(

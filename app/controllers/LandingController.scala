@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.AppConfig
+import config.ApplicationConfig
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 @Singleton
 class LandingController @Inject()(actions: Actions)
-                                 (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+                                 (implicit val appConfig: ApplicationConfig, val messagesApi: MessagesApi) extends CustomsController {
 
   def displayLandingPage: Action[AnyContent] = (actions.switch(Feature.landing) andThen actions.auth).async { implicit req =>
     Future.successful(Ok(views.html.landing()))

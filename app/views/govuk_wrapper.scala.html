@@ -14,8 +14,8 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
-@(appConfig: AppConfig,
+@import config.ApplicationConfig
+@(appConfig: ApplicationConfig,
   title: String,
   mainClass: Option[String] = None,
   mainDataAttributes: Option[Html] = None,
@@ -72,8 +72,8 @@
 
 @bodyEnd = {
     @uiLayouts.footer(
-      analyticsToken = Some(appConfig.analyticsToken),
-      analyticsHost = appConfig.analyticsHost,
+      analyticsToken = Some(appConfig.googleAnalytics.token),
+      analyticsHost = appConfig.googleAnalytics.host,
       ssoUrl = None,
       scriptElem = scriptElem,
       gaCalls = None)
@@ -98,7 +98,7 @@
     }
 }
 
-@getHelpForm = @{uiHelpers.reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)}
+@getHelpForm = @{uiHelpers.reportAProblemLink(appConfig.contactFrontend.reportAProblemPartialUrl, appConfig.contactFrontend.reportAProblemNonJSUrl)}
 
 @content = {
     @uiLayouts.main_content(

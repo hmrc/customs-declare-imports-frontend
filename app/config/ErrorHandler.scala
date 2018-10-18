@@ -29,7 +29,7 @@ import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 import play.api.mvc.Results.Status
 
 @Singleton
-class ErrorHandler @Inject()(implicit val messagesApi: MessagesApi, val appConfig: AppConfig) extends FrontendErrorHandler with AuthRedirects {
+class ErrorHandler @Inject()(implicit val messagesApi: MessagesApi, val appConfig: AppConfig, val cfg: ApplicationConfig) extends FrontendErrorHandler with AuthRedirects {
 
   override def config: Configuration = appConfig.runModeConfiguration
 

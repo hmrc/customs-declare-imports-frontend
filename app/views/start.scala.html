@@ -14,15 +14,15 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
+@import config.{AppConfig, ApplicationConfig}
 @import controllers.routes
 
 @import domain.features.Feature
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@()(implicit request: Request[_], messages: Messages, cfg: AppConfig, appConfig: ApplicationConfig)
 
     @main_template(title = messages("startpage.titleAndHeading"), bodyClasses = None) {
 
-        @if(appConfig.isFeatureOn(Feature.landing)) {
+        @if(cfg.isFeatureOn(Feature.landing)) {
             <h1 class="heading-xlarge">@messages("startpage.titleAndHeading")</h1>
 
             <p>@messages("startpage.p.useThisServiceTo")</p>

@@ -16,18 +16,17 @@
 
 package controllers
 
-import config.AppConfig
+import config.{AppConfig, ApplicationConfig}
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc._
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.Future
 
 @Singleton
 class StartController @Inject()(actions: Actions)
-                               (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+                               (implicit val cfg: AppConfig, val appConfig: ApplicationConfig, val messagesApi: MessagesApi) extends CustomsController {
 
   def displayStartPage: Action[AnyContent] = actions.switch(Feature.start).async { implicit request =>
     Future.successful(Ok(views.html.start()))
