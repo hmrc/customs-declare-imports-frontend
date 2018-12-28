@@ -21,22 +21,22 @@ import domain.auth.{AuthenticatedRequest, SignedInUser}
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
-import play.api.data.Form
-import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import repositories.declaration.{Submission, SubmissionRepository}
-import services.{CustomsCacheService, CustomsDeclarationsConnector}
+import repositories.declaration.SubmissionRepository
+import services.{CustomsCacheService, CustomsCacheServiceImpl, CustomsDeclarationsConnector}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import uk.gov.hmrc.wco.dec.{AdditionalInformation, Amendment, Declaration, MetaData}
+import uk.gov.hmrc.wco.dec.{MetaData}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: CustomsCacheService, submissionRepository: SubmissionRepository)
-                                     (implicit val messagesApi: MessagesApi, val appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController with I18nSupport {
+class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: CustomsCacheService,
+  submissionRepository: SubmissionRepository)(implicit val messagesApi: MessagesApi, val appConfig: AppConfig,
+  ec: ExecutionContext) extends FrontendController with I18nSupport {
+
+  val GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY = "GovAgencyGoodsItems"
 
   private val navigationKeys = Set("next-page", "last-page", "force-last")
 
@@ -78,6 +78,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     if (errors.isEmpty) {
       cacheSubmission(data ++ Map("force-last" -> "false")) { (merged, _) =>
         val props = merged.filterNot(entry => navigationKeys.contains(entry._1) || knownBad.contains(entry._1) || entry._2.trim.isEmpty)
+        val metadata = MetaData.fromProperties(props).copy()
         client.submitImportDeclaration(MetaData.fromProperties(props)).map { resp =>
           Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId))
         }

@@ -71,3 +71,13 @@ case class RadioInput(name: String,
 trait MaxLength {
   val maxLength: Int
 }
+
+case class RadioOption(id: String, value: String, messageKey: String)
+
+object RadioOption {
+  def apply(keyPrefix: String, option: String): RadioOption = RadioOption(
+    s"$keyPrefix.$option",
+    option,
+    s"$keyPrefix.$option"
+  )
+}

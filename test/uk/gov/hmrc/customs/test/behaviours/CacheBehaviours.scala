@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.customs.test.behaviours
 
+import domain.GovernmentAgencyGoodsItem
 import org.scalatest.BeforeAndAfterEach
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -51,7 +52,7 @@ class MockCustomsCacheService extends CustomsCacheService {
   override def get(cacheName: String, eori: String)
          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, String]]] = Future.successful(
     cache.get(cacheName).flatMap(_.get(eori))
-  )
+)
 
   override def put(cacheName: String, eori: String, data: Map[String, String])
          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = {
@@ -65,5 +66,19 @@ class MockCustomsCacheService extends CustomsCacheService {
 
   def cache[T](cacheName: String, eori: String, data: Map[String, String])
               (implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[CacheMap] = put(cacheName, eori, data)
+
+  def getGoodsItems(eori: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[List[GovernmentAgencyGoodsItem]]]
+  = Future.successful(Some(List(GovernmentAgencyGoodsItem())))
+
+  def getAGoodsItem(eori: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[GovernmentAgencyGoodsItem]]
+  = Future.successful(Some(GovernmentAgencyGoodsItem()))
+
+  def saveGoodsItem(eori: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean]
+  = Future.successful(true)
+
+
+  def putGoodsItem(eori: String, item: GovernmentAgencyGoodsItem = GovernmentAgencyGoodsItem())(implicit hc: HeaderCarrier,
+    ec: ExecutionContext): Future[CacheMap] =     Future.successful(CacheMap("test", Map(eori -> Json.toJson(item))))
+
 
 }

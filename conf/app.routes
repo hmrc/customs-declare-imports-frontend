@@ -10,3 +10,15 @@ POST        /submit-declaration/submit                         controllers.Decla
 GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)
 GET         /submit-declaration/:name                          controllers.DeclarationController.displaySubmitForm(name)
 POST        /submit-declaration/:name                          controllers.DeclarationController.handleSubmitForm(name)
+
+GET       /submit-declaration-goods/gov-agency-goods-items        controllers.GovernmentAgencyGoodsItemsController.showGoodsItems()
+POST       /submit-declaration-goods/gov-agency-goods-items        controllers.GovernmentAgencyGoodsItemsController.submitGoodsItems()
+GET       /submit-declaration-goods/add-gov-agency-goods-item        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
+POST       /submit-declaration-goods/add-gov-agency-goods-item        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
+POST      /submit-declaration-goods/add-gov-agency-goods-items        controllers.GovernmentAgencyGoodsItemsController.saveGoodsItem()
+
+GET       /submit-declaration-goods/add-gov-agency-goods-items-additional-docs       controllers.GovernmentAgencyGoodsItemsController.showGovAgencyGoodsItemsAdditionalDocuments()
+POST       /submit-declaration-goods/add-gov-agency-goods-items-additional-docs       controllers.GovernmentAgencyGoodsItemsController.handleGovAgencyGoodsItemsAdditionalDocumentsSubmit()
+
+GET       /submit-declaration-goods/add-goods-items-additional-informations       controllers.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations()
+POST       /submit-declaration-goods/add-goods-items-additional-informations       controllers.GovernmentAgencyGoodsItemsController.handleGoodsItemsAdditionalInformationsSubmit()
