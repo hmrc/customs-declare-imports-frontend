@@ -127,7 +127,7 @@ object GovernmentAgencyGoodsItem {
     "value" -> optional(bigDecimal.verifying("amount must not be negative", a => a < 0)))(Amount.apply)(Amount.unapply)
 
   val measureMapping = mapping("unitCode" -> optional(text.verifying("unitCode is only 5 characters", _.length <= 5)),
-    "value" -> optional(bigDecimal.verifying("amount must not be negative", a => a > 0)))(Measure.apply)(Measure.unapply)
+    "value" -> optional(bigDecimal.verifying("value must not be negative", a => a > 0)))(Measure.apply)(Measure.unapply)
 
   val writeOffMapping = mapping("quantity" -> optional(measureMapping), "amount" -> optional(amountMapping))(WriteOff.apply)(WriteOff.unapply)
 

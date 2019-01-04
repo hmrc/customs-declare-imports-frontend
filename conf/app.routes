@@ -37,3 +37,6 @@ POST       /submit-declaration-goods/add-origins      controllers.GovernmentAgen
 
 GET       /submit-declaration-goods/add-manufacturers       controllers.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()
 POST       /submit-declaration-goods/add-manufacturers      controllers.GovernmentAgencyGoodsItemsController.handleNamedEntityPartiesSubmit()
+
+GET       /submit-declaration-goods/add-packagings       controllers.GovernmentAgencyGoodsItemsController.showPackagings()
+POST       /submit-declaration-goods/add-packagings      controllers.GovernmentAgencyGoodsItemsController.handlePackagingsSubmit()
