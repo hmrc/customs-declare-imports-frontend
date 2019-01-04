@@ -1,5 +1,5 @@
 @*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@
     @helpers.form(action = GovernmentAgencyGoodsItemsController.handleGoodsItemsAdditionalInformationsSubmit()) {
 
 
-<h2 class="heading-medium">Government Agency Goods Item Additional Documents</h2>
+<h2 class="heading-medium">Government Agency Goods Item Additional Information</h2>
 @if(additionalInformations.nonEmpty) {
-No of Goods Item additional docs added : <td scope="row">@additionalInformations.size</td>
+No of Goods Item additional Information added : <td scope="row">@additionalInformations.size</td>
 
 <table>
     <thead>
@@ -49,7 +49,7 @@ No of Goods Item additional docs added : <td scope="row">@additionalInformations
     </tbody>
 </table>
 } else {
-<p>No Goods Shipments available</p>
+<p>No Additional Information available</p>
 
 }
 

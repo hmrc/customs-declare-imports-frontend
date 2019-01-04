@@ -1,0 +1,47 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import uk.gov.hmrc.play.views.html._
+@import controllers.routes._
+@import domain.GoodsItemValueInformation
+
+@(form:Form[GoodsItemValueInformation])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
+
+@main_template(
+    title = messages("goodsItem.title"),
+    bodyClasses = None) {
+
+    @helpers.form(action = GovernmentAgencyGoodsItemsController.submitGoodsItemValueSection()) {
+
+
+<h2 class="heading-medium">Government Agency Goods Item Value </h2>
+@components.input_text(field = form("customsValueAmount"),label = "Customs Value Amount")
+@components.input_text(field = form("sequenceNumeric"),label = "Sequence Numeric")
+@components.input_text(field = form("statisticalValueAmount.currencyId"),label = "Currency code")
+@components.input_text(field = form("statisticalValueAmount.value"),label = "Currency value")
+@components.input_text(field = form("transactionNatureCode"),label = "transactionNatureCode code")
+@components.input_text(field = form("destination.countryCode"),label = "Destination country  code")
+@components.input_text(field = form("destination.regionId"),label = "Destination regionId")
+@components.input_text(field = form("ucr.id"),label = "UCR Id")
+@components.input_text(field = form("ucr.traderAssignedReferenceId"),label = "trader Assigned ReferenceId")
+@components.input_text(field = form("exportCountry.id"),label = "export Country")
+@components.input_text(field = form("valuationAdjustment.additionCode"),label = "Valuation Adjustment addition Code")
+
+@components.submit_button()
+
+}
+}

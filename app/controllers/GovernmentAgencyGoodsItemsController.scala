@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,17 @@
 package controllers
 
 import config.AppConfig
-import domain.GovernmentAgencyGoodsItem
 import domain.GovernmentAgencyGoodsItem._
 import domain.features.Feature
+import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
-import uk.gov.hmrc.wco.dec.{AdditionalInformation, GovernmentAgencyGoodsItemAdditionalDocument}
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
+import uk.gov.hmrc.wco.dec.{NamedEntityWithAddress, _}
 
 import scala.concurrent.Future
 
@@ -37,7 +38,13 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
 
   val additionalDocumentform: Form[GovernmentAgencyGoodsItemAdditionalDocument] = Form(govtAgencyGoodsItemAddDocMapping)
   val additionalInformationform: Form[AdditionalInformation] = Form(additionalInformationMapping)
+  val goodsItemValueInformationForm: Form[GoodsItemValueInformation] = Form(goodsItemValueInformationMapping)
+  val governmentProcedureForm: Form[GovernmentProcedure] = Form(governmentProcedureMapping)
+  val roleBasedPartiesForm: Form[RoleBasedParty] = Form(roleBasedPartyMapping)
+  val originsForm: Form[Origin] = Form(originMapping)
+  val namedEntityWithAddressForm: Form[NamedEntityWithAddress] = Form(namedEntityWithAddressMapping)
 
+  val goodsItemValueInformationKey = "goodsItemValueInformation"
 
   def showGoodsItems(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
@@ -51,14 +58,40 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
       val optionSelected = req.body.asFormUrlEncoded.get("submit").headOption
       optionSelected match {
         case Some("AddGoodsItem") =>
-          cache.getGoodsItems(req.user.eori.get).flatMap(listItems =>
-            cache.putGoodsItem(req.user.eori.get).map(_ =>
-              Ok(views.html.gov_agency_goods_items_list(listItems.getOrElse(List.empty)))))
+          //  cache.putGoodsItem(req.user.eori.get).map(_ => Ok(views.html.gov_agency_goods_items(None)))
+          Future.successful(Ok(views.html.goods_item_value(goodsItemValueInformationForm)))
 
         case Some("next") => Future.successful(Redirect(routes.DeclarationController.displaySubmitForm("check-your-answers")))
         case _ => Logger.error("wrong selection => " + optionSelected.get);
           Future.successful(BadRequest("This action is not allowed"))
       }
+
+  }
+
+  def showGoodsItemValuePage(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit req =>
+
+      cache.getForm[GoodsItemValueInformation](req.user.eori.get, goodsItemValueInformationKey)(goodsItemValueReadsFormats, hc,
+        MdcLoggingExecutionContext.fromLoggingDetails).map {
+        case Some(form) => Ok(views.html.goods_item_value(goodsItemValueInformationForm.fill(form)))
+        case _ => Ok(views.html.goods_item_value(goodsItemValueInformationForm))
+      }
+  }
+
+  def submitGoodsItemValueSection(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit request =>
+      goodsItemValueInformationForm.bindFromRequest().fold(
+        (formWithErrors: Form[GoodsItemValueInformation]) =>
+          Future.successful(BadRequest((views.html.goods_item_value(formWithErrors)))),
+        form =>
+          cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+            Logger.info("additionalInformationform form --->" + form)
+            val updatedGoodsItem = GovernmentAgencyGoodsItem(goodsItemValue = Some(form))
+
+            cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
+              Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+            }
+          })
 
   }
 
@@ -76,18 +109,72 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
       case Some("AddAdditionalInformation") => Future.successful(
         Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations()))
 
-      case Some("AddRoleBasedParty") => Future.successful(Ok("Clicked AddRoleBasedParty"))
-      case Some("AddGovernmentProcedures") => Future.successful(Ok("Clicked AddGovernmentProcedures"))
-      case Some("AddOrigins") => Future.successful(Ok("Clicked AddOrigins"))
+      case Some("AddMutualRecognitionParties") => Future.successful(
+        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
+
+      case Some("AddDomesticDutyTaxParties") => Future.successful(
+        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
+
+      case Some("AddGovernmentProcedures") => Future.successful(
+        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGovernmentProcedures()))
+
+      case Some("AddOrigins") => Future.successful(
+        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showOrigins()))
+
+      case Some("AddManufacturers") => Future.successful(
+        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
+
       case Some("AddPackagings") => Future.successful(Ok("Clicked Add Packagings"))
-      case Some("AddPreviousDocuments") => Future.successful(Ok("Clicked AddPreviousDocuments"))
-      case Some("AddRefundRecipientParties") => Future.successful(Ok("Clicked AddRefundRecipientParties"))
+      case Some("AddPreviousDocuments") => Future.successful(Ok("Clicked Add PreviousDocuments"))
+      case Some("AddRefundRecipientParties") => Future.successful(
+        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
+
       case Some("SaveGoodsItem") =>
         cache.saveGoodsItem(request.user.eori.get).map { _ => Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItems()) }
 
-      case _ => Logger.error("wrong selection => " + optionSelected.get);
-        Future.successful(BadRequest("This action is not allowed"))
+      case _ => Logger.error("wrong selection => " + optionSelected.get)
+        Future.successful(BadRequest("This request is not allowed"))
     }
+  }
+
+  def showNamedEntryAddressParties(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit req =>
+      cache.getAGoodsItem(req.user.eori.get).map { res =>
+        val docs: List[NamedEntityWithAddress] = if (res.isDefined) {
+          res.get.manufacturers.toList
+        } else List.empty
+        Ok(views.html.goods_items_named_entity_parties(namedEntityWithAddressForm, docs))
+      }
+  }
+
+  def showRoleBasedParties(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit req =>
+      cache.getAGoodsItem(req.user.eori.get).map { res =>
+        val docs: List[RoleBasedParty] = if (res.isDefined) {
+          res.get.aeoMutualRecognitionParties.toList
+        } else List.empty
+        Ok(views.html.goods_items_role_based_parties(roleBasedPartiesForm, docs))
+      }
+  }
+
+  def showGovernmentProcedures(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit req =>
+      cache.getAGoodsItem(req.user.eori.get).map { res =>
+        val docs: List[GovernmentProcedure] = if (res.isDefined) {
+          res.get.governmentProcedures.toList
+        } else List.empty
+        Ok(views.html.goods_items_government_procedures(governmentProcedureForm, docs))
+      }
+  }
+
+  def showOrigins(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit req =>
+      cache.getAGoodsItem(req.user.eori.get).map { res =>
+        val docs: List[Origin] = if (res.isDefined) {
+          res.get.origins.toList
+        } else List.empty
+        Ok(views.html.goods_items_origins(roleBasedPartiesForm, docs))
+      }
   }
 
   def showGoodsItemsAdditionalInformations(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
@@ -115,8 +202,25 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
             cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
               Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
             }
-          }
-      )
+          })
+  }
+
+  def handleGovernmentProceduresSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit request =>
+      governmentProcedureForm.bindFromRequest().fold(
+        (formWithErrors: Form[GovernmentProcedure]) =>
+          Future.successful(BadRequest(views.html.goods_items_government_procedures(formWithErrors, List.empty))),
+        form =>
+          cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+            Logger.info("GovernmentProcedureForm form --->" + form)
+            val updatedGoodsItem = if (res.isDefined)
+              res.get.copy(governmentProcedures = res.get.governmentProcedures :+ form)
+            else GovernmentAgencyGoodsItem(governmentProcedures = Seq(form))
+
+            cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
+              Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+            }
+          })
   }
 
   def handleGovAgencyGoodsItemsAdditionalDocumentsSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async { implicit request =>
@@ -133,8 +237,61 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
           cache.putGoodsItem(request.user.eori.get, updatedGovernmentAgencyGoodsItem).map { _ =>
             Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
           }
-        }
-    )
+        })
+  }
+
+  def handleRoleBasedPartiesSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit request =>
+      roleBasedPartiesForm.bindFromRequest().fold(
+        (formWithErrors: Form[RoleBasedParty]) =>
+          Future.successful(BadRequest(views.html.goods_items_role_based_parties(formWithErrors, List.empty))),
+        form =>
+          cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+            Logger.info("roleBasedPartiesForm form --->" + form)
+            val updatedGoodsItem = if (res.isDefined)
+              res.get.copy(aeoMutualRecognitionParties = res.get.aeoMutualRecognitionParties :+ form)
+            else GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = Seq(form))
+
+            cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
+              Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+            }
+          })
+  }
+
+  def handleOriginsSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit request =>
+      originsForm.bindFromRequest().fold(
+        (formWithErrors: Form[Origin]) =>
+          Future.successful(BadRequest(views.html.goods_items_origins(formWithErrors, List.empty))),
+        form =>
+          cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+            Logger.info("originsForm form --->" + form)
+            val updatedGoodsItem = if (res.isDefined)
+              res.get.copy(origins = res.get.origins :+ form)
+            else GovernmentAgencyGoodsItem(origins = Seq(form))
+
+            cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
+              Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+            }
+          })
+  }
+
+  def handleNamedEntityPartiesSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit request =>
+      namedEntityWithAddressForm.bindFromRequest().fold(
+        (formWithErrors: Form[NamedEntityWithAddress]) =>
+          Future.successful(BadRequest(views.html.goods_items_named_entity_parties(formWithErrors, List.empty))),
+        form =>
+          cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+            Logger.info("NamedEntityWithAddress form --->" + form)
+            val updatedGoodsItem = if (res.isDefined)
+              res.get.copy(manufacturers = res.get.manufacturers :+ form)
+            else GovernmentAgencyGoodsItem(manufacturers = Seq(form))
+
+            cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
+              Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+            }
+          })
   }
 
   def showGovAgencyGoodsItemsAdditionalDocuments(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {

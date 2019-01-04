@@ -14,6 +14,9 @@ POST        /submit-declaration/:name                          controllers.Decla
 GET       /submit-declaration-goods/gov-agency-goods-items        controllers.GovernmentAgencyGoodsItemsController.showGoodsItems()
 POST       /submit-declaration-goods/gov-agency-goods-items        controllers.GovernmentAgencyGoodsItemsController.submitGoodsItems()
 GET       /submit-declaration-goods/add-gov-agency-goods-item        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
+GET       /submit-declaration-goods/goods-item-value        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemValuePage()
+POST       /submit-declaration-goods/goods-item-value        controllers.GovernmentAgencyGoodsItemsController.submitGoodsItemValueSection()
+
 POST       /submit-declaration-goods/add-gov-agency-goods-item        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
 POST      /submit-declaration-goods/add-gov-agency-goods-items        controllers.GovernmentAgencyGoodsItemsController.saveGoodsItem()
 
@@ -22,3 +25,15 @@ POST       /submit-declaration-goods/add-gov-agency-goods-items-additional-docs 
 
 GET       /submit-declaration-goods/add-goods-items-additional-informations       controllers.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations()
 POST       /submit-declaration-goods/add-goods-items-additional-informations       controllers.GovernmentAgencyGoodsItemsController.handleGoodsItemsAdditionalInformationsSubmit()
+
+GET       /submit-declaration-goods/add-government-procedures       controllers.GovernmentAgencyGoodsItemsController.showGovernmentProcedures()
+POST       /submit-declaration-goods/add-government-procedures      controllers.GovernmentAgencyGoodsItemsController.handleGovernmentProceduresSubmit()
+
+GET       /submit-declaration-goods/add-role-based-parties       controllers.GovernmentAgencyGoodsItemsController.showRoleBasedParties()
+POST       /submit-declaration-goods/add-role-based-parties      controllers.GovernmentAgencyGoodsItemsController.handleRoleBasedPartiesSubmit()
+
+GET       /submit-declaration-goods/add-origins       controllers.GovernmentAgencyGoodsItemsController.showOrigins()
+POST       /submit-declaration-goods/add-origins      controllers.GovernmentAgencyGoodsItemsController.handleOriginsSubmit()
+
+GET       /submit-declaration-goods/add-manufacturers       controllers.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()
+POST       /submit-declaration-goods/add-manufacturers      controllers.GovernmentAgencyGoodsItemsController.handleNamedEntityPartiesSubmit()

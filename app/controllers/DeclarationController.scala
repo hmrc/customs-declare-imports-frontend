@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,11 @@ import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import repositories.declaration.SubmissionRepository
-import services.{CustomsCacheService, CustomsCacheServiceImpl, CustomsDeclarationsConnector}
+import services.{CustomsCacheService, CustomsDeclarationsConnector}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import uk.gov.hmrc.wco.dec.{MetaData}
+import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, MetaData}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -78,10 +79,11 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     if (errors.isEmpty) {
       cacheSubmission(data ++ Map("force-last" -> "false")) { (merged, _) =>
         val props = merged.filterNot(entry => navigationKeys.contains(entry._1) || knownBad.contains(entry._1) || entry._2.trim.isEmpty)
-        val metadata = MetaData.fromProperties(props).copy()
-        client.submitImportDeclaration(MetaData.fromProperties(props)).map { resp =>
+        updateMetaData(MetaData.fromProperties(props)).flatMap( metadata =>
+          client.submitImportDeclaration(metadata.get).map { resp =>
           Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId))
-        }
+        })
+
       }
     } else invalid(data("last-page"), data)
   }
@@ -113,5 +115,38 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
       filter(entry => permissibleKeys.contains(entry._1) && entry._2.isDefined).
       map(field => field._1 -> field._2.get)
   }.getOrElse(Map.empty)
+
+  //Obviously rubbish at memory and performance
+  private def updateMetaData(metaData: MetaData)(implicit req: AuthenticatedRequest[AnyContent], hc: HeaderCarrier) = {
+    cache.getGoodsItems(req.user.eori.get).map(_.map { items =>
+      val decGoodsItems: Seq[GovernmentAgencyGoodsItem] =
+        items.map(rec => GovernmentAgencyGoodsItem(customsValueAmount = rec.goodsItemValue.get.customsValueAmount,
+        sequenceNumeric = rec.goodsItemValue.get.sequenceNumeric,
+        statisticalValueAmount = rec.goodsItemValue.get.statisticalValueAmount,
+        transactionNatureCode = rec.goodsItemValue.get.transactionNatureCode,
+        additionalDocuments = rec.additionalDocuments,
+        additionalInformations= rec.additionalInformations,
+        aeoMutualRecognitionParties = rec.aeoMutualRecognitionParties,
+        buyer  = rec.buyer,
+          commodity = rec.commodity,
+        consignee = rec.consignee,
+          consignor = rec.consignor,
+          customsValuation = rec.customsValuation,
+          destination = rec.goodsItemValue.get.destination,
+          domesticDutyTaxParties = rec.domesticDutyTaxParties,
+          exportCountry = rec.goodsItemValue.get.exportCountry,
+          governmentProcedures = rec.governmentProcedures,
+          manufacturers = rec.manufacturers,
+          origins = rec.origins,
+          packagings = rec.packagings,
+          previousDocuments = rec.previousDocuments,
+          refundRecipientParties = rec.refundRecipientParties,
+          seller = rec.seller,
+          ucr = rec.goodsItemValue.get.ucr,
+          valuationAdjustment = rec.goodsItemValue.get.valuationAdjustment))
+      val goodsShipmentNew = metaData.declaration.goodsShipment.map(rec => rec.copy(governmentAgencyGoodsItems = decGoodsItems))
+      metaData.copy(declaration = metaData.declaration.copy(goodsShipment = goodsShipmentNew))
+    })
+  }
 
 }

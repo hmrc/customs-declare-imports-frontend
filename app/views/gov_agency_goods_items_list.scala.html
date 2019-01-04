@@ -1,5 +1,5 @@
 @*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@
 
     @helpers.form(action = GovernmentAgencyGoodsItemsController.submitGoodsItems()) {
 
+
 <h2 class="heading-medium"> Government Agency Goods Items </h2>
 @if(govAgencyGoodsItems.nonEmpty) {
 No of Government Agency Goods Items Added : <td scope="row">@govAgencyGoodsItems.size</td>
@@ -39,6 +40,7 @@ No of Government Agency Goods Items Added : <td scope="row">@govAgencyGoodsItems
     <th scope="col">Domestic Duty Parties</th>
     <th scope="col">Government Procedures</th>
     <th scope="col">Origin of goods</th>
+    <th scope="col">Manufacturers</th>
     <th scope="col">Packagings</th>
     <th scope="col">Previous Documents</th>
     <th scope="col"> Refund Recipient Parties</th>
@@ -52,6 +54,7 @@ No of Government Agency Goods Items Added : <td scope="row">@govAgencyGoodsItems
         <td scope="col">@goodsItem.domesticDutyTaxParties.size</td>
         <td scope="col">@goodsItem.governmentProcedures.size</td>
         <td scope="col">@goodsItem.origins.size</td>
+        <td scope="col">@goodsItem.manufacturers.size</td>
         <td scope="col">@goodsItem.packagings.size</td>
         <td scope="col">@goodsItem.previousDocuments.size</td>
         <td scope="col">@goodsItem.refundRecipientParties.size</td>

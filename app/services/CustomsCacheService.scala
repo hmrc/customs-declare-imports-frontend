@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.AppConfig
 import domain.GovernmentAgencyGoodsItem
 import domain.GovernmentAgencyGoodsItem.governmentAgencyGoodsItemFormats
+import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CompositeSymmetricCrypto}
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpDelete, HttpGet, HttpPut}
@@ -58,6 +59,11 @@ trait CustomsCacheService {
   def putGoodsItem(eori: String, item: GovernmentAgencyGoodsItem = GovernmentAgencyGoodsItem())(implicit hc: HeaderCarrier,
     ec: ExecutionContext): Future[CacheMap]
 
+  def getForm[A](eori: String, key: String)(implicit reads: Reads[A], hc: HeaderCarrier,
+    ec: ExecutionContext): Future[Option[A]]
+
+  def putForm[A](cacheName: String, eori: String, form: A)(implicit hc: HeaderCarrier, ec: ExecutionContext,
+    writes: Writes[A]): Future[CacheMap]
 }
 
 @Singleton
@@ -100,7 +106,13 @@ class CustomsCacheServiceImpl @Inject()(caching: CustomsHttpCaching, application
         }
     }
 
-  def putGoodsItem(eori: String, item: GovernmentAgencyGoodsItem = GovernmentAgencyGoodsItem())(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] =
+  def putGoodsItem(eori: String, item: GovernmentAgencyGoodsItem = GovernmentAgencyGoodsItem())(implicit hc: HeaderCarrier,
+    ec: ExecutionContext): Future[CacheMap] =
     cache[GovernmentAgencyGoodsItem](eori, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, item)
 
+  def getForm[A](eori: String, key: String)(implicit reads: Reads[A], hc: HeaderCarrier, ec: ExecutionContext):
+  Future[Option[A]] = fetchAndGetEntry[A](eori, key)
+
+  def putForm[A](cacheName: String, eori: String, form: A)(implicit hc: HeaderCarrier, ec: ExecutionContext,
+    writes: Writes[A]): Future[CacheMap] = cache(cacheName, eori, form)
 }
