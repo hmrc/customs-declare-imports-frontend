@@ -44,6 +44,8 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
   val originsForm: Form[Origin] = Form(originMapping)
   val namedEntityWithAddressForm: Form[NamedEntityWithAddress] = Form(namedEntityWithAddressMapping)
   val packagingForm: Form[Packaging] = Form(packagingMapping)
+  val previousDocumentForm: Form[PreviousDocument] = Form(previousDocumentMapping)
+
   val goodsItemValueInformationKey = "goodsItemValueInformation"
 
   def showGoodsItems(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
@@ -58,7 +60,6 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
       val optionSelected = req.body.asFormUrlEncoded.get("submit").headOption
       optionSelected match {
         case Some("AddGoodsItem") =>
-          //  cache.putGoodsItem(req.user.eori.get).map(_ => Ok(views.html.gov_agency_goods_items(None)))
           Future.successful(Ok(views.html.goods_item_value(goodsItemValueInformationForm)))
 
         case Some("next") => Future.successful(Redirect(routes.DeclarationController.displaySubmitForm("check-your-answers")))
@@ -126,7 +127,9 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
       case Some("AddPackagings") => Future.successful(
         Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showPackagings()))
 
-      case Some("AddPreviousDocuments") => Future.successful(Ok("Clicked Add PreviousDocuments"))
+      case Some("AddPreviousDocuments") => Future.successful(
+        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showPreviousDocuments()))
+
       case Some("AddRefundRecipientParties") => Future.successful(
         Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
 
@@ -138,6 +141,13 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
     }
   }
 
+  def showPreviousDocuments(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit req =>
+      cache.getAGoodsItem(req.user.eori.get).map { res =>
+        val docs: List[PreviousDocument] = if (res.isDefined) { res.get.previousDocuments.toList } else List.empty
+        Ok(views.html.goods_items_previousdocs(previousDocumentForm, docs))
+      }
+  }
   def showPackagings(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
       cache.getAGoodsItem(req.user.eori.get).map { res =>
@@ -324,6 +334,24 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
             val updatedGoodsItem = if (res.isDefined)
               res.get.copy(packagings = res.get.packagings :+ form)
             else GovernmentAgencyGoodsItem(packagings = Seq(form))
+
+            cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
+              Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+            }
+          })
+  }
+
+  def handlePreviousDcoumentsSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit request =>
+      previousDocumentForm.bindFromRequest().fold(
+        (formWithErrors: Form[PreviousDocument]) =>
+          Future.successful(BadRequest(views.html.goods_items_previousdocs(formWithErrors, List.empty))),
+        form =>
+          cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+            Logger.info("previousDocumentForm form --->" + form)
+            val updatedGoodsItem = if (res.isDefined)
+              res.get.copy(previousDocuments = res.get.previousDocuments :+ form)
+            else GovernmentAgencyGoodsItem(previousDocuments = Seq(form))
 
             cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
               Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())

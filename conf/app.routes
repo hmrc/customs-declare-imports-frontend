@@ -40,3 +40,6 @@ POST       /submit-declaration-goods/add-manufacturers      controllers.Governme
 
 GET       /submit-declaration-goods/add-packagings       controllers.GovernmentAgencyGoodsItemsController.showPackagings()
 POST       /submit-declaration-goods/add-packagings      controllers.GovernmentAgencyGoodsItemsController.handlePackagingsSubmit()
+
+GET       /submit-declaration-goods/add-previous-documents       controllers.GovernmentAgencyGoodsItemsController.showPreviousDocuments()
+POST       /submit-declaration-goods/add-previous-documents      controllers.GovernmentAgencyGoodsItemsController.handlePreviousDcoumentsSubmit()
