@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.customs.test.behaviours
 
-import domain.GovernmentAgencyGoodsItem
+import domain.{DeclarationFormats, GovernmentAgencyGoodsItem}
 import org.scalatest.BeforeAndAfterEach
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{Json, Reads, Writes}
+import play.api.libs.json.{Format, Json, Reads, Writes}
 import services.CustomsCacheService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -77,12 +77,12 @@ class MockCustomsCacheService extends CustomsCacheService {
   = Future.successful(true)
 
   def putGoodsItem(eori: String, item: GovernmentAgencyGoodsItem = GovernmentAgencyGoodsItem())(implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[CacheMap] = Future.successful(CacheMap("test", Map(eori -> Json.toJson(item))))
+    ec: ExecutionContext): Future[CacheMap] = Future.successful(CacheMap("test", Map(eori -> Json.toJson(item)(DeclarationFormats.governmentAgencyGoodsItemFormats))))
 
-  def getForm[A](eori: String, key: String)(implicit reads: Reads[A], hc: HeaderCarrier,
+  def getForm[A](eori: String, key: String)(implicit format: Format[A], hc: HeaderCarrier,
     ec: ExecutionContext): Future[Option[A]] = Future.successful(None)
 
-  def putForm[A](cacheName: String, eori: String, form: A)(implicit hc: HeaderCarrier, ec: ExecutionContext,
-    writes: Writes[A]): Future[CacheMap] = Future.successful(CacheMap("test", Map(eori -> Json.toJson(form))))
+  def putForm[A](cacheName: String, eori: String, form: A)(implicit format: Format[A], hc: HeaderCarrier,
+    ec: ExecutionContext): Future[CacheMap] = Future.successful(CacheMap("test", Map(eori -> Json.toJson(form))))
 
 }

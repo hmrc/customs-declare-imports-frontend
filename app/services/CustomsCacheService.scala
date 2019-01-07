@@ -18,9 +18,9 @@ package services
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.AppConfig
-import domain.GovernmentAgencyGoodsItem
-import domain.GovernmentAgencyGoodsItem.governmentAgencyGoodsItemFormats
-import play.api.libs.json.{Reads, Writes}
+import domain.{DeclarationFormats, GovernmentAgencyGoodsItem}
+import domain.DeclarationFormats.governmentAgencyGoodsItemFormats
+import play.api.libs.json.{Format, Reads, Writes}
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CompositeSymmetricCrypto}
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpDelete, HttpGet, HttpPut}
@@ -59,11 +59,10 @@ trait CustomsCacheService {
   def putGoodsItem(eori: String, item: GovernmentAgencyGoodsItem = GovernmentAgencyGoodsItem())(implicit hc: HeaderCarrier,
     ec: ExecutionContext): Future[CacheMap]
 
-  def getForm[A](eori: String, key: String)(implicit reads: Reads[A], hc: HeaderCarrier,
+  def getForm[A](eori: String, key: String)(implicit format: Format[A], hc: HeaderCarrier,
     ec: ExecutionContext): Future[Option[A]]
 
-  def putForm[A](cacheName: String, eori: String, form: A)(implicit hc: HeaderCarrier, ec: ExecutionContext,
-    writes: Writes[A]): Future[CacheMap]
+  def putForm[A](eori: String, cacheId: String, form: A)(implicit format: Format[A], hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap]
 }
 
 @Singleton
@@ -110,9 +109,8 @@ class CustomsCacheServiceImpl @Inject()(caching: CustomsHttpCaching, application
     ec: ExecutionContext): Future[CacheMap] =
     cache[GovernmentAgencyGoodsItem](eori, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, item)
 
-  def getForm[A](eori: String, key: String)(implicit reads: Reads[A], hc: HeaderCarrier, ec: ExecutionContext):
+  def getForm[A](eori: String, key: String)(implicit format: Format[A], hc: HeaderCarrier, ec: ExecutionContext):
   Future[Option[A]] = fetchAndGetEntry[A](eori, key)
 
-  def putForm[A](cacheName: String, eori: String, form: A)(implicit hc: HeaderCarrier, ec: ExecutionContext,
-    writes: Writes[A]): Future[CacheMap] = cache(cacheName, eori, form)
+  def putForm[A](eori: String, cacheId: String, form: A)(implicit format: Format[A], hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = cache(eori, cacheId, form)
 }

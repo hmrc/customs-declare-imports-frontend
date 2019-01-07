@@ -43,3 +43,6 @@ POST       /submit-declaration-goods/add-packagings      controllers.GovernmentA
 
 GET       /submit-declaration-goods/add-previous-documents       controllers.GovernmentAgencyGoodsItemsController.showPreviousDocuments()
 POST       /submit-declaration-goods/add-previous-documents      controllers.GovernmentAgencyGoodsItemsController.handlePreviousDcoumentsSubmit()
+
+GET       /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.display()
+POST      /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()

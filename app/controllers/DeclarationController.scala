@@ -50,7 +50,8 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
 
   def displaySubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
     cache.get(appConfig.submissionCacheId, req.user.eori.get).map { data =>
-      Ok(views.html.generic_view(name, data.getOrElse(Map.empty)))
+      if(req.request.uri.endsWith("guarantee-type")) Redirect(routes.ObligationGuaranteeController.display())
+      else Ok(views.html.generic_view(name, data.getOrElse(Map.empty)))
     }
   }
 

@@ -17,7 +17,7 @@
 package controllers
 
 import config.AppConfig
-import domain.GovernmentAgencyGoodsItem._
+import domain.DeclarationFormats._
 import domain.features.Feature
 import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
 import javax.inject.{Inject, Singleton}
@@ -28,6 +28,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import uk.gov.hmrc.wco.dec.{NamedEntityWithAddress, _}
+import forms.DeclarationFormMapping._
 
 import scala.concurrent.Future
 
@@ -63,7 +64,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
           Future.successful(Ok(views.html.goods_item_value(goodsItemValueInformationForm)))
 
         case Some("next") => Future.successful(Redirect(routes.DeclarationController.displaySubmitForm("check-your-answers")))
-        case _ => Logger.error("wrong selection => " + optionSelected.get);
+        case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
 
@@ -72,7 +73,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
   def showGoodsItemValuePage(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
 
-      cache.getForm[GoodsItemValueInformation](req.user.eori.get, goodsItemValueInformationKey)(goodsItemValueReadsFormats, hc,
+      cache.getForm[GoodsItemValueInformation](req.user.eori.get, goodsItemValueInformationKey)(goodsItemValueFormats, hc,
         MdcLoggingExecutionContext.fromLoggingDetails).map {
         case Some(form) => Ok(views.html.goods_item_value(goodsItemValueInformationForm.fill(form)))
         case _ => Ok(views.html.goods_item_value(goodsItemValueInformationForm))
