@@ -19,7 +19,7 @@
 @import controllers.routes._
 @import uk.gov.hmrc.wco.dec.RoleBasedParty
 
-@(form:Form[_], roleBasedParties: List[RoleBasedParty])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
+@(form:Form[_], roleBasedParties: Seq[RoleBasedParty])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
     title = messages("rolebasedparties.title"),
@@ -53,7 +53,9 @@ No of Goods Item Mutual recognition Parties added : <td scope="row">@roleBasedPa
 @components.input_text(field = form("id"),label = "id")
 @components.input_text(field = form("roleCode"),label = "Role Code")
 
-@components.submit_button()
-
+<div class="section">
+    <button class="button" id="Add" value="Add" name = "submit">Add Mutual recognition Parties</button>
+    <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+</div>
 }
 }

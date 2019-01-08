@@ -19,7 +19,7 @@
 @import controllers.routes._
 @import uk.gov.hmrc.wco.dec.GovernmentProcedure
 
-@(form:Form[_], governmentProcedures: List[GovernmentProcedure])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
+@(form:Form[_], governmentProcedures: Seq[GovernmentProcedure])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
     title = messages("governmentprocedures.title"),
@@ -54,7 +54,10 @@ No of Government Procedures added : <td scope="row">@governmentProcedures.size</
 @components.input_text(field = form("currentCode"),label = "Current Code")
 @components.input_text(field = form("previousCode"),label = "Previous Code")
 
-@components.submit_button()
+<div class="section">
+    <button class="button" id="Add" value="Add" name = "submit">Add Government Procedure</button>
+    <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+</div>
 
 }
 }

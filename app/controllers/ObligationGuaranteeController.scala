@@ -24,7 +24,6 @@ import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import domain.ObligationGuarantee._
 import forms.ObligationGuaranteeForm
 import play.api.Logger
@@ -35,7 +34,6 @@ import scala.concurrent.Future
 @Singleton
 class ObligationGuaranteeController @Inject()( actions: Actions, cache: CustomsCacheService)
   (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
-
 
   val obligationGuaranteesForm: Form[ObligationGuarantee] = Form(obligationGauranteeMapping)
 
@@ -74,7 +72,7 @@ class ObligationGuaranteeController @Inject()( actions: Actions, cache: CustomsC
                 }
               }
               else
-                Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItems()))
+                Future.successful(Redirect(controllers.routes.ObligationGuaranteeController.display()))
 
             })
         case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItems()))

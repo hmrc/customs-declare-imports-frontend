@@ -27,6 +27,8 @@
 
     @helpers.form(action = ObligationGuaranteeController.submit()) {
 
+@components.back_link("deferred-payment")
+
 <h2 class="heading-medium">Obligation Guarantees</h2>
 
 @if(guarantees.nonEmpty) {

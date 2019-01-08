@@ -19,7 +19,7 @@
 @import controllers.routes._
 @import uk.gov.hmrc.wco.dec.PreviousDocument
 
-@(form:Form[_], docs: List[PreviousDocument])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
+@(form:Form[_], docs: Seq[PreviousDocument])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
     title = messages("previousDocuments.title"),
@@ -57,7 +57,9 @@
 @components.input_text(field = form("typeCode"),label = "typeCode")
 @components.input_text(field = form("lineNumeric"),label = "lineNumeric")
 
-@components.submit_button()
-
+<div class="section">
+    <button class="button" id="Add" value="Add" name = "submit">Add Previous Docs</button>
+    <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+</div>
 }
 }

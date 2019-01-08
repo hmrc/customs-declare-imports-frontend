@@ -29,6 +29,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, MetaData}
+import domain.ObligationGuarantee._
+import forms.ObligationGuaranteeForm
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -119,6 +121,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
 
   //Obviously rubbish at memory and performance
   private def updateMetaData(metaData: MetaData)(implicit req: AuthenticatedRequest[AnyContent], hc: HeaderCarrier) = {
+    cache.getForm[ObligationGuaranteeForm](req.user.eori.get,"ObligationGuarantees").flatMap( obligationGuaranteeForm =>
     cache.getGoodsItems(req.user.eori.get).map(_.map { items =>
       val decGoodsItems: Seq[GovernmentAgencyGoodsItem] =
         items.map(rec => GovernmentAgencyGoodsItem(customsValueAmount = rec.goodsItemValue.get.customsValueAmount,
@@ -146,8 +149,8 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
           ucr = rec.goodsItemValue.get.ucr,
           valuationAdjustment = rec.goodsItemValue.get.valuationAdjustment))
       val goodsShipmentNew = metaData.declaration.goodsShipment.map(rec => rec.copy(governmentAgencyGoodsItems = decGoodsItems))
-      metaData.copy(declaration = metaData.declaration.copy(goodsShipment = goodsShipmentNew))
-    })
+      metaData.copy(declaration = metaData.declaration.copy(goodsShipment = goodsShipmentNew, obligationGuarantees = obligationGuaranteeForm.get.guarantees))
+    }))
   }
 
 }

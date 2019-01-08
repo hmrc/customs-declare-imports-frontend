@@ -19,7 +19,7 @@
 @import controllers.routes._
 @import uk.gov.hmrc.wco.dec.NamedEntityWithAddress
 
-@(form:Form[_], namedEntityParties: List[NamedEntityWithAddress])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
+@(form:Form[_], namedEntityParties: Seq[NamedEntityWithAddress])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
     title = messages("namedEntityParties.title"),
@@ -70,7 +70,9 @@ No of Manufacturers added : <td scope="row">@namedEntityParties.size</td>
 @components.input_text(field = form("address.line"),label = "Address line")
 @components.input_text(field = form("address.postcodeId"),label = "Postcode")
 
-@components.submit_button()
-
+<div class="section">
+    <button class="button" id="Add" value="Add" name = "submit">Add Manufacturers</button>
+    <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+</div>
 }
 }
