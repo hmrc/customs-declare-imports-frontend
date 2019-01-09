@@ -1,9 +1,12 @@
 
 import TestPhases.oneForkedJvmPerTest
-import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption}
+import org.scalastyle.sbt.ScalastylePlugin._
+import uk.gov.hmrc.DefaultBuildSettings.addTestReportOption
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "customs-declare-imports-frontend"
+
+scalastyleConfig := baseDirectory.value / "project" / "scalastyle-config.xml"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
@@ -27,3 +30,18 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     resolvers ++= Seq(Resolver.jcenterRepo, Resolver.bintrayRepo("hmrc", "releases"))
   )
+  .settings(scoverageSettings)
+
+lazy val scoverageSettings: Seq[Setting[_]] = Seq(
+  coverageExcludedPackages := List(
+    "<empty>"
+    ,"Reverse.*"
+    ,"domain\\..*"
+    ,"views\\..*"
+    ,".*(BuildInfo|Routes|Options).*"
+  ).mkString(";"),
+  coverageMinimum := 70,
+  coverageFailOnMinimum := true,
+  coverageHighlighting := true,
+  parallelExecution in Test := false
+)
