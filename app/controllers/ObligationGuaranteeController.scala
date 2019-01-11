@@ -17,29 +17,29 @@
 package controllers
 
 import config.AppConfig
-import forms.DeclarationFormMapping._
+import domain.ObligationGuarantee._
 import domain.features.Feature
+import forms.DeclarationFormMapping._
+import forms.ObligationGuaranteeForm
 import javax.inject.{Inject, Singleton}
+import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
-import domain.ObligationGuarantee._
-import forms.ObligationGuaranteeForm
-import play.api.Logger
 import uk.gov.hmrc.wco.dec.ObligationGuarantee
 
 import scala.concurrent.Future
 
 @Singleton
-class ObligationGuaranteeController @Inject()( actions: Actions, cache: CustomsCacheService)
+class ObligationGuaranteeController @Inject()(actions: Actions, cache: CustomsCacheService)
   (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
 
   val obligationGuaranteesForm: Form[ObligationGuarantee] = Form(obligationGauranteeMapping)
 
   val guaranteeTypeFormKey = "ObligationGuarantees"
 
-  def display(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
+  def display(): Action[AnyContent] = actions.auth.async {
     implicit req =>
       cache.getForm[ObligationGuaranteeForm](req.user.eori.get, guaranteeTypeFormKey).map {
         case Some(cachedGuarantees) =>
@@ -73,7 +73,6 @@ class ObligationGuaranteeController @Inject()( actions: Actions, cache: CustomsC
               }
               else
                 Future.successful(Redirect(controllers.routes.ObligationGuaranteeController.display()))
-
             })
         case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItems()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)

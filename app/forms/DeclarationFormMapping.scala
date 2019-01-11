@@ -159,8 +159,8 @@ object DeclarationFormMapping{
 
 
   val obligationGauranteeMapping =
-    mapping("amount" -> optional(bigDecimal.verifying("value must not be negative", a => a > 0)),
-      "id" -> optional(text.verifying("id should be less than or equal to 35 characters", _.length <= 70)),
+    mapping("amount" -> optional(bigDecimal.verifying("Amount must not be negative", a => a > 0)),
+      "id" -> optional(text.verifying("Id should be less than or equal to 35 characters", _.length <= 70)),
       "referenceId" -> optional(text.verifying("ReferenceId should be less than or equal to 35 characters", _.length <= 35)),
       "securityDetailsCode" -> optional(text.verifying("SecurityDetailsCode should be less than or equal to 3 characters", _.length <= 3)),
       "accessCode" -> optional(text.verifying("AccessCode should be less than or equal to 4 characters", _.length <= 4)),
