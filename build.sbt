@@ -38,7 +38,7 @@ lazy val scoverageSettings: Seq[Setting[_]] = Seq(
     ,"Reverse.*"
     ,"domain\\..*"
     ,"views\\..*"
-    ,".*(BuildInfo|Routes|Options).*"
+    ,".*(BuildInfo|Routes|Options|FeatureSwitchController|TestingUtilitiesController).*"
   ).mkString(";"),
   coverageMinimum := 70,
   coverageFailOnMinimum := true,
