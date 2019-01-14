@@ -41,7 +41,7 @@ class ObligationGuaranteeController @Inject()(actions: Actions, cache: CustomsCa
 
   def display(): Action[AnyContent] = actions.auth.async {
     implicit req =>
-      cache.getForm[ObligationGuaranteeForm](req.user.eori.get, guaranteeTypeFormKey).map {
+      cache.fetchAndGetEntry[ObligationGuaranteeForm](req.user.eori.get, guaranteeTypeFormKey).map {
         case Some(cachedGuarantees) =>
           Ok(views.html.obligation_guarantee(obligationGuaranteesForm, cachedGuarantees.guarantees))
         case _ => Ok(views.html.obligation_guarantee(obligationGuaranteesForm, Seq.empty))
@@ -59,20 +59,20 @@ class ObligationGuaranteeController @Inject()(actions: Actions, cache: CustomsCa
             form => {
               if (form.accessCode.isDefined || form.id.isDefined || form.amount.isDefined || form.referenceId.isDefined ||
                 form.securityDetailsCode.isDefined) {
-                cache.getForm[ObligationGuaranteeForm](req.user.eori.get, guaranteeTypeFormKey).flatMap {
+                cache.fetchAndGetEntry[ObligationGuaranteeForm](req.user.eori.get, guaranteeTypeFormKey).flatMap {
                   case Some(cached) =>
                     val updatedGuarantees = cached.copy(cached.guarantees :+ form)
-                    cache.putForm[ObligationGuaranteeForm](req.user.eori.get, guaranteeTypeFormKey, updatedGuarantees).map { _ =>
+                    cache.cache[ObligationGuaranteeForm](req.user.eori.get, guaranteeTypeFormKey, updatedGuarantees).map { _ =>
                       Ok(views.html.obligation_guarantee(obligationGuaranteesForm, updatedGuarantees.guarantees))
                     }
                   case _ =>
-                    cache.putForm[ObligationGuaranteeForm](req.user.eori.get, guaranteeTypeFormKey, ObligationGuaranteeForm(Seq(form))).map { _ =>
+                    cache.cache[ObligationGuaranteeForm](req.user.eori.get, guaranteeTypeFormKey, ObligationGuaranteeForm(Seq(form))).map { _ =>
                       Ok(views.html.obligation_guarantee(obligationGuaranteesForm, Seq[ObligationGuarantee](form)))
                     }
                 }
               }
               else
-                Future.successful(Redirect(controllers.routes.ObligationGuaranteeController.display()))
+                Future.successful(Ok(views.html.obligation_guarantee(obligationGuaranteesForm, Seq.empty)))
             })
         case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItems()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)

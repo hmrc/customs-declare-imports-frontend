@@ -18,18 +18,22 @@ package controllers
 
 import config.SubmissionJourney
 import domain.features.Feature
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import play.api.data.Form
 import repositories.declaration.{Submission, SubmissionRepository}
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.ReactiveRepository
 
+import scala.concurrent.Future
+
 class DeclarationControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
   with FeatureBehaviours
   with RequestHandlerBehaviours
   with CustomsDeclarationsApiBehaviours
-  with CacheBehaviours
   with MongoBehaviours
   with HttpAssertions
   with HtmlAssertions {
@@ -47,6 +51,7 @@ class DeclarationControllerSpec extends CustomsSpec
 
     "return 200" in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
+        withCaching(None)
         withRequest(get, submitUri, headers, session, tags) {
           wasOk
         }
@@ -90,6 +95,7 @@ class DeclarationControllerSpec extends CustomsSpec
 
     "return 303" in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
+        withCaching(None)
         withRequestAndFormBody(post, submitUri, headers, session, tags, payload) { resp =>
           // TODO make assertions about handling of form submission
           wasRedirected(journeyUri(SubmissionJourney.screens(1)), resp)

@@ -41,76 +41,19 @@ class CustomsHttpCaching @Inject()(cfg: AppConfig, httpClient: HttpClient) exten
 
 }
 
-@ImplementedBy(classOf[CustomsCacheServiceImpl])
-trait CustomsCacheService {
-
-  def get(cacheName: String, eori: String)
-    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, String]]]
-
-  def put(cacheName: String, eori: String, data: Map[String, String])
-    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap]
-
-  def getGoodsItems(eori: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[List[GovernmentAgencyGoodsItem]]]
-
-  def getAGoodsItem(eori: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[GovernmentAgencyGoodsItem]]
-
-  def saveGoodsItem(eori: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean]
-
-  def putGoodsItem(eori: String, item: GovernmentAgencyGoodsItem = GovernmentAgencyGoodsItem())(implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[CacheMap]
-
-  def getForm[A](eori: String, key: String)(implicit format: Format[A], hc: HeaderCarrier,
-    ec: ExecutionContext): Future[Option[A]]
-
-  def putForm[A](eori: String, cacheId: String, form: A)(implicit format: Format[A], hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap]
-}
-
 @Singleton
-class CustomsCacheServiceImpl @Inject()(caching: CustomsHttpCaching, applicationCrypto: ApplicationCrypto) extends CustomsCacheService with ShortLivedCache {
+class CustomsCacheService @Inject()(caching: CustomsHttpCaching, applicationCrypto: ApplicationCrypto)  extends ShortLivedCache {
 
   override implicit val crypto: CompositeSymmetricCrypto = applicationCrypto.JsonCrypto
 
   override def shortLiveCache: ShortLivedHttpCaching = caching
 
-  val GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY = "GovAgencyGoodsItems"
-  val GOV_AGENCY_GOODS_ITEM_CACHE_KEY = "GovAgencyGoodsItem"
 
-  override def get(cacheName: String, eori: String)
+   def get(cacheName: String, eori: String)
     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, String]]] =
     fetchAndGetEntry[Map[String, String]](cacheName, eori)
 
-  override def put(cacheName: String, eori: String, data: Map[String, String])
+   def put(cacheName: String, eori: String, data: Map[String, String])
     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = cache(cacheName, eori, data)
 
-  def getGoodsItems(eori: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[List[GovernmentAgencyGoodsItem]]]
-  = fetchAndGetEntry[List[GovernmentAgencyGoodsItem]](eori, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY)
-
-  def getAGoodsItem(eori: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[GovernmentAgencyGoodsItem]]
-  = fetchAndGetEntry[GovernmentAgencyGoodsItem](eori, GOV_AGENCY_GOODS_ITEM_CACHE_KEY)
-
-  def saveGoodsItem(eori: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
-    fetchAndGetEntry[GovernmentAgencyGoodsItem](eori, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).flatMap {
-      goodsItem =>
-        fetchAndGetEntry[List[GovernmentAgencyGoodsItem]](eori, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY).flatMap {
-          goodsItemsList =>
-            val listToSave = if (goodsItemsList.isDefined && goodsItem.isDefined)
-              goodsItemsList.get :+ goodsItem.get
-            else if (goodsItemsList.isEmpty && goodsItem.isDefined)
-              List(goodsItem.get)
-            else
-              List.empty
-
-            cache[List[GovernmentAgencyGoodsItem]](eori, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY, listToSave).map(res => true)
-
-        }
-    }
-
-  def putGoodsItem(eori: String, item: GovernmentAgencyGoodsItem = GovernmentAgencyGoodsItem())(implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[CacheMap] =
-    cache[GovernmentAgencyGoodsItem](eori, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, item)
-
-  def getForm[A](eori: String, key: String)(implicit format: Format[A], hc: HeaderCarrier, ec: ExecutionContext):
-  Future[Option[A]] = fetchAndGetEntry[A](eori, key)
-
-  def putForm[A](eori: String, cacheId: String, form: A)(implicit format: Format[A], hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = cache(eori, cacheId, form)
 }

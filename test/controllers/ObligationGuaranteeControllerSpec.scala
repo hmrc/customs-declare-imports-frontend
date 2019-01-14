@@ -17,6 +17,7 @@
 package controllers
 
 import domain.features.Feature
+import play.api.http.Status
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
@@ -25,7 +26,6 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
   with FeatureBehaviours
   with RequestHandlerBehaviours
-  with CacheBehaviours
   with HttpAssertions
   with HtmlAssertions {
 
@@ -45,6 +45,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
 
     " return 200" in withFeatures((enabled(Feature.submit))) {
       withSignedInUser() { (headers, session, tags) =>
+        withCaching(None)
         withRequest("GET", requestUri, headers, session, tags) {
           wasOk
         }
@@ -53,6 +54,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
 
     "display ObligationGurantee fields " in {
       withSignedInUser() { (headers, session, tags) =>
+        withCaching(None)
         withRequest("GET", requestUri, headers, session, tags) { resp =>
           contentAsHtml(resp) should include element withValue("amount")
           contentAsHtml(resp) should include element withValue("id")
@@ -75,6 +77,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
 
     "validate user input data on click of Add" in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
+        withCaching(None)
         withRequestAndFormBody(postMethod, requestUri, headers, session, tags, invalidPayload) { resp =>
           val stringResult = contentAsString(resp)
           stringResult must include("Amount must not be negative")
@@ -82,7 +85,19 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
           stringResult must include("ReferenceId should be less than or equal to 35 characters")
           stringResult must include("SecurityDetailsCode should be less than or equal to 3 characters")
           stringResult must include("AccessCode should be less than or equal to 4 characters")
+          stringResult must include("No Obligation Guarantees Added")
+        }
+      }
+    }
+    val emptyValidPayload = Map("submit" -> "Add")
+    "empty Obligation guarantee  input is NOT added on click of add" in withFeatures(enabled(Feature.submit)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withCaching(None)
+        withRequestAndFormBody(postMethod, requestUri, headers, session, tags, emptyValidPayload) { resp =>
+          val stringResult = contentAsString(resp)
+          status(resp) must be(Status.OK)
 
+          stringResult must include("No Obligation Guarantees Added")
         }
       }
     }
@@ -100,6 +115,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
       withSignedInUser() { (headers, session, tags) =>
         withRequestAndFormBody(postMethod, requestUri, headers, session, tags, validPayload) { resp =>
           val stringResult = contentAsString(resp)
+          withCaching(None)
           stringResult must include("Obligation Guarantees added : <td scope=\"row\">1</td>")
         }
       }
@@ -108,6 +124,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
     val nextPayload = Map("submit" -> "next")
     "navigate to good items page on click of next " in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
+        withCaching(None)
         withRequestAndFormBody(postMethod, requestUri, headers, session, tags, nextPayload) { resp =>
           val header = resp.futureValue.header
           status(resp) must be(SEE_OTHER)
@@ -115,6 +132,17 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
         }
       }
     }
+    val wrongButton = Map("submit" -> "any")
+    "Bad request on incorrect submit button" in withFeatures(enabled(Feature.submit)) {
+      withCaching(None)
+      withSignedInUser() { (headers, session, tags) =>
+        withRequestAndFormBody(postMethod, requestUri, headers, session, tags, wrongButton) { resp =>
+          status(resp) must be(BAD_REQUEST)
+        }
+      }
+    }
+
+
   }
 
 }

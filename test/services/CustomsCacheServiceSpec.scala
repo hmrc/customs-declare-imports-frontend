@@ -38,7 +38,7 @@ class CustomsCacheServiceSpec extends CustomsSpec with AuthenticationBehaviours 
 
     var putData: Option[Map[String, Map[String, Map[String, Map[String, String]]]]] = None
 
-    val service = new CustomsCacheServiceImpl(new CustomsHttpCaching(appConfig, component[HttpClient]) {
+    val service = new CustomsCacheService(new CustomsHttpCaching(appConfig, component[HttpClient]) {
       override def fetchAndGetEntry[T](source: String, cacheId: String, key: String)
         (implicit hc: HeaderCarrier, rds: Reads[T], executionContext: ExecutionContext): Future[Option[T]] = (source, cacheId, key) match {
         case legit if (source == cacheSource && cacheId == cacheName && key == eori) => Future.successful(Some(Protected(cachedData).asInstanceOf[T]))
@@ -74,19 +74,6 @@ class CustomsCacheServiceSpec extends CustomsSpec with AuthenticationBehaviours 
 
   }
 
-  "test" should {
-    "convert GovernmentAgencyGoodsItem to a map of elements" in {
-      val item = GovernmentAgencyGoodsItem(additionalDocuments = Seq(
-        GovernmentAgencyGoodsItemAdditionalDocument(categoryCode = Some("3"), id = Some("id1"),
-          submitter = Some(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter(name = Some("submitter name 1"), Some("3)")))
-        ),
-        GovernmentAgencyGoodsItemAdditionalDocument(categoryCode = Some("4"), id = Some("id2"),
-          submitter = Some(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter(name = Some("submitter name 2"), Some("4)")))
-        )))
-      println(getCCParams(item).mkString("\n"))
-    }
-
-  }
 
   def getCCParams(cc: AnyRef) =
     (Map[String, Any]() /: cc.getClass.getDeclaredFields) { (a, f) =>

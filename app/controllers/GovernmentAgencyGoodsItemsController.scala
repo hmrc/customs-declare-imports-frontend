@@ -27,14 +27,15 @@ import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import uk.gov.hmrc.wco.dec.{NamedEntityWithAddress, _}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: CustomsCacheService)
+class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
   (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
 
   val additionalDocumentform: Form[GovernmentAgencyGoodsItemAdditionalDocument] = Form(govtAgencyGoodsItemAddDocMapping)
@@ -48,11 +49,13 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
   val previousDocumentForm: Form[PreviousDocument] = Form(previousDocumentMapping)
 
   val goodsItemValueInformationKey = "goodsItemValueInformation"
+  val GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY = "GovAgencyGoodsItems"
+  val GOV_AGENCY_GOODS_ITEM_CACHE_KEY = "GovAgencyGoodsItem"
 
   def showGoodsItems(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
-      cache.getGoodsItems(req.user.eori.get).flatMap(listItems =>
-        cache.putGoodsItem(req.user.eori.get).map(_ =>
+      cacheService.fetchAndGetEntry[List[GovernmentAgencyGoodsItem]](req.user.eori.get, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY).flatMap(listItems =>
+        cacheService.cache[GovernmentAgencyGoodsItem](req.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, GovernmentAgencyGoodsItem()).map(_ =>
           Ok(views.html.gov_agency_goods_items_list(listItems.getOrElse(List.empty)))))
   }
 
@@ -72,9 +75,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
 
   def showGoodsItemValuePage(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
-
-      cache.getForm[GoodsItemValueInformation](req.user.eori.get, goodsItemValueInformationKey)(goodsItemValueFormats, hc,
-        MdcLoggingExecutionContext.fromLoggingDetails).map {
+      cacheService.fetchAndGetEntry[GoodsItemValueInformation](req.user.eori.get, goodsItemValueInformationKey)(hc,goodsItemValueFormats, MdcLoggingExecutionContext.fromLoggingDetails).map {
         case Some(form) => Ok(views.html.goods_item_value(goodsItemValueInformationForm.fill(form)))
         case _ => Ok(views.html.goods_item_value(goodsItemValueInformationForm))
       }
@@ -89,62 +90,54 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
           Logger.info("goodsItemValue form --->" + form)
           val updatedGoodsItem = GovernmentAgencyGoodsItem(goodsItemValue = Some(form))
 
-          cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
-            Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+          cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, updatedGoodsItem).map {
+            _ => Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
           }
         })
 
   }
 
   def showGoodsItemPage(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
-    implicit req =>
-      cache.getAGoodsItem(req.user.eori.get).map(res =>
+    implicit request =>
+      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).map(res =>
         Ok(views.html.gov_agency_goods_items(res)))
   }
 
-  def saveGoodsItem() = (actions.switch(Feature.submit) andThen actions.auth).async { implicit request =>
-    val optionSelected = request.body.asFormUrlEncoded.get("add").headOption
-    optionSelected match {
-      case Some("AddGovernmentAgencyGoodsItemAdditionalDocument") => Future.successful(
-        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGovAgencyGoodsItemsAdditionalDocuments()))
-      case Some("AddAdditionalInformation") => Future.successful(
-        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations()))
-
-      case Some("AddMutualRecognitionParties") => Future.successful(
-        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
-
-      case Some("AddDomesticDutyTaxParties") => Future.successful(
-        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
-
-      case Some("AddGovernmentProcedures") => Future.successful(
-        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGovernmentProcedures()))
-
-      case Some("AddOrigins") => Future.successful(
-        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showOrigins()))
-
-      case Some("AddManufacturers") => Future.successful(
-        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
-
-      case Some("AddPackagings") => Future.successful(
-        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showPackagings()))
-
-      case Some("AddPreviousDocuments") => Future.successful(
-        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showPreviousDocuments()))
-
-      case Some("AddRefundRecipientParties") => Future.successful(
-        Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
-
-      case Some("SaveGoodsItem") =>
-        cache.saveGoodsItem(request.user.eori.get).map { _ => Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItems()) }
-
-      case _ => Logger.error("wrong selection => " + optionSelected.get)
-        Future.successful(BadRequest("This request is not allowed"))
-    }
+  def saveGoodsItem(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit request =>
+      val optionSelected = request.body.asFormUrlEncoded.get("add").headOption
+      optionSelected match {
+        case Some("AddGovernmentAgencyGoodsItemAdditionalDocument") => Future.successful(
+          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGovAgencyGoodsItemsAdditionalDocuments()))
+        case Some("AddAdditionalInformation") => Future.successful(
+          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations()))
+        case Some("AddMutualRecognitionParties") => Future.successful(
+          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
+        case Some("AddDomesticDutyTaxParties") => Future.successful(
+          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
+        case Some("AddGovernmentProcedures") => Future.successful(
+          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGovernmentProcedures()))
+        case Some("AddOrigins") => Future.successful(
+          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showOrigins()))
+        case Some("AddManufacturers") => Future.successful(
+          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
+        case Some("AddPackagings") => Future.successful(
+          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showPackagings()))
+        case Some("AddPreviousDocuments") => Future.successful(
+          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showPreviousDocuments()))
+        case Some("AddRefundRecipientParties") => Future.successful(
+          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
+        case Some("SaveGoodsItem") => saveGoodsItem(request.user.eori.get).map { _ =>
+          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItems())
+        }
+        case _ => Logger.error("wrong selection => " + optionSelected.get)
+          Future.successful(BadRequest("This request is not allowed"))
+      }
   }
 
   def showPreviousDocuments(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
-      cache.getAGoodsItem(req.user.eori.get).map { res =>
+      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](req.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).map { res =>
         val docs: Seq[PreviousDocument] = if (res.isDefined) {
           res.get.previousDocuments
         } else Seq.empty
@@ -154,7 +147,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
 
   def showPackagings(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
-      cache.getAGoodsItem(req.user.eori.get).map { res =>
+      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](req.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).map { res =>
         val docs: Seq[Packaging] = if (res.isDefined) {
           res.get.packagings
         } else Seq.empty
@@ -164,7 +157,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
 
   def showNamedEntryAddressParties(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
-      cache.getAGoodsItem(req.user.eori.get).map { res =>
+      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](req.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).map { res =>
         val docs: Seq[NamedEntityWithAddress] = if (res.isDefined) {
           res.get.manufacturers
         } else Seq.empty
@@ -174,7 +167,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
 
   def showRoleBasedParties(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
-      cache.getAGoodsItem(req.user.eori.get).map { res =>
+      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](req.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).map { res =>
         val docs: Seq[RoleBasedParty] = if (res.isDefined) {
           res.get.aeoMutualRecognitionParties
         } else Seq.empty
@@ -184,7 +177,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
 
   def showGovernmentProcedures(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
-      cache.getAGoodsItem(req.user.eori.get).map { res =>
+      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](req.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).map { res =>
         val docs: Seq[GovernmentProcedure] = if (res.isDefined) {
           res.get.governmentProcedures
         } else Seq.empty
@@ -194,7 +187,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
 
   def showOrigins(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
-      cache.getAGoodsItem(req.user.eori.get).map { res =>
+      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](req.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).map { res =>
         val docs: Seq[Origin] = if (res.isDefined) {
           res.get.origins
         } else Seq.empty
@@ -204,7 +197,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
 
   def showGoodsItemsAdditionalInformations(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
-      cache.getAGoodsItem(req.user.eori.get).map { res =>
+      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](req.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).map { res =>
         val docs: Seq[AdditionalInformation] = if (res.isDefined) {
           res.get.additionalInformations.toList
         } else Seq.empty
@@ -214,7 +207,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
 
   def showGovAgencyGoodsItemsAdditionalDocuments(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
-      cache.getAGoodsItem(req.user.eori.get).map { res =>
+      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](req.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).map { res =>
         val docs: Seq[GovernmentAgencyGoodsItemAdditionalDocument] = if (res.isDefined) {
           res.get.additionalDocuments
         } else Seq.empty
@@ -222,7 +215,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
       }
   }
 
-  def handleGoodsItemsAdditionalInformationsSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
+  def handleGoodsItemsAdditionalInformationsSubmit(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit request =>
       val optionSelected = request.body.asFormUrlEncoded.get("submit").headOption
       optionSelected match {
@@ -231,13 +224,13 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
             (formWithErrors: Form[AdditionalInformation]) =>
               Future.successful(BadRequest(views.html.goods_items_add_additional_informations(formWithErrors, List.empty))),
             form =>
-              cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+              cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).flatMap { res =>
                 Logger.info("additionalInformationform form --->" + form)
                 val updatedGoodsItem = if (res.isDefined)
                   res.get.copy(additionalInformations = res.get.additionalInformations :+ form)
                 else GovernmentAgencyGoodsItem(additionalInformations = Seq(form))
 
-                cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
+                cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, updatedGoodsItem).map { _ =>
                   Ok(views.html.goods_items_add_additional_informations(additionalInformationform, updatedGoodsItem.additionalInformations))
                 }
               })
@@ -248,7 +241,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
       }
   }
 
-  def handleGovernmentProceduresSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
+  def handleGovernmentProceduresSubmit(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit request =>
       val optionSelected = request.body.asFormUrlEncoded.get("submit").headOption
       optionSelected match {
@@ -257,14 +250,14 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
             (formWithErrors: Form[GovernmentProcedure]) =>
               Future.successful(BadRequest(views.html.goods_items_government_procedures(formWithErrors, List.empty))),
             form =>
-              cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+              cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).flatMap { res =>
                 Logger.info("GovernmentProcedureForm form --->" + form)
                 val updatedGoodsItem = if (res.isDefined)
                   res.get.copy(governmentProcedures = res.get.governmentProcedures :+ form)
                 else GovernmentAgencyGoodsItem(governmentProcedures = Seq(form))
 
-                cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
-                  Ok((views.html.goods_items_government_procedures(governmentProcedureForm, updatedGoodsItem.governmentProcedures)))
+                cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, updatedGoodsItem).map {
+                  _ => Ok((views.html.goods_items_government_procedures(governmentProcedureForm, updatedGoodsItem.governmentProcedures)))
                 }
               })
 
@@ -274,32 +267,39 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
       }
   }
 
-  def handleGovAgencyGoodsItemsAdditionalDocumentsSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
-    implicit request =>
-      val optionSelected = request.body.asFormUrlEncoded.get("submit").headOption
-      optionSelected match {
-        case Some("Add") =>
-          additionalDocumentform.bindFromRequest().fold(
-            (formWithErrors: Form[GovernmentAgencyGoodsItemAdditionalDocument]) =>
-              Future.successful(BadRequest(views.html.gov_agency_goods_items_add_docs(formWithErrors, List.empty))),
-            form =>
-              cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
-                Logger.info("additionalDocumentform  --->" + form)
-                val updatedGoodsItem = if (res.isDefined)
-                  res.get.copy(additionalDocuments = res.get.additionalDocuments :+ form)
-                else GovernmentAgencyGoodsItem(additionalDocuments = Seq(form))
+  def handleGovAgencyGoodsItemsAdditionalDocumentsSubmit(): Action[AnyContent] =
+    (actions.switch(Feature.submit) andThen actions.auth).async {
+      implicit request =>
+        val optionSelected = request.body.asFormUrlEncoded.get("submit").headOption
+        optionSelected match {
+          case Some("Add") =>
+            additionalDocumentform.bindFromRequest().fold(
+              (formWithErrors: Form[GovernmentAgencyGoodsItemAdditionalDocument]) =>
+                Future.successful(BadRequest(views.html.gov_agency_goods_items_add_docs(formWithErrors, List.empty))),
+              form =>
+                cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).flatMap { res =>
+                  Logger.info("additionalDocumentform  --->" + form)
+                  val updatedGoodsItem = {
+                    if (res.isDefined) {
+                      res.get.copy(additionalDocuments = res.get.additionalDocuments :+ form)
+                    }
+                    else {
+                      GovernmentAgencyGoodsItem(additionalDocuments = Seq(form))
+                    }
+                  }
 
-                cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
-                  Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentform, updatedGoodsItem.additionalDocuments))
-                }
-              })
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
-        case _ => Logger.error("wrong selection => " + optionSelected.get)
-          Future.successful(BadRequest("This action is not allowed"))
-      }
-  }
+                  cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, updatedGoodsItem).map {
+                    _ =>
+                      Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentform, updatedGoodsItem.additionalDocuments))
+                  }
+                })
+          case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+          case _ => Logger.error("wrong selection => " + optionSelected.get)
+            Future.successful(BadRequest("This action is not allowed"))
+        }
+    }
 
-  def handleRoleBasedPartiesSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
+  def handleRoleBasedPartiesSubmit(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit request =>
       val optionSelected = request.body.asFormUrlEncoded.get("submit").headOption
       optionSelected match {
@@ -308,13 +308,14 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
             (formWithErrors: Form[RoleBasedParty]) =>
               Future.successful(BadRequest(views.html.goods_items_role_based_parties(formWithErrors, List.empty))),
             form =>
-              cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+              cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).flatMap { res =>
                 Logger.info("roleBasedPartiesForm form --->" + form)
                 val updatedGoodsItem = if (res.isDefined)
                   res.get.copy(aeoMutualRecognitionParties = res.get.aeoMutualRecognitionParties :+ form)
                 else GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = Seq(form))
 
-                cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
+                cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY,
+                  updatedGoodsItem).map { _ =>
                   Ok(views.html.goods_items_role_based_parties(roleBasedPartiesForm, updatedGoodsItem.aeoMutualRecognitionParties))
                 }
               })
@@ -324,7 +325,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
       }
   }
 
-  def handleOriginsSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
+  def handleOriginsSubmit(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit request =>
       val optionSelected = request.body.asFormUrlEncoded.get("submit").headOption
       optionSelected match {
@@ -333,13 +334,14 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
             (formWithErrors: Form[Origin]) =>
               Future.successful(BadRequest(views.html.goods_items_origins(formWithErrors, List.empty))),
             form =>
-              cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+              cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).flatMap { res =>
                 Logger.info("originsForm form --->" + form)
                 val updatedGoodsItem = if (res.isDefined)
                   res.get.copy(origins = res.get.origins :+ form)
                 else GovernmentAgencyGoodsItem(origins = Seq(form))
 
-                cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
+                cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY,
+                  updatedGoodsItem).map { _ =>
                   Ok(views.html.goods_items_origins(originsForm, updatedGoodsItem.origins))
                 }
               })
@@ -349,7 +351,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
       }
   }
 
-  def handleNamedEntityPartiesSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
+  def handleNamedEntityPartiesSubmit(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit request =>
       val optionSelected = request.body.asFormUrlEncoded.get("submit").headOption
       optionSelected match {
@@ -358,13 +360,13 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
             (formWithErrors: Form[NamedEntityWithAddress]) =>
               Future.successful(BadRequest(views.html.goods_items_named_entity_parties(formWithErrors, List.empty))),
             form =>
-              cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+              cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).flatMap { res =>
                 Logger.info("NamedEntityWithAddress form --->" + form)
                 val updatedGoodsItem = if (res.isDefined)
                   res.get.copy(manufacturers = res.get.manufacturers :+ form)
                 else GovernmentAgencyGoodsItem(manufacturers = Seq(form))
 
-                cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
+                cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, updatedGoodsItem).map { _ =>
                   Ok(views.html.goods_items_named_entity_parties(namedEntityWithAddressForm, updatedGoodsItem.manufacturers))
                 }
               })
@@ -374,7 +376,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
       }
   }
 
-  def handlePackagingsSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
+  def handlePackagingsSubmit(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit request =>
       val optionSelected = request.body.asFormUrlEncoded.get("submit").headOption
       optionSelected match {
@@ -383,13 +385,13 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
             (formWithErrors: Form[Packaging]) =>
               Future.successful(BadRequest(views.html.goods_items_packagings(formWithErrors, List.empty))),
             form =>
-              cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+              cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).flatMap { res =>
                 Logger.info("NamedEntityWithAddress form --->" + form)
                 val updatedGoodsItem = if (res.isDefined)
                   res.get.copy(packagings = res.get.packagings :+ form)
                 else GovernmentAgencyGoodsItem(packagings = Seq(form))
 
-                cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
+                cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, updatedGoodsItem).map { _ =>
                   Ok(views.html.goods_items_packagings(packagingForm, updatedGoodsItem.packagings))
                 }
               })
@@ -399,7 +401,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
       }
   }
 
-  def handlePreviousDcoumentsSubmit() = (actions.switch(Feature.submit) andThen actions.auth).async {
+  def handlePreviousDcoumentsSubmit(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit request =>
       val optionSelected = request.body.asFormUrlEncoded.get("submit").headOption
       optionSelected match {
@@ -408,13 +410,13 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
             (formWithErrors: Form[PreviousDocument]) =>
               Future.successful(BadRequest(views.html.goods_items_previousdocs(formWithErrors, List.empty))),
             form =>
-              cache.getAGoodsItem(request.user.eori.get).flatMap { res =>
+              cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).flatMap { res =>
                 Logger.info("previousDocumentForm form --->" + form)
                 val updatedGoodsItem = if (res.isDefined)
                   res.get.copy(previousDocuments = res.get.previousDocuments :+ form)
                 else GovernmentAgencyGoodsItem(previousDocuments = Seq(form))
 
-                cache.putGoodsItem(request.user.eori.get, updatedGoodsItem).map { _ =>
+                cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, updatedGoodsItem).map { _ =>
                   Ok(views.html.goods_items_previousdocs(previousDocumentForm, updatedGoodsItem.previousDocuments))
                 }
               })
@@ -424,4 +426,21 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cache: Cu
       }
   }
 
+  private  def saveGoodsItem(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+    cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](eori, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).flatMap {
+      goodsItem =>
+        cacheService.fetchAndGetEntry[List[GovernmentAgencyGoodsItem]](eori, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY).flatMap {
+          goodsItemsList =>
+            val listToSave = if (goodsItemsList.isDefined && goodsItem.isDefined)
+              goodsItemsList.get :+ goodsItem.get
+            else if (goodsItemsList.isEmpty && goodsItem.isDefined)
+              List(goodsItem.get)
+            else
+              List.empty
+
+            cacheService.cache[List[GovernmentAgencyGoodsItem]](eori, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY,
+              listToSave).map(res => true)
+
+        }
+    }
 }

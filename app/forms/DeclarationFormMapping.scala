@@ -29,7 +29,7 @@ object DeclarationFormMapping{
 
 
   val amountMapping = mapping("currencyId" -> optional(text.verifying("currencyId is only 3 characters", _.length <= 3)),
-    "value" -> optional(bigDecimal.verifying("amount must not be negative", a => a < 0)))(Amount.apply)(Amount.unapply)
+    "value" -> optional(bigDecimal.verifying("amount must not be negative", a => a > 0)))(Amount.apply)(Amount.unapply)
 
   val measureMapping = mapping("unitCode" -> optional(text.verifying("unitCode is only 5 characters", _.length <= 5)),
     "value" -> optional(bigDecimal.verifying("value must not be negative", a => a > 0)))(Measure.apply)(Measure.unapply)
@@ -65,7 +65,7 @@ object DeclarationFormMapping{
 
   val valuationAdjustmentMapping = mapping("additionCode" -> optional(
     text.verifying("valuationAdjustment should be less than or equal to 4 characters",
-      _.length <= 2)))(ValuationAdjustment.apply)(ValuationAdjustment.unapply)
+      _.length <= 4)))(ValuationAdjustment.apply)(ValuationAdjustment.unapply)
 
   val goodsItemValueInformationMapping = mapping(
     "customsValueAmount" -> optional(bigDecimal.verifying("customs Value Amount must not be negative", a => a > 0)),

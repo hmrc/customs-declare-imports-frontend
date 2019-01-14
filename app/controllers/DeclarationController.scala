@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, MetaData}
 import domain.ObligationGuarantee._
 import forms.ObligationGuaranteeForm
-
+import domain.DeclarationFormats._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -119,10 +119,9 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
       map(field => field._1 -> field._2.get)
   }.getOrElse(Map.empty)
 
-  //Obviously rubbish at memory and performance
   private def updateMetaData(metaData: MetaData)(implicit req: AuthenticatedRequest[AnyContent], hc: HeaderCarrier) = {
-    cache.getForm[ObligationGuaranteeForm](req.user.eori.get,"ObligationGuarantees").flatMap( obligationGuaranteeForm =>
-    cache.getGoodsItems(req.user.eori.get).map(_.map { items =>
+    cache.fetchAndGetEntry[ObligationGuaranteeForm](req.user.eori.get,"ObligationGuarantees").flatMap( obligationGuaranteeForm =>
+    cache.fetchAndGetEntry[List[domain.GovernmentAgencyGoodsItem]](req.user.eori.get, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY).map(_.map { items =>
       val decGoodsItems: Seq[GovernmentAgencyGoodsItem] =
         items.map(rec => GovernmentAgencyGoodsItem(customsValueAmount = rec.goodsItemValue.get.customsValueAmount,
         sequenceNumeric = rec.goodsItemValue.get.sequenceNumeric,

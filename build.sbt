@@ -37,6 +37,7 @@ lazy val scoverageSettings: Seq[Setting[_]] = Seq(
     "<empty>"
     ,"Reverse.*"
     ,"domain\\..*"
+    ,"forms\\..*"
     ,"views\\..*"
     ,".*(BuildInfo|Routes|Options).*"
   ).mkString(";"),
