@@ -17,10 +17,12 @@
 package controllers
 
 import domain.features.Feature
+import forms.ObligationGuaranteeForm
 import play.api.http.Status
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
+import uk.gov.hmrc.wco.dec.ObligationGuarantee
 
 class ObligationGuaranteeControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
@@ -32,6 +34,9 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
   val requestUri = uriWithContextPath("/submit-declaration-guarantees/add-guarantees")
   val get = "GET"
   val postMethod = "POST"
+
+  val obligationGuaranteeForm: ObligationGuaranteeForm = ObligationGuaranteeForm(Seq(
+    ObligationGuarantee(Some(10.00), Some("refId1"), Some("id1"), Some("1233"), Some("1233"))))
 
   "ObligationGuranteeController" should {
 
@@ -51,7 +56,15 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
         }
       }
     }
-
+    "display guarantees that are cached" in withFeatures((enabled(Feature.submit))) {
+      withSignedInUser() { (headers, session, tags) =>
+        withCaching(Some(obligationGuaranteeForm))
+        withRequest("GET", requestUri, headers, session, tags) { resp =>
+          val stringResult = contentAsString(resp)
+          stringResult must include("Obligation Guarantees added : <td scope=\"row\">1</td>")
+        }
+      }
+    }
     "display ObligationGurantee fields " in {
       withSignedInUser() { (headers, session, tags) =>
         withCaching(None)
@@ -104,8 +117,8 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
 
     val validPayload = Map(
       "amount" -> "10.00",
-      "referenceId" -> "name1",
-      "id" -> "Address1",
+      "referenceId" -> "referenceId",
+      "id" -> "id1",
       "securityDetailsCode" -> "123",
       "accessCode" -> "123",
       "submit" -> "Add"
@@ -113,14 +126,23 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
 
     "valid Obligation guarantee is added on click of add" in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
+        withCaching(None)
         withRequestAndFormBody(postMethod, requestUri, headers, session, tags, validPayload) { resp =>
           val stringResult = contentAsString(resp)
-          withCaching(None)
           stringResult must include("Obligation Guarantees added : <td scope=\"row\">1</td>")
         }
       }
     }
 
+    "valid Obligation guarantee is added  to existing cached guarantees on click of add" in withFeatures(enabled(Feature.submit)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withCaching(Some(obligationGuaranteeForm))
+        withRequestAndFormBody(postMethod, requestUri, headers, session, tags, validPayload) { resp =>
+          val stringResult = contentAsString(resp)
+          stringResult must include("Obligation Guarantees added : <td scope=\"row\">2</td>")
+        }
+      }
+    }
     val nextPayload = Map("submit" -> "next")
     "navigate to good items page on click of next " in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
@@ -141,8 +163,6 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
         }
       }
     }
-
-
   }
 
 }

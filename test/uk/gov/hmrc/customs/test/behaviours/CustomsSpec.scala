@@ -53,10 +53,10 @@ trait CustomsSpec extends PlaySpec
 
   val mockCustomsCacheService: CustomsCacheService = mock[CustomsCacheService]
 
-  def withCaching[T](form: Option[Form[T]]): OngoingStubbing[Future[CacheMap]] = {
+  def withCaching[T](form: Option[T]): OngoingStubbing[Future[CacheMap]] = {
     when(mockCustomsCacheService.get(any(), any())(any(), any()))
       .thenReturn(Future.successful(None))
-    when(mockCustomsCacheService.fetchAndGetEntry[Form[T]](any(), any())(any(), any(), any()))
+    when(mockCustomsCacheService.fetchAndGetEntry[T](any(), any())(any(), any(), any()))
       .thenReturn(Future.successful(form))
 
     when(mockCustomsCacheService.put(any(), any(), any())(any(), any()))

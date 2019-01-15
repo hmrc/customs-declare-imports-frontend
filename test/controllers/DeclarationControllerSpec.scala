@@ -18,16 +18,11 @@ package controllers
 
 import config.SubmissionJourney
 import domain.features.Feature
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import play.api.data.Form
 import repositories.declaration.{Submission, SubmissionRepository}
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.ReactiveRepository
-
-import scala.concurrent.Future
 
 class DeclarationControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
