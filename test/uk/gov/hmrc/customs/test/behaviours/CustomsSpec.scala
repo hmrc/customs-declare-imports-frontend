@@ -25,7 +25,6 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.Application
-import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -65,7 +64,7 @@ trait CustomsSpec extends PlaySpec
       .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
   }
 
-  def withCaching[T](dataToReturn: Option[T], id: String): OngoingStubbing[Future[CacheMap]]  = {
+  def withCachingUsingKey[T](dataToReturn: Option[T], id: String): OngoingStubbing[Future[CacheMap]]  = {
     when(
       mockCustomsCacheService
         .fetchAndGetEntry[T](ArgumentMatchers.eq(appConfig.appName), ArgumentMatchers.eq(id))(any(), any(), any())

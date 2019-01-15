@@ -70,7 +70,6 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
-
   }
 
   def showGoodsItemValuePage(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {

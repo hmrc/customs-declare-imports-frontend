@@ -16,10 +16,13 @@
 
 package controllers
 
+import domain.GoodsItemValueInformation
 import domain.features.Feature
+import play.api.http.Status
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
+import uk.gov.hmrc.wco.dec.Amount
 
 class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
@@ -30,9 +33,13 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   val goodsItemsListUri = uriWithContextPath("/submit-declaration-goods/gov-agency-goods-items")
   val goodsItemsPageUri = uriWithContextPath("/submit-declaration-goods/goods-item-value")
+  val goodsItemsUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-item")
+  val navigateToSelectedGoodsItemPageUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-items")
   val get = "GET"
   val postMethod = "POST"
 
+  val goodsItemValueInformation:GoodsItemValueInformation = GoodsItemValueInformation(Some(30.00),123,
+    Some(Amount(Some("GBP"),Some(123))))
   "GovernmentAgencyGoodsItemsController" should {
 
     "require Authentication" in withFeatures((enabled(Feature.submit))) {
@@ -52,7 +59,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       }
     }
 
-    "display GoodsItems Page with list of items entered displayed" in withFeatures((enabled(Feature.submit))) {
+    "display GoodsItems Page with no goods items displayed" in withFeatures((enabled(Feature.submit))) {
       withSignedInUser() { (headers, session, tags) =>
         withCaching(None)
         withRequest("GET", goodsItemsListUri, headers, session, tags) { resp =>
@@ -62,6 +69,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
         }
       }
     }
+
 
     "display GoodsItems values with single field Page" in withFeatures((enabled(Feature.submit))) {
       withSignedInUser() { (headers, session, tags) =>
@@ -83,6 +91,24 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     }
 
 
+    "display GoodsItems values Page with pre-populated data that user has entered before " in withFeatures((enabled(Feature.submit))) {
+      withSignedInUser() { (headers, session, tags) =>
+        withCaching(None)
+        withRequest("GET", goodsItemsPageUri, headers, session, tags) { resp =>
+          val content = contentAsString(resp)
+          content must include("customsValueAmount")
+          content must include("statisticalValueAmount.currencyId")
+          content must include("statisticalValueAmount.value")
+          content must include("transactionNatureCode")
+          content must include("destination.countryCode")
+          content must include("destination.regionId")
+          content must include("ucr.id")
+          content must include("ucr.traderAssignedReferenceId")
+          content must include("exportCountry.id")
+          content must include("valuationAdjustment.additionCode")
+        }
+      }
+    }
     val invalidPayload = Map(
       "customsValueAmount" -> "-0",
       "statisticalValueAmount.currencyId" -> "name1nasdfghlertghoy asdflgothidlglfdleasdflksdf",
@@ -117,7 +143,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     val validPayload = Map(
       "customsValueAmount" -> "30.00",
       "sequenceNumeric" -> "3",
-      "statisticalValueAmount.currencyId" -> "UK",
+      "statisticalValueAmount.currencyId" -> "GBP",
       "statisticalValueAmount.value" -> "3345",
       "transactionNatureCode" -> "123",
       "destination.countryCode" -> "UK",
@@ -140,6 +166,78 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
         }
       }
     }
+
+    "display good items page with pre-populated data on revisiting the page " in withFeatures(enabled(Feature.submit)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withCaching(Some(goodsItemValueInformation))
+        withRequest("GET", goodsItemsPageUri, headers, session, tags) { resp =>
+         //  includesHtmlInput(resp, "customsValueAmount",value = "30.00")
+           includesHtmlInput(resp, "sequenceNumeric",value = "123")
+           includesHtmlInput(resp, "statisticalValueAmount.currencyId",value = "GBP")
+        }
+      }
+    }
   }
 
+  "display GoodsItems multiple items view Page with all the list fields" in withFeatures((enabled(Feature.submit))) {
+    withSignedInUser() { (headers, session, tags) =>
+      withCaching(None)
+      withRequest("GET", goodsItemsUri, headers, session, tags) { resp =>
+        val content = contentAsHtml(resp)
+        content should include element withAttrValue("id", "AddGAGIAddDoc")
+        content should include element withAttrValue("id", "AddAdditionalInformation")
+        content should include element withAttrValue("id", "AddMutualRecognitionParties")
+        content should include element withAttrValue("id", "AddDomesticDutyTaxParties")
+        content should include element withAttrValue("id", "AddGovernmentProcedures")
+        content should include element withAttrValue("id", "AddOrigins")
+        content should include element withAttrValue("id", "AddManufacturers")
+        content should include element withAttrValue("id", "AddPackagings")
+        content should include element withAttrValue("id", "AddPreviousDocuments")
+        content should include element withAttrValue("id", "AddRefundRecipientParties")
+        content should include element withAttrValue("id", "SaveGoodsItem")
+      }
+    }
+  }
+
+
+  "navigate to respective page inputs based on the user action of Add goods items" in withFeatures(
+    (enabled(Feature.submit))) {
+    assertNavigation(Map("add" -> "AddGovernmentAgencyGoodsItemAdditionalDocument"),
+      "/customs-declare-imports/submit-declaration-goods/add-gov-agency-goods-items-additional-docs")
+    assertNavigation(Map("add" -> "AddAdditionalInformation"),
+      "/customs-declare-imports/submit-declaration-goods/add-goods-items-additional-informations")
+    assertNavigation(Map("add" -> "AddMutualRecognitionParties"),
+      "/customs-declare-imports/submit-declaration-goods/add-role-based-parties")
+    assertNavigation(Map("add" -> "AddDomesticDutyTaxParties"),
+      "/customs-declare-imports/submit-declaration-goods/add-role-based-parties")
+    assertNavigation(Map("add" -> "AddGovernmentProcedures"),
+      "/customs-declare-imports/submit-declaration-goods/add-government-procedures")
+    assertNavigation(Map("add" -> "AddOrigins"),
+      "/customs-declare-imports/submit-declaration-goods/add-origins")
+    assertNavigation(Map("add" -> "AddManufacturers"),
+      "/customs-declare-imports/submit-declaration-goods/add-manufacturers")
+    assertNavigation(Map("add" -> "AddPackagings"),
+      "/customs-declare-imports/submit-declaration-goods/add-packagings")
+    assertNavigation(Map("add" -> "AddPreviousDocuments"),
+      "/customs-declare-imports/submit-declaration-goods/add-previous-documents")
+    assertNavigation(Map("add" -> "AddRefundRecipientParties"),
+      "/customs-declare-imports/submit-declaration-goods/add-manufacturers")
+    assertNavigation(Map("add" -> "SaveGoodsItem"),
+      "/customs-declare-imports/submit-declaration-goods/gov-agency-goods-items")
+    assertNavigation(Map("add" -> "wrong-url"), "", Status.BAD_REQUEST)
+  }
+  
+
+  private def assertNavigation(payload :Map[String,String] ,headerLocationUri:String,
+    respStatus :Int = Status.SEE_OTHER, postUri :String = navigateToSelectedGoodsItemPageUri) =
+    withSignedInUser() { (headers, session, tags) =>
+      withCaching(None)
+      withRequestAndFormBody(postMethod, postUri, headers, session, tags, payload) { resp =>
+        status(resp) must be(respStatus)
+        val header = resp.futureValue.header
+        header.headers.get("Location") must
+          be(if(headerLocationUri == "") None else Some(headerLocationUri))
+
+      }
+    }
 }
