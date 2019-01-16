@@ -16,8 +16,9 @@
 
 package forms
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import domain.GoodsItemValueInformation
-import play.api.data.Form
+import play.api.data.{Form, Mapping}
 import play.api.data.Forms._
 import uk.gov.hmrc.wco.dec._
 
@@ -47,12 +48,18 @@ object DeclarationFormMapping{
     "writeOff" -> optional(writeOffMapping)
   )(GovernmentAgencyGoodsItemAdditionalDocument.apply)(GovernmentAgencyGoodsItemAdditionalDocument.unapply)
 
-  val additionalInformationMapping = mapping(
+  lazy val additionalInformationMapping = mapping(
     "statementCode" -> optional(text.verifying("statement Code should be less than or equal to 17 characters", _.length <= 17)),
     "statementDescription" -> optional(text.verifying("statement Description should be less than or equal to 512 characters", _.length <= 512)),
     "statementTypeCode" -> optional(text.verifying("statement Type Code should be less than or equal to 3 characters", _.length <= 3)),
-    "pointers" -> ignored[Seq[Pointer]](Seq.empty)
+    "pointers" -> seq(pointerMapping)
   )(AdditionalInformation.apply)(AdditionalInformation.unapply)
+
+  val pointerMapping: Mapping[Pointer] = mapping(
+    "sequenceNumeric" -> optional(number.verifying("Pointer sequence numeric cannot be less than 0", _ >= 0).verifying("Pointer sequence numeric cannot be greater than 99999", _ <= 99999)),
+    "documentSectionCode" -> optional(text.verifying("Pointer document section code length cannot be greater than 3", _.size <= 3)),
+    "tagId" -> optional(text.verifying("Pointer tag id length cannot be greater than 4", _.size <= 4))
+  )(Pointer.apply)(Pointer.unapply)
 
   val destinationMapping = mapping("countryCode" -> optional(text.verifying("country code is only 3 characters", _.length <= 3)),
     "regionId" -> optional(text.verifying("regionId code is only 9 characters", _.length <= 9)))(Destination.apply)(Destination.unapply)
