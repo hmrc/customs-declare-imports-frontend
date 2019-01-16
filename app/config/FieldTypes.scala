@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,4 +70,14 @@ case class RadioInput(name: String,
 // this is a marker interface which can be used in HTML to drive incorporation of maxLength attribute via FieldDefinition.maxLength
 trait MaxLength {
   val maxLength: Int
+}
+
+case class RadioOption(id: String, value: String, messageKey: String)
+
+object RadioOption {
+  def apply(keyPrefix: String, option: String): RadioOption = RadioOption(
+    s"$keyPrefix.$option",
+    option,
+    s"$keyPrefix.$option"
+  )
 }

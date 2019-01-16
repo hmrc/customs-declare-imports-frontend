@@ -1,0 +1,64 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import uk.gov.hmrc.play.views.html._
+@import controllers.routes._
+@import uk.gov.hmrc.wco.dec.Origin
+
+@(form:Form[_], origins: Seq[Origin])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
+
+@main_template(
+    title = messages("origins.title"),
+    bodyClasses = None) {
+
+    @helpers.form(action = GovernmentAgencyGoodsItemsController.handleOriginsSubmit()) {
+
+
+<h2 class="heading-medium">Government Agency Goods Item Origin of goods	</h2>
+@if(origins.nonEmpty) {
+No of Goods Item origins added : <td scope="row">@origins.size</td>
+
+<table>
+    <thead>
+    <th scope="col">Country</th>
+    <th scope="col">regionId</th>
+    <th scope="col">typeCode</th>
+    </thead>
+    <tbody>
+    @for(item <- origins) {
+    <tr>
+        <td scope="row">@item.countryCode</td>
+        <td scope="row">@item.regionId</td>
+        <td scope="row">@item.typeCode</td>
+   </tr>
+    }
+    </tbody>
+</table>
+} else {
+<p>No  Origins available</p>
+}
+
+@components.input_text(field = form("countryCode"),label = "Country")
+@components.input_text(field = form("regionId"),label = "regionId")
+@components.input_text(field = form("typeCode"),label = "typeCode")
+
+<div class="section">
+    <button class="button" id="Add" value="Add" name = "submit">Add Origins</button>
+    <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+</div>
+}
+}

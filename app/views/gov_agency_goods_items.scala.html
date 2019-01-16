@@ -1,0 +1,131 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import uk.gov.hmrc.play.views.html._
+@import controllers.routes._
+@import domain.GovernmentAgencyGoodsItem
+
+@(goodsItem: Option[GovernmentAgencyGoodsItem])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
+
+@main_template(
+    title = messages("goodsItem.title"),
+    bodyClasses = None) {
+
+    @helpers.form(action = GovernmentAgencyGoodsItemsController.saveGoodsItem()) {
+
+<h2 class="heading-medium">Government Agency Goods Item</h2>
+
+<table>
+    <tr>
+        <th scope="col">Additional Documents</th>
+        <td scope="col">@goodsItem.map(_.additionalDocuments.size)</td>
+        <td scope="col">
+            <div class="section">
+            <button id="AddGAGIAddDoc" value="AddGovernmentAgencyGoodsItemAdditionalDocument" name = "add" class="button">Add</button>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">Additional Information</th>
+        <td scope="col">@goodsItem.map(_.additionalInformations.size)</td>
+        <td scope="col">
+             <div class="section">
+                <button id="AddAdditionalInformation" value="AddAdditionalInformation" name = "add" class="button">Add</button>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">Mutual recognition Parties</th>
+        <td scope="col">@goodsItem.map(_.aeoMutualRecognitionParties.size)</td>
+        <td scope="col">
+            <div class="section">
+                <button id="AddMutualRecognitionParties" value="AddMutualRecognitionParties" name = "add" class="button">Add</button>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">Domestic Duty Parties</th>
+        <td scope="col">@goodsItem.map(_.domesticDutyTaxParties.size)</td>
+        <td scope="col">
+            <div class="section">
+                <button id="AddDomesticDutyTaxParties" value="AddDomesticDutyTaxParties" name = "add" class="button">Add</button>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">Government Procedures</th>
+        <td scope="col">@goodsItem.map(_.governmentProcedures.size)</td>
+        <td scope="col">
+            <div class="section">
+                <button id="AddGovernmentProcedures" value="AddGovernmentProcedures" name = "add" class="button">Add</button>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">Origin of goods</th>
+        <td scope="col">@goodsItem.map(_.origins.size)</td>
+        <td scope="col">
+            <div class="section">
+                <button id="AddOrigins" value="AddOrigins" name = "add"  class="button">Add</button>
+            </div>
+        </td>
+    </tr>
+    <tr>
+    <tr>
+        <th scope="col">Manufacturers</th>
+        <td scope="col">@goodsItem.map(_.manufacturers.size)</td>
+        <td scope="col">
+            <div class="section">
+                <button id="AddManufacturers" value="AddManufacturers" name = "add"  class="button">Add</button>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">Packagings</th>
+        <td scope="col">@goodsItem.map(_.packagings.size)</td>
+        <td scope="col">
+            <div class="section">
+                <button id="AddPackagings" value="AddPackagings" name = "add" class="button">Add</button>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">Previous Documents</th>
+        <td scope="col">@goodsItem.map(_.previousDocuments.size)</td>
+        <td scope="col">
+            <div class="section">
+                <button id="AddPreviousDocuments" value="AddPreviousDocuments" name = "add" class="button">Add</button>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col"> Refund Recipient Parties</th>
+        <td scope="col">@goodsItem.map(_.refundRecipientParties.size)</td>
+        <td scope="col">
+            <div class="section">
+                <button id="AddRefundRecipientParties" value="AddRefundRecipientParties" name = "add" class="button">Add</button>
+            </div>
+        </td>
+    </tr>
+</table>
+
+
+<div class="section">
+    <button id="SaveGoodsItem" value="SaveGoodsItem" name = "add" class="button">Save Goods Item</button>
+</div>
+}
+}

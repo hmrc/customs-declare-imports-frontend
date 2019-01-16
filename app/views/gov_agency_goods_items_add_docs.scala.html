@@ -1,0 +1,75 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import uk.gov.hmrc.play.views.html._
+@import controllers.routes._
+@import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItemAdditionalDocument
+
+@(form:Form[_], additionalDocuments: Seq[GovernmentAgencyGoodsItemAdditionalDocument])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
+
+@main_template(
+    title = messages("cancel.title"),
+    bodyClasses = None) {
+
+    @helpers.form(action = GovernmentAgencyGoodsItemsController.handleGovAgencyGoodsItemsAdditionalDocumentsSubmit()) {
+
+
+<h2 class="heading-medium">Government Agency Goods Item Additional Documents</h2>
+@if(additionalDocuments.nonEmpty) {
+No of Goods Item additional docs added : <td scope="row">@additionalDocuments.size</td>
+
+<table>
+    <thead>
+    <th scope="col">Country Code</th>
+    <th scope="col">Document name</th>
+    <th scope="col">id</th>
+    <th scope="col">Type code of document</th>
+    <th scope="col">lpcoExemption code of document</th>
+    <th scope="col">Submitter Name</th>
+    <th scope="col">Submitter Role code</th>
+    </thead>
+    <tbody>
+    @for(item <- additionalDocuments) {
+    <tr>
+        <td scope="row">@item.categoryCode</td>
+        <td scope="row">@item.name</td>
+        <td scope="row">@item.id</td>
+        <td scope="row">@item.typeCode</td>
+        <td scope="row">@item.lpcoExemptionCode</td>
+        <td scope="row">@item.submitter.map(_.name)</td>
+        <td scope="row">@item.submitter.map(_.roleCode)</td>
+   </tr>
+    }
+    </tbody>
+</table>
+} else {
+<p>No Goods Shipments available</p>
+}
+
+@components.input_text(field = form("categoryCode"),label = "category code")
+@components.input_text(field = form("name"),label = "Document Name")
+@components.input_text(field = form("id"),label = "documents Id")
+@components.input_text(field = form("typeCode"),label = "type Code of document")
+@components.input_text(field = form("lpcoExemptionCode"),label = "lpcoExemptionCode")
+@components.input_text(field = form("submitter.name"),label = "submitter name")
+@components.input_text(field = form("submitter.roleCode"),label = "submitter role Code")
+
+<div class="section">
+    <button class="button" id="Add" value="Add" name = "submit">Add Documents</button>
+    <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+</div>}
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@ package services
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.AppConfig
+import domain.{DeclarationFormats, GovernmentAgencyGoodsItem}
+import domain.DeclarationFormats.governmentAgencyGoodsItemFormats
+import play.api.libs.json.{Format, Reads, Writes}
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CompositeSymmetricCrypto}
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpDelete, HttpGet, HttpPut}
@@ -38,28 +41,19 @@ class CustomsHttpCaching @Inject()(cfg: AppConfig, httpClient: HttpClient) exten
 
 }
 
-@ImplementedBy(classOf[CustomsCacheServiceImpl])
-trait CustomsCacheService {
-
-  def get(cacheName: String, eori: String)
-         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, String]]]
-
-  def put(cacheName: String, eori: String, data: Map[String, String])
-         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap]
-
-}
-
 @Singleton
-class CustomsCacheServiceImpl @Inject()(caching: CustomsHttpCaching, applicationCrypto: ApplicationCrypto) extends CustomsCacheService with ShortLivedCache {
+class CustomsCacheService @Inject()(caching: CustomsHttpCaching, applicationCrypto: ApplicationCrypto)  extends ShortLivedCache {
 
   override implicit val crypto: CompositeSymmetricCrypto = applicationCrypto.JsonCrypto
 
   override def shortLiveCache: ShortLivedHttpCaching = caching
 
-  override def get(cacheName: String, eori: String)
-         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, String]]] =
+
+   def get(cacheName: String, eori: String)
+    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Map[String, String]]] =
     fetchAndGetEntry[Map[String, String]](cacheName, eori)
 
-  override def put(cacheName: String, eori: String, data: Map[String, String])
-         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = cache(cacheName, eori, data)
+   def put(cacheName: String, eori: String, data: Map[String, String])
+    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = cache(cacheName, eori, data)
+
 }

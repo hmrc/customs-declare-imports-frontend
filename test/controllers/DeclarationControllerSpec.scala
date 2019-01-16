@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ class DeclarationControllerSpec extends CustomsSpec
   with FeatureBehaviours
   with RequestHandlerBehaviours
   with CustomsDeclarationsApiBehaviours
-  with CacheBehaviours
   with MongoBehaviours
   with HttpAssertions
   with HtmlAssertions {
@@ -40,7 +39,6 @@ class DeclarationControllerSpec extends CustomsSpec
   val get = "GET"
   val post = "POST"
   val submitUri = journeyUri(SubmissionJourney.screens.head)
-  val cancelUri = uriWithContextPath(s"/cancel-declaration/$mrn")
 
   def journeyUri(screen: String): String = uriWithContextPath(s"/submit-declaration/$screen")
 
@@ -48,6 +46,7 @@ class DeclarationControllerSpec extends CustomsSpec
 
     "return 200" in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
+        withCaching(None)
         withRequest(get, submitUri, headers, session, tags) {
           wasOk
         }
@@ -91,6 +90,7 @@ class DeclarationControllerSpec extends CustomsSpec
 
     "return 303" in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
+        withCaching(None)
         withRequestAndFormBody(post, submitUri, headers, session, tags, payload) { resp =>
           // TODO make assertions about handling of form submission
           wasRedirected(journeyUri(SubmissionJourney.screens(1)), resp)
@@ -116,43 +116,6 @@ class DeclarationControllerSpec extends CustomsSpec
     "be behind a feature switch" in withFeatures(disabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
         withRequest(post, submitUri, headers, session, tags) {
-          wasNotFound
-        }
-      }
-    }
-
-  }
-
-  s"$get $cancelUri" should {
-
-    "return 200" in withFeatures(enabled(Feature.cancel)) {
-      repo.insert(Submission(eori = randomUser.requiredEori, conversationId = randomString(16), lrn = None, mrn = Some(mrn)))
-      withSignedInUser() { (headers, session, tags) =>
-        withRequest(get, cancelUri, headers, session, tags) {
-          wasOk
-        }
-      }
-    }
-
-    "return HTML" in withFeatures(enabled(Feature.cancel)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withRequest(get, cancelUri, headers, session, tags) {
-          wasHtml
-        }
-      }
-    }
-
-    "require authentication" in withFeatures(enabled(Feature.cancel)) {
-      withoutSignedInUser() {
-        withRequest(get, cancelUri) { resp =>
-          wasRedirected(ggLoginRedirectUri(cancelUri), resp)
-        }
-      }
-    }
-
-    "be behind a feature switch" in withFeatures(disabled(Feature.cancel)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withRequest(get, cancelUri, headers, session, tags) {
           wasNotFound
         }
       }

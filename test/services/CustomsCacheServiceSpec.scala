@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package services
 
+import domain.GovernmentAgencyGoodsItem
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.crypto.{ApplicationCrypto, Protected}
 import uk.gov.hmrc.customs.test.behaviours.{AuthenticationBehaviours, CustomsSpec}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItemAdditionalDocument, GovernmentAgencyGoodsItemAdditionalDocumentSubmitter}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,15 +38,15 @@ class CustomsCacheServiceSpec extends CustomsSpec with AuthenticationBehaviours 
 
     var putData: Option[Map[String, Map[String, Map[String, Map[String, String]]]]] = None
 
-    val service = new CustomsCacheServiceImpl(new CustomsHttpCaching(appConfig, component[HttpClient]) {
+    val service = new CustomsCacheService(new CustomsHttpCaching(appConfig, component[HttpClient]) {
       override def fetchAndGetEntry[T](source: String, cacheId: String, key: String)
-                                      (implicit hc: HeaderCarrier, rds: Reads[T], executionContext: ExecutionContext): Future[Option[T]] = (source, cacheId, key) match {
+        (implicit hc: HeaderCarrier, rds: Reads[T], executionContext: ExecutionContext): Future[Option[T]] = (source, cacheId, key) match {
         case legit if (source == cacheSource && cacheId == cacheName && key == eori) => Future.successful(Some(Protected(cachedData).asInstanceOf[T]))
         case _ => super.fetchAndGetEntry(source, cacheId, key)(hc, rds, executionContext)
       }
 
       override def cache[A](source: String, cacheId: String, formId: String, body: A)
-                           (implicit wts: Writes[A], hc: HeaderCarrier, executionContext: ExecutionContext): Future[CacheMap] = (source, cacheId, formId) match {
+        (implicit wts: Writes[A], hc: HeaderCarrier, executionContext: ExecutionContext): Future[CacheMap] = (source, cacheId, formId) match {
         case legit if (source == cacheSource && cacheId == cacheName && formId == eori) => {
           putData = Some(Map(source -> Map(cacheId -> Map(formId -> body.asInstanceOf[Protected[Map[String, String]]].decryptedValue))))
           Future.successful(CacheMap(randomString(8), Map.empty))
@@ -71,5 +73,12 @@ class CustomsCacheServiceSpec extends CustomsSpec with AuthenticationBehaviours 
     }
 
   }
+
+
+  def getCCParams(cc: AnyRef) =
+    (Map[String, Any]() /: cc.getClass.getDeclaredFields) { (a, f) =>
+      f.setAccessible(true)
+      a + (f.getName -> f.get(cc))
+    }
 
 }

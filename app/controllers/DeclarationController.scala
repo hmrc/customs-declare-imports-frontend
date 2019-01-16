@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,22 +21,25 @@ import domain.auth.{AuthenticatedRequest, SignedInUser}
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
-import play.api.data.Form
-import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import repositories.declaration.{Submission, SubmissionRepository}
+import repositories.declaration.SubmissionRepository
 import services.{CustomsCacheService, CustomsDeclarationsConnector}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import uk.gov.hmrc.wco.dec.{AdditionalInformation, Amendment, Declaration, MetaData}
-
+import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, MetaData}
+import domain.ObligationGuarantee._
+import forms.ObligationGuaranteeForm
+import domain.DeclarationFormats._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: CustomsCacheService, submissionRepository: SubmissionRepository)
-                                     (implicit val messagesApi: MessagesApi, val appConfig: AppConfig, ec: ExecutionContext)
-  extends FrontendController with I18nSupport {
+class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: CustomsCacheService,
+  submissionRepository: SubmissionRepository)(implicit val messagesApi: MessagesApi, val appConfig: AppConfig,
+  ec: ExecutionContext) extends FrontendController with I18nSupport {
+
+  val GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY = "GovAgencyGoodsItems"
 
   private val navigationKeys = Set("next-page", "last-page", "force-last")
 
@@ -49,7 +52,8 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
 
   def displaySubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
     cache.get(appConfig.submissionCacheId, req.user.eori.get).map { data =>
-      Ok(views.html.generic_view(name, data.getOrElse(Map.empty)))
+      if(req.request.uri.endsWith("guarantee-type")) Redirect(routes.ObligationGuaranteeController.display())
+      else Ok(views.html.generic_view(name, data.getOrElse(Map.empty)))
     }
   }
 
@@ -78,33 +82,13 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     if (errors.isEmpty) {
       cacheSubmission(data ++ Map("force-last" -> "false")) { (merged, _) =>
         val props = merged.filterNot(entry => navigationKeys.contains(entry._1) || knownBad.contains(entry._1) || entry._2.trim.isEmpty)
-        client.submitImportDeclaration(MetaData.fromProperties(props)).map { resp =>
+        updateMetaData(MetaData.fromProperties(props)).flatMap( metadata =>
+          client.submitImportDeclaration(metadata.get).map { resp =>
           Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId))
-        }
+        })
+
       }
     } else invalid(data("last-page"), data)
-  }
-
-  def displayCancelForm(mrn: String): Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
-    submissionRepository.getByEoriAndMrn(req.user.requiredEori, mrn).map {
-      case Some(submission) => Ok(views.html.cancel_form(submission, Cancel.form))
-      case None => NotFound(views.html.error_template("Submission Not Found", "Submission Not Found", "We're sorry but we couldn't find that submission."))
-    }
-  }
-
-  def handleCancelForm(mrn: String): Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
-    val resultForm = Cancel.form.bindFromRequest()
-    submissionRepository.getByEoriAndMrn(req.user.requiredEori, mrn).flatMap {
-      case Some(submission) => resultForm.fold(
-        errors => Future.successful(BadRequest(views.html.cancel_form(submission, errors))),
-        success => {
-          client.cancelImportDeclaration(success.toMetaData(submission)).map { _ =>
-            Ok(views.html.cancel_confirmation())
-          }
-        }
-      )
-      case None => Future.successful(NotFound(views.html.error_template("Submission Not Found", "Submission Not Found", "We're sorry but we couldn't find that submission."))) // TODO throw specific ApplicationException type to be handled via ErrorHandler
-    }
   }
 
   private def invalid(name: String, data: Map[String, String])(implicit req: AuthenticatedRequest[AnyContent], errors: Map[String, Seq[ValidationError]]): Future[Result] = Future.successful(BadRequest(views.html.generic_view(name, data)))
@@ -135,30 +119,37 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
       map(field => field._1 -> field._2.get)
   }.getOrElse(Map.empty)
 
-}
-
-// cancel declaration form objects
-
-object Cancel {
-  val form: Form[CancelForm] = Form[CancelForm](mapping(
-    "statementDescription" -> nonEmptyText(maxLength = 512),
-    "changeReasonCode" -> nonEmptyText
-  )(CancelForm.apply)(CancelForm.unapply))
-}
-
-case class CancelForm(statementDescription: String, changeReasonCode: String) {
-
-  def toMetaData(submission: Submission): MetaData = MetaData(declaration = Declaration(
-    typeCode = Some("INV"),
-    functionCode = Some(13),
-    functionalReferenceId = submission.lrn,
-    id = submission.mrn,
-    additionalInformations = Seq(AdditionalInformation(
-      statementDescription = Some(statementDescription)
-    )),
-    amendments = Seq(Amendment(
-      changeReasonCode = Some(changeReasonCode)
-    ))
-  ))
+  private def updateMetaData(metaData: MetaData)(implicit req: AuthenticatedRequest[AnyContent], hc: HeaderCarrier) = {
+    cache.fetchAndGetEntry[ObligationGuaranteeForm](req.user.eori.get,"ObligationGuarantees").flatMap( obligationGuaranteeForm =>
+    cache.fetchAndGetEntry[List[domain.GovernmentAgencyGoodsItem]](req.user.eori.get, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY).map(_.map { items =>
+      val decGoodsItems: Seq[GovernmentAgencyGoodsItem] =
+        items.map(rec => GovernmentAgencyGoodsItem(customsValueAmount = rec.goodsItemValue.get.customsValueAmount,
+        sequenceNumeric = rec.goodsItemValue.get.sequenceNumeric,
+        statisticalValueAmount = rec.goodsItemValue.get.statisticalValueAmount,
+        transactionNatureCode = rec.goodsItemValue.get.transactionNatureCode,
+        additionalDocuments = rec.additionalDocuments,
+        additionalInformations= rec.additionalInformations,
+        aeoMutualRecognitionParties = rec.aeoMutualRecognitionParties,
+        buyer  = rec.buyer,
+          commodity = rec.commodity,
+        consignee = rec.consignee,
+          consignor = rec.consignor,
+          customsValuation = rec.customsValuation,
+          destination = rec.goodsItemValue.get.destination,
+          domesticDutyTaxParties = rec.domesticDutyTaxParties,
+          exportCountry = rec.goodsItemValue.get.exportCountry,
+          governmentProcedures = rec.governmentProcedures,
+          manufacturers = rec.manufacturers,
+          origins = rec.origins,
+          packagings = rec.packagings,
+          previousDocuments = rec.previousDocuments,
+          refundRecipientParties = rec.refundRecipientParties,
+          seller = rec.seller,
+          ucr = rec.goodsItemValue.get.ucr,
+          valuationAdjustment = rec.goodsItemValue.get.valuationAdjustment))
+      val goodsShipmentNew = metaData.declaration.goodsShipment.map(rec => rec.copy(governmentAgencyGoodsItems = decGoodsItems))
+      metaData.copy(declaration = metaData.declaration.copy(goodsShipment = goodsShipmentNew, obligationGuarantees = obligationGuaranteeForm.get.guarantees))
+    }))
+  }
 
 }
