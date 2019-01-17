@@ -176,9 +176,11 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withSignedInUser() { (headers, session, tags) =>
         withCaching(Some(goodsItemValueInformation))
         withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>
-          //  includesHtmlInput(resp, "customsValueAmount",value = "30.00")
+          includesHtmlInput(resp, "customsValueAmount", value = "30.0")
           includesHtmlInput(resp, "sequenceNumeric", value = "123")
           includesHtmlInput(resp, "statisticalValueAmount.currencyId", value = "GBP")
+          includesHtmlInput(resp, "statisticalValueAmount.value", value = "123")
+          includesHtmlInput(resp, "transactionNatureCode", value = "333")
         }
       }
     }

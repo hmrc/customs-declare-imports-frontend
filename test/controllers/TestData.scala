@@ -23,7 +23,7 @@ import uk.gov.hmrc.wco.dec._
 trait TestData {
 
   val goodsItemValueInformation:GoodsItemValueInformation = GoodsItemValueInformation(Some(30.00), 123,
-    Some(Amount(Some("GBP"),Some(123))))
+    Some(Amount(Some("GBP"),Some(123))), Some(333))
 
   val measure = Measure(Some("12345"), Some(30.30))
   val address = Address(Some("CityName"), Some("UK"))
