@@ -16,13 +16,16 @@
 
 package views
 
-import views.html.declaration_additional_information
-import views.html.components.input_text
 import forms.DeclarationFormMapping.additionalInformationMapping
+import generators.Generators
 import org.scalatest.matchers.{MatchResult, Matcher}
+import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.wco.dec.AdditionalInformation
+import views.behaviours.ViewBehaviours
+import views.html.components.input_text
+import views.html.declaration_additional_information
 
 trait ViewMatchers {
 
@@ -37,12 +40,37 @@ trait ViewMatchers {
   def include(right: Html) = new HtmlContains(right)
 }
 
-class DeclarationAdditionalInformationSpec extends ViewSpec with ViewMatchers {
+class DeclarationAdditionalInformationSpec extends ViewBehaviours with ViewMatchers with PropertyChecks with Generators  {
 
-  def view(form: Form[AdditionalInformation] = form): Html = declaration_additional_information(form)
+  val emptyAdditionalInfo: Seq[AdditionalInformation] = Seq.empty
+
+  def view(form: Form[AdditionalInformation] = form,
+           additionalInformation: Seq[AdditionalInformation] = emptyAdditionalInfo): Html =
+    declaration_additional_information(form, additionalInformation)(fakeRequest, messages, appConfig)
+
+  val view: () => Html = () => declaration_additional_information(form, emptyAdditionalInfo)(fakeRequest, messages, appConfig)
+
+  val messagePreFix = "additionalInformation"
+
   lazy val form = Form(additionalInformationMapping)
 
   "view" should {
+
+    behave like pageWithoutHeading(view, messagePreFix )
+
+    "have title" in {
+
+      val doc = asDocument(view())
+
+      assertEqualsMessage(doc, "title", s"$messagePreFix.title")
+    }
+
+    "have heading" in {
+
+      val doc = asDocument(view())
+
+      assertEqualsMessage(doc, "h2", s"$messagePreFix.header")
+    }
 
     "contain statement code field" in {
 
@@ -61,6 +89,52 @@ class DeclarationAdditionalInformationSpec extends ViewSpec with ViewMatchers {
       val input = input_text(form("statementTypeCode"), "Statement Type Code")
       view() must include(input)
     }
-  }
 
+    "not display additional information table if additional information is not available" in {
+
+      val doc = asDocument(view(form, emptyAdditionalInfo))
+
+      assertContainsText(doc, messages("additionalInformation.informationNotAvailable"))
+    }
+
+    "display additional information table if additional information is available" in {
+
+      forAll { additionalInfo: AdditionalInformation =>
+        val additionalInfoSeq = Seq(additionalInfo)
+        val doc = asDocument(view(form, additionalInfoSeq))
+
+        assertContainsText(doc, messages("additionalInformation.informationAvailable") + s" ${additionalInfoSeq.size}")
+      }
+    }
+
+    "display statement code in table" in {
+
+      forAll { additionalInfo: AdditionalInformation =>
+        val additionalInfoSeq = Seq(additionalInfo)
+        val doc = asDocument(view(form, additionalInfoSeq))
+
+        additionalInfo.statementCode.map(assertContainsText(doc, _))
+      }
+    }
+
+    "display statement description in table" in {
+
+      forAll { additionalInfo: AdditionalInformation =>
+        val additionalInfoSeq = Seq(additionalInfo)
+        val doc = asDocument(view(form, additionalInfoSeq))
+
+        additionalInfo.statementDescription.map(assertContainsText(doc, _))
+      }
+    }
+
+    "display statement type code in table" in {
+
+      forAll { additionalInfo: AdditionalInformation =>
+        val additionalInfoSeq = Seq(additionalInfo)
+        val doc = asDocument(view(form, additionalInfoSeq))
+
+        additionalInfo.statementTypeCode.map(assertContainsText(doc, _))
+      }
+    }
+  }
 }

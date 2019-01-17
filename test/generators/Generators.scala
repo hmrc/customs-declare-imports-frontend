@@ -43,4 +43,5 @@ trait Generators {
       i <- choose(length, length + 500)
       n <- listOfN(i, arbitrary[Char])
     } yield n.mkString
+
 }
