@@ -29,10 +29,9 @@
 
 
 <h2 class="heading-medium">Government Agency Goods Item Additional Information</h2>
-@if(additionalInformations.nonEmpty) {
-No of Goods Item additional Information added : <td scope="row">@additionalInformations.size</td>
-
 <table>
+    @if(additionalInformations.nonEmpty) {
+    <p>@additionalInformations.size Goods Item additional Information added</p>
     <thead>
     <th scope="col">statement Code</th>
     <th scope="col">statementDescription</th>
@@ -47,11 +46,11 @@ No of Goods Item additional Information added : <td scope="row">@additionalInfor
    </tr>
     }
     </tbody>
+    } else {
+        <p>No Additional Information available</p>
+    }
 </table>
-} else {
-<p>No Additional Information available</p>
 
-}
 
 @components.input_text(field = form("statementCode"),label = "Statement code")
 @components.input_text(field = form("statementDescription"),label = "Statement Description")

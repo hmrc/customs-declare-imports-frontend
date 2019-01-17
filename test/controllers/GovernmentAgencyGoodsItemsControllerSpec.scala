@@ -256,7 +256,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(Some(goodsItem))
       withRequest(get, goodsItemsAdditionalDocsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No of Goods Item Additional Documents added : <td scope=\"row\">1")
+        contentAsString(resp) must include("1 Goods Item Additional Documents added")
         content should include element withAttrValue("name", "categoryCode")
         content should include element withAttrValue("name", "name")
         content should include element withAttrValue("name", "id")
@@ -287,7 +287,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(Some(goodsItem))
       withRequest(get, goodsItemsAdditionalInfosPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No of Goods Item additional Information added : <td scope=\"row\">1</td>")
+        contentAsString(resp) must include("1 Goods Item additional Information added")
         content should include element withAttrValue("name", "statementCode")
         content should include element withAttrValue("name", "statementDescription")
         content should include element withAttrValue("name", "statementTypeCode")
@@ -312,7 +312,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(Some(goodsItem))
       withRequest(get, addMutualRecognitionPartiesPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No of Goods Item Mutual recognition Parties added : <td scope=\"row\">1</td>")
+        contentAsString(resp) must include("1 Goods Item Mutual recognition Parties added")
         content should include element withAttrValue("name", "roleCode")
         content should include element withAttrValue("name", "id")
       }
@@ -336,7 +336,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(Some(goodsItem))
       withRequest(get, addGovtProcedureCodesPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No of Government Procedures added : <td scope=\"row\">1</td>")
+        contentAsString(resp) must include("1 Government Procedures added")
         content should include element withAttrValue("name", "currentCode")
         content should include element withAttrValue("name", "previousCode")
       }
@@ -361,7 +361,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(Some(goodsItem))
       withRequest(get, addOriginsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No of Goods Item Origins added : <td scope=\"row\">1</td>")
+        contentAsString(resp) must include("1 Goods Item Origins added")
         content should include element withAttrValue("name", "countryCode")
         content should include element withAttrValue("name", "regionId")
         content should include element withAttrValue("name", "typeCode")
@@ -392,7 +392,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(Some(goodsItem))
       withRequest(get, addManufacturersPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No of Manufacturers added : <td scope=\"row\">1</td>")
+        contentAsString(resp) must include("1 Manufacturers added")
         content should include element withAttrValue("name", "id")
         content should include element withAttrValue("name", "name")
         content should include element withAttrValue("name", "address.cityName")
@@ -430,7 +430,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(Some(goodsItem))
       withRequest(get, addPackagingsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No of Goods Item Packagings added : <td scope=\"row\">1</td>")
+        contentAsString(resp) must include("1 Goods Item Packagings added")
         content should include element withAttrValue("name", "sequenceNumeric")
         content should include element withAttrValue("name", "marksNumbersId")
         content should include element withAttrValue("name", "quantity")
@@ -464,7 +464,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(Some(goodsItem))
       withRequest(get, addPreviousDocsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No of Goods Item Previous Documents added : <td scope=\"row\">1</td>")
+        contentAsString(resp) must include("1 Goods Item Previous Documents added")
         content should include element withAttrValue("name", "categoryCode")
         content should include element withAttrValue("name", "id")
         content should include element withAttrValue("name", "typeCode")
