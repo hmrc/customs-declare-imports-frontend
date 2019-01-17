@@ -309,3 +309,15 @@ alpha.required=This is a mandatory field. It must consist of exactly {0} A-Z cha
 alpha.optional=When specified, this field must consist of exactly {0} A-Z characters
 contains.required=This is a mandatory field. Please select from one of the available options
 contains.optional=When specified, the value of this field must be one of the available options
+
+## Obligation guarantees
+obligationGuarantees.title=Obligation guarantees
+obligationGuarantees.noObligationGuaranteesAdded=No obligation guarantees added
+obligationGuarantees.amount=Amount
+obligationGuarantees.id=ID
+obligationGuarantees.referenceId=Reference ID
+obligationGuarantees.securityDetailsCode=Security details code
+obligationGuarantees.accessCode=Access code
+obligationGuarantees.guarantorOfficeId=Guarantor office ID
+obligationGuarantees.obligationGuaranteesAdded=obligation guarantees added.
+obligationGuarantees.addObligationGuarantees=Add obligation guarantees
