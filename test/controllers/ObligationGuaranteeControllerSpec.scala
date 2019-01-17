@@ -61,7 +61,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
         withCaching(Some(obligationGuaranteeForm))
         withRequest("GET", requestUri, headers, session, tags) { resp =>
           val stringResult = contentAsString(resp)
-          stringResult must include("Obligation Guarantees added : <td scope=\"row\">1</td>")
+          stringResult must include("1 obligation guarantees added.")
         }
       }
     }
@@ -98,7 +98,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
           stringResult must include("ReferenceId should be less than or equal to 35 characters")
           stringResult must include("SecurityDetailsCode should be less than or equal to 3 characters")
           stringResult must include("AccessCode should be less than or equal to 4 characters")
-          stringResult must include("No Obligation Guarantees Added")
+          stringResult must include("No obligation guarantees added")
         }
       }
     }
@@ -110,7 +110,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
           val stringResult = contentAsString(resp)
           status(resp) must be(Status.OK)
 
-          stringResult must include("No Obligation Guarantees Added")
+          stringResult must include("No obligation guarantees added")
         }
       }
     }
@@ -129,7 +129,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
         withCaching(None)
         withRequestAndFormBody(postMethod, requestUri, headers, session, tags, validPayload) { resp =>
           val stringResult = contentAsString(resp)
-          stringResult must include("Obligation Guarantees added : <td scope=\"row\">1</td>")
+          stringResult must include("1 obligation guarantees added.")
         }
       }
     }
@@ -139,7 +139,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
         withCaching(Some(obligationGuaranteeForm))
         withRequestAndFormBody(postMethod, requestUri, headers, session, tags, validPayload) { resp =>
           val stringResult = contentAsString(resp)
-          stringResult must include("Obligation Guarantees added : <td scope=\"row\">2</td>")
+          stringResult must include("2 obligation guarantees added.")
         }
       }
     }
