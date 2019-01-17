@@ -50,6 +50,7 @@ object DeclarationFormMapping{
   val additionalInformationMapping = mapping(
     "statementCode" -> optional(text.verifying("statement Code should be less than or equal to 17 characters", _.length <= 17)),
     "statementDescription" -> optional(text.verifying("statement Description should be less than or equal to 512 characters", _.length <= 512)),
+    "limitDateTime" -> optional(text),
     "statementTypeCode" -> optional(text.verifying("statement Type Code should be less than or equal to 3 characters", _.length <= 3)),
     "pointers" -> ignored[Seq[Pointer]](Seq.empty)
   )(AdditionalInformation.apply)(AdditionalInformation.unapply)
