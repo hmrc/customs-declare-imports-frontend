@@ -19,16 +19,17 @@ package generators
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
-import uk.gov.hmrc.wco.dec.Pointer
+import org.scalatest.enablers.Length
+import uk.gov.hmrc.wco.dec.{AdditionalInformation, Pointer}
 
 trait Generators {
-
-  implicit val arbitraryPointer: Arbitrary[Pointer] = Arbitrary {
+  
+  implicit val arbitraryAdditionalInfo: Arbitrary[AdditionalInformation] = Arbitrary {
     for {
-      sequenceNumeric     <- option(arbitrary[Int].suchThat(x => x >= 0 && x <= 99999))
-      documentSectionCode <- option(arbitrary[String].map(_.take(3)))
-      tagId               <- option(arbitrary[String].map(_.take(4)))
-    } yield Pointer(sequenceNumeric, documentSectionCode, tagId)
+      statementCode         <-  option(arbitrary[String].map(_.take(17)))
+      statementDescription  <-  option(arbitrary[String].map(_.take(512)))
+      statementTypeCode     <-  option(arbitrary[String].map(_.take(3)))
+    } yield AdditionalInformation(statementCode, statementDescription, statementTypeCode)
   }
 
   def intGreaterThan(min: Int): Gen[Int] =
@@ -38,6 +39,8 @@ trait Generators {
     choose(Int.MinValue, max - 1)
 
   def minStringLength(length: Int): Gen[String] =
-    arbitrary[String].suchThat(_.size >= length)
-
+    for {
+      i <- choose(length, length + 500)
+      n <- listOfN(i, arbitrary[Char])
+    } yield n.mkString
 }

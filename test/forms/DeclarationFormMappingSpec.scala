@@ -18,11 +18,12 @@ package forms
 
 import DeclarationFormMapping._
 import generators.Generators
+import org.scalacheck.Arbitrary
 import org.scalatest.matchers.{MatchResult, Matcher}
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.{Form, FormError}
-import uk.gov.hmrc.wco.dec.Pointer
+import uk.gov.hmrc.wco.dec.{AdditionalInformation, Pointer}
 import org.scalacheck.Arbitrary._
 
 class DeclarationFormMappingSpec extends WordSpec
@@ -41,73 +42,63 @@ class DeclarationFormMappingSpec extends WordSpec
 
   def haveMessage(right: String) = new ErrorHasMessage(right)
 
-  "pointerForm" should {
+  "additionalInformationForm" should {
 
     "bind" when {
 
       "valid values are bound" in {
 
-        forAll { pointer: Pointer =>
+        forAll { additionalInfo: AdditionalInformation =>
 
-          Form(pointerMapping).fillAndValidate(pointer).fold(
-            _ => fail("Test should not fail"),
-            result => result mustBe pointer
+          Form(additionalInformationMapping).fillAndValidate(additionalInfo).fold(
+              _          => fail("Test should not fail"),
+              result     => result mustBe additionalInfo
           )
         }
       }
 
-      "fail with invalid sequence numeric" when {
+      "fail with invalid statement code" when {
 
-        "sequence number is less than 0" in {
+        "statement code length is greater than 17" in {
 
-          forAll(arbitrary[Pointer], intLessThan(0)) { (pointer, i) =>
+          forAll(arbitrary[AdditionalInformation], minStringLength(17)) { (additionalInfo, invalidCode) =>
 
-            Form(pointerMapping).fillAndValidate(pointer.copy(sequenceNumeric = Some(i))).fold(
-              error => error.error("sequenceNumeric") must haveMessage("Pointer sequence numeric cannot be less than 0"),
-              _ => fail("Should not succeed")
-            )
-          }
-        }
-
-        "sequence number is greater than 99999" in {
-
-          forAll(arbitrary[Pointer], intGreaterThan(99999)) { (pointer, i) =>
-
-            Form(pointerMapping).fillAndValidate(pointer.copy(sequenceNumeric = Some(i))).fold(
-              error => error.error("sequenceNumeric") must haveMessage("Pointer sequence numeric cannot be greater than 99999"),
-              _ => fail("Should not succeed")
+            Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementCode = Some(invalidCode))).fold(
+              error => error.error("statementCode") must haveMessage("statement Code should be less than or equal to 17 characters"),
+              _     => fail("Should not succeed")
             )
           }
         }
       }
 
-      "fail with invalid document section code" when {
+      "fail with invalid statement description" when {
 
-        "document section code length is greater than 3" in {
+        "statement description length is greater than 512" in {
 
-          forAll(arbitrary[Pointer], minStringLength(4)) { (pointer, i) =>
+          forAll(arbitrary[AdditionalInformation], minStringLength(512))  { (additionalInfo, invalidDescription) =>
 
-            Form(pointerMapping).fillAndValidate(pointer.copy(documentSectionCode = Some(i))).fold(
-              error => error.error("documentSectionCode") must haveMessage("Pointer document section code length cannot be greater than 3"),
-              _ => fail("Should not succeed")
+            Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementDescription = Some(invalidDescription))).fold(
+              error => error.error("statementDescription") must haveMessage("statement Description should be less than or equal to 512 characters"),
+              _     => fail("Should not succeed")
             )
           }
         }
       }
 
-      "fail with invalid tag id" when {
+      "fail with invalid statement type code" when {
 
-        "tag id length is greater than 4" in {
+        "statement type code length is greater than 3" in {
 
-          forAll(arbitrary[Pointer], minStringLength(5)) { (pointer, i) =>
+          forAll(arbitrary[AdditionalInformation], minStringLength(3))  { (additionalInfo, invalidTypeCode) =>
 
-            Form(pointerMapping).fillAndValidate(pointer.copy(tagId = Some(i))).fold(
-              error => error.error("tagId") must haveMessage("Pointer tag id length cannot be greater than 4"),
-              _ => fail("Should not succeed")
+            Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementTypeCode = Some(invalidTypeCode))).fold(
+              error => error.error("statementTypeCode") must haveMessage("statement Type Code should be less than or equal to 3 characters"),
+              _     => fail("Should not succeed")
             )
           }
         }
       }
+
     }
   }
 }

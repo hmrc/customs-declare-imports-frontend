@@ -61,20 +61,6 @@ class DeclarationAdditionalInformationSpec extends ViewSpec with ViewMatchers {
       val input = input_text(form("statementTypeCode"), "Statement Type Code")
       view() must include(input)
     }
-
-    "contain pointer.sequenceNumeric field" in {
-
-      val input = input_text(form("pointer[0].sequenceNumeric"), "Pointer Sequence Number")
-      view() must include(input)
-    }
-
-    "contain pointer.documentSectionCode field" in {
-
-    }
-
-    "contains pointer.tagId field" in {
-
-    }
   }
 
 }
