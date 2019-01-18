@@ -30,7 +30,7 @@
 
 <h2 class="heading-medium">Government Agency Goods Item Additional Documents</h2>
 @if(additionalDocuments.nonEmpty) {
-No of Goods Item additional docs added : <td scope="row">@additionalDocuments.size</td>
+<p>@additionalDocuments.size Goods Item Additional Documents added</p>
 
 <table>
     <thead>
@@ -41,6 +41,8 @@ No of Goods Item additional docs added : <td scope="row">@additionalDocuments.si
     <th scope="col">lpcoExemption code of document</th>
     <th scope="col">Submitter Name</th>
     <th scope="col">Submitter Role code</th>
+    <th scope="col">Write Off Quantity</th>
+    <th scope="col">Write Off Amount</th>
     </thead>
     <tbody>
     @for(item <- additionalDocuments) {
@@ -52,12 +54,14 @@ No of Goods Item additional docs added : <td scope="row">@additionalDocuments.si
         <td scope="row">@item.lpcoExemptionCode</td>
         <td scope="row">@item.submitter.map(_.name)</td>
         <td scope="row">@item.submitter.map(_.roleCode)</td>
+        <td scope="row">@item.writeOff.map(_.quantity)</td>
+        <td scope="row">@item.writeOff.map(_.amount)</td>
    </tr>
     }
     </tbody>
 </table>
 } else {
-<p>No Goods Shipments available</p>
+<p>No Additional Documents available</p>
 }
 
 @components.input_text(field = form("categoryCode"),label = "category code")
@@ -67,6 +71,8 @@ No of Goods Item additional docs added : <td scope="row">@additionalDocuments.si
 @components.input_text(field = form("lpcoExemptionCode"),label = "lpcoExemptionCode")
 @components.input_text(field = form("submitter.name"),label = "submitter name")
 @components.input_text(field = form("submitter.roleCode"),label = "submitter role Code")
+@components.input_text(field = form("writeOff.quantity"),label = "Write Off Quantity")
+@components.input_text(field = form("writeOff.amount"),label = "Write Off Amount")
 
 <div class="section">
     <button class="button" id="Add" value="Add" name = "submit">Add Documents</button>

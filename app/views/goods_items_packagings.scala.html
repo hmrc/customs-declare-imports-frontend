@@ -30,8 +30,7 @@
 
 <h2 class="heading-medium">Government Agency Goods Item Packaging	</h2>
 @if(packagings.nonEmpty) {
-No of Goods Item Packaging added : <td scope="row">@packagings.size</td>
-
+<p>@packagings.size Goods Item Packagings added</p>
 <table>
     <thead>
     <th scope="col">SequenceNumeric</th>
@@ -63,7 +62,7 @@ No of Goods Item Packaging added : <td scope="row">@packagings.size</td>
     </tbody>
 </table>
 } else {
-<p>No  Packagings available</p>
+<p>No Packagings available</p>
 }
 
 @components.input_text(field = form("sequenceNumeric"),label = "SequenceNumeric")
