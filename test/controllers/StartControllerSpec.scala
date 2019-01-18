@@ -41,7 +41,7 @@ class StartControllerSpec extends CustomsSpec
 
     "display 'Manage my import declarations' message" in withFeatures(enabled(Feature.start)) {
       withRequest(method, uri) { resp =>
-        contentAsHtml(resp) should include element withName("h1").withValue(messages("startpage.titleAndHeading"))
+        contentAsHtml(resp) should include element withName("h1").withValue(messagesApi("startpage.titleAndHeading"))
       }
     }
 
@@ -57,7 +57,7 @@ class StartControllerSpec extends CustomsSpec
 
     "include a message when begin page is not on" in withFeatures(enabled(Feature.start) ++ disabled(Feature.landing)) {
       withRequest(method, uri) { resp =>
-        contentAsHtml(resp) should include element withClass("message").withValue(messages("landingpage.unavailable"))
+        contentAsHtml(resp) should include element withClass("message").withValue(messagesApi("landingpage.unavailable"))
       }
     }
 

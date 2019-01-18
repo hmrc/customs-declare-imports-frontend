@@ -22,9 +22,8 @@ import org.scalacheck.Gen._
 import org.scalatest.enablers.Length
 import uk.gov.hmrc.wco.dec.{AdditionalInformation, Pointer}
 
-trait Generators {
 
-  val alphaNumRegEx = "^[a-zA-Z0-9_]*$"
+trait Generators extends SignedInUserGen {
 
   implicit val arbitraryAdditionalInfo: Arbitrary[AdditionalInformation] = Arbitrary {
     for {

@@ -22,6 +22,8 @@ POST      /submit-declaration-goods/add-gov-agency-goods-items        controller
 GET       /submit-declaration-goods/add-gov-agency-goods-items-additional-docs       controllers.GovernmentAgencyGoodsItemsController.showGovAgencyGoodsItemsAdditionalDocuments()
 POST       /submit-declaration-goods/add-gov-agency-goods-items-additional-docs       controllers.GovernmentAgencyGoodsItemsController.handleGovAgencyGoodsItemsAdditionalDocumentsSubmit()
 
+GET       /submit-declaration-goods/declaration-additional-information            controllers.DeclarationAdditionalInformationController.onPageLoad()
+
 GET       /submit-declaration-goods/add-goods-items-additional-informations       controllers.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations()
 POST       /submit-declaration-goods/add-goods-items-additional-informations       controllers.GovernmentAgencyGoodsItemsController.handleGoodsItemsAdditionalInformationsSubmit()
 

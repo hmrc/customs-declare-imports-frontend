@@ -14,33 +14,21 @@
  * limitations under the License.
  */
 
-package controllers
+package uk.gov.hmrc.customs.test
 
+import repositories.declaration.SubmissionRepository
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, RequestHandlerBehaviours}
+import uk.gov.hmrc.customs.test.behaviours._
+import uk.gov.hmrc.mongo.ReactiveRepository
 
-class UnauthorisedControllerSpec extends CustomsSpec
+trait IntegrationTest extends AuthenticationBehaviours
+  with FeatureBehaviours
   with RequestHandlerBehaviours
+  with CustomsDeclarationsApiBehaviours
   with HttpAssertions
-  with HtmlAssertions {
+  with HtmlAssertions
+  with MongoBehaviours {
 
-  val method = "GET"
-  val uri = uriWithContextPath("/enrol")
-
-  s"$method $uri" should {
-
-    "return 200" in withRequest(method, uri) {
-      wasOk
-    }
-
-    "return HTML" in withRequest(method, uri) {
-      wasHtml
-    }
-
-    "display message" in withRequest(method, uri) { resp =>
-      contentAsHtml(resp) should include element withName("h1").withValue(messagesApi("enrolmentpage.titleAndHeading"))
-    }
-
-  }
-
+  val repo = component[SubmissionRepository]
+  override val repositories: Seq[ReactiveRepository[_, _]] = Seq(repo)
 }

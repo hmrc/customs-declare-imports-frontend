@@ -50,13 +50,13 @@ class ErrorHandlerSpec extends CustomsSpec with HtmlAssertions {
     "handle upstream 4xx error" in {
       val res: Result = handler.resolveError(req, new Upstream4xxResponse("uh oh, bad xml!", Status.BAD_REQUEST, Status.INTERNAL_SERVER_ERROR))
       res.header.status must be(Status.INTERNAL_SERVER_ERROR)
-      includeHtmlTag(Future.successful(res), "h1", messages("4xxpage.titleAndHeading"))
+      includeHtmlTag(Future.successful(res), "h1", messagesApi("4xxpage.titleAndHeading"))
     }
 
     "handle upstream 5xx error" in {
       val res: Result = handler.resolveError(req, new Upstream5xxResponse("uh oh, bad xml!", Status.INTERNAL_SERVER_ERROR, Status.INTERNAL_SERVER_ERROR))
       res.header.status must be(Status.INTERNAL_SERVER_ERROR)
-      includeHtmlTag(Future.successful(res), "h1", messages("5xxpage.titleAndHeading"))
+      includeHtmlTag(Future.successful(res), "h1", messagesApi("5xxpage.titleAndHeading"))
     }
 
   }
