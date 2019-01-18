@@ -21,6 +21,7 @@ import play.api.http.Status
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
+import generators.Generators
 
 class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
@@ -28,7 +29,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   with RequestHandlerBehaviours
   with HttpAssertions
   with HtmlAssertions
-  with TestData {
+  with Generators{
 
   val goodsItemsListUri = uriWithContextPath("/submit-declaration-goods/gov-agency-goods-items")
   val goodsItemsPageUri = uriWithContextPath("/submit-declaration-goods/goods-item-value")
@@ -174,13 +175,16 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
     "display good items page with pre-populated data on revisiting the page " in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
-        withCaching(Some(goodsItemValueInformation))
+        val sampleData = arbitraryGoodsItemValueInformation.arbitrary.sample
+        withCaching(sampleData)
         withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>
-          includesHtmlInput(resp, "customsValueAmount", value = "30.0")
-          includesHtmlInput(resp, "sequenceNumeric", value = "123")
-          includesHtmlInput(resp, "statisticalValueAmount.currencyId", value = "GBP")
-          includesHtmlInput(resp, "statisticalValueAmount.value", value = "123")
-          includesHtmlInput(resp, "transactionNatureCode", value = "333")
+          includesHtmlInput(resp, "customsValueAmount", value = sampleData.value.customsValueAmount.getOrElse("").toString)
+          includesHtmlInput(resp, "sequenceNumeric", value = sampleData.value.sequenceNumeric.toString)
+          includesHtmlInput(resp, "statisticalValueAmount.currencyId",
+            value = sampleData.value.statisticalValueAmount.value.currencyId.value.toString)
+          includesHtmlInput(resp, "statisticalValueAmount.value",
+            value = sampleData.value.statisticalValueAmount.value.value.value.toString)
+          includesHtmlInput(resp, "transactionNatureCode", value = sampleData.value.transactionNatureCode.value.toString)
         }
       }
     }
@@ -255,7 +259,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate gov-agency-goods-items-additional-docs as a list on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(Some(goodsItem))
+      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
       withRequest(get, goodsItemsAdditionalDocsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Goods Item Additional Documents added")
@@ -286,7 +290,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   }
   "pre-populate goods-items-additional-informations that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(Some(goodsItem))
+      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
       withRequest(get, goodsItemsAdditionalInfosPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Goods Item additional Information added")
@@ -311,7 +315,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate AddMutualRecognitionParties that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(Some(goodsItem))
+      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
       withRequest(get, addMutualRecognitionPartiesPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Goods Item Mutual recognition Parties added")
@@ -335,7 +339,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate addGovtProcedureCodesPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(Some(goodsItem))
+      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
       withRequest(get, addGovtProcedureCodesPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Government Procedures added")
@@ -360,7 +364,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate addOriginsPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(Some(goodsItem))
+      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
       withRequest(get, addOriginsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Goods Item Origins added")
@@ -391,7 +395,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate addManufacturersPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(Some(goodsItem))
+      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
       withRequest(get, addManufacturersPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Manufacturers added")
@@ -429,7 +433,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate addPackagings that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(Some(goodsItem))
+      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
       withRequest(get, addPackagingsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Goods Item Packagings added")
@@ -463,7 +467,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate addPreviousDocsPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(Some(goodsItem))
+      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
       withRequest(get, addPreviousDocsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Goods Item Previous Documents added")
