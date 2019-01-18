@@ -24,9 +24,9 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import uk.gov.hmrc.wco.dec.AdditionalInformation
 import views.html.declaration_additional_information
 import domain.DeclarationFormats._
+import services.cachekeys.AdditionalInformationId
 
 class DeclarationAdditionalInformationController @Inject()(actions: Actions, cacheService: CustomsCacheService)
                                                           (implicit val messagesApi: MessagesApi, appConfig: AppConfig)
@@ -36,8 +36,14 @@ class DeclarationAdditionalInformationController @Inject()(actions: Actions, cac
 
   def onPageLoad(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>
-      cacheService.fetchAndGetEntry[Seq[AdditionalInformation]](request.eori, "DeclarationAdditionalInformation").map { additionalInformation =>
-        Ok(declaration_additional_information(form, additionalInformation.getOrElse(Seq.empty)))
+      println("*" * 50)
+      println(request.eori)
+      cacheService.getByKey(
+        request.eori,
+        AdditionalInformationId.declaration
+      ).map {
+        additionalInformation =>
+          Ok(declaration_additional_information(form, additionalInformation.getOrElse(Seq.empty)))
       }
   }
 }

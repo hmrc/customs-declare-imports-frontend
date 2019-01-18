@@ -131,6 +131,6 @@ class MyEoriController(actions: Actions) extends BaseController {
 
   def action: Action[AnyContent] = (actions.auth andThen actions.eori) {
     implicit req =>
-      Ok(req.eori)
+      Ok(req.eori.value)
   }
 }

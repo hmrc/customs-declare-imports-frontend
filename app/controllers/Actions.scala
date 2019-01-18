@@ -18,7 +18,7 @@ package controllers
 
 import com.google.inject.ImplementedBy
 import config.{AppConfig, ErrorHandler}
-import domain.auth.{AuthenticatedRequest, EORIRequest, SignedInUser}
+import domain.auth.{AuthenticatedRequest, EORI, EORIRequest, SignedInUser}
 import domain.features.Feature.Feature
 import domain.features.FeatureStatus
 import javax.inject.{Inject, Singleton}
@@ -88,6 +88,6 @@ class EORIAction(errorHandler: ErrorHandler) extends ActionRefiner[Authenticated
   override protected def refine[A](request: AuthenticatedRequest[A]): Future[Either[Result, EORIRequest[A]]] =
     Future.successful(
       request.user.eori
-        .map(EORIRequest(request, _))
+        .map(e => EORIRequest(request, EORI(e)))
         .toRight(Unauthorized(errorHandler.notFoundTemplate(request))))
 }
