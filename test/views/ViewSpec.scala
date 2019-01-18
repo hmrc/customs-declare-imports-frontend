@@ -16,13 +16,22 @@
 
 package views
 
+import config.AppConfig
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.inject.Injector
 import play.api.test.FakeRequest
 
 trait ViewSpec extends PlaySpec
   with OneAppPerSuite {
 
+  lazy val injector: Injector = app.injector
+
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
+
+  lazy val fakeRequest = FakeRequest("", "")
+
   implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
 }
