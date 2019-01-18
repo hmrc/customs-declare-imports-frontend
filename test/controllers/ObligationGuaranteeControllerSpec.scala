@@ -17,26 +17,22 @@
 package controllers
 
 import domain.features.Feature
-import forms.ObligationGuaranteeForm
+import generators.Generators
 import play.api.http.Status
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
-import uk.gov.hmrc.wco.dec.ObligationGuarantee
 
 class ObligationGuaranteeControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
   with FeatureBehaviours
   with RequestHandlerBehaviours
   with HttpAssertions
-  with HtmlAssertions {
+  with HtmlAssertions  with Generators{
 
   val requestUri = uriWithContextPath("/submit-declaration-guarantees/add-guarantees")
   val get = "GET"
   val postMethod = "POST"
-
-  val obligationGuaranteeForm: ObligationGuaranteeForm = ObligationGuaranteeForm(Seq(
-    ObligationGuarantee(Some(10.00), Some("refId1"), Some("id1"), Some("1233"), Some("1233"))))
 
   "ObligationGuranteeController" should {
 
@@ -58,10 +54,10 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
     }
     "display guarantees that are cached" in withFeatures((enabled(Feature.submit))) {
       withSignedInUser() { (headers, session, tags) =>
-        withCaching(Some(obligationGuaranteeForm))
+        withCaching(arbitraryObligationGuaranteeForm.arbitrary.sample)
         withRequest("GET", requestUri, headers, session, tags) { resp =>
           val stringResult = contentAsString(resp)
-          stringResult must include("Obligation Guarantees added : <td scope=\"row\">1</td>")
+          stringResult must include("1 obligation guarantees added.")
         }
       }
     }
@@ -69,12 +65,12 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
       withSignedInUser() { (headers, session, tags) =>
         withCaching(None)
         withRequest("GET", requestUri, headers, session, tags) { resp =>
-          contentAsHtml(resp) should include element withValue("amount")
-          contentAsHtml(resp) should include element withValue("id")
-          contentAsHtml(resp) should include element withValue("referenceId")
-          contentAsHtml(resp) should include element withValue("securityDetailsCode")
-          contentAsHtml(resp) should include element withValue("accessCode")
-          contentAsHtml(resp) should include element withValue("accessCode")
+          val content = contentAsHtml(resp)
+          content should include element withAttrValue("id", "amount")
+          content should include element withAttrValue("id", "id")
+          content should include element withAttrValue("id", "referenceId")
+          content should include element withAttrValue("id", "securityDetailsCode")
+          content should include element withAttrValue("id", "accessCode")
         }
       }
     }
@@ -98,7 +94,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
           stringResult must include("ReferenceId should be less than or equal to 35 characters")
           stringResult must include("SecurityDetailsCode should be less than or equal to 3 characters")
           stringResult must include("AccessCode should be less than or equal to 4 characters")
-          stringResult must include("No Obligation Guarantees Added")
+          stringResult must include("No obligation guarantees added")
         }
       }
     }
@@ -110,7 +106,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
           val stringResult = contentAsString(resp)
           status(resp) must be(Status.OK)
 
-          stringResult must include("No Obligation Guarantees Added")
+          stringResult must include("No obligation guarantees added")
         }
       }
     }
@@ -129,17 +125,17 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
         withCaching(None)
         withRequestAndFormBody(postMethod, requestUri, headers, session, tags, validPayload) { resp =>
           val stringResult = contentAsString(resp)
-          stringResult must include("Obligation Guarantees added : <td scope=\"row\">1</td>")
+          stringResult must include("1 obligation guarantees added.")
         }
       }
     }
 
     "valid Obligation guarantee is added  to existing cached guarantees on click of add" in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
-        withCaching(Some(obligationGuaranteeForm))
+        withCaching(arbitraryObligationGuaranteeForm.arbitrary.sample)
         withRequestAndFormBody(postMethod, requestUri, headers, session, tags, validPayload) { resp =>
           val stringResult = contentAsString(resp)
-          stringResult must include("Obligation Guarantees added : <td scope=\"row\">2</td>")
+          stringResult must include("2 obligation guarantees added.")
         }
       }
     }

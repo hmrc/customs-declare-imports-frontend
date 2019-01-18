@@ -17,6 +17,7 @@
 package generators
 
 import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
+import forms.ObligationGuaranteeForm
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
 import org.scalacheck.{Arbitrary, Gen, Shrink}
@@ -93,6 +94,28 @@ trait Generators {
   def stringsExceptSpecificValues(excluded: Set[String]): Gen[String] =
     nonEmptyString suchThat (!excluded.contains(_))
 
+  implicit val arbitraryOffice: Arbitrary[Office] = Arbitrary {
+    for {
+      id <- option(arbitrary[String].map(_.take(17)))
+    } yield Office(id)
+  }
+  implicit val arbitraryObligationGuarantee: Arbitrary[ObligationGuarantee] = Arbitrary {
+    for {
+      amount <- option(arbitrary[BigDecimal].map(_.max(9999999999999999.99999)))
+      id <- option(arbitrary[String].map(_.take(70)))
+      referenceId <- option(arbitrary[String].map(_.take(35)))
+      securityDetailsCode <- option(arbitrary[String].map(_.take(3)))
+      accessCode <- option(arbitrary[String].map(_.take(4)))
+      office <- option(arbitraryOffice.arbitrary)
+    } yield ObligationGuarantee(amount, id, referenceId, securityDetailsCode, accessCode, office)
+  }
+
+  implicit val arbitraryObligationGuaranteeForm: Arbitrary[ObligationGuaranteeForm] = Arbitrary {
+    for {
+      guarantees <- Gen.listOfN(1, arbitraryObligationGuarantee.arbitrary)
+    } yield ObligationGuaranteeForm(guarantees)
+  }
+
   implicit val arbitraryAdditionalInfo: Arbitrary[AdditionalInformation] = Arbitrary {
     for {
       statementCode <- option(arbitrary[String].map(_.take(17)))
@@ -119,7 +142,7 @@ trait Generators {
     for {
       quantity <- option(arbitraryMeasure.arbitrary)
       amount <- option(arbitraryAmount.arbitrary)
-    } yield WriteOff(quantity,amount)
+    } yield WriteOff(quantity, amount)
   }
 
   implicit val arbitraryPreviousDocument: Arbitrary[PreviousDocument] = Arbitrary {
@@ -170,7 +193,7 @@ trait Generators {
       lpcoExemptionCode <- option(arbitrary[String].map(_.take(3)))
       submitter <- option(arbitraryGovernmentAgencyGoodsItemAdditionalDocumentSubmitter.arbitrary)
       writeOff <- option(arbitraryWriteOff.arbitrary)
-    } yield GovernmentAgencyGoodsItemAdditionalDocument(categoryCode, effectiveDateTime, id, name, typeCode, lpcoExemptionCode,submitter, writeOff)
+    } yield GovernmentAgencyGoodsItemAdditionalDocument(categoryCode, effectiveDateTime, id, name, typeCode, lpcoExemptionCode, submitter, writeOff)
   }
 
 
@@ -266,22 +289,21 @@ trait Generators {
       statisticalValueAmount, transactionNatureCode, destination, ucr, exportCountry, valuationAdjustment)
   }
 
-    implicit val arbitraryGovernmentAgencyGoodsItem: Arbitrary[GovernmentAgencyGoodsItem] = Arbitrary {
+  implicit val arbitraryGovernmentAgencyGoodsItem: Arbitrary[GovernmentAgencyGoodsItem] = Arbitrary {
     for {
       goodsItemValue <- option(arbitraryGoodsItemValueInformation.arbitrary)
-      additionalDocuments <- Gen.listOfN(1,arbitraryGovernmentAgencyGoodsItemAdditionalDocument.arbitrary)
-      additionalInformations  <-  Gen.listOfN(1, arbitraryAdditionalInfo.arbitrary)
-      aeoMutualRecognitionParties  <-  Gen.listOfN(1, arbitraryRoleBasedParty.arbitrary)
-      domesticParties  <-  Gen.listOfN(1, arbitraryRoleBasedParty.arbitrary)
-      governmentProcedures  <-  Gen.listOfN(1, arbitraryGovernmentProcedure.arbitrary)
-      manufacturers  <-  Gen.listOfN(1, arbitraryNamedEntityWithAddress.arbitrary)
-      origins  <-  Gen.listOfN(1, arbitraryOrigin.arbitrary)
-      packagings  <-  Gen.listOfN(1, arbitraryPackaging.arbitrary)
-      previousDocuments  <-  Gen.listOfN(1, arbitraryPreviousDocument.arbitrary)
-    } yield GovernmentAgencyGoodsItem(goodsItemValue,additionalDocuments, additionalInformations,aeoMutualRecognitionParties,
-      domesticParties, governmentProcedures, manufacturers, origins , packagings, previousDocuments)
+      additionalDocuments <- Gen.listOfN(1, arbitraryGovernmentAgencyGoodsItemAdditionalDocument.arbitrary)
+      additionalInformations <- Gen.listOfN(1, arbitraryAdditionalInfo.arbitrary)
+      aeoMutualRecognitionParties <- Gen.listOfN(1, arbitraryRoleBasedParty.arbitrary)
+      domesticParties <- Gen.listOfN(1, arbitraryRoleBasedParty.arbitrary)
+      governmentProcedures <- Gen.listOfN(1, arbitraryGovernmentProcedure.arbitrary)
+      manufacturers <- Gen.listOfN(1, arbitraryNamedEntityWithAddress.arbitrary)
+      origins <- Gen.listOfN(1, arbitraryOrigin.arbitrary)
+      packagings <- Gen.listOfN(1, arbitraryPackaging.arbitrary)
+      previousDocuments <- Gen.listOfN(1, arbitraryPreviousDocument.arbitrary)
+    } yield GovernmentAgencyGoodsItem(goodsItemValue, additionalDocuments, additionalInformations, aeoMutualRecognitionParties,
+      domesticParties, governmentProcedures, manufacturers, origins, packagings, previousDocuments)
   }
-
 
 
   def intGreaterThan(min: Int): Gen[Int] =

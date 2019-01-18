@@ -22,56 +22,62 @@
 @(form:Form[_], guarantees: Seq[ObligationGuarantee])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
-    title = messages("obligationGuarantees.title"),
-    bodyClasses = None) {
+  title = messages("obligationGuarantees.title"),
+  bodyClasses = None, mainClass = Some("full-width")) {
 
-    @helpers.form(action = ObligationGuaranteeController.submit()) {
+  @helpers.form(action = ObligationGuaranteeController.submit()) {
 
-@components.back_link("deferred-payment")
+		@components.back_link("deferred-payment")
 
-<h2 class="heading-medium">Obligation Guarantees</h2>
+		<legend>
+			<h1>@messages("obligationGuarantees.title")</h1>
+		</legend>
 
-@if(guarantees.nonEmpty) {
- Obligation Guarantees added : <td scope="row">@guarantees.size</td>
+		@if(guarantees.nonEmpty) {
+		 <p>@guarantees.size @messages("obligationGuarantees.obligationGuaranteesAdded")</p>
 
-<table>
- <thead>
- <th scope="col">Amount</th>
- <th scope="col">id</th>
- <th scope="col">ReferenceId</th>
- <th scope="col">SecurityDetailsCode</th>
- <th scope="col">AccessCode</th>
- <th scope="col">Guarantor Office Id</th>
- </thead>
- <tbody>
- @for(item <- guarantees) {
- <tr>
-  <td scope="row">@item.amount</td>
-  <td scope="row">@item.id</td>
-  <td scope="row">@item.referenceId</td>
-  <td scope="row">@item.securityDetailsCode</td>
-  <td scope="row">@item.accessCode</td>
-  <td scope="row">@item.guaranteeOffice.map(_.id)</td>
- </tr>
- }
- </tbody>
-</table>
-} else {
-<p>No Obligation Guarantees Added</p>
+			<table class="form-group">
+				<thead>
+					<tr>
+						<th scope="col">@messages("obligationGuarantees.amount")</th>
+						<th scope="col">@messages("obligationGuarantees.id")</th>
+						<th scope="col">@messages("obligationGuarantees.referenceId")</th>
+						<th scope="col">@messages("obligationGuarantees.securityDetailsCode")</th>
+						<th scope="col">@messages("obligationGuarantees.accessCode")</th>
+						<th scope="col">@messages("obligationGuarantees.guarantorOfficeId")</th>
+					</tr>
+			  </thead>
+			  <tbody>
+			 	@for(item <- guarantees) {
+					<tr>
+						<td scope="row">@item.amount</td>
+						<td>@item.id</td>
+						<td>@item.referenceId</td>
+						<td>@item.securityDetailsCode</td>
+						<td>@item.accessCode</td>
+						<td>@item.guaranteeOffice.map(_.id)</td>
+					</tr>
+				}
+			 </tbody>
+			</table>
+		} else {
+			<p>@messages("obligationGuarantees.noObligationGuaranteesAdded")</p>
+		}
 
-}
+		<div class="grid-row">
+			<div class="column-two-thirds">
+				<fieldset>
+					@components.input_text(field = form("amount"),label = messages("obligationGuarantees.amount"))
+					@components.input_text(field = form("id"),label = messages("obligationGuarantees.id"))
+					@components.input_text(field = form("referenceId"),label = messages("obligationGuarantees.referenceId"))
+					@components.input_text(field = form("securityDetailsCode"),label = messages("obligationGuarantees.securityDetailsCode"))
+					@components.input_text(field = form("accessCode"),label = messages("obligationGuarantees.accessCode"))
+					@components.input_text(field = form("guaranteeOffice.get.id"),label = messages("obligationGuarantees.guarantorOfficeId"))
+				</fieldset>
 
-@components.input_text(field = form("amount"),label = "Amount")
-@components.input_text(field = form("id"),label = "Id")
-@components.input_text(field = form("referenceId"),label = "ReferenceId")
-@components.input_text(field = form("securityDetailsCode"),label = "SecurityDetailsCode")
-@components.input_text(field = form("accessCode"),label = "AccessCode")
-@components.input_text(field = form("guaranteeOffice.get.id"),label = "Guarantor Office Id")
-
-
-<div class="section">
- <button class="button" id="Add" value="Add" name = "submit">Add Obligation Guarantees</button>
- <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
-</div>
-}
+				<button id="Add" value="Add" name = "submit">@messages("obligationGuarantees.addObligationGuarantees")</button>
+				<button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+			</div>
+		</div>
+	}
 }

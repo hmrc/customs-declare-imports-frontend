@@ -181,10 +181,10 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
           includesHtmlInput(resp, "customsValueAmount", value = sampleData.value.customsValueAmount.getOrElse("").toString)
           includesHtmlInput(resp, "sequenceNumeric", value = sampleData.value.sequenceNumeric.toString)
           includesHtmlInput(resp, "statisticalValueAmount.currencyId",
-            value = sampleData.value.statisticalValueAmount.value.currencyId.value.toString)
+            value = sampleData.value.statisticalValueAmount.value.currencyId.getOrElse("").toString)
           includesHtmlInput(resp, "statisticalValueAmount.value",
-            value = sampleData.value.statisticalValueAmount.value.value.value.toString)
-          includesHtmlInput(resp, "transactionNatureCode", value = sampleData.value.transactionNatureCode.value.toString)
+            value = sampleData.value.statisticalValueAmount.value.value.getOrElse("").toString)
+          includesHtmlInput(resp, "transactionNatureCode", value = sampleData.value.transactionNatureCode.getOrElse("").toString)
         }
       }
     }
