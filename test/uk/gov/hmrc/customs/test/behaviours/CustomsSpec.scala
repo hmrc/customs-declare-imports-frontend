@@ -25,10 +25,11 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.Application
-import play.api.i18n.MessagesApi
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.concurrent.Execution.Implicits
+import play.api.test.FakeRequest
 import services.CustomsCacheService
 import uk.gov.hmrc.customs.test.{CustomsFixtures, CustomsFutures}
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -44,7 +45,10 @@ trait CustomsSpec extends PlaySpec
   implicit lazy val mat: Materializer = app.materializer
   implicit lazy val ec: ExecutionContext = Implicits.defaultContext
   implicit lazy val appConfig: AppConfig = component[AppConfig]
-  implicit lazy val messages: MessagesApi = component[MessagesApi]
+  implicit lazy val messagesApi: MessagesApi = component[MessagesApi]
+  implicit lazy val messages: Messages = messagesApi.preferred(fakeRequest)
+
+  lazy val fakeRequest = FakeRequest("", "")
 
   override lazy val app: Application = customise(GuiceApplicationBuilder()).build()
 

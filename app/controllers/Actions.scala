@@ -16,8 +16,9 @@
 
 package controllers
 
+import com.google.inject.ImplementedBy
 import config.{AppConfig, ErrorHandler}
-import domain.auth.{AuthenticatedRequest, SignedInUser}
+import domain.auth.{AuthenticatedRequest, EORIRequest, SignedInUser}
 import domain.features.Feature.Feature
 import domain.features.FeatureStatus
 import javax.inject.{Inject, Singleton}
@@ -33,10 +34,22 @@ import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-class Actions @Inject()(authConnector: AuthConnector, errorHandler: ErrorHandler)(implicit val appConfig: AppConfig, ec: ExecutionContext) {
+@ImplementedBy(classOf[ActionsImpl])
+trait Actions {
 
-  def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] = AuthAction(authConnector)
+  def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest]
+
+  def eori: ActionRefiner[AuthenticatedRequest, EORIRequest]
+
+  def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request]
+}
+
+@Singleton
+class ActionsImpl @Inject()(authConnector: AuthConnector, errorHandler: ErrorHandler)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends Actions {
+
+  def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] = new AuthAction(authConnector)
+
+  def eori: ActionRefiner[AuthenticatedRequest, EORIRequest] = new EORIAction(errorHandler)
 
   def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request] = new ActionBuilder[Request] with ActionFilter[Request] {
 
@@ -47,12 +60,10 @@ class Actions @Inject()(authConnector: AuthConnector, errorHandler: ErrorHandler
         case FeatureStatus.suspended => Some(ServiceUnavailable(errorHandler.notFoundTemplate(input)))
       }
     )
-
   }
-
 }
 
-case class AuthAction(auth: AuthConnector)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] with AuthorisedFunctions with AuthRedirects {
+class AuthAction(auth: AuthConnector)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] with AuthorisedFunctions with AuthRedirects {
 
   override def authConnector: AuthConnector = auth
 
@@ -70,4 +81,13 @@ case class AuthAction(auth: AuthConnector)(implicit val appConfig: AppConfig, ec
       }
   }
 
+}
+
+class EORIAction(errorHandler: ErrorHandler) extends ActionRefiner[AuthenticatedRequest, EORIRequest] {
+
+  override protected def refine[A](request: AuthenticatedRequest[A]): Future[Either[Result, EORIRequest[A]]] =
+    Future.successful(
+      request.user.eori
+        .map(EORIRequest(request, _))
+        .toRight(Unauthorized(errorHandler.notFoundTemplate(request))))
 }

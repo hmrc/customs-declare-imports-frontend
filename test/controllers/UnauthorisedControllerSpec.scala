@@ -38,7 +38,7 @@ class UnauthorisedControllerSpec extends CustomsSpec
     }
 
     "display message" in withRequest(method, uri) { resp =>
-      contentAsHtml(resp) should include element withName("h1").withValue(messages("enrolmentpage.titleAndHeading"))
+      contentAsHtml(resp) should include element withName("h1").withValue(messagesApi("enrolmentpage.titleAndHeading"))
     }
 
   }

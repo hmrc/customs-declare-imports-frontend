@@ -22,13 +22,13 @@ import org.scalacheck.Gen._
 import org.scalatest.enablers.Length
 import uk.gov.hmrc.wco.dec.{AdditionalInformation, Pointer}
 
-trait Generators {
+trait Generators extends SignedInUserGen {
   
   implicit val arbitraryAdditionalInfo: Arbitrary[AdditionalInformation] = Arbitrary {
     for {
-      statementCode         <-  option(arbitrary[String].map(_.take(17)))
-      statementDescription  <-  option(arbitrary[String].map(_.take(512)))
-      statementTypeCode     <-  option(arbitrary[String].map(_.take(3)))
+      statementCode         <- option(arbitrary[String].map(_.take(17)))
+      statementDescription  <- option(arbitrary[String].map(_.take(512)))
+      statementTypeCode     <- option(arbitrary[String].map(_.take(3)))
     } yield AdditionalInformation(statementCode, statementDescription, statementTypeCode)
   }
 
