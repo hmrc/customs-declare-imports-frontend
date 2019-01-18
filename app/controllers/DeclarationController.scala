@@ -28,10 +28,11 @@ import services.{CustomsCacheService, CustomsDeclarationsConnector}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, MetaData}
+import uk.gov.hmrc.wco.dec.{GoodsShipment, GovernmentAgencyGoodsItem, MetaData}
 import domain.ObligationGuarantee._
 import forms.ObligationGuaranteeForm
 import domain.DeclarationFormats._
+
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -147,8 +148,12 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
           seller = rec.seller,
           ucr = rec.goodsItemValue.get.ucr,
           valuationAdjustment = rec.goodsItemValue.get.valuationAdjustment))
-      val goodsShipmentNew = metaData.declaration.goodsShipment.map(rec => rec.copy(governmentAgencyGoodsItems = decGoodsItems))
-      metaData.copy(declaration = metaData.declaration.copy(goodsShipment = goodsShipmentNew, obligationGuarantees = obligationGuaranteeForm.get.guarantees))
+
+      val goodsShipmentNew = metaData
+        .declaration
+        .flatMap(_.goodsShipment.map(rec => rec.copy(governmentAgencyGoodsItems = decGoodsItems)))
+
+      metaData.copy(declaration = metaData.declaration.map(_.copy(goodsShipment = goodsShipmentNew, obligationGuarantees = obligationGuaranteeForm.get.guarantees)))
     }))
   }
 
