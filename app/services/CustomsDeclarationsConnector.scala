@@ -95,7 +95,7 @@ class CustomsDeclarationsConnectorImpl @Inject()(appConfig: AppConfig,
       Submission(
         eori = user.requiredEori,
         conversationId = resp.conversationId,
-        meta.declaration.functionalReferenceId
+        meta.declaration.flatMap(_.functionalReferenceId)
       )
     ).map(_ => resp)
 

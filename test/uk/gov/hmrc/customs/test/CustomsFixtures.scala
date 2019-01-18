@@ -45,9 +45,9 @@ trait CustomsFixtures {
     )
   )
 
-  protected def randomSubmitDeclaration: MetaData = MetaData(declaration = Declaration(
+  protected def randomSubmitDeclaration: MetaData = MetaData(declaration = Some(Declaration(
     functionalReferenceId = Some(randomString(35))
-  ))
+  )))
 
   protected def randomCancelDeclaration: MetaData = MetaData(
     wcoDataModelVersionCode = Some(randomString(6)),
@@ -55,7 +55,7 @@ trait CustomsFixtures {
     responsibleCountryCode = Some(randomISO3166Alpha2CountryCode),
     responsibleAgencyName = Some(randomString(70)),
     agencyAssignedCustomizationVersionCode = Some(randomString(3)),
-    declaration = Declaration(
+    declaration = Some(Declaration(
       typeCode = Some("INV"), // ONLY acceptable value for a cancellation
       functionCode = Some(13), // ONLY acceptable value for a cancellation
       functionalReferenceId = Some(randomString(35)),
@@ -66,7 +66,7 @@ trait CustomsFixtures {
       amendments = Seq(Amendment(
         changeReasonCode = Some(randomString(3))
       ))
-    )
+    ))
   )
 
   protected def randomConversationId: String = UUID.randomUUID().toString
