@@ -38,23 +38,25 @@
 
 			<table class="form-group">
 				<thead>
-					<th scope="col">@messages("obligationGuarantees.amount")</th>
-					<th scope="col">@messages("obligationGuarantees.id")</th>
-					<th scope="col">@messages("obligationGuarantees.referenceId")</th>
-					<th scope="col">@messages("obligationGuarantees.securityDetailsCode")</th>
-					<th scope="col">@messages("obligationGuarantees.accessCode")</th>
-					<th scope="col">@messages("obligationGuarantees.guarantorOfficeId")</th>
-			 </thead>
-			 <tbody>
+					<tr>
+						<th scope="col">@messages("obligationGuarantees.amount")</th>
+						<th scope="col">@messages("obligationGuarantees.id")</th>
+						<th scope="col">@messages("obligationGuarantees.referenceId")</th>
+						<th scope="col">@messages("obligationGuarantees.securityDetailsCode")</th>
+						<th scope="col">@messages("obligationGuarantees.accessCode")</th>
+						<th scope="col">@messages("obligationGuarantees.guarantorOfficeId")</th>
+					</tr>
+			  </thead>
+			  <tbody>
 			 	@for(item <- guarantees) {
-				 <tr>
-				  <td scope="row">@item.amount</td>
-				  <td>@item.id</td>
-				  <td>@item.referenceId</td>
-				  <td>@item.securityDetailsCode</td>
-				  <td>@item.accessCode</td>
-				  <td>@item.guaranteeOffice.map(_.id)</td>
-				 </tr>
+					<tr>
+						<td scope="row">@item.amount</td>
+						<td>@item.id</td>
+						<td>@item.referenceId</td>
+						<td>@item.securityDetailsCode</td>
+						<td>@item.accessCode</td>
+						<td>@item.guaranteeOffice.map(_.id)</td>
+					</tr>
 				}
 			 </tbody>
 			</table>
