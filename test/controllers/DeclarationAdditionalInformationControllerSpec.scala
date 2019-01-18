@@ -48,7 +48,7 @@ class DeclarationAdditionalInformationControllerSpec extends CustomsSpec
     new DeclarationAdditionalInformationController(new FakeActions(user), cacheService)
 
   def view(form: Form[AdditionalInformation], additionalInformation: List[AdditionalInformation]): Html =
-    declaration_additional_information(form)
+    declaration_additional_information(form, additionalInformation)(fakeRequest, messages, appConfig)
 
   ".onPageLoad" should {
 

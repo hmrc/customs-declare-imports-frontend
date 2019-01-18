@@ -18,6 +18,7 @@ package controllers
 
 import forms.DeclarationFormMapping._
 import com.google.inject.Inject
+import config.AppConfig
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -28,15 +29,15 @@ import views.html.declaration_additional_information
 import domain.DeclarationFormats._
 
 class DeclarationAdditionalInformationController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-                                                          (implicit val messagesApi: MessagesApi)
+                                                          (implicit val messagesApi: MessagesApi, appConfig: AppConfig)
   extends FrontendController with I18nSupport {
 
   lazy val form = Form(additionalInformationMapping)
 
   def onPageLoad(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>
-      cacheService.fetchAndGetEntry[List[AdditionalInformation]](request.eori, "DeclarationAdditionalInformation").map { additionalInformation =>
-        Ok(declaration_additional_information(form))
+      cacheService.fetchAndGetEntry[Seq[AdditionalInformation]](request.eori, "DeclarationAdditionalInformation").map { additionalInformation =>
+        Ok(declaration_additional_information(form, additionalInformation.getOrElse(Seq.empty)))
       }
   }
 }
