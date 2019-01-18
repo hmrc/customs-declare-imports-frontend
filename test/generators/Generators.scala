@@ -23,13 +23,16 @@ import org.scalatest.enablers.Length
 import uk.gov.hmrc.wco.dec.{AdditionalInformation, Pointer}
 
 trait Generators {
-  
+
+  val alphaNumRegEx = "^[a-zA-Z0-9_]*$"
+
   implicit val arbitraryAdditionalInfo: Arbitrary[AdditionalInformation] = Arbitrary {
     for {
-      statementCode         <-  option(arbitrary[String].map(_.take(17)))
-      statementDescription  <-  option(arbitrary[String].map(_.take(512)))
-      statementTypeCode     <-  option(arbitrary[String].map(_.take(3)))
-    } yield AdditionalInformation(statementCode, statementDescription, statementTypeCode)
+      statementCode <- option(string.map(_.take(17)))
+      statementDescription <- option(string.map(_.take(512)))
+      limitDateTime <- option(string.map(_.take(35)))
+      statementTypeCode <- option(string.map(_.take(3)))
+    } yield AdditionalInformation(statementCode, statementDescription, limitDateTime, statementTypeCode)
   }
 
   def intGreaterThan(min: Int): Gen[Int] =
@@ -43,5 +46,17 @@ trait Generators {
       i <- choose(length, length + 500)
       n <- listOfN(i, arbitrary[Char])
     } yield n.mkString
+
+  val string: Gen[String] = Gen.alphaNumStr
+
+  val nonAlphaNumericChar: Gen[Char] = {
+    val a = choose(Char.MinValue, 47.toChar)
+    val b = choose(58.toChar, 64.toChar)
+    val c = choose(91.toChar, 96.toChar)
+    val d = choose(123.toChar, Char.MaxValue)
+    oneOf(a, b, c, d)
+  }
+
+  val nonAlphaNumString: Gen[String] = listOf(nonAlphaNumericChar).map(_.mkString)
 
 }
