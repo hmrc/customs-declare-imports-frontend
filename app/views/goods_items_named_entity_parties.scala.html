@@ -29,8 +29,7 @@
 
 <h2 class="heading-medium">Government Agency Goods Item Manufacturers	</h2>
 @if(namedEntityParties.nonEmpty) {
-No of Manufacturers added : <td scope="row">@namedEntityParties.size</td>
-
+<p>@namedEntityParties.size Manufacturers added</p>
 <table>
     <thead>
     <th scope="col">Id</th>
@@ -58,7 +57,7 @@ No of Manufacturers added : <td scope="row">@namedEntityParties.size</td>
     </tbody>
 </table>
 } else {
-<p>No  Manufacturers available</p>
+<p>No Manufacturers available</p>
 }
 
 @components.input_text(field = form("id"),label = "id")

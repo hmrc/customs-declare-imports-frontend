@@ -19,6 +19,7 @@ package forms
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
@@ -138,7 +139,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
     "return true for a valid format" in {
 
-      forAll(string) { validString: String =>
+      forAll(alphaNumStr) { validString: String =>
         validString.matches(alphaNum) mustBe true
       }
     }

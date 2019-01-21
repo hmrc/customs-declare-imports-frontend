@@ -17,10 +17,11 @@
 package controllers
 
 import config.ErrorHandler
-import domain.auth.{AuthenticatedRequest, EORIRequest, SignedInUser}
+import domain.auth.{AuthenticatedRequest, SignedInUser}
 import domain.features.Feature
 import domain.features.Feature.Feature
 import generators.Generators
+import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent}

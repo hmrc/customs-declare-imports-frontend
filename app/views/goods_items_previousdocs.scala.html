@@ -29,7 +29,7 @@
 
 <h2 class="heading-medium">Government Agency Goods Item Previous Documents</h2>
 @if(docs.nonEmpty) {
-    No of Goods Item Previous Documents added : <td scope="row">@docs.size</td>
+<p>@docs.size Goods Item Previous Documents added</p>
     <table>
         <thead>
         <th scope="col">Category Code</th>
@@ -49,7 +49,7 @@
         </tbody>
     </table>
     } else {
-        <p>No  Previous Documents available</p>
+        <p>No Previous Documents available</p>
     }
 
 @components.input_text(field = form("categoryCode"),label = "Category Code")

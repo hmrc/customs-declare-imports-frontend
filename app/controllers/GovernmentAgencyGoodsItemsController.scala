@@ -198,7 +198,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
     implicit req =>
       cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](req.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).map { res =>
         val docs: Seq[AdditionalInformation] = if (res.isDefined) {
-          res.get.additionalInformations.toList
+          res.get.additionalInformations
         } else Seq.empty
         Ok(views.html.goods_items_add_additional_informations(additionalInformationform, docs))
       }
