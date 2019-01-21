@@ -321,3 +321,30 @@ obligationGuarantees.accessCode=Access code
 obligationGuarantees.guarantorOfficeId=Guarantor office ID
 obligationGuarantees.obligationGuaranteesAdded=obligation guarantees added.
 obligationGuarantees.addObligationGuarantees=Add obligation guarantees
+
+## Government agency goods item
+governmentAgencyGoodsItem.title=Government agency goods item
+governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
+governmentAgencyGoodsItem.additionalDocuments=Additional documents
+governmentAgencyGoodsItem.additionalInformation=Additional information
+governmentAgencyGoodsItem.mutualRecognitionParties=Mutual recognition parties
+governmentAgencyGoodsItem.domesticDutyParties=Domestic duty parties
+governmentAgencyGoodsItem.governmentProcedures=Government procedures
+governmentAgencyGoodsItem.originOfGoods=Origin of goods
+governmentAgencyGoodsItem.manufacturers=Manufacturers
+governmentAgencyGoodsItem.packagings=Packagings
+governmentAgencyGoodsItem.previousDocuments=Previous documents
+governmentAgencyGoodsItem.refundRecipientParties=Refund recipient parties
+governmentAgencyGoodsItem.addGoodsItem=Add goods item
+governmentAgencyGoodsItem.numberGovAgencyGoodsItems=No of Government Agency Goods Items Added:
+
+governmentAgencyGoodsItemAdd.title=Government Agency Goods Item Additional Documents
+governmentAgencyGoodsItemAdd.countryCode=Country code
+governmentAgencyGoodsItemAdd.documentName=Document name
+governmentAgencyGoodsItemAdd.id=ID
+governmentAgencyGoodsItemAdd.typeCodeOfDocument=Type code of document
+governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument=LPCO exemption code of document
+governmentAgencyGoodsItemAdd.submitterName=Submitter name
+governmentAgencyGoodsItemAdd.submitterRoleCode=Submitter role code
+governmentAgencyGoodsItemAdd.addDocuments=Add Documents
+governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs=No of Goods Item additional docs added:

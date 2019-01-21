@@ -22,53 +22,55 @@
 @(govAgencyGoodsItems: Seq[GovernmentAgencyGoodsItem])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
-    title = messages("cancel.title"),
+    title = messages("governmentAgencyGoodsItem.title"),
     bodyClasses = None) {
+
+    <h1 class="heading-large">@messages("governmentAgencyGoodsItem.title")</h1>
 
     @helpers.form(action = GovernmentAgencyGoodsItemsController.submitGoodsItems()) {
 
+        @if(govAgencyGoodsItems.nonEmpty) {
+            <p>@messages("governmentAgencyGoodsItem.numberGovAgencyGoodsItems") @govAgencyGoodsItems.size</p>
 
-<h2 class="heading-medium"> Government Agency Goods Items </h2>
-@if(govAgencyGoodsItems.nonEmpty) {
-<p>@govAgencyGoodsItems.size Government Agency Goods Items Added</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.additionalDocuments")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.additionalInformation")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.mutualRecognitionParties")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.domesticDutyParties")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.governmentProcedures")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.originOfGoods")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.manufacturers")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.packagings")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.previousDocuments")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.refundRecipientParties")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(goodsItem <- govAgencyGoodsItems) {
+                    <tr>
+                        <td scope="row">@goodsItem.additionalDocuments.size</td>
+                        <td>@goodsItem.additionalInformations.size</td>
+                        <td>@goodsItem.aeoMutualRecognitionParties.size</td>
+                        <td>@goodsItem.domesticDutyTaxParties.size</td>
+                        <td>@goodsItem.governmentProcedures.size</td>
+                        <td>@goodsItem.origins.size</td>
+                        <td>@goodsItem.manufacturers.size</td>
+                        <td>@goodsItem.packagings.size</td>
+                        <td>@goodsItem.previousDocuments.size</td>
+                        <td>@goodsItem.refundRecipientParties.size</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        } else {
+            <p>@messages("governmentAgencyGoodsItem.noGoodsShipment")</p>
+        }
 
-<table>
-    <thead>
-    <th scope="col">Additional Docs</th>
-    <th scope="col">Additional Information</th>
-    <th scope="col">Mutual recognition Parties</th>
-    <th scope="col">Domestic Duty Parties</th>
-    <th scope="col">Government Procedures</th>
-    <th scope="col">Origin of goods</th>
-    <th scope="col">Manufacturers</th>
-    <th scope="col">Packagings</th>
-    <th scope="col">Previous Documents</th>
-    <th scope="col"> Refund Recipient Parties</th>
-    </thead>
-    <tbody>
-    @for(goodsItem <- govAgencyGoodsItems) {
-    <tr>
-        <td scope="col">@goodsItem.additionalDocuments.size</td>
-        <td scope="col">@goodsItem.additionalInformations.size</td>
-        <td scope="col">@goodsItem.aeoMutualRecognitionParties.size</td>
-        <td scope="col">@goodsItem.domesticDutyTaxParties.size</td>
-        <td scope="col">@goodsItem.governmentProcedures.size</td>
-        <td scope="col">@goodsItem.origins.size</td>
-        <td scope="col">@goodsItem.manufacturers.size</td>
-        <td scope="col">@goodsItem.packagings.size</td>
-        <td scope="col">@goodsItem.previousDocuments.size</td>
-        <td scope="col">@goodsItem.refundRecipientParties.size</td>
-    </tr>
+        <div class="section">
+            <button id="AddGAGIAddDoc" value="AddGoodsItem" name = "submit" class="button">@messages("governmentAgencyGoodsItem.addGoodsItem")</button>
+            <button class="button" type="next" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+        </div>
     }
-    </tbody>
-</table>
-} else {
-<p>No Goods Shipments available</p>
-
-}
-<div class="section">
-    <button id="AddGAGIAddDoc" value="AddGoodsItem" name = "submit" class="button">Add Goods Item</button>
-    <button class="button" type="next" id="next" name="submit" value="next">@messages("common.button.continue")</button>
-</div>
-}
 }
