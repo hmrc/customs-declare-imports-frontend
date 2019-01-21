@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-package domain
+package uk.gov.hmrc.customs.test
 
-import play.api.libs.json.Json
-import uk.gov.hmrc.wco.dec.Pointer
+import org.scalatest.matchers.{MatchResult, Matcher}
+import play.api.data.FormError
 
-object Declaration {
+trait FormMatchers {
 
-  implicit val pointerFormats = Json.format[Pointer]
+  class ErrorHasMessage(right: String) extends Matcher[Option[FormError]] {
+
+    override def apply(left: Option[FormError]): MatchResult =
+      MatchResult(
+        left.exists(_.message == right),
+        s""""$left" does not contains message "$right"""",
+        s""""$left contains message "$right""""
+      )
+  }
+
+  def haveMessage(right: String) = new ErrorHasMessage(right)
 }

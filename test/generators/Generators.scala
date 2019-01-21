@@ -29,9 +29,8 @@ trait Generators extends SignedInUserGen {
     for {
       statementCode <- option(string.map(_.take(17)))
       statementDescription <- option(string.map(_.take(512)))
-      limitDateTime <- option(string.map(_.take(35)))
       statementTypeCode <- option(string.map(_.take(3)))
-    } yield AdditionalInformation(statementCode, statementDescription, limitDateTime, statementTypeCode)
+    } yield AdditionalInformation(statementCode, statementDescription, None, statementTypeCode)
   }
 
   def intGreaterThan(min: Int): Gen[Int] =

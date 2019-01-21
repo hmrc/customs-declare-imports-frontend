@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package services.cachekeys
+package uk.gov.hmrc.customs.test
 
-import uk.gov.hmrc.wco.dec.AdditionalInformation
+import org.scalatest.matchers.{MatchResult, Matcher}
+import play.twirl.api.Html
 
-object AdditionalInformationId {
+trait ViewMatchers {
 
-  case object KeyId extends Identifier[Seq[AdditionalInformation]]
+  class HtmlContains(right: Html) extends Matcher[Html] {
+    override def apply(left: Html): MatchResult =
+      MatchResult(
+        left.toString.contains(right.toString()),
+        s""""${left.toString.take(100)}" did not contain "${right.toString.take(100)}"""",
+        s""""${left.toString.take(100)}" contained "${right.toString.take(100)}"""")
+  }
 
-  val declaration = CacheKey("DeclarationAdditionalInformation", KeyId)
+  def include(right: Html) = new HtmlContains(right)
 }

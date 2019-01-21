@@ -16,15 +16,14 @@
 
 package forms
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import domain.GoodsItemValueInformation
-import play.api.data.{Form, Mapping}
 import play.api.data.Forms._
+import play.api.data.Mapping
 import uk.gov.hmrc.wco.dec._
 
 object DeclarationFormMapping{
 
-  val alphaNumRegEx = "^[a-zA-Z0-9_]*$"
+  val alphaNum = "^[a-zA-Z0-9_]*$"
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text),
@@ -53,29 +52,15 @@ object DeclarationFormMapping{
 
   lazy val additionalInformationMapping = mapping(
     "statementCode" -> optional(text
-      .verifying("statement Code should be less than or equal to 17 characters", _.length <= 17))
-      .verifying("Incorrect format", x => validateAlphNumFieldFormat(x)),
-    "statementDescription" -> optional(text.verifying("statement Description should be less than or equal to 512 characters", _.length <= 512))
-      .verifying("Incorrect format", x => validateAlphNumFieldFormat(x)),
-    "limitDateTime" -> optional(text.verifying("limit Date Time should be less than or equal to 35 characters", _.length <= 35)),
-    "statementTypeCode" -> optional(text.verifying("statement Type Code should be less than or equal to 3 characters", _.length <= 3))
-      .verifying("Incorrect format", x => validateAlphNumFieldFormat(x)),
+      .verifying("statement code should be less than or equal to 17 characters", _.length <= 17))
+      .verifying("statement code must be alphanumeric", _.fold(true)(_.matches(alphaNum))),
+    "statementDescription" -> optional(text.verifying("statement description should be less than or equal to 512 characters", _.length <= 512))
+      .verifying("statement description must be alphanumeric", _.fold(true)(_.matches(alphaNum))),
+    "limitDateTime" -> ignored[Option[String]](None),
+    "statementTypeCode" -> optional(text.verifying("statement type code should be less than or equal to 3 characters", _.length <= 3))
+      .verifying("statement type code must be alphanumeric", _.fold(true)(_.matches(alphaNum))),
     "pointers" -> ignored[Seq[Pointer]](Seq.empty)
   )(AdditionalInformation.apply)(AdditionalInformation.unapply)
-
-  def validateAlphNumFieldFormat(optionValue: Option[String]): Boolean = {
-    optionValue match {
-      case Some(value) =>
-        if (value.matches(alphaNumRegEx))true else false
-      case None => true
-    }
-  }
-
-  val pointerMapping: Mapping[Pointer] = mapping(
-    "sequenceNumeric" -> optional(number.verifying("Pointer sequence numeric cannot be less than 0", _ >= 0).verifying("Pointer sequence numeric cannot be greater than 99999", _ <= 99999)),
-    "documentSectionCode" -> optional(text.verifying("Pointer document section code length cannot be greater than 3", _.size <= 3)),
-    "tagId" -> optional(text.verifying("Pointer tag id length cannot be greater than 4", _.size <= 4))
-  )(Pointer.apply)(Pointer.unapply)
 
   val destinationMapping = mapping("countryCode" -> optional(text.verifying("country code is only 3 characters", _.length <= 3)),
     "regionId" -> optional(text.verifying("regionId code is only 9 characters", _.length <= 9)))(Destination.apply)(Destination.unapply)

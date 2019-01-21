@@ -16,32 +16,20 @@
 
 package forms
 
-import DeclarationFormMapping._
+import forms.DeclarationFormMapping._
 import generators.Generators
-import org.scalacheck.Arbitrary
-import org.scalatest.matchers.{MatchResult, Matcher}
+import org.scalacheck.Arbitrary._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
-import play.api.data.{Form, FormError}
-import uk.gov.hmrc.wco.dec.{AdditionalInformation, Pointer}
-import org.scalacheck.Arbitrary._
+import play.api.data.Form
+import uk.gov.hmrc.customs.test.FormMatchers
+import uk.gov.hmrc.wco.dec.AdditionalInformation
 
 class DeclarationFormMappingSpec extends WordSpec
   with MustMatchers
   with PropertyChecks
-  with Generators {
-
-  class ErrorHasMessage(right: String) extends Matcher[Option[FormError]] {
-
-    override def apply(left: Option[FormError]): MatchResult =
-      MatchResult(
-        left.exists(_.message == right),
-        s""""$left" does not contains message "$right"""",
-        s""""$left contains message "$right""""
-      )
-  }
-
-  def haveMessage(right: String) = new ErrorHasMessage(right)
+  with Generators
+  with FormMatchers {
 
   "additionalInformationForm" should {
 
@@ -52,7 +40,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll { additionalInfo: AdditionalInformation =>
 
           Form(additionalInformationMapping).fillAndValidate(additionalInfo).fold(
-              _          => fail("Test should not fail"),
+              error      => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
               result     => result mustBe additionalInfo
           )
         }
@@ -65,7 +53,7 @@ class DeclarationFormMappingSpec extends WordSpec
           forAll(arbitrary[AdditionalInformation], minStringLength(17)) { (additionalInfo, invalidCode) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementCode = Some(invalidCode))).fold(
-              error => error.error("statementCode") must haveMessage("statement Code should be less than or equal to 17 characters"),
+              error => error.error("statementCode") must haveMessage("statement code should be less than or equal to 17 characters"),
               _     => fail("Should not succeed")
             )
           }
@@ -79,7 +67,7 @@ class DeclarationFormMappingSpec extends WordSpec
               whenever(invalidCode.nonEmpty) {
 
                 Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementCode = Some(invalidCode))).fold(
-                  error => error.error("statementCode") must haveMessage("Incorrect format"),
+                  error => error.error("statementCode") must haveMessage("statement code must be alphanumeric"),
                   _     => fail("Should not succeed")
                 )
               }
@@ -94,7 +82,7 @@ class DeclarationFormMappingSpec extends WordSpec
           forAll(arbitrary[AdditionalInformation], minStringLength(512))  { (additionalInfo, invalidDescription) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementDescription = Some(invalidDescription))).fold(
-              error => error.error("statementDescription") must haveMessage("statement Description should be less than or equal to 512 characters"),
+              error => error.error("statementDescription") must haveMessage("statement description should be less than or equal to 512 characters"),
               _     => fail("Should not succeed")
             )
           }
@@ -108,24 +96,10 @@ class DeclarationFormMappingSpec extends WordSpec
               whenever(invalidDescription.nonEmpty) {
 
                 Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementDescription = Some(invalidDescription))).fold(
-                  error => error.error("statementDescription") must haveMessage("Incorrect format"),
+                  error => error.error("statementDescription") must haveMessage("statement description must be alphanumeric"),
                   _ => fail("Should not succeed")
                 )
             }
-          }
-        }
-      }
-
-      "fail with invalid limit date time" when {
-
-        "limit date time length is greater than 35" in {
-
-          forAll(arbitrary[AdditionalInformation], minStringLength(35)) {(additionalInfo, invalidLimitDateTime) =>
-
-            Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(limitDateTime = Some(invalidLimitDateTime))).fold(
-              error => error.error("limitDateTime") must haveMessage("limit Date Time should be less than or equal to 35 characters"),
-              _     => fail("Should not succeed")
-            )
           }
         }
       }
@@ -137,7 +111,7 @@ class DeclarationFormMappingSpec extends WordSpec
           forAll(arbitrary[AdditionalInformation], minStringLength(3))  { (additionalInfo, invalidTypeCode) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementTypeCode = Some(invalidTypeCode))).fold(
-              error => error.error("statementTypeCode") must haveMessage("statement Type Code should be less than or equal to 3 characters"),
+              error => error.error("statementTypeCode") must haveMessage("statement type code should be less than or equal to 3 characters"),
               _     => fail("Should not succeed")
             )
           }
@@ -150,7 +124,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
               whenever(invalidTypeCode.nonEmpty) {
                 Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementTypeCode = Some(invalidTypeCode))).fold(
-                  error => error.error("statementTypeCode") must haveMessage("Incorrect format"),
+                  error => error.error("statementTypeCode") must haveMessage("statement type code must be alphanumeric"),
                   _ => fail("Should not succeed")
                 )
             }
@@ -160,12 +134,12 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
-  "validateAlphNumFieldFormat" should {
+  "alphaNum regular expression" should {
 
     "return true for a valid format" in {
 
       forAll(string) { validString: String =>
-        validString.matches(alphaNumRegEx) mustBe true
+        validString.matches(alphaNum) mustBe true
       }
     }
 
@@ -173,9 +147,8 @@ class DeclarationFormMappingSpec extends WordSpec
 
       forAll(nonAlphaNumString) { invalidString: String =>
 
-
         whenever(invalidString.nonEmpty) {
-          invalidString.matches(alphaNumRegEx) mustBe false
+          invalidString.matches(alphaNum) mustBe false
         }
       }
     }

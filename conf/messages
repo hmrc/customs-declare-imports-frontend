@@ -300,19 +300,6 @@ declaration.goodsShipment.governmentAgencyGoodsItems.packagings.quantityHint=Thi
 declaration.goodsShipment.consignment.transportEquipments.idHint=Marks (letters and/or numbers) which identify the transport container.
 declaration.totalGrossMassMeasure.value=Gross mass
 
-
-##
-additionalInformation.title=Additional information
-additionalInformation.header=Additional information
-additionalInformation.informationNotAvailable=No Additional Information available
-additionalInformation.informationAvailable=Number of Declaration Item additional Information added :
-additionalInformation.statementCode=Statement Code
-additionalInformation.statementDescription=Statement Description
-additionalInformation.limitDateTime=Limit Date Time
-additionalInformation.statementTypeCode=Statement Type Code
-additionalInformation.addAdditionalInformationButton=Add Additional Information
-
-
 ## validations
 alphanumeric.required=This is a mandatory field. It must consist of between {0} and {1} alphanumeric characters
 alphanumeric.optional=When specified, this field cannot be less than {0} or more than {1} characters
