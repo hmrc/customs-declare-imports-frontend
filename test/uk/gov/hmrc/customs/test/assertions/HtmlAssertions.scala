@@ -23,6 +23,7 @@ import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
+import scala.util.matching.Regex
 
 trait HtmlAssertions extends CustomsAssertions with JsoupShouldMatchers {
 
@@ -34,7 +35,7 @@ trait HtmlAssertions extends CustomsAssertions with JsoupShouldMatchers {
     contentAsHtml(in) should include element withName("input").
       withAttrValue("type", `type`).
       withAttrValue("name", name).
-      withAttrValue("value", value)
+      withAttrValueMatching("value", Regex.quote(value))
 
   def includesHtmlLink(in: Future[Result], href: String): Unit =
     contentAsHtml(in) should include element withName("a").
