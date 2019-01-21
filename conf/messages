@@ -347,4 +347,5 @@ governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument=LPCO exemption code of 
 governmentAgencyGoodsItemAdd.submitterName=Submitter name
 governmentAgencyGoodsItemAdd.submitterRoleCode=Submitter role code
 governmentAgencyGoodsItemAdd.addDocuments=Add Documents
-governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs=No of Goods Item additional docs added:
+governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs=No of goods item additional docs added:
+governmentAgencyGoodsItemAdd.noAdditionalDocuments=No additional documents available
