@@ -17,8 +17,12 @@
 package controllers
 
 import config.ErrorHandler
+import domain.auth.{AuthenticatedRequest, SignedInUser}
 import domain.features.Feature
 import domain.features.Feature.Feature
+import generators.Generators
+import org.scalacheck.Gen._
+import org.scalatest.prop.PropertyChecks
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
@@ -28,13 +32,20 @@ import uk.gov.hmrc.play.bootstrap.controller.BaseController
 
 import scala.concurrent.Future
 
-class ActionsSpec extends CustomsSpec with AuthenticationBehaviours with FeatureBehaviours {
+class ActionsSpec extends CustomsSpec
+  with AuthenticationBehaviours
+  with FeatureBehaviours
+  with PropertyChecks
+  with Generators{
 
-  val actions = new Actions(authConnector, component[ErrorHandler])
+  val errorHandler = component[ErrorHandler]
+  val actions = new ActionsImpl(authConnector, errorHandler)
 
   val switchedController = new MySwitchedController(actions, Feature.start)
 
   val authenticatedController = new MyAuthedController(actions)
+
+  val eoriController = new MyEoriController(actions)
 
   "switch action" should {
 
@@ -66,12 +77,46 @@ class ActionsSpec extends CustomsSpec with AuthenticationBehaviours with Feature
 
   }
 
+  "eori action" should {
+
+    "return an eori request when user has eori identifier" in {
+
+      forAll { user: SignedInUser =>
+
+        withSignedInUser(user) { (_, _, _) =>
+
+          val result = call(eoriController.action, fakeRequest)
+
+          status(result) mustBe OK
+          Some(contentAsString(result)) mustBe user.eori
+        }
+      }
+    }
+
+    "return Unauthorized when user does not have an eori" in {
+
+      forAll { user: UnauthenticatedUser =>
+
+        whenever(user.user.enrolments.getEnrolment("HMRC-CUS-ORG").nonEmpty) {
+          withSignedInUser(user.user) { (_, _, _) =>
+
+            val result = call(eoriController.action, fakeRequest)
+            val expectedContent = errorHandler.notFoundTemplate(AuthenticatedRequest(fakeRequest, user.user)).body
+
+            status(result) mustBe UNAUTHORIZED
+            contentAsString(result) mustBe expectedContent
+          }
+        }
+      }
+    }
+  }
+
 }
 
 class MySwitchedController(actions: Actions, val feature: Feature) extends BaseController {
 
   def action: Action[AnyContent] = actions.switch(feature).async { implicit req =>
-    Future.successful(Ok(s"${feature} is enabled"))
+    Future.successful(Ok(s"$feature is enabled"))
   }
 
 }
@@ -81,5 +126,12 @@ class MyAuthedController(actions: Actions) extends BaseController {
   def action: Action[AnyContent] = actions.auth.async { implicit req =>
     Future.successful(Ok(s"${req.user}"))
   }
+}
 
+class MyEoriController(actions: Actions) extends BaseController {
+
+  def action: Action[AnyContent] = (actions.auth andThen actions.eori) {
+    implicit req =>
+      Ok(req.eori.value)
+  }
 }

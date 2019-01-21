@@ -17,11 +17,14 @@
 package forms
 
 import domain.GoodsItemValueInformation
-import play.api.data.Form
 import play.api.data.Forms._
+import play.api.data.Mapping
 import uk.gov.hmrc.wco.dec._
 
 object DeclarationFormMapping{
+
+  val alphaNum = "^[a-zA-Z0-9_]*$"
+
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text),
     "roleCode" -> optional(text.verifying("roleCode is only 3 characters", _.length <= 3))
@@ -47,11 +50,15 @@ object DeclarationFormMapping{
     "writeOff" -> optional(writeOffMapping)
   )(GovernmentAgencyGoodsItemAdditionalDocument.apply)(GovernmentAgencyGoodsItemAdditionalDocument.unapply)
 
-  val additionalInformationMapping = mapping(
-    "statementCode" -> optional(text.verifying("statement Code should be less than or equal to 17 characters", _.length <= 17)),
-    "statementDescription" -> optional(text.verifying("statement Description should be less than or equal to 512 characters", _.length <= 512)),
-    "limitDateTime" -> optional(text),
-    "statementTypeCode" -> optional(text.verifying("statement Type Code should be less than or equal to 3 characters", _.length <= 3)),
+  lazy val additionalInformationMapping = mapping(
+    "statementCode" -> optional(text
+      .verifying("statement code should be less than or equal to 17 characters", _.length <= 17))
+      .verifying("statement code must be alphanumeric", _.fold(true)(_.matches(alphaNum))),
+    "statementDescription" -> optional(text.verifying("statement description should be less than or equal to 512 characters", _.length <= 512))
+      .verifying("statement description must be alphanumeric", _.fold(true)(_.matches(alphaNum))),
+    "limitDateTime" -> ignored[Option[String]](None),
+    "statementTypeCode" -> optional(text.verifying("statement type code should be less than or equal to 3 characters", _.length <= 3))
+      .verifying("statement type code must be alphanumeric", _.fold(true)(_.matches(alphaNum))),
     "pointers" -> ignored[Seq[Pointer]](Seq.empty)
   )(AdditionalInformation.apply)(AdditionalInformation.unapply)
 
@@ -168,6 +175,7 @@ object DeclarationFormMapping{
       "guaranteeOffice" -> optional(officeMapping))(ObligationGuarantee.apply)(ObligationGuarantee.unapply)
 
  val guaranteesFormMapping = mapping("guarantees" -> seq(obligationGauranteeMapping))(ObligationGuaranteeForm.apply)(ObligationGuaranteeForm.unapply)
+
 
 }
 

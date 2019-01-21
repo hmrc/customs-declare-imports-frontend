@@ -23,7 +23,7 @@ import org.scalacheck.Gen._
 import org.scalacheck.{Arbitrary, Gen, Shrink}
 import uk.gov.hmrc.wco.dec._
 
-trait Generators {
+trait Generators extends SignedInUserGen {
 
   implicit val dontShrink: Shrink[String] = Shrink.shrinkAny
 
@@ -118,9 +118,9 @@ trait Generators {
 
   implicit val arbitraryAdditionalInfo: Arbitrary[AdditionalInformation] = Arbitrary {
     for {
-      statementCode <- option(arbitrary[String].map(_.take(17)))
-      statementDescription <- option(arbitrary[String].map(_.take(512)))
-      statementTypeCode <- option(arbitrary[String].map(_.take(3)))
+      statementCode <- option(alphaNumStr.map(_.take(17)))
+      statementDescription <- option(alphaNumStr.map(_.take(512)))
+      statementTypeCode <- option(alphaNumStr.map(_.take(3)))
     } yield AdditionalInformation(statementCode, statementDescription, statementTypeCode)
   }
 
@@ -305,7 +305,6 @@ trait Generators {
       domesticParties, governmentProcedures, manufacturers, origins, packagings, previousDocuments)
   }
 
-
   def intGreaterThan(min: Int): Gen[Int] =
     choose(min + 1, Int.MaxValue)
 
@@ -318,5 +317,13 @@ trait Generators {
       n <- listOfN(i, arbitrary[Char])
     } yield n.mkString
 
+  val nonAlphaNumericChar: Gen[Char] = {
+    val a = choose(Char.MinValue, 47.toChar)
+    val b = choose(58.toChar, 64.toChar)
+    val c = choose(91.toChar, 96.toChar)
+    val d = choose(123.toChar, Char.MaxValue)
+    oneOf(a, b, c, d)
+  }
 
+  val nonAlphaNumString: Gen[String] = listOf(nonAlphaNumericChar).map(_.mkString)
 }

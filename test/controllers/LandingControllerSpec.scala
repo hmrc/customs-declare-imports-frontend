@@ -51,7 +51,7 @@ class LandingControllerSpec extends CustomsSpec
     "display message" in withFeatures(enabled(Feature.landing)) {
       withSignedInUser() { (headers, session, tags) =>
         withRequest(method, uri, headers, session, tags) { resp =>
-          contentAsHtml(resp) should include element withName("h1").withValue(messages("common.importDeclarations"))
+          contentAsHtml(resp) should include element withName("h1").withValue(messagesApi("common.importDeclarations"))
         }
       }
     }
