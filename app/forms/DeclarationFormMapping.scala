@@ -18,12 +18,9 @@ package forms
 
 import domain.GoodsItemValueInformation
 import play.api.data.Forms._
-import play.api.data.Mapping
 import uk.gov.hmrc.wco.dec._
 
-object DeclarationFormMapping{
-
-  val alphaNum = "^[a-zA-Z0-9_]*$"
+object DeclarationFormMapping {
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text),
@@ -52,13 +49,10 @@ object DeclarationFormMapping{
 
   lazy val additionalInformationMapping = mapping(
     "statementCode" -> optional(text
-      .verifying("statement code should be less than or equal to 17 characters", _.length <= 17))
-      .verifying("statement code must be alphanumeric", _.fold(true)(_.matches(alphaNum))),
-    "statementDescription" -> optional(text.verifying("statement description should be less than or equal to 512 characters", _.length <= 512))
-      .verifying("statement description must be alphanumeric", _.fold(true)(_.matches(alphaNum))),
+      .verifying("statement code should be less than or equal to 17 characters", _.length <= 17)),
+    "statementDescription" -> optional(text.verifying("statement description should be less than or equal to 512 characters", _.length <= 512)),
     "limitDateTime" -> ignored[Option[String]](None),
-    "statementTypeCode" -> optional(text.verifying("statement type code should be less than or equal to 3 characters", _.length <= 3))
-      .verifying("statement type code must be alphanumeric", _.fold(true)(_.matches(alphaNum))),
+    "statementTypeCode" -> optional(text.verifying("statement type code should be less than or equal to 3 characters", _.length <= 3)),
     "pointers" -> ignored[Seq[Pointer]](Seq.empty)
   )(AdditionalInformation.apply)(AdditionalInformation.unapply)
 

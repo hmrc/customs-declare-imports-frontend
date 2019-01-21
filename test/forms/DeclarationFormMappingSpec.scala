@@ -51,27 +51,12 @@ class DeclarationFormMappingSpec extends WordSpec
 
         "statement code length is greater than 17" in {
 
-          forAll(arbitrary[AdditionalInformation], minStringLength(17)) { (additionalInfo, invalidCode) =>
+          forAll(arbitrary[AdditionalInformation], minStringLength(18)) { (additionalInfo, invalidCode) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementCode = Some(invalidCode))).fold(
               error => error.error("statementCode") must haveMessage("statement code should be less than or equal to 17 characters"),
               _     => fail("Should not succeed")
             )
-          }
-        }
-
-        "statement code is not alphanumeric" in {
-
-          forAll(arbitrary[AdditionalInformation], nonAlphaNumString.map(_.take(17))) {
-            (additionalInfo, invalidCode) =>
-
-              whenever(invalidCode.nonEmpty) {
-
-                Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementCode = Some(invalidCode))).fold(
-                  error => error.error("statementCode") must haveMessage("statement code must be alphanumeric"),
-                  _     => fail("Should not succeed")
-                )
-              }
           }
         }
       }
@@ -80,27 +65,12 @@ class DeclarationFormMappingSpec extends WordSpec
 
         "statement description length is greater than 512" in {
 
-          forAll(arbitrary[AdditionalInformation], minStringLength(512))  { (additionalInfo, invalidDescription) =>
+          forAll(arbitrary[AdditionalInformation], minStringLength(513))  { (additionalInfo, invalidDescription) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementDescription = Some(invalidDescription))).fold(
               error => error.error("statementDescription") must haveMessage("statement description should be less than or equal to 512 characters"),
               _     => fail("Should not succeed")
             )
-          }
-        }
-
-        "statement description is not alphanumeric" in {
-
-          forAll(arbitrary[AdditionalInformation], nonAlphaNumString.map(_.take(512))) {
-            (additionalInfo, invalidDescription) =>
-
-              whenever(invalidDescription.nonEmpty) {
-
-                Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementDescription = Some(invalidDescription))).fold(
-                  error => error.error("statementDescription") must haveMessage("statement description must be alphanumeric"),
-                  _ => fail("Should not succeed")
-                )
-            }
           }
         }
       }
@@ -109,47 +79,13 @@ class DeclarationFormMappingSpec extends WordSpec
 
         "statement type code length is greater than 3" in {
 
-          forAll(arbitrary[AdditionalInformation], minStringLength(3))  { (additionalInfo, invalidTypeCode) =>
+          forAll(arbitrary[AdditionalInformation], minStringLength(4))  { (additionalInfo, invalidTypeCode) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementTypeCode = Some(invalidTypeCode))).fold(
               error => error.error("statementTypeCode") must haveMessage("statement type code should be less than or equal to 3 characters"),
               _     => fail("Should not succeed")
             )
           }
-        }
-
-        "statement type code is not alphanumeric" in {
-
-          forAll(arbitrary[AdditionalInformation], nonAlphaNumString.map(_.take(3))) {
-            (additionalInfo, invalidTypeCode) =>
-
-              whenever(invalidTypeCode.nonEmpty) {
-                Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementTypeCode = Some(invalidTypeCode))).fold(
-                  error => error.error("statementTypeCode") must haveMessage("statement type code must be alphanumeric"),
-                  _ => fail("Should not succeed")
-                )
-            }
-          }
-        }
-      }
-    }
-  }
-
-  "alphaNum regular expression" should {
-
-    "return true for a valid format" in {
-
-      forAll(alphaNumStr) { validString: String =>
-        validString.matches(alphaNum) mustBe true
-      }
-    }
-
-    "return false for an invalid format" in {
-
-      forAll(nonAlphaNumString) { invalidString: String =>
-
-        whenever(invalidString.nonEmpty) {
-          invalidString.matches(alphaNum) mustBe false
         }
       }
     }
