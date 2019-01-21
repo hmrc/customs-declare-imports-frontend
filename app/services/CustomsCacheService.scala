@@ -19,7 +19,7 @@ package services
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.AppConfig
 import domain.auth.EORI
-import play.api.libs.json.Reads
+import play.api.libs.json.{Reads, Writes}
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CompositeSymmetricCrypto}
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache, ShortLivedHttpCaching}
@@ -57,5 +57,12 @@ class CustomsCacheService @Inject()(caching: CustomsHttpCaching, applicationCryp
     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CacheMap] = cache(cacheName, eori, data)
 
   def getByKey[T](cacheId: EORI, key: CacheKey[T])(implicit hc: HeaderCarrier, rds: Reads[T], executionContext: ExecutionContext): Future[Option[T]] =
-    super.fetchAndGetEntry[T](cacheId.value, key.key)
+    fetchAndGetEntry[T](cacheId.value, key.key)
+
+  def upsert[T](cacheId: EORI, key: CacheKey[T])(insert: => T)(update: T => T)
+               (implicit hc: HeaderCarrier, rds: Reads[T], wts: Writes[T], executionContext: ExecutionContext): Future[Unit] =
+    getByKey(cacheId, key).flatMap { optT =>
+      val t = optT.fold(insert)(update)
+      cache(cacheId.value, key.key, t).map(_ => ())
+    }
 }

@@ -36,12 +36,7 @@ class DeclarationAdditionalInformationController @Inject()(actions: Actions, cac
 
   def onPageLoad(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>
-      println("*" * 50)
-      println(request.eori)
-      cacheService.getByKey(
-        request.eori,
-        AdditionalInformationId.declaration
-      ).map {
+      cacheService.getByKey(request.eori, AdditionalInformationId.declaration).map {
         additionalInformation =>
           Ok(declaration_additional_information(form, additionalInformation.getOrElse(Seq.empty)))
       }
