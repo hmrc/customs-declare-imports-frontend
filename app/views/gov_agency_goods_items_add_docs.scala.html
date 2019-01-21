@@ -44,6 +44,8 @@
                     <th scope="col">@messages("governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument")</th>
                     <th scope="col">@messages("governmentAgencyGoodsItemAdd.submitterName")</th>
                     <th scope="col">@messages("governmentAgencyGoodsItemAdd.submitterRoleCode")</th>
+                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.writeOffQuantity")</th>
+                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.writeOffAmount")</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -56,6 +58,8 @@
                             <td scope="row">@item.lpcoExemptionCode</td>
                             <td scope="row">@item.submitter.map(_.name)</td>
                             <td scope="row">@item.submitter.map(_.roleCode)</td>
+                            <td scope="row">@item.writeOff.map(_.quantity)</td>
+                            <td scope="row">@item.writeOff.map(_.amount)</td>
                        </tr>
                     }
                 </tbody>
@@ -72,6 +76,8 @@
             @components.input_text(field = form("lpcoExemptionCode"),label = messages("governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument"))
             @components.input_text(field = form("submitter.name"),label = messages("governmentAgencyGoodsItemAdd.submitterName"))
             @components.input_text(field = form("submitter.roleCode"),label = messages("governmentAgencyGoodsItemAdd.submitterRoleCode"))
+            @components.input_text(field = form("writeOff.quantity"),label = messages("governmentAgencyGoodsItemAdd.writeOffQuantity"))
+            @components.input_text(field = form("writeOff.amount"),label = messages("governmentAgencyGoodsItemAdd.writeOffAmount"))
         </fieldset>
 
         <div class="section">

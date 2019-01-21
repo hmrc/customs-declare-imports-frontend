@@ -349,3 +349,5 @@ governmentAgencyGoodsItemAdd.submitterRoleCode=Submitter role code
 governmentAgencyGoodsItemAdd.addDocuments=Add Documents
 governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs=No of goods item additional docs added:
 governmentAgencyGoodsItemAdd.noAdditionalDocuments=No additional documents available
+governmentAgencyGoodsItemAdd.writeOffQuantity=Write off quantity
+governmentAgencyGoodsItemAdd.writeOffAmount=Write off amount
