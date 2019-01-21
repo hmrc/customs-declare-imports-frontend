@@ -24,7 +24,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
-import uk.gov.hmrc.wco.dec.AdditionalInformation
+import uk.gov.hmrc.wco.dec.{AdditionalInformation, AuthorisationHolder}
 
 class DeclarationFormMappingSpec extends WordSpec
   with MustMatchers
@@ -134,6 +134,80 @@ class DeclarationFormMappingSpec extends WordSpec
       }
     }
   }
+
+  "authorisationHolderForm" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { authorisationHolder: AuthorisationHolder =>
+
+          Form(authorisationHolderMapping).fillAndValidate(authorisationHolder).fold(
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe authorisationHolder
+          )
+        }
+      }
+
+      "fail with invalid id" when {
+
+        "id length is greater than 17" in {
+
+          forAll(arbitrary[AuthorisationHolder], minStringLength(17)) { (authorisationHolder, invalidId) =>
+
+            Form(authorisationHolderMapping).fillAndValidate(authorisationHolder.copy(id = Some(invalidId))).fold(
+              error => error.error("id") must haveMessage("ID should be less than or equal to 17 characters"),
+              _     => fail("Should not succeed")
+            )
+          }
+        }
+
+        "id is not alphanumeric" in {
+
+          forAll(arbitrary[AuthorisationHolder], nonAlphaNumString.map(_.take(17))) { (authorisationHolder, invalidId) =>
+
+              whenever(invalidId.nonEmpty) {
+
+                Form(authorisationHolderMapping).fillAndValidate(authorisationHolder.copy(id = Some(invalidId))).fold(
+                  error => error.error("id") must haveMessage("ID must be alphanumeric"),
+                  _     => fail("Should not succeed")
+                )
+              }
+          }
+        }
+      }
+
+      "fail with invalid category code" when {
+
+        "category code length is greater than 4" in {
+
+          forAll(arbitrary[AuthorisationHolder], minStringLength(4)) { (authorisationHolder, invalidCategoryCode) =>
+
+            Form(authorisationHolderMapping).fillAndValidate(authorisationHolder.copy(categoryCode = Some(invalidCategoryCode))).fold(
+              error => error.error("categoryCode") must haveMessage("Category Code should be less than or equal to 4 characters"),
+              _     => fail("Should not succeed")
+            )
+          }
+        }
+
+        "category code is not alphanumeric" in {
+
+          forAll(arbitrary[AuthorisationHolder], nonAlphaNumString.map(_.take(4))) { (authorisationHolder, invalidCategoryCode) =>
+
+              whenever(invalidCategoryCode.nonEmpty) {
+
+                Form(authorisationHolderMapping).fillAndValidate(authorisationHolder.copy(categoryCode = Some(invalidCategoryCode))).fold(
+                  error => error.error("categoryCode") must haveMessage("Category Code must be alphanumeric"),
+                  _     => fail("Should not succeed")
+                )
+              }
+          }
+        }
+      }
+    }
+  }
+
 
   "alphaNum regular expression" should {
 

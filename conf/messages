@@ -321,3 +321,7 @@ obligationGuarantees.accessCode=Access code
 obligationGuarantees.guarantorOfficeId=Guarantor office ID
 obligationGuarantees.obligationGuaranteesAdded=obligation guarantees added.
 obligationGuarantees.addObligationGuarantees=Add obligation guarantees
+
+## Authorisation Holder
+authorisationHolder.title=Authorisation Holder
+authorisationHolder.header=Authorisation Holder
