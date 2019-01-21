@@ -23,6 +23,9 @@ import play.api.data.Forms._
 import uk.gov.hmrc.wco.dec._
 
 object DeclarationFormMapping{
+
+  val alphaNumRegEx = "^[a-zA-Z0-9_]*$"
+
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text),
     "roleCode" -> optional(text.verifying("roleCode is only 3 characters", _.length <= 3))
@@ -49,11 +52,24 @@ object DeclarationFormMapping{
   )(GovernmentAgencyGoodsItemAdditionalDocument.apply)(GovernmentAgencyGoodsItemAdditionalDocument.unapply)
 
   lazy val additionalInformationMapping = mapping(
-    "statementCode" -> optional(text.verifying("statement Code should be less than or equal to 17 characters", _.length <= 17)),
-    "statementDescription" -> optional(text.verifying("statement Description should be less than or equal to 512 characters", _.length <= 512)),
-    "statementTypeCode" -> optional(text.verifying("statement Type Code should be less than or equal to 3 characters", _.length <= 3)),
+    "statementCode" -> optional(text
+      .verifying("statement Code should be less than or equal to 17 characters", _.length <= 17))
+      .verifying("Incorrect format", x => validateAlphNumFieldFormat(x)),
+    "statementDescription" -> optional(text.verifying("statement Description should be less than or equal to 512 characters", _.length <= 512))
+      .verifying("Incorrect format", x => validateAlphNumFieldFormat(x)),
+    "limitDateTime" -> optional(text.verifying("limit Date Time should be less than or equal to 35 characters", _.length <= 35)),
+    "statementTypeCode" -> optional(text.verifying("statement Type Code should be less than or equal to 3 characters", _.length <= 3))
+      .verifying("Incorrect format", x => validateAlphNumFieldFormat(x)),
     "pointers" -> ignored[Seq[Pointer]](Seq.empty)
   )(AdditionalInformation.apply)(AdditionalInformation.unapply)
+
+  def validateAlphNumFieldFormat(optionValue: Option[String]): Boolean = {
+    optionValue match {
+      case Some(value) =>
+        if (value.matches(alphaNumRegEx))true else false
+      case None => true
+    }
+  }
 
   val pointerMapping: Mapping[Pointer] = mapping(
     "sequenceNumeric" -> optional(number.verifying("Pointer sequence numeric cannot be less than 0", _ >= 0).verifying("Pointer sequence numeric cannot be greater than 99999", _ <= 99999)),
@@ -174,6 +190,7 @@ object DeclarationFormMapping{
       "guaranteeOffice" -> optional(officeMapping))(ObligationGuarantee.apply)(ObligationGuarantee.unapply)
 
  val guaranteesFormMapping = mapping("guarantees" -> seq(obligationGauranteeMapping))(ObligationGuaranteeForm.apply)(ObligationGuaranteeForm.unapply)
+
 
 }
 

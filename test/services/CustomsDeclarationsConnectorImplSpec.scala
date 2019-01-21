@@ -20,6 +20,7 @@ import java.net.ConnectException
 import java.util.concurrent.TimeoutException
 
 import domain.auth.SignedInUser
+import org.scalatest.OptionValues
 import play.api.Configuration
 import play.api.http.{ContentTypes, HeaderNames, HttpVerbs, Status}
 import play.api.libs.ws.WSClient
@@ -37,7 +38,7 @@ import uk.gov.hmrc.wco.dec.MetaData
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 
-class CustomsDeclarationsConnectorImplSpec extends CustomsSpec {
+class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues {
 
   // any required implicits (++ those in CustomsSpec)
 
@@ -108,7 +109,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec {
 
     "save successfully submitted declaration" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, _, expectation, repo, _) =>
       val saved = repo.findAll().futureValue.head
-      saved.lrn must be(aRandomSubmitDeclaration.declaration.functionalReferenceId)
+      saved.lrn must be(aRandomSubmitDeclaration.declaration.value.functionalReferenceId)
       saved.eori must be(user.requiredEori)
       saved.conversationId must be(expectation.resp.header("X-Conversation-ID").get)
     }

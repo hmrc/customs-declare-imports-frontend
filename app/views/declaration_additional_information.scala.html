@@ -21,34 +21,44 @@
 
 @main_template(title = messages("additionalInformation.title"), bodyClasses = None) {
 
- <h2 class="heading-medium">@messages("additionalInformation.header")</h2>
+<h2 class="heading-medium">@messages("additionalInformation.header")</h2>
 
 @if(additionalInformation.nonEmpty) {
 
 @messages("additionalInformation.informationAvailable") <td scope="row">@additionalInformation.size</td>
 
 <table>
-  <thead>
+    <thead>
     <th scope="col">@messages("additionalInformation.statementCode")</th>
-    <th scope="col">@messages("additionalInformation.Description")</th>
+    <th scope="col">@messages("additionalInformation.statementDescription")</th>
+    <th scope="col">@messages("additionalInformation.limitDateTime")</th>
     <th scope="col">@messages("additionalInformation.statementTypeCode")</th>
-  </thead>
-  <tbody>
-  @for(item <- additionalInformation) {
-  <tr>
-    <td scope="row">@item.statementCode</td>
-    <td scope="row">@item.statementDescription</td>
-    <td scope="row">@item.statementTypeCode</td>
-  </tr>
-  }
-  </tbody>
+    </thead>
+    <tbody>
+    @for(item <- additionalInformation) {
+    <tr>
+        <td scope="row">@item.statementCode</td>
+        <td scope="row">@item.statementDescription</td>
+        <td scope="row">@item.limitDateTime</td>
+        <td scope="row">@item.statementTypeCode</td>
+    </tr>
+    }
+    </tbody>
 </table>
 } else {
 <p>@messages("additionalInformation.informationNotAvailable")</p>
 
 }
- @components.input_text(form("statementCode"), "Statement Code")
- @components.input_text(form("statementDescription"), "Statement Description")
- @components.input_text(form("statementTypeCode"), "Statement Type Code")
+@components.input_text(form("statementCode"), "Statement Code")
+@components.input_text(form("statementDescription"), "Statement Description")
+@components.input_text(form("limitDateTime"), "Limit Date Time")
+@components.input_text(form("statementTypeCode"), "Statement Type Code")
+
+<div class="section">
+    <button class="button" id="Add" value="Add" name="submit">
+        @messages("additionalInformation.addAdditionalInformationButton")
+    </button>
+    <button class="button" id="Next" name="submit" value="next">@messages("common.button.continue")</button>
+</div>
 }
 

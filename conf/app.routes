@@ -47,3 +47,4 @@ POST       /submit-declaration-goods/add-previous-documents      controllers.Gov
 
 GET       /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.display()
 POST      /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()
+

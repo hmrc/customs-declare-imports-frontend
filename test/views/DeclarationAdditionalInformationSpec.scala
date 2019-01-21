@@ -84,6 +84,12 @@ class DeclarationAdditionalInformationSpec extends ViewBehaviours with ViewMatch
       view() must include(input)
     }
 
+    "contain limit date time field" in {
+
+      val input = input_text(form("limitDateTime"), "Limit Date Time")
+      view() must include(input)
+    }
+
     "contain statement type code field" in {
 
       val input = input_text(form("statementTypeCode"), "Statement Type Code")
@@ -124,6 +130,17 @@ class DeclarationAdditionalInformationSpec extends ViewBehaviours with ViewMatch
         val doc = asDocument(view(form, additionalInfoSeq))
 
         additionalInfo.statementDescription.map(assertContainsText(doc, _))
+      }
+    }
+
+    "display limit date time in table" in {
+
+      forAll { additionalInfo: AdditionalInformation =>
+        val additionalInfoSeq = Seq(additionalInfo)
+        val doc = asDocument(view(form, additionalInfoSeq))
+
+        additionalInfo.limitDateTime.map(assertContainsText(doc, _))
+
       }
     }
 

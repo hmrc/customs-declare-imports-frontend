@@ -32,6 +32,7 @@ class DeclarationFormMappingSpec extends WordSpec
   with Generators {
 
   class ErrorHasMessage(right: String) extends Matcher[Option[FormError]] {
+
     override def apply(left: Option[FormError]): MatchResult =
       MatchResult(
         left.exists(_.message == right),
@@ -69,6 +70,21 @@ class DeclarationFormMappingSpec extends WordSpec
             )
           }
         }
+
+        "statement code is not alphanumeric" in {
+
+          forAll(arbitrary[AdditionalInformation], nonAlphaNumString.map(_.take(17))) {
+            (additionalInfo, invalidCode) =>
+
+              whenever(invalidCode.nonEmpty) {
+
+                Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementCode = Some(invalidCode))).fold(
+                  error => error.error("statementCode") must haveMessage("Incorrect format"),
+                  _     => fail("Should not succeed")
+                )
+              }
+          }
+        }
       }
 
       "fail with invalid statement description" when {
@@ -79,6 +95,35 @@ class DeclarationFormMappingSpec extends WordSpec
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementDescription = Some(invalidDescription))).fold(
               error => error.error("statementDescription") must haveMessage("statement Description should be less than or equal to 512 characters"),
+              _     => fail("Should not succeed")
+            )
+          }
+        }
+
+        "statement description is not alphanumeric" in {
+
+          forAll(arbitrary[AdditionalInformation], nonAlphaNumString.map(_.take(512))) {
+            (additionalInfo, invalidDescription) =>
+
+              whenever(invalidDescription.nonEmpty) {
+
+                Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementDescription = Some(invalidDescription))).fold(
+                  error => error.error("statementDescription") must haveMessage("Incorrect format"),
+                  _ => fail("Should not succeed")
+                )
+            }
+          }
+        }
+      }
+
+      "fail with invalid limit date time" when {
+
+        "limit date time length is greater than 35" in {
+
+          forAll(arbitrary[AdditionalInformation], minStringLength(35)) {(additionalInfo, invalidLimitDateTime) =>
+
+            Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(limitDateTime = Some(invalidLimitDateTime))).fold(
+              error => error.error("limitDateTime") must haveMessage("limit Date Time should be less than or equal to 35 characters"),
               _     => fail("Should not succeed")
             )
           }
@@ -97,8 +142,42 @@ class DeclarationFormMappingSpec extends WordSpec
             )
           }
         }
-      }
 
+        "statement type code is not alphanumeric" in {
+
+          forAll(arbitrary[AdditionalInformation], nonAlphaNumString.map(_.take(3))) {
+            (additionalInfo, invalidTypeCode) =>
+
+              whenever(invalidTypeCode.nonEmpty) {
+                Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementTypeCode = Some(invalidTypeCode))).fold(
+                  error => error.error("statementTypeCode") must haveMessage("Incorrect format"),
+                  _ => fail("Should not succeed")
+                )
+            }
+          }
+        }
+      }
+    }
+  }
+
+  "validateAlphNumFieldFormat" should {
+
+    "return true for a valid format" in {
+
+      forAll(string) { validString: String =>
+        validString.matches(alphaNumRegEx) mustBe true
+      }
+    }
+
+    "return false for an invalid format" in {
+
+      forAll(nonAlphaNumString) { invalidString: String =>
+
+
+        whenever(invalidString.nonEmpty) {
+          invalidString.matches(alphaNumRegEx) mustBe false
+        }
+      }
     }
   }
 }
