@@ -22,6 +22,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
 import generators.Generators
+import org.scalatest.prop.PropertyChecks
 
 class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
@@ -29,7 +30,8 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   with RequestHandlerBehaviours
   with HttpAssertions
   with HtmlAssertions
-  with Generators{
+  with Generators
+  with PropertyChecks {
 
   val goodsItemsListUri = uriWithContextPath("/submit-declaration-goods/gov-agency-goods-items")
   val goodsItemsPageUri = uriWithContextPath("/submit-declaration-goods/goods-item-value")
@@ -175,16 +177,19 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
     "display good items page with pre-populated data on revisiting the page " in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
-        val sampleData = arbitraryGoodsItemValueInformation.arbitrary.sample
-        withCaching(sampleData)
-        withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>
-          includesHtmlInput(resp, "customsValueAmount", value = sampleData.value.customsValueAmount.getOrElse("").toString)
-          includesHtmlInput(resp, "sequenceNumeric", value = sampleData.value.sequenceNumeric.toString)
-          includesHtmlInput(resp, "statisticalValueAmount.currencyId",
-            value = sampleData.value.statisticalValueAmount.value.currencyId.getOrElse("").toString)
-          includesHtmlInput(resp, "statisticalValueAmount.value",
-            value = sampleData.value.statisticalValueAmount.value.value.getOrElse("").toString)
-          includesHtmlInput(resp, "transactionNatureCode", value = sampleData.value.transactionNatureCode.getOrElse("").toString)
+
+        forAll(arbitraryGoodsItemValueInformation.arbitrary) { sampleData =>
+
+          withCaching(Some(sampleData))
+          withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>
+            includesHtmlInput(resp, "customsValueAmount", value = sampleData.customsValueAmount.getOrElse("").toString)
+            includesHtmlInput(resp, "sequenceNumeric", value = sampleData.sequenceNumeric.toString)
+            includesHtmlInput(resp, "statisticalValueAmount.currencyId",
+              value = sampleData.statisticalValueAmount.flatMap(_.currencyId).getOrElse("").toString)
+            includesHtmlInput(resp, "statisticalValueAmount.value",
+              value = sampleData.statisticalValueAmount.flatMap(_.value).getOrElse("").toString)
+            includesHtmlInput(resp, "transactionNatureCode", value = sampleData.transactionNatureCode.getOrElse("").toString)
+          }
         }
       }
     }
