@@ -17,12 +17,14 @@
 package controllers
 
 import config.AppConfig
+import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
+import services.cachekeys.CacheKey
 import views.html.authorisation_holder
 
 class AuthorisationHoldersController @Inject()
@@ -31,7 +33,9 @@ class AuthorisationHoldersController @Inject()
 
   def form = Form(authorisationHolderMapping)
 
-  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori) { implicit req =>
-    Ok(authorisation_holder(form, Seq()))
+  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+    cacheService.getByKey(req.eori, CacheKey.authorisationHolders).map { authHolders =>
+      Ok(authorisation_holder(form, authHolders.getOrElse(Seq())))
+    }
   }
 }

@@ -16,21 +16,31 @@
 
 package controllers
 
-import domain.auth.SignedInUser
+import domain.auth.{EORI, SignedInUser}
+import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import generators.Generators
+import org.mockito.ArgumentMatchers.{eq => eqTo, _}
+import org.mockito.Mockito._
+import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen._
 import org.scalatest.OptionValues
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
+import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.CustomsSpec
 import uk.gov.hmrc.wco.dec.AuthorisationHolder
 import views.html.authorisation_holder
 
+import scala.concurrent.Future
+
 class AuthorisationHoldersControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
-  with OptionValues {
+  with OptionValues
+  with MockitoSugar {
 
   def form = Form(authorisationHolderMapping)
 
@@ -47,6 +57,8 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
+
+          when(mockCustomsCacheService.getByKey(any(), any())(any(), any(), any())).thenReturn(Future.successful(None))
 
           val result = controller(Some(user)).onPageLoad(fakeRequest)
 
@@ -66,6 +78,23 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
           status(result) mustBe UNAUTHORIZED
         }
+      }
+    }
+
+    "load data from cache" in {
+
+      val gen = option(listOf(arbitrary[AuthorisationHolder]))
+
+      forAll(arbitrary[SignedInUser], gen) {
+        case (user, data) =>
+
+          when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.authorisationHolders))(any(), any(), any()))
+            .thenReturn(Future.successful(data))
+
+          val result = controller(Some(user)).onPageLoad(fakeRequest)
+
+          status(result) mustBe OK
+          contentAsString(result) mustBe view(authHolders = data.getOrElse(List()))
       }
     }
   }

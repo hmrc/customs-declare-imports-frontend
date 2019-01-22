@@ -32,6 +32,7 @@ import play.api.libs.concurrent.Execution.Implicits
 import play.api.test.FakeRequest
 import services.CustomsCacheService
 import uk.gov.hmrc.customs.test.{CustomsFixtures, CustomsFutures}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,6 +43,7 @@ trait CustomsSpec extends PlaySpec
   with CustomsFutures
   with CustomsFixtures with MockitoSugar {
 
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val mat: Materializer = app.materializer
   implicit lazy val ec: ExecutionContext = Implicits.defaultContext
   implicit lazy val appConfig: AppConfig = component[AppConfig]
