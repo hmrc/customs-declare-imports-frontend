@@ -23,25 +23,44 @@ trait EndpointBehaviours extends CustomsSpec {
 
   def authenticatedEndpoint(uri: String, method: String = GET): Unit = {
 
+    "redirect user" when {
+      s"$uri endpoint is called with $method and without signed in user" in new IntegrationTest {
+
+        withoutSignedInUser() { (headers, tags) =>
+          withRequest(method, uriWithContextPath(uri), headers, tags = tags) { resp =>
+            wasRedirected(ggLoginRedirectUri(uriWithContextPath(uri)), resp)
+          }
+        }
+      }
+    }
+  }
+
+  def okEndpoint(uri: String, method: String = GET): Unit = {
+
     "return 200" when {
 
-      s"$uri endpoint is called with signed in user" in new IntegrationTest {
+      s"$uri endpoint is called with $method and with signed in user" in new IntegrationTest {
 
         withCaching(None)
         withSignedInUser() { (headers, session, tags) =>
-          withRequest(GET, uriWithContextPath(uri), headers, session, tags) {
+          withRequest(method, uriWithContextPath(uri), headers, session, tags) {
             wasOk
           }
         }
       }
     }
+  }
 
-    "redirect user" when {
-      s"$uri endpoint is called without signed in user" in new IntegrationTest {
+  def redirectedEndpoint(uri: String, redirectTo: String, method: String = GET): Unit = {
 
-        withoutSignedInUser() {
-          withRequest(GET, uriWithContextPath(uri)) { resp =>
-            wasRedirected(ggLoginRedirectUri(uriWithContextPath(uri)), resp)
+    "return 303" when {
+
+      s"$uri endpoint is called with $method and with signed in user" in new IntegrationTest {
+
+        withCaching(None)
+        withSignedInUser() { (headers, session, tags) =>
+          withRequest(method, uriWithContextPath(uri), headers, session, tags) { resp =>
+            wasRedirected(uriWithContextPath(redirectTo), resp)
           }
         }
       }

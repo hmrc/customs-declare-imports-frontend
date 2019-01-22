@@ -59,10 +59,10 @@ class CustomsCacheService @Inject()(caching: CustomsHttpCaching, applicationCryp
   def getByKey[T](cacheId: EORI, key: CacheKey[T])(implicit hc: HeaderCarrier, rds: Reads[T], executionContext: ExecutionContext): Future[Option[T]] =
     fetchAndGetEntry[T](cacheId.value, key.key)
 
-  def upsert[T](cacheId: EORI, key: CacheKey[T])(insert: => T)(update: T => T)
+  def upsert[T](cacheId: EORI, key: CacheKey[T])(insert: () => T, update: T => T)
                (implicit hc: HeaderCarrier, rds: Reads[T], wts: Writes[T], executionContext: ExecutionContext): Future[Unit] =
     getByKey(cacheId, key).flatMap { optT =>
-      val t = optT.fold(insert)(update)
+      val t = optT.fold(insert())(update)
       cache(cacheId.value, key.key, t).map(_ => ())
     }
 }

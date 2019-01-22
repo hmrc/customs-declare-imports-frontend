@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.google.common.cache.CacheLoader
 import config.AppConfig
 import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
@@ -27,6 +28,8 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.authorisation_holder
 
+import scala.concurrent.Future
+
 class AuthorisationHoldersController @Inject()
   (actions: Actions, cacheService: CustomsCacheService)
   (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
@@ -37,5 +40,22 @@ class AuthorisationHoldersController @Inject()
     cacheService.getByKey(req.eori, CacheKey.authorisationHolders).map { authHolders =>
       Ok(authorisation_holder(form, authHolders.getOrElse(Seq())))
     }
+  }
+
+  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+    form.bindFromRequest().fold(
+      errors =>
+        cacheService.getByKey(req.eori, CacheKey.authorisationHolders).map { authHolders =>
+          BadRequest(authorisation_holder(errors, authHolders.getOrElse(Seq())))
+        },
+
+      authHolder =>
+        cacheService
+          .upsert(req.eori, CacheKey.authorisationHolders)
+                 (() => Seq(authHolder), authHolder +: _).map { _ =>
+
+          Redirect(routes.AuthorisationHoldersController.onPageLoad())
+        }
+    )
   }
 }

@@ -47,3 +47,4 @@ GET       /submit-declaration-guarantees/add-guarantees     controllers.Obligati
 POST      /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()
 
 GET       /submit-declaration-goods/add-authorisation-holder    controllers.AuthorisationHoldersController.onPageLoad()
+POST      /submit-declaration-goods/add-authorisation-holder    controllers.AuthorisationHoldersController.onSubmit()

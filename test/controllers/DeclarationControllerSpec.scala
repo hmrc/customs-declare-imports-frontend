@@ -62,7 +62,7 @@ class DeclarationControllerSpec extends CustomsSpec
     }
 
     "require authentication" in withFeatures(enabled(Feature.submit)) {
-      withoutSignedInUser() {
+      withoutSignedInUser() { (_, _) =>
         withRequest(get, submitUri) { resp =>
           wasRedirected(ggLoginRedirectUri(submitUri), resp)
         }
@@ -120,7 +120,6 @@ class DeclarationControllerSpec extends CustomsSpec
         }
       }
     }
-
   }
 
 }

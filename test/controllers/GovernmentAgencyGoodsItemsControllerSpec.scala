@@ -51,7 +51,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   "GovernmentAgencyGoodsItemsController" should {
 
     "require Authentication" in withFeatures((enabled(Feature.submit))) {
-      withoutSignedInUser() {
+      withoutSignedInUser() { (_, _) =>
         withRequest(get, goodsItemsListUri) { resp =>
           wasRedirected(ggLoginRedirectUri(goodsItemsListUri), resp)
         }
