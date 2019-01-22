@@ -25,28 +25,34 @@
 <h2 class="heading-medium">@messages("authorisationHolder.header")</h2>
 
 
-<table>
- @if(authorisationHolders.nonEmpty) {
- <p>@authorisationHolders.size @messages("authorisationHolder.table.heading")</p>
- <thead>
- <th scope="col">@messages("authorisationHolder.table.id")</th>
- <th scope="col">@messages("authorisationHolder.table.categoryCode")</th>
- </thead>
- <tbody>
- @for(item <- authorisationHolders) {
- <tr>
-  <td scope="row">@item.id</td>
-  <td scope="row">@item.categoryCode</td>
- </tr>
- }
- </tbody>
- } else {
- <p>@messages("authorisationHolder.table.empty")</p>
- }
-</table>
+@if(authorisationHolders.nonEmpty) {
+    <p>@authorisationHolders.size @messages("authorisationHolder.table.heading")</p>
+    <table>
+        <thead>
+            <th scope="col">@messages("authorisationHolder.id")</th>
+            <th scope="col">@messages("authorisationHolder.categoryCode")</th>
+        </thead>
+        <tbody>
+        @for(item <- authorisationHolders) {
+        <tr>
+            <td scope="row">@item.id</td>
+            <td>@item.categoryCode</td>
+        </tr>
+        }
+        </tbody>
+    </table>
+    } else {
+    <p>@messages("authorisationHolder.table.empty")</p>
+    }
 
+@components.input_text(form("id"), messages("authorisationHolder.id"))
+@components.input_text(form("categoryCode"), messages("authorisationHolder.categoryCode"))
 
-@components.input_text(form("id"), "ID")
-@components.input_text(form("categoryCode"), "Category Code")
+<div class="section">
+    <button class="button" id="Add" value="Add" name="submit">
+        @messages("authorisationHolder.addAuthorisationHolderButton")
+    </button>
+    <button class="button" id="Next" name="submit" value="next">@messages("common.button.continue")</button>
+</div>
 
 }
