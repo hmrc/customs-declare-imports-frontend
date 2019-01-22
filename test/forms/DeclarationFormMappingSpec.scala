@@ -162,20 +162,6 @@ class DeclarationFormMappingSpec extends WordSpec
             )
           }
         }
-
-        "id is not alphanumeric" in {
-
-          forAll(arbitrary[AuthorisationHolder], nonAlphaNumString.map(_.take(17))) { (authorisationHolder, invalidId) =>
-
-              whenever(invalidId.nonEmpty) {
-
-                Form(authorisationHolderMapping).fillAndValidate(authorisationHolder.copy(id = Some(invalidId))).fold(
-                  error => error.error("id") must haveMessage("ID must be alphanumeric"),
-                  _     => fail("Should not succeed")
-                )
-              }
-          }
-        }
       }
 
       "fail with invalid category code" when {
@@ -188,20 +174,6 @@ class DeclarationFormMappingSpec extends WordSpec
               error => error.error("categoryCode") must haveMessage("Category Code should be less than or equal to 4 characters"),
               _     => fail("Should not succeed")
             )
-          }
-        }
-
-        "category code is not alphanumeric" in {
-
-          forAll(arbitrary[AuthorisationHolder], nonAlphaNumString.map(_.take(4))) { (authorisationHolder, invalidCategoryCode) =>
-
-              whenever(invalidCategoryCode.nonEmpty) {
-
-                Form(authorisationHolderMapping).fillAndValidate(authorisationHolder.copy(categoryCode = Some(invalidCategoryCode))).fold(
-                  error => error.error("categoryCode") must haveMessage("Category Code must be alphanumeric"),
-                  _     => fail("Should not succeed")
-                )
-              }
           }
         }
       }

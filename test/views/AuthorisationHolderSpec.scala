@@ -22,6 +22,7 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.customs.test.ViewMatchers
+import uk.gov.hmrc.wco.dec.AuthorisationHolder
 import views.behaviours.ViewBehaviours
 import views.html.authorisation_holder
 import views.html.components.input_text
@@ -32,7 +33,13 @@ class AuthorisationHolderSpec
     with PropertyChecks
     with Generators {
 
-  val view: () => Html = () => authorisation_holder(form)(fakeRequest, messages, appConfig)
+  val emptyAuthorisationHolder: Seq[AuthorisationHolder] = Seq.empty
+
+  def view(form: Form[AuthorisationHolder] = form,
+           authorisationHolder: Seq[AuthorisationHolder] = emptyAuthorisationHolder): Html =
+    authorisation_holder(form, authorisationHolder)(fakeRequest, messages, appConfig)
+
+  val view: () => Html = () => authorisation_holder(form, emptyAuthorisationHolder)(fakeRequest, messages, appConfig)
 
   val messagePrefix = "authorisationHolder"
 
@@ -68,17 +75,22 @@ class AuthorisationHolderSpec
       val input = input_text(form("categoryCode"), "Category Code")
       view() must include(input)
     }
+
+    "not display authorisation holder table if authorisation holder is not available" in {
+
+      val doc = asDocument(view(form, emptyAuthorisationHolder))
+
+      assertContainsText(doc, messages("authorisationHolder.table.empty"))
+    }
+
+    "display authorisation holder table if authorisation holder is available" in {
+
+      forAll { authorisationHolder: AuthorisationHolder =>
+        val authorisationHolderSeq = Seq(authorisationHolder)
+        val doc = asDocument(view(form, authorisationHolderSeq))
+
+        assertContainsText(doc, s"${authorisationHolderSeq.size} " + messages("authorisationHolder.table.heading"))
+      }
+    }
   }
 }
-
-
-/*
-  val emptyAdditionalInfo: Seq[AuthorisationHolder] = Seq.empty
-
-/*
-  def view(form: Form[AuthorisationHolder] = form,
-  additionalInformation: Seq[AuthorisationHolder] = emptyAdditionalInfo): Html =
-    authorisation_holder(form, additionalInformation)(fakeRequest, messages, appConfig)
-*/
-*/
-

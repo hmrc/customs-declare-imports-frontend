@@ -179,11 +179,9 @@ object DeclarationFormMapping{
   val authorisationHolderMapping =
     mapping(
       "id" -> optional(text
-        .verifying("ID should be less than or equal to 17 characters", _.length <= 17))
-        .verifying("ID must be alphanumeric", _.fold(true)(_.matches(alphaNum))),
+        .verifying("ID should be less than or equal to 17 characters", _.length <= 17)),
       "categoryCode" -> optional(text
         .verifying("Category Code should be less than or equal to 4 characters", _.length <= 4))
-        .verifying("Category Code must be alphanumeric", _.fold(true)(_.matches(alphaNum)))
     )(AuthorisationHolder.apply)(AuthorisationHolder.unapply)
 }
 
