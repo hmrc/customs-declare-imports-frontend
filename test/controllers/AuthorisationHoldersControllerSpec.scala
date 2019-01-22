@@ -30,7 +30,7 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.CustomsSpec
+import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
 import uk.gov.hmrc.wco.dec.AuthorisationHolder
 import views.html.authorisation_holder
 
@@ -40,7 +40,8 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
   with OptionValues
-  with MockitoSugar {
+  with MockitoSugar
+  with EndpointBehaviours {
 
   def form = Form(authorisationHolderMapping)
 
@@ -51,6 +52,8 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
     authorisation_holder(form, authHolders)(fakeRequest, messages, appConfig).body
 
   ".onPageLoad" should {
+
+    behave like authenticatedEndpoint("/submit-declaration-goods/add-authorisation-holder")
 
     "return OK" when {
 
