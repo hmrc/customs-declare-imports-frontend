@@ -19,3 +19,4 @@ POST          /customs-declare-imports/test-only/user/:eori/submissions         
 DELETE        /customs-declare-imports/test-only/submissions/:id                                        test.controllers.TestingUtilitiesController.deleteSubmission(id)
 DELETE        /customs-declare-imports/test-only/submissions/conversation/:conversationId               test.controllers.TestingUtilitiesController.deleteSubmissionByConversationId(conversationId)
 DELETE        /customs-declare-imports/test-only/user/:eori/submissions/:mrn                            test.controllers.TestingUtilitiesController.deleteSubmissionByEoriAndMrn(eori, mrn)
+POST          /customs-declare-imports/test-only/declaration/submit                                     test.controllers.TestingUtilitiesController.submitDeclarationXml
