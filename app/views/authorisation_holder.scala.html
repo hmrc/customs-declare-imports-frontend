@@ -22,11 +22,16 @@
 
 @main_template(title = messages("authorisationHolder.title"), bodyClasses = None) {
 
+@components.back_link("")
+
 <h2 class="heading-medium">@messages("authorisationHolder.header")</h2>
 
-
 @if(authorisationHolders.nonEmpty) {
+    @if(authorisationHolders.size > 1){
+    <p>@authorisationHolders.size @messages("authorisationHolder.table.multiple.heading")</p>
+    }else{
     <p>@authorisationHolders.size @messages("authorisationHolder.table.heading")</p>
+    }
     <table>
         <thead>
             <th scope="col">@messages("authorisationHolder.id")</th>
@@ -45,14 +50,14 @@
     <p>@messages("authorisationHolder.table.empty")</p>
     }
 
-@components.input_text(form("id"), messages("authorisationHolder.id"))
-@components.input_text(form("categoryCode"), messages("authorisationHolder.categoryCode"))
-
-<div class="section">
-    <button class="button" id="Add" value="Add" name="submit">
-        @messages("authorisationHolder.addAuthorisationHolderButton")
-    </button>
-    <button class="button" id="Next" name="submit" value="next">@messages("common.button.continue")</button>
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <fieldset>
+            @components.input_text(form("id"), messages("authorisationHolder.id"))
+            @components.input_text(form("categoryCode"), messages("authorisationHolder.categoryCode"))
+        </fieldset>
+        <a href="#" id="Add" role="button" class="button">@messages("authorisationHolder.addAuthorisationHolderButton")</a>
+        <a href="#" id="Next" role="button" class="button">@messages("common.button.continue")</a>
+    </div>
 </div>
-
 }
