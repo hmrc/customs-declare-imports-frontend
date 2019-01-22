@@ -31,7 +31,7 @@ class AuthorisationHoldersController @Inject()
 
   def form = Form(authorisationHolderMapping)
 
-  def onPageLoad: Action[AnyContent] = Action { implicit req =>
+  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori) { implicit req =>
     Ok(authorisation_holder(form, Seq()))
   }
 }

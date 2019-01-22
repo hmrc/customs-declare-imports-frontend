@@ -55,5 +55,18 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
         }
       }
     }
+
+    "return Unauthorized" when {
+
+      "user doesn't have an eori" in {
+
+        forAll { user: UnauthenticatedUser =>
+
+          val result = controller(Some(user.user)).onPageLoad(fakeRequest)
+
+          status(result) mustBe UNAUTHORIZED
+        }
+      }
+    }
   }
 }
