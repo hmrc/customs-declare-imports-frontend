@@ -362,7 +362,6 @@ governmentAgencyGoodsItem.previousDocuments=Previous documents
 governmentAgencyGoodsItem.refundRecipientParties=Refund recipient parties
 governmentAgencyGoodsItem.saveGoodsItem=Save goods item
 
-
 governmentAgencyGoodsItemAdd.title=Government Agency Goods Item Additional Documents
 governmentAgencyGoodsItemAdd.countryCode=Country code
 governmentAgencyGoodsItemAdd.documentName=Document name
@@ -376,4 +375,3 @@ governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs=No of goods item additi
 governmentAgencyGoodsItemAdd.noAdditionalDocuments=No additional documents available
 governmentAgencyGoodsItemAdd.writeOffQuantity=Write off quantity
 governmentAgencyGoodsItemAdd.writeOffAmount=Write off amount
-
