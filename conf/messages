@@ -323,9 +323,10 @@ obligationGuarantees.obligationGuaranteesAdded=obligation guarantees added.
 obligationGuarantees.addObligationGuarantees=Add obligation guarantees
 
 ## Authorisation Holder
-authorisationHolder.title=Authorisation Holder
-authorisationHolder.header=Authorisation Holder
+authorisationHolder.title=Authorisation Holders
+authorisationHolder.header=Authorisation Holders
 authorisationHolder.table.heading=Authorisation Holder added
+authorisationHolder.table.multiple.heading=Authorisation Holders added
 authorisationHolder.table.empty=No Authorisation Holder available
 authorisationHolder.table.id=ID
 authorisationHolder.table.categoryCode=Category Code

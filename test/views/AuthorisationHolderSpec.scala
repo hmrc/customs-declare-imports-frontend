@@ -83,13 +83,24 @@ class AuthorisationHolderSpec
       assertContainsText(doc, messages("authorisationHolder.table.empty"))
     }
 
-    "display authorisation holder table heading if authorisation holder is available" in {
+    "display authorisation holder table heading for single item if authorisation holder is available" in {
+
+      forAll { authorisationHolder: AuthorisationHolder =>
+        val authorisationHolderSeq = Seq(authorisationHolder)
+        val doc = asDocument(view(form, authorisationHolderSeq))
+
+        assertContainsText(doc, s"${authorisationHolderSeq.size} " + messages("authorisationHolder.table.heading"))
+      }
+    }
+
+
+    "display authorisation holder table heading for multiple items if authorisation holder is available" in {
 
       forAll { authorisationHolder: AuthorisationHolder =>
         val authorisationHolderSeq = Seq(authorisationHolder, authorisationHolder)
         val doc = asDocument(view(form, authorisationHolderSeq))
 
-        assertContainsText(doc, s"${authorisationHolderSeq.size} " + messages("authorisationHolder.table.heading"))
+        assertContainsText(doc, s"${authorisationHolderSeq.size} " + messages("authorisationHolder.table.multiple.heading"))
       }
     }
 
