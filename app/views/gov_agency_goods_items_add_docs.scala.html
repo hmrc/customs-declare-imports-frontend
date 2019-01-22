@@ -22,60 +22,67 @@
 @(form:Form[_], additionalDocuments: Seq[GovernmentAgencyGoodsItemAdditionalDocument])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
-    title = messages("cancel.title"),
+    title = messages("governmentAgencyGoodsItemAdd.title"),
     bodyClasses = None) {
 
     @helpers.form(action = GovernmentAgencyGoodsItemsController.handleGovAgencyGoodsItemsAdditionalDocumentsSubmit()) {
 
+        <legend>
+            <h1>@messages("governmentAgencyGoodsItemAdd.title")</h1>
+        </legend>
 
-<h2 class="heading-medium">Government Agency Goods Item Additional Documents</h2>
-@if(additionalDocuments.nonEmpty) {
-<p>@additionalDocuments.size Goods Item Additional Documents added</p>
+        @if(additionalDocuments.nonEmpty) {
+            <p>@messages("governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs") @additionalDocuments.size</p>
 
-<table>
-    <thead>
-    <th scope="col">Country Code</th>
-    <th scope="col">Document name</th>
-    <th scope="col">id</th>
-    <th scope="col">Type code of document</th>
-    <th scope="col">lpcoExemption code of document</th>
-    <th scope="col">Submitter Name</th>
-    <th scope="col">Submitter Role code</th>
-    <th scope="col">Write Off Quantity</th>
-    <th scope="col">Write Off Amount</th>
-    </thead>
-    <tbody>
-    @for(item <- additionalDocuments) {
-    <tr>
-        <td scope="row">@item.categoryCode</td>
-        <td scope="row">@item.name</td>
-        <td scope="row">@item.id</td>
-        <td scope="row">@item.typeCode</td>
-        <td scope="row">@item.lpcoExemptionCode</td>
-        <td scope="row">@item.submitter.map(_.name)</td>
-        <td scope="row">@item.submitter.map(_.roleCode)</td>
-        <td scope="row">@item.writeOff.map(_.quantity)</td>
-        <td scope="row">@item.writeOff.map(_.amount)</td>
-   </tr>
+            <table>
+                <thead>
+                <tr>
+                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.countryCode")</th>
+                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.documentName")</th>
+                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.id")</th>
+                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.typeCodeOfDocument")</th>
+                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument")</th>
+                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.submitterName")</th>
+                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.submitterRoleCode")</th>
+                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.writeOffQuantity")</th>
+                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.writeOffAmount")</th>
+                </tr>
+                </thead>
+                <tbody>
+                    @for(item <- additionalDocuments) {
+                        <tr>
+                            <td scope="row">@item.categoryCode</td>
+                            <td scope="row">@item.name</td>
+                            <td scope="row">@item.id</td>
+                            <td scope="row">@item.typeCode</td>
+                            <td scope="row">@item.lpcoExemptionCode</td>
+                            <td scope="row">@item.submitter.map(_.name)</td>
+                            <td scope="row">@item.submitter.map(_.roleCode)</td>
+                            <td scope="row">@item.writeOff.map(_.quantity)</td>
+                            <td scope="row">@item.writeOff.map(_.amount)</td>
+                       </tr>
+                    }
+                </tbody>
+            </table>
+        } else {
+            <p>@messages("governmentAgencyGoodsItemAdd.noAdditionalDocuments")</p>
+        }
+
+        <fieldset>
+            @components.input_text(field = form("categoryCode"),label = messages("governmentAgencyGoodsItemAdd.countryCode"))
+            @components.input_text(field = form("name"),label = messages("governmentAgencyGoodsItemAdd.documentName"))
+            @components.input_text(field = form("id"),label = messages("governmentAgencyGoodsItemAdd.id"))
+            @components.input_text(field = form("typeCode"),label = messages("governmentAgencyGoodsItemAdd.typeCodeOfDocument"))
+            @components.input_text(field = form("lpcoExemptionCode"),label = messages("governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument"))
+            @components.input_text(field = form("submitter.name"),label = messages("governmentAgencyGoodsItemAdd.submitterName"))
+            @components.input_text(field = form("submitter.roleCode"),label = messages("governmentAgencyGoodsItemAdd.submitterRoleCode"))
+            @components.input_text(field = form("writeOff.quantity"),label = messages("governmentAgencyGoodsItemAdd.writeOffQuantity"))
+            @components.input_text(field = form("writeOff.amount"),label = messages("governmentAgencyGoodsItemAdd.writeOffAmount"))
+        </fieldset>
+
+        <div class="section">
+            <button class="button" id="Add" value="Add" name = "submit">@messages("governmentAgencyGoodsItemAdd.addDocuments")</button>
+            <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+        </div>
     }
-    </tbody>
-</table>
-} else {
-<p>No Additional Documents available</p>
-}
-
-@components.input_text(field = form("categoryCode"),label = "category code")
-@components.input_text(field = form("name"),label = "Document Name")
-@components.input_text(field = form("id"),label = "documents Id")
-@components.input_text(field = form("typeCode"),label = "type Code of document")
-@components.input_text(field = form("lpcoExemptionCode"),label = "lpcoExemptionCode")
-@components.input_text(field = form("submitter.name"),label = "submitter name")
-@components.input_text(field = form("submitter.roleCode"),label = "submitter role Code")
-@components.input_text(field = form("writeOff.quantity"),label = "Write Off Quantity")
-@components.input_text(field = form("writeOff.amount"),label = "Write Off Amount")
-
-<div class="section">
-    <button class="button" id="Add" value="Add" name = "submit">Add Documents</button>
-    <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
-</div>}
 }
