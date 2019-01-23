@@ -15,16 +15,21 @@
  *@
 
 @import config.AppConfig
+@import uk.gov.hmrc.play.views.html._
+@import controllers.routes._
 @import uk.gov.hmrc.wco.dec.AuthorisationHolder
-
 
 @(form: Form[_], authorisationHolders: Seq[AuthorisationHolder])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(title = messages("authorisationHolder.title"), bodyClasses = None) {
 
+@helpers.form(action = AuthorisationHoldersController.onSubmit()) {
+
 @components.back_link("")
 
-<h2 class="heading-medium">@messages("authorisationHolder.header")</h2>
+@components.error_summary(form.errors)
+
+<h1 class="heading-medium">@messages("authorisationHolder.header")</h1>
 
 @if(authorisationHolders.nonEmpty) {
     @if(authorisationHolders.size > 1){
@@ -50,14 +55,17 @@
     <p>@messages("authorisationHolder.table.empty")</p>
     }
 
-<div class="grid-row">
-    <div class="column-two-thirds">
-        <fieldset>
-            @components.input_text(form("id"), messages("authorisationHolder.id"))
-            @components.input_text(form("categoryCode"), messages("authorisationHolder.categoryCode"))
-        </fieldset>
-        <a href="#" id="Add" role="button" class="button">@messages("authorisationHolder.addAuthorisationHolderButton")</a>
-        <a href="#" id="Next" role="button" class="button">@messages("common.button.continue")</a>
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <fieldset>
+                @components.input_text(form("id"), messages("authorisationHolder.id"))
+                @components.input_text(form("categoryCode"), messages("authorisationHolder.categoryCode"))
+            </fieldset>
+
+            <button id="Add" value="Add" name="submit">@messages("authorisationHolder.addAuthorisationHolderButton")
+            </button>
+            <a href="#" class="button" id="Next">@messages("common.button.continue")</a>
+        </div>
     </div>
-</div>
+    }
 }

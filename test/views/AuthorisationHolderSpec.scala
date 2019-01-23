@@ -102,7 +102,7 @@ class AuthorisationHolderSpec
       forAll(listOf(arbitrary[AuthorisationHolder])) { authorisationHolders =>
 
         whenever(authorisationHolders.size > 1) {
-          
+
           val doc = asDocument(view(form, authorisationHolders))
 
           assertContainsText(doc, s"${authorisationHolders.size} " + messages("authorisationHolder.table.multiple.heading"))
