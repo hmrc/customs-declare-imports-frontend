@@ -23,7 +23,7 @@ import org.scalacheck.Gen._
 import org.scalacheck.{Arbitrary, Gen, Shrink}
 import uk.gov.hmrc.wco.dec._
 
-trait Generators extends SignedInUserGen {
+trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val dontShrink: Shrink[String] = Shrink.shrinkAny
 

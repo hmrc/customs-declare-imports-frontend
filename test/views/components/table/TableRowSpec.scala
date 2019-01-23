@@ -35,18 +35,7 @@ class TableRowSpec extends ViewSpecBase
   def view[A](row: TableRow[A]) =
     Html(s"<table>${table_row(row)}</table>")
 
-
-  implicit val arbitraryRow: Arbitrary[TableRow[String]] =
-    Arbitrary {
-      for {
-        n <- choose(1, 50)
-        values <- listOfN(n, arbitrary[String])
-      } yield {
-        TableRow(values.headOption.value, values.tail)
-      }
-    }
-
-  "rendered row" should {
+  "table_row" should {
 
     "display only a single tr" in {
 
