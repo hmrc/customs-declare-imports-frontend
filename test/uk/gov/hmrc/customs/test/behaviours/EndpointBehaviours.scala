@@ -51,6 +51,22 @@ trait EndpointBehaviours extends CustomsSpec {
     }
   }
 
+  def badRequestEndpoint(uri: String, method: String = GET): Unit = {
+
+    "return 400" when {
+
+      s"$uri endpoint is called with $method and with signed in user" in new IntegrationTest {
+
+        withCaching(None)
+        withSignedInUser() { (headers, session, tags) =>
+          withRequest(method, uriWithContextPath(uri), headers, session, tags) {
+            wasBadRequest
+          }
+        }
+      }
+    }
+  }
+
   def redirectedEndpoint(uri: String, redirectTo: String, method: String = GET): Unit = {
 
     "return 303" when {

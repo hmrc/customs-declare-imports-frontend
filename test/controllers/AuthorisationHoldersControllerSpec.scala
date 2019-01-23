@@ -107,7 +107,7 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
   ".onSubmit" should {
 
-    behave like redirectedEndpoint("/submit-declaration-goods/add-authorisation-holder", "/submit-declaration-goods/add-authorisation-holder", POST)
+    behave like badRequestEndpoint("/submit-declaration-goods/add-authorisation-holder", POST)
     behave like authenticatedEndpoint("/submit-declaration-goods/add-authorisation-holder", POST)
 
     "return SEE_OTHER" when {
