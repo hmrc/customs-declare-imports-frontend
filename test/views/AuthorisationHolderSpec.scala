@@ -18,6 +18,8 @@ package views
 
 import forms.DeclarationFormMapping.authorisationHolderMapping
 import generators.Generators
+import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.twirl.api.Html
@@ -86,6 +88,7 @@ class AuthorisationHolderSpec
     "display authorisation holder table heading for single item if authorisation holder is available" in {
 
       forAll { authorisationHolder: AuthorisationHolder =>
+
         val authorisationHolderSeq = Seq(authorisationHolder)
         val doc = asDocument(view(form, authorisationHolderSeq))
 
@@ -96,31 +99,34 @@ class AuthorisationHolderSpec
 
     "display authorisation holder table heading for multiple items if authorisation holder is available" in {
 
-      forAll { authorisationHolder: AuthorisationHolder =>
-        val authorisationHolderSeq = Seq(authorisationHolder, authorisationHolder)
-        val doc = asDocument(view(form, authorisationHolderSeq))
+      forAll(listOf(arbitrary[AuthorisationHolder])) { authorisationHolders =>
 
-        assertContainsText(doc, s"${authorisationHolderSeq.size} " + messages("authorisationHolder.table.multiple.heading"))
+        whenever(authorisationHolders.size > 1) {
+          
+          val doc = asDocument(view(form, authorisationHolders))
+
+          assertContainsText(doc, s"${authorisationHolders.size} " + messages("authorisationHolder.table.multiple.heading"))
+        }
       }
     }
 
     "display authorisation holder id in the table when available" in {
 
-      forAll { authorisationHolder: AuthorisationHolder =>
-        val authorisationHolderSeq = Seq(authorisationHolder)
-        val doc = asDocument(view(form, authorisationHolderSeq))
+      forAll(listOf(arbitrary[AuthorisationHolder])) { authorisationHolders =>
 
-        authorisationHolder.id.map(assertContainsText(doc, _))
+        val doc = asDocument(view(form, authorisationHolders))
+
+        authorisationHolders.map(_.id.map(assertContainsText(doc, _)))
       }
     }
 
     "display authorisation holder category code in the table when available" in {
 
-      forAll { authorisationHolder: AuthorisationHolder =>
-        val authorisationHolderSeq = Seq(authorisationHolder)
-        val doc = asDocument(view(form, authorisationHolderSeq))
+      forAll(listOf(arbitrary[AuthorisationHolder])) { authorisationHolders =>
 
-        authorisationHolder.categoryCode.map(assertContainsText(doc, _))
+        val doc = asDocument(view(form, authorisationHolders))
+
+        authorisationHolders.map(_.categoryCode.map(assertContainsText(doc, _)))
       }
     }
   }
