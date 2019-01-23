@@ -29,7 +29,7 @@
 
     @components.error_summary(form.errors)
 
-    <h1 class="heading-medium">@messages("authorisationHolder.heading")</h1>
+    <h1 class="heading-large">@messages("authorisationHolder.heading")</h1>
 
     @if(authorisationHolders.nonEmpty) {
         @if(authorisationHolders.size > 1){
@@ -40,8 +40,10 @@
 
         <table>
             <thead>
-                <th scope="col">@messages("authorisationHolder.id")</th>
-                <th scope="col">@messages("authorisationHolder.categoryCode")</th>
+                <tr>
+                    <th scope="col">@messages("authorisationHolder.id")</th>
+                    <th scope="col">@messages("authorisationHolder.categoryCode")</th>
+                </tr>
             </thead>
             <tbody>
             @for(item <- authorisationHolders) {
@@ -56,17 +58,15 @@
         <p>@messages("authorisationHolder.table.empty")</p>
         }
 
-    <div class="grid-row">
-        <div class="column-two-thirds">
-            <fieldset>
-                @components.input_text(form("id"), messages("authorisationHolder.id"))
-                @components.input_text(form("categoryCode"), messages("authorisationHolder.categoryCode"))
-            </fieldset>
 
-            <button id="Add" value="Add" name="submit">@messages("authorisationHolder.addAuthorisationHolderButton")
-            </button>
-            <a href="#" class="button" id="Next">@messages("common.button.continue")</a>
-        </div>
-    </div>
+        <fieldset>
+            @components.input_text(form("id"), messages("authorisationHolder.id"))
+            @components.input_text(form("categoryCode"), messages("authorisationHolder.categoryCode"))
+        </fieldset>
+
+        <button id="Add" value="Add" name="submit">@messages("authorisationHolder.addAuthorisationHolderButton")
+        </button>
+        <a href="#" class="button" id="Next">@messages("common.button.continue")</a>
+
     }
 }
