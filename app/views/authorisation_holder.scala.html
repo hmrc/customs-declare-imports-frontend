@@ -25,35 +25,36 @@
 
 @helpers.form(action = AuthorisationHoldersController.onSubmit()) {
 
-@components.back_link("")
+    @components.back_link("")
 
-@components.error_summary(form.errors)
+    @components.error_summary(form.errors)
 
-<h1 class="heading-medium">@messages("authorisationHolder.header")</h1>
+    <h1 class="heading-medium">@messages("authorisationHolder.heading")</h1>
 
-@if(authorisationHolders.nonEmpty) {
-    @if(authorisationHolders.size > 1){
-    <p>@authorisationHolders.size @messages("authorisationHolder.table.multiple.heading")</p>
-    }else{
-    <p>@authorisationHolders.size @messages("authorisationHolder.table.heading")</p>
-    }
-    <table>
-        <thead>
-            <th scope="col">@messages("authorisationHolder.id")</th>
-            <th scope="col">@messages("authorisationHolder.categoryCode")</th>
-        </thead>
-        <tbody>
-        @for(item <- authorisationHolders) {
-        <tr>
-            <td scope="row">@item.id</td>
-            <td>@item.categoryCode</td>
-        </tr>
+    @if(authorisationHolders.nonEmpty) {
+        @if(authorisationHolders.size > 1){
+            <p>@authorisationHolders.size @messages("authorisationHolder.table.multiple.heading")</p>
+        } else {
+            <p>@authorisationHolders.size @messages("authorisationHolder.table.heading")</p>
         }
-        </tbody>
-    </table>
-    } else {
-    <p>@messages("authorisationHolder.table.empty")</p>
-    }
+
+        <table>
+            <thead>
+                <th scope="col">@messages("authorisationHolder.id")</th>
+                <th scope="col">@messages("authorisationHolder.categoryCode")</th>
+            </thead>
+            <tbody>
+            @for(item <- authorisationHolders) {
+            <tr>
+                <td scope="row">@item.id</td>
+                <td>@item.categoryCode</td>
+            </tr>
+            }
+            </tbody>
+        </table>
+        } else {
+        <p>@messages("authorisationHolder.table.empty")</p>
+        }
 
     <div class="grid-row">
         <div class="column-two-thirds">
