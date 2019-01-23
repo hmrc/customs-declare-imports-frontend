@@ -23,12 +23,16 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.{Action, AnyContent}
 import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString}
 import repositories.declaration.{Submission, SubmissionRepository}
+import services.CustomsDeclarationsConnector
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
+import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.concurrent.ExecutionContext
+import scala.xml.NodeSeq
 
 @Singleton
-class TestingUtilitiesController @Inject()(actions: Actions, submissionRepository: SubmissionRepository)
+class TestingUtilitiesController @Inject()(actions: Actions, submissionRepository: SubmissionRepository, connector: CustomsDeclarationsConnector)
                                           (implicit val appConfig: AppConfig, ec: ExecutionContext) extends BaseController {
 
   def displaySubmissions(eori: String): Action[AnyContent] = Action.async { implicit req =>
@@ -70,6 +74,13 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
       case Some(submission) => submissionRepository.removeById(submission.id).map { res =>
         if (res.ok) Accepted else InternalServerError
       }
+    }
+  }
+
+  def submitDeclarationXml: Action[String] = actions.auth.async(parse.tolerantText) { implicit req =>
+    implicit val user = req.user
+    connector.submitImportDeclaration(MetaData.fromXml(req.body)).map { resp =>
+      Created(resp.conversationId)
     }
   }
 
