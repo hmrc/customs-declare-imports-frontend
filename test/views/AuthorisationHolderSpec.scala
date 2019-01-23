@@ -48,21 +48,7 @@ class AuthorisationHolderSpec
 
   "Authorisation Holder Page" should {
 
-    behave like pageWithoutHeading(view, messagePrefix)
-
-    "have title" in {
-
-      val doc = asDocument(view())
-
-      assertEqualsMessage(doc, "title", s"$messagePrefix.title")
-    }
-
-    "have heading" in {
-
-      val doc = asDocument(view())
-
-      assertEqualsMessage(doc, "h2", s"$messagePrefix.header")
-    }
+    behave like normalPage(view, messagePrefix)
 
     "contain id field" in {
 
