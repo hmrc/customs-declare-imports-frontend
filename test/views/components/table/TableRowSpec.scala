@@ -1,0 +1,78 @@
+/*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package views.components.table
+
+import generators.Generators
+import org.scalacheck.Arbitrary
+import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen._
+import org.scalatest.OptionValues
+import org.scalatest.prop.PropertyChecks
+import play.twirl.api.Html
+import viewmodels.TableRow
+import views.ViewSpecBase
+import views.html.components.table._
+
+class TableRowSpec extends ViewSpecBase
+  with PropertyChecks
+  with Generators
+  with OptionValues {
+
+  def view[A](row: TableRow[A]) =
+    Html(s"<table>${table_row(row)}</table>")
+
+
+  implicit val arbitraryRow: Arbitrary[TableRow[String]] =
+    Arbitrary {
+      for {
+        n <- choose(1, 50)
+        values <- listOfN(n, arbitrary[String])
+      } yield {
+        TableRow(values.headOption.value, values.tail)
+      }
+    }
+
+  "rendered row" should {
+
+    "display only a single tr" in {
+
+      forAll { row: TableRow[String] =>
+
+        val doc = asDocument(view(row))
+        doc.getElementsByTag("tr").size() mustBe 1
+      }
+    }
+
+    "display td's equal to number of values" in {
+
+      forAll { row: TableRow[String] =>
+
+        val doc = asDocument(view(row))
+        doc.getElementsByTag("td").size() mustBe row.values.length + 1
+      }
+    }
+
+    "display content of each value" in {
+
+      forAll { row: TableRow[String] =>
+
+        val doc = asDocument(view(row))
+        row.map(value => assertContainsText(doc, value))
+      }
+    }
+  }
+}
