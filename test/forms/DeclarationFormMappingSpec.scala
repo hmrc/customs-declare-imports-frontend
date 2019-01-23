@@ -24,7 +24,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
-import uk.gov.hmrc.wco.dec.AdditionalInformation
+import uk.gov.hmrc.wco.dec.{AdditionalInformation, AuthorisationHolder}
 
 class DeclarationFormMappingSpec extends WordSpec
   with MustMatchers
@@ -51,7 +51,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
         "statement code length is greater than 17" in {
 
-          forAll(arbitrary[AdditionalInformation], minStringLength(17)) { (additionalInfo, invalidCode) =>
+          forAll(arbitrary[AdditionalInformation], minStringLength(18)) { (additionalInfo, invalidCode) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementCode = Some(invalidCode))).fold(
               error => error.error("statementCode") must haveMessage("statement code should be less than or equal to 17 characters"),
@@ -80,7 +80,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
         "statement description length is greater than 512" in {
 
-          forAll(arbitrary[AdditionalInformation], minStringLength(512))  { (additionalInfo, invalidDescription) =>
+          forAll(arbitrary[AdditionalInformation], minStringLength(513))  { (additionalInfo, invalidDescription) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementDescription = Some(invalidDescription))).fold(
               error => error.error("statementDescription") must haveMessage("statement description should be less than or equal to 512 characters"),
@@ -109,7 +109,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
         "statement type code length is greater than 3" in {
 
-          forAll(arbitrary[AdditionalInformation], minStringLength(3))  { (additionalInfo, invalidTypeCode) =>
+          forAll(arbitrary[AdditionalInformation], minStringLength(4))  { (additionalInfo, invalidTypeCode) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementTypeCode = Some(invalidTypeCode))).fold(
               error => error.error("statementTypeCode") must haveMessage("statement type code should be less than or equal to 3 characters"),
@@ -131,6 +131,56 @@ class DeclarationFormMappingSpec extends WordSpec
             }
           }
         }
+      }
+    }
+  }
+
+  "authorisationHolderForm" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { authorisationHolder: AuthorisationHolder =>
+
+          Form(authorisationHolderMapping).fillAndValidate(authorisationHolder).fold(
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe authorisationHolder
+          )
+        }
+      }
+    }
+
+    "fail to bind" when {
+
+      "id length is greater than 17" in {
+
+        forAll(arbitrary[AuthorisationHolder], minStringLength(18)) { (authorisationHolder, invalidId) =>
+
+          Form(authorisationHolderMapping).fillAndValidate(authorisationHolder.copy(id = Some(invalidId))).fold(
+            error => error.error("id") must haveMessage("ID should be less than or equal to 17 characters"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
+
+      "category code length is greater than 4" in {
+
+        forAll(arbitrary[AuthorisationHolder], minStringLength(5)) { (authorisationHolder, invalidCategoryCode) =>
+
+          Form(authorisationHolderMapping).fillAndValidate(authorisationHolder.copy(categoryCode = Some(invalidCategoryCode))).fold(
+            error => error.error("categoryCode") must haveMessage("Category Code should be less than or equal to 4 characters"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
+
+      "both id and category code are missing" in {
+
+        Form(authorisationHolderMapping).bind(Map[String, String]()).fold(
+          error => error must haveErrorMessage("You must provide an ID or category code"),
+          _     => fail("Should not succeed")
+        )
       }
     }
   }

@@ -11,6 +11,7 @@ common.phase=Alpha
 common.feedbackFirst=This is a new service - your
 common.feedbackSecond=feedback
 common.feedbackThird=will help us to improve it.
+common.error.summary.title=There is a problem
 
 ## common buttons with shared labels
 common.button.startNow=Start now
@@ -322,6 +323,18 @@ obligationGuarantees.guarantorOfficeId=Guarantor office ID
 obligationGuarantees.obligationGuaranteesAdded=obligation guarantees added.
 obligationGuarantees.addObligationGuarantees=Add obligation guarantees
 
+## Authorisation Holder
+authorisationHolder.title=Authorisation Holders
+authorisationHolder.heading=Authorisation Holders
+authorisationHolder.table.heading=Authorisation Holder added
+authorisationHolder.table.multiple.heading=Authorisation Holders added
+authorisationHolder.table.empty=No Authorisation Holder available
+authorisationHolder.table.id=ID
+authorisationHolder.table.categoryCode=Category Code
+authorisationHolder.id=ID
+authorisationHolder.categoryCode=Category Code
+authorisationHolder.addAuthorisationHolderButton=Add Authorisation Holder
+
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Government agency goods item
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
@@ -350,7 +363,6 @@ governmentAgencyGoodsItem.packagings=Packagings
 governmentAgencyGoodsItem.previousDocuments=Previous documents
 governmentAgencyGoodsItem.refundRecipientParties=Refund recipient parties
 governmentAgencyGoodsItem.saveGoodsItem=Save goods item
-
 
 governmentAgencyGoodsItemAdd.title=Government Agency Goods Item Additional Documents
 governmentAgencyGoodsItemAdd.countryCode=Country code

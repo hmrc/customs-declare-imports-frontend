@@ -3,6 +3,4 @@
 ->         /                          health.Routes
 ->     	   /template                  template.Routes
 
-GET           /customs-declare-imports/test-only/feature/:feature/:status                               test.controllers.FeatureSwitchController.set(feature: domain.features.Feature.Feature, status: domain.features.FeatureStatus.FeatureStatus)
-
 GET        /admin/metrics             com.kenshoo.play.metrics.MetricsController.metrics
