@@ -34,7 +34,7 @@ class FeatureSwitchController @Inject()(implicit val appConfig: AppConfig, ec: E
   }
 
   def setAll(status: FeatureStatus): Action[AnyContent] = Action.async { implicit req =>
-    domain.features.Feature.values.map(set(_, status)(req))
-      .foldLeft(Future.successful(Ok(s"all $status")))((b, a) => b.zip(a).map(_._1))
+    domain.features.Feature.values.foreach(appConfig.setFeatureStatus(_, status))
+    Future.successful(Ok(s"all $status"))
   }
 }
