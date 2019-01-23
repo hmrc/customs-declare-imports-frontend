@@ -11,6 +11,7 @@ common.phase=Alpha
 common.feedbackFirst=This is a new service - your
 common.feedbackSecond=feedback
 common.feedbackThird=will help us to improve it.
+common.error.summary.title=There is a problem
 
 ## common buttons with shared labels
 common.button.startNow=Start now

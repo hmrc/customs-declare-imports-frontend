@@ -53,7 +53,6 @@ class AuthorisationHoldersController @Inject()
         cacheService
           .upsert(req.eori, CacheKey.authorisationHolders)
                  (() => Seq(authHolder), authHolder +: _).map { _ =>
-
           Redirect(routes.AuthorisationHoldersController.onPageLoad())
         }
     )
