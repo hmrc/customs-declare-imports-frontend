@@ -22,43 +22,51 @@
 @(form:Form[_], additionalInformations: Seq[AdditionalInformation])(implicit request: Request[_], messages: Messages, appConfig:AppConfig)
 
 @main_template(
-    title = messages("cancel.title"),
+    title = messages("governmentAgencyGoodsItemAdditionalInfo.title"),
     bodyClasses = None) {
 
     @helpers.form(action = GovernmentAgencyGoodsItemsController.handleGoodsItemsAdditionalInformationsSubmit()) {
 
+        <legend>
+            <h1>@messages("governmentAgencyGoodsItemAdditionalInfo.title")</h1>
+        </legend>
 
-<h2 class="heading-medium">Government Agency Goods Item Additional Information</h2>
-<table>
-    @if(additionalInformations.nonEmpty) {
-    <p>@additionalInformations.size Goods Item additional Information added</p>
-    <thead>
-    <th scope="col">statement Code</th>
-    <th scope="col">statementDescription</th>
-    <th scope="col">statementTypeCode</th>
-    </thead>
-    <tbody>
-    @for(item <- additionalInformations) {
-    <tr>
-        <td scope="row">@item.statementCode</td>
-        <td scope="row">@item.statementDescription</td>
-        <td scope="row">@item.statementTypeCode</td>
-   </tr>
+
+        @if(additionalInformations.nonEmpty) {
+            <p>@additionalInformations.size @messages("governmentAgencyGoodsItemAdditionalInfo.p.additionalInformationAdded")</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdditionalInfo.statementCode")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdditionalInfo.statementDescription")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdditionalInfo.statementTypeCode")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(item <- additionalInformations) {
+                    <tr>
+                        <td scope="row">@item.statementCode</td>
+                        <td>@item.statementDescription</td>
+                        <td>@item.statementTypeCode</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        } else {
+            <p>@messages("governmentAgencyGoodsItemAdditionalInfo.noAdditionalInfo")</p>
+        }
+
+
+        <fieldset>
+            @components.input_text(field = form("statementCode"),label = messages("governmentAgencyGoodsItemAdditionalInfo.statementCode"))
+            @components.input_text(field = form("statementDescription"),label = messages("governmentAgencyGoodsItemAdditionalInfo.statementDescription"))
+            @components.input_text(field = form("statementTypeCode"),label = messages("governmentAgencyGoodsItemAdditionalInfo.statementTypeCode"))
+        </fieldset>
+
+        <div class="section">
+            <button class="button" id="Add" value="Add" name = "submit">@messages("governmentAgencyGoodsItemAdditionalInfo.addAdditionalInformation")</button>
+            <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+        </div>
     }
-    </tbody>
-    } else {
-        <p>No Additional Information available</p>
-    }
-</table>
-
-
-@components.input_text(field = form("statementCode"),label = "Statement code")
-@components.input_text(field = form("statementDescription"),label = "Statement Description")
-@components.input_text(field = form("statementTypeCode"),label = "Statement Type Code")
-
-<div class="section">
-    <button class="button" id="Add" value="Add" name = "submit">Add Additional Information</button>
-    <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
-</div>
-}
 }
