@@ -28,11 +28,10 @@ object HtmlTable {
     new HtmlTable(HtmlTableRow(header), values.map(HtmlTableRow(_))) {}
 
   def apply[A, B](header1: A, header2: A)(values: List[(B, B)]): HtmlTable[A, B] =
-    new HtmlTable(HtmlTableRow(header1, List(header2)), values.map { case (a, b) => HtmlTableRow(a, List(b)) }) {}
+    new HtmlTable(HtmlTableRow(header1, List(header2)), values.map { case (a, b) => HtmlTableRow(a, List(b))}) {}
 }
 
-
-case class HtmlTableRow[A](value: A, values: List[A] = List()) {
+sealed abstract case class HtmlTableRow[A](value: A, values: List[A]) {
 
   def map[B](f: A => B): HtmlTableRow[B] =
     HtmlTableRow(f(value), values.map(f))
@@ -42,4 +41,10 @@ case class HtmlTableRow[A](value: A, values: List[A] = List()) {
 
   def size: Int =
     foldLeft(0)((b, _) => b + 1)
+}
+
+object HtmlTableRow {
+
+  def apply[A](value: A, values: List[A] = List()): HtmlTableRow[A] =
+    new HtmlTableRow(value, values) {}
 }
