@@ -118,10 +118,17 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryAdditionalInfo: Arbitrary[AdditionalInformation] = Arbitrary {
     for {
-      statementCode <- option(alphaNumStr.map(_.take(17)))
-      statementDescription <- option(alphaNumStr.map(_.take(512)))
-      statementTypeCode <- option(alphaNumStr.map(_.take(3)))
+      statementCode         <- option(alphaNumStr.map(_.take(17)))
+      statementDescription  <- option(alphaNumStr.map(_.take(512)))
+      statementTypeCode     <- option(alphaNumStr.map(_.take(3)))
     } yield AdditionalInformation(statementCode, statementDescription, statementTypeCode)
+  }
+
+  implicit val arbitraryAuthorisationHolder: Arbitrary[AuthorisationHolder] = Arbitrary {
+    for {
+      id            <- option(alphaNumStr.map(_.take(17)))
+      categoryCode  <- option(alphaNumStr.map(_.take(4)))
+    } yield AuthorisationHolder(id, categoryCode)
   }
 
   implicit val arbitraryMeasure: Arbitrary[Measure] = Arbitrary {

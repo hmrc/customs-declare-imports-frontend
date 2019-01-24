@@ -37,7 +37,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
   "ObligationGuranteeController" should {
 
     "require Authentication" in withFeatures((enabled(Feature.submit))) {
-      withoutSignedInUser() {
+      withoutSignedInUser() { (_, _) =>
         withRequest("GET", requestUri) { resp =>
           wasRedirected(ggLoginRedirectUri(requestUri), resp)
         }

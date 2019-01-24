@@ -176,7 +176,18 @@ object DeclarationFormMapping{
 
  val guaranteesFormMapping = mapping("guarantees" -> seq(obligationGauranteeMapping))(ObligationGuaranteeForm.apply)(ObligationGuaranteeForm.unapply)
 
+  val authorisationHolderMapping =
+    mapping(
+      "id" ->
+        optional(text.verifying("ID should be less than or equal to 17 characters", _.length <= 17)),
+      "categoryCode" ->
+        optional(text.verifying("Category Code should be less than or equal to 4 characters", _.length <= 4))
+    )(AuthorisationHolder.apply)(AuthorisationHolder.unapply)
+      .verifying("You must provide an ID or category code", require1Field[AuthorisationHolder](_.id, _.categoryCode))
 
+
+  def require1Field[T](fs: (T => Option[_])*): T => Boolean =
+    t => fs.exists(f => f(t).nonEmpty)
 }
 
 case class ObligationGuaranteeForm (guarantees: Seq[ObligationGuarantee] = Seq.empty)
