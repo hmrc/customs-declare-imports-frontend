@@ -16,22 +16,22 @@
 
 package viewmodels
 
-sealed abstract case class HtmlTable[A, B](header: HtmlTableRow[A], rows: List[HtmlTableRow[B]])
+sealed abstract case class HtmlTable[A, B](header: HtmlTableRow[A], rows: Seq[HtmlTableRow[B]])
 
 object HtmlTable {
 
-  def apply[A, B](header: HtmlTableRow[A], rows: List[HtmlTableRow[B]]): Option[HtmlTable[A, B]] =
+  def apply[A, B](header: HtmlTableRow[A], rows: Seq[HtmlTableRow[B]]): Option[HtmlTable[A, B]] =
     if (rows.exists(_.size != header.size)) None
     else Some(new HtmlTable(header, rows) {})
 
-  def apply[A, B](header: A)(values: List[B]): HtmlTable[A, B] =
+  def apply[A, B](header: A)(values: Seq[B]): HtmlTable[A, B] =
     new HtmlTable(HtmlTableRow(header), values.map(HtmlTableRow(_))) {}
 
-  def apply[A, B](header1: A, header2: A)(values: List[(B, B)]): HtmlTable[A, B] =
+  def apply[A, B](header1: A, header2: A)(values: Seq[(B, B)]): HtmlTable[A, B] =
     new HtmlTable(HtmlTableRow(header1, List(header2)), values.map { case (a, b) => HtmlTableRow(a, List(b))}) {}
 }
 
-sealed abstract case class HtmlTableRow[A](value: A, values: List[A]) {
+sealed abstract case class HtmlTableRow[A](value: A, values: Seq[A]) {
 
   def map[B](f: A => B): HtmlTableRow[B] =
     HtmlTableRow(f(value), values.map(f))
@@ -45,6 +45,6 @@ sealed abstract case class HtmlTableRow[A](value: A, values: List[A]) {
 
 object HtmlTableRow {
 
-  def apply[A](value: A, values: List[A] = List()): HtmlTableRow[A] =
+  def apply[A](value: A, values: Seq[A] = List()): HtmlTableRow[A] =
     new HtmlTableRow(value, values) {}
 }

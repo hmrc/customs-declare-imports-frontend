@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.play.views.html._
 @import controllers.routes._
 @import uk.gov.hmrc.wco.dec.AuthorisationHolder
+@import viewmodels.HtmlTable
 
 @(form: Form[_], authorisationHolders: Seq[AuthorisationHolder])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
@@ -31,42 +32,31 @@
 
     <h1 class="heading-large">@messages("authorisationHolder.heading")</h1>
 
-    @if(authorisationHolders.nonEmpty) {
-        @if(authorisationHolders.size > 1){
-            <p>@authorisationHolders.size @messages("authorisationHolder.table.multiple.heading")</p>
-        } else {
-            <p>@authorisationHolders.size @messages("authorisationHolder.table.heading")</p>
-        }
-
-        <table>
-            <thead>
-                <tr>
-                    <th scope="col">@messages("authorisationHolder.id")</th>
-                    <th scope="col">@messages("authorisationHolder.categoryCode")</th>
-                </tr>
-            </thead>
-            <tbody>
-            @for(item <- authorisationHolders) {
-            <tr>
-                <td scope="row">@item.id</td>
-                <td>@item.categoryCode</td>
-            </tr>
-            }
-            </tbody>
-        </table>
-        } else {
+    @if(authorisationHolders.isEmpty) {
         <p>@messages("authorisationHolder.table.empty")</p>
+    } else {
+        @if(authorisationHolders.size == 1) {
+            <p>@authorisationHolders.size @messages("authorisationHolder.table.heading")</p>
+        } else {
+            <p>@authorisationHolders.size @messages("authorisationHolder.table.multiple.heading")</p>
         }
+    }
 
+    @components.table.table(
+        HtmlTable[String, String](
+            messages("authorisationHolder.id"),
+            messages("authorisationHolder.categoryCode")
+        )(authorisationHolders.map(a => (a.id.getOrElse(""), a.categoryCode.getOrElse("")))))
 
-        <fieldset>
-            @components.input_text(form("id"), messages("authorisationHolder.id"))
-            @components.input_text(form("categoryCode"), messages("authorisationHolder.categoryCode"))
-        </fieldset>
+    <fieldset>
+        @components.input_text(form("id"), messages("authorisationHolder.id"))
+        @components.input_text(form("categoryCode"), messages("authorisationHolder.categoryCode"))
+    </fieldset>
 
-        <button id="Add" value="Add" name="submit">@messages("authorisationHolder.addAuthorisationHolderButton")
-        </button>
-        <a href="#" class="button" id="Next">@messages("common.button.continue")</a>
+    <button id="Add" value="Add" name="submit">
+        @messages("authorisationHolder.addAuthorisationHolderButton")
+    </button>
 
+    <a href="#" class="button" id="Next">@messages("common.button.continue")</a>
     }
 }
