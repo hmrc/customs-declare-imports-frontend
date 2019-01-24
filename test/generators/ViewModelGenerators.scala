@@ -20,25 +20,25 @@ import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen._
 import org.scalatest.OptionValues
-import viewmodels.{Table, TableRow}
+import viewmodels.{HtmlTable, HtmlTableRow}
 
 trait ViewModelGenerators extends OptionValues {
 
-  implicit val arbitraryTable: Arbitrary[Table[String, String]] =
+  implicit val arbitraryTable: Arbitrary[HtmlTable[String, String]] =
     Arbitrary {
       for {
         n      <- choose(1, 50)
         header <- genRow(n)
         rows   <- listOf(genRow(n))
       } yield {
-        Table(header, rows)
+        HtmlTable(header, rows).value
       }
     }
 
-  implicit val arbitraryRow: Arbitrary[TableRow[String]] =
+  implicit val arbitraryRow: Arbitrary[HtmlTableRow[String]] =
     Arbitrary(choose(1, 50).flatMap(genRow))
 
-  def genRow(n: Int): Gen[TableRow[String]] =
+  def genRow(n: Int): Gen[HtmlTableRow[String]] =
     listOfN(n, arbitrary[String])
-      .map(xs => TableRow(xs.headOption.value, xs.tail))
+      .map(xs => HtmlTableRow(xs.headOption.value, xs.tail))
 }

@@ -21,7 +21,7 @@ import org.scalatest.OptionValues
 import org.scalatest.prop.PropertyChecks
 import play.twirl.api.Html
 import uk.gov.hmrc.customs.test.ViewMatchers
-import viewmodels.Table
+import viewmodels.HtmlTable
 import views.html.components.table.{table, table_header, table_row}
 import views.ViewSpecBase
 
@@ -31,7 +31,7 @@ class TableSpec extends ViewSpecBase
   with OptionValues
   with ViewMatchers {
 
-  def view(testTable: Table[String, String]): Html = table(testTable)
+  def view(testTable: HtmlTable[String, String]): Html = table(testTable)
 
   "table" should {
 
@@ -39,9 +39,9 @@ class TableSpec extends ViewSpecBase
 
       "there are no rows" in {
 
-        forAll { table: Table[String, String] =>
+        forAll { table: HtmlTable[String, String] =>
 
-          val doc = asDocument(view(table.copy(rows = List())))
+          val doc = asDocument(view(HtmlTable[String, String](table.header, List()).value))
           assert(doc.getElementsByTag("table").isEmpty)
         }
       }
@@ -49,7 +49,7 @@ class TableSpec extends ViewSpecBase
 
     "display only 1 table" in {
 
-      forAll { table: Table[String, String] =>
+      forAll { table: HtmlTable[String, String] =>
 
         whenever(table.rows.nonEmpty) {
 
@@ -61,7 +61,7 @@ class TableSpec extends ViewSpecBase
 
     "display table header" in {
 
-      forAll { table: Table[String, String] =>
+      forAll { table: HtmlTable[String, String] =>
 
         whenever(table.rows.nonEmpty) {
           
@@ -73,7 +73,7 @@ class TableSpec extends ViewSpecBase
     
     "display every table row" in {
 
-      forAll { table: Table[String, String] =>
+      forAll { table: HtmlTable[String, String] =>
 
         table.rows.foreach { row =>
 

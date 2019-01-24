@@ -23,7 +23,7 @@ import org.scalacheck.Gen._
 import org.scalatest.OptionValues
 import org.scalatest.prop.PropertyChecks
 import play.twirl.api.Html
-import viewmodels.TableRow
+import viewmodels.HtmlTableRow
 import views.ViewSpecBase
 import views.html.components.table._
 
@@ -32,14 +32,14 @@ class TableRowSpec extends ViewSpecBase
   with Generators
   with OptionValues {
 
-  def view[A](row: TableRow[A]) =
+  def view[A](row: HtmlTableRow[A]) =
     Html(s"<table>${table_row(row)}</table>")
 
   "table_row" should {
 
     "display only a single tr" in {
 
-      forAll { row: TableRow[String] =>
+      forAll { row: HtmlTableRow[String] =>
 
         val doc = asDocument(view(row))
         doc.getElementsByTag("tr").size() mustBe 1
@@ -48,7 +48,7 @@ class TableRowSpec extends ViewSpecBase
 
     "display td's equal to number of values" in {
 
-      forAll { row: TableRow[String] =>
+      forAll { row: HtmlTableRow[String] =>
 
         val doc = asDocument(view(row))
         doc.getElementsByTag("td").size() mustBe row.values.length + 1
@@ -57,7 +57,7 @@ class TableRowSpec extends ViewSpecBase
 
     "display content of each value" in {
 
-      forAll { row: TableRow[String] =>
+      forAll { row: HtmlTableRow[String] =>
 
         val doc = asDocument(view(row))
         row.map(value => assertContainsText(doc, value))

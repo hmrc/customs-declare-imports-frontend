@@ -14,9 +14,9 @@
  * limitations under the License.
  *@
 
-@import viewmodels.TableRow
+@import viewmodels.HtmlTableRow
 
-@(header: TableRow[_])
+@(header: HtmlTableRow[_])
 
 <tr>
     @Html(header.map(value => s"""<th scope="col">$value</th>""").foldLeft("")(_ + _))
