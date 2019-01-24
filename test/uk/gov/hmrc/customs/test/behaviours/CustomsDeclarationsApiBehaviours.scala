@@ -58,7 +58,7 @@ class MockCustomsDeclarationsConnector extends CustomsDeclarationsConnector with
 
   val cancellationSchemas = Seq("/CANCEL_METADATA.xsd","/CANCEL.xsd")
 
-  override def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String])
+  override def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String], token: Option[String] = None)
                                       (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
     expectedSubmissions.getOrElse(metaData, throw new IllegalArgumentException("Unexpected API submission call"))
 

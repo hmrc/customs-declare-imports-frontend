@@ -19,12 +19,14 @@ package test.controllers
 import config.AppConfig
 import controllers.Actions
 import javax.inject.{Inject, Singleton}
+import play.api.Logger
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.{Action, AnyContent}
 import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString}
 import repositories.declaration.{Submission, SubmissionRepository}
 import services.CustomsDeclarationsConnector
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 import uk.gov.hmrc.wco.dec.MetaData
 
@@ -77,9 +79,22 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
     }
   }
 
-  def submitDeclarationXml: Action[String] = actions.auth.async(parse.tolerantText) { implicit req =>
-    implicit val user = req.user
-    connector.submitImportDeclaration(MetaData.fromXml(req.body)).map { resp =>
+  def submitDeclarationXml: Action[String] = actions.auth.async(parse.tolerantText) { implicit authenticatedRequest =>
+    implicit val user = authenticatedRequest.user
+
+    val headers = authenticatedRequest.request.headers
+    for((k,v) <- headers.toSimpleMap){Logger.info(s"HEADERS: $k  $v")}
+
+    val maybeLrn = headers.toSimpleMap.get("X-Local-Reference-Number")
+
+
+    val session = authenticatedRequest.request.session
+    val authToken = session.data.get("authToken")
+    for((k,v) <- session.data){Logger.info(s"SESSION DATA: $k  $v")}
+
+    //In order to keep the interface the same between current connector and new backend implementation have kept
+    //badgeIdentifier as input but in new backend we are actually using this to pass in LRN
+    connector.submitImportDeclaration(MetaData.fromXml(authenticatedRequest.body), badgeIdentifier = maybeLrn, token = authToken).map { resp =>
       Created(resp.conversationId)
     }
   }
