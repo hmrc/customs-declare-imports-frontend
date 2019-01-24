@@ -43,7 +43,7 @@
     }
 
     @components.table.table(
-        HtmlTable[String, String](
+        HtmlTable(
             messages("authorisationHolder.id"),
             messages("authorisationHolder.categoryCode")
         )(authorisationHolders.map(a => (a.id.getOrElse(""), a.categoryCode.getOrElse("")))))
