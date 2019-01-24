@@ -335,6 +335,14 @@ authorisationHolder.id=ID
 authorisationHolder.categoryCode=Category Code
 authorisationHolder.addAuthorisationHolderButton=Add Authorisation Holder
 
+## Add Previous Documents
+addPreviousDocument.title=Previous Documents
+addPreviousDocument.heading=Previous Documents
+addPreviousDocument.categoryCode=Document Category
+addPreviousDocument.id=Document Reference
+addPreviousDocument.typeCode=Document Type
+addPreviousDocument.lineNumeric=Goods Item Identifier
+
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Government agency goods item
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
