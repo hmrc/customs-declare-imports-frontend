@@ -342,6 +342,10 @@ addPreviousDocument.categoryCode=Document Category
 addPreviousDocument.id=Document Reference
 addPreviousDocument.typeCode=Document Type
 addPreviousDocument.lineNumeric=Goods Item Identifier
+addPreviousDocument.table.heading=Previous Document added
+addPreviousDocument.table.multiple.heading=Previous Documents added
+addPreviousDocument.table.empty=No Previous Documents available
+addPreviousDocument.addPreviousDocumentButton=Add Previous Document
 
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Government agency goods item

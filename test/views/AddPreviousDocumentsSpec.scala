@@ -18,13 +18,17 @@ package views
 
 import forms.DeclarationFormMapping.addPreviousDocumentMapping
 import generators.Generators
+import org.scalacheck.Gen.listOf
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.customs.test.ViewMatchers
+import uk.gov.hmrc.wco.dec.PreviousDocument
+import viewmodels.HtmlTable
 import views.behaviours.ViewBehaviours
 import views.html.add_previous_documents
 import views.html.components.input_text
+import views.html.components.table.table
 
 
 class AddPreviousDocumentsSpec
@@ -33,11 +37,17 @@ class AddPreviousDocumentsSpec
     with PropertyChecks
     with Generators {
 
-  lazy val form = Form(addPreviousDocumentMapping)
+  val emptyPreviousDocuments: Seq[PreviousDocument] = Seq.empty
 
-  val view: () => Html = () => add_previous_documents(form)(fakeRequest, messages, appConfig)
+  def view(form: Form[PreviousDocument] = form,
+           previousDocuments: Seq[PreviousDocument] = emptyPreviousDocuments): Html =
+    add_previous_documents(form, previousDocuments)(fakeRequest, messages, appConfig)
+
+  val view: () => Html = () => add_previous_documents(form, emptyPreviousDocuments)(fakeRequest, messages, appConfig)
 
   val messagePrefix = "addPreviousDocument"
+
+  lazy val form = Form(addPreviousDocumentMapping)
 
   "Previous Documents Page" should {
 
@@ -65,6 +75,59 @@ class AddPreviousDocumentsSpec
 
       val input = input_text(form("lineNumeric"), messages("addPreviousDocument.lineNumeric"))
       view() must include(input)
+    }
+
+    "not display previous documents table if previous document is not available" in {
+
+      val doc = asDocument(view(form, emptyPreviousDocuments))
+
+      assertContainsText(doc, messages("addPreviousDocument.table.empty"))
+    }
+
+    "display previous documents table heading for single item if previous document is available" in {
+
+      forAll(arbitraryAddPreviousDocument.arbitrary) { previousDocument: PreviousDocument =>
+
+        val previousDocumentsSeq = Seq(previousDocument)
+        val doc = asDocument(view(form, previousDocumentsSeq))
+
+        assertContainsText(doc, s"${previousDocumentsSeq.size} " + messages("addPreviousDocument.table.heading"))
+      }
+    }
+
+    "display previous documents table heading for multiple items if previous documents are available" in {
+
+      forAll(listOf(arbitraryAddPreviousDocument.arbitrary)) { previousDocuments =>
+
+        whenever(previousDocuments.size > 1) {
+
+          val doc = asDocument(view(form, previousDocuments))
+
+          assertContainsText(doc, s"${previousDocuments.size} " + messages("addPreviousDocument.table.multiple.heading"))
+        }
+      }
+    }
+
+    "display table for previous documents" in {
+
+      forAll(listOf(arbitraryAddPreviousDocument.arbitrary)) { previousDocuments =>
+
+        whenever(previousDocuments.nonEmpty) {
+
+          val htmlTable =
+            HtmlTable(messages("addPreviousDocument.categoryCode"),
+              messages("addPreviousDocument.id"),
+              messages("addPreviousDocument.typeCode"),
+              messages("addPreviousDocument.lineNumeric"))(previousDocuments.map(a => (a.categoryCode.getOrElse(""),
+              a.id.getOrElse(""),
+              a.typeCode.getOrElse(""),
+              a.lineNumeric.getOrElse(""))))
+          val tableComponent = table(htmlTable)
+          val rendered = view(form, previousDocuments)
+
+          rendered must include(tableComponent)
+        }
+      }
     }
   }
 }
