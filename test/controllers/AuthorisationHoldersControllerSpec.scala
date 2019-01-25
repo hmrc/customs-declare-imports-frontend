@@ -24,7 +24,7 @@ import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
-import org.scalatest.OptionValues
+import org.scalatest.{BeforeAndAfterEach, OptionValues}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
@@ -43,7 +43,8 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
   with Generators
   with OptionValues
   with MockitoSugar
-  with EndpointBehaviours {
+  with EndpointBehaviours
+  with BeforeAndAfterEach {
 
   def form = Form(authorisationHolderMapping)
 
@@ -55,6 +56,16 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
   val authHoldersGen = option(listOf(arbitrary[AuthorisationHolder]))
 
+  override def beforeEach = {
+    super.beforeEach()
+
+    when(mockCustomsCacheService.getByKey(any(), any())(any(), any(), any()))
+      .thenReturn(Future.successful(None))
+
+    when(mockCustomsCacheService.upsert(any(), any())(any(), any())(any(), any(), any(), any()))
+      .thenReturn(Future.successful(()))
+  }
+
   ".onPageLoad" should {
 
     behave like okEndpoint("/submit-declaration-goods/add-authorisation-holder")
@@ -65,8 +76,6 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
-          when(mockCustomsCacheService.getByKey(any(), any())(any(), any(), any())).thenReturn(Future.successful(None))
 
           val result = controller(Some(user)).onPageLoad(fakeRequest)
 
@@ -116,9 +125,6 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
         forAll { (user: SignedInUser, authHolder: AuthorisationHolder) =>
 
-          when(mockCustomsCacheService.upsert(any(), any())(any(), any())(any(), any(), any(), any()))
-            .thenReturn(Future.successful(()))
-
           val request = fakeRequest.withFormUrlEncodedBody(getCCParams(authHolder): _*)
           val result  = controller(Some(user)).onSubmit(request)
 
@@ -164,6 +170,21 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
             status(result) mustBe BAD_REQUEST
             contentAsString(result) mustBe view(badForm, existingData.getOrElse(Seq()))
+        }
+      }
+    }
+
+    "saves data in cache" when {
+
+      "valid data is provided" in {
+
+        forAll { (user: SignedInUser, authHolder: AuthorisationHolder) =>
+
+          val request = fakeRequest.withFormUrlEncodedBody(getCCParams(authHolder): _*)
+          await(controller(Some(user)).onSubmit(request))
+
+          verify(mockCustomsCacheService, atLeastOnce())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.authorisationHolders))(any(), any())(any(), any(), any(), any())
         }
       }
     }

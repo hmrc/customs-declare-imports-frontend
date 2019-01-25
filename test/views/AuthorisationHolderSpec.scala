@@ -25,9 +25,11 @@ import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.customs.test.ViewMatchers
 import uk.gov.hmrc.wco.dec.AuthorisationHolder
+import viewmodels.HtmlTable
 import views.behaviours.ViewBehaviours
 import views.html.authorisation_holder
 import views.html.components.input_text
+import views.html.components.table.table
 
 class AuthorisationHolderSpec
   extends ViewBehaviours
@@ -96,23 +98,19 @@ class AuthorisationHolderSpec
       }
     }
 
-    "display authorisation holder id in the table when available" in {
+    "display table for authorisation holders" in {
 
       forAll(listOf(arbitrary[AuthorisationHolder])) { authorisationHolders =>
 
-        val doc = asDocument(view(form, authorisationHolders))
+        whenever(authorisationHolders.nonEmpty) {
 
-        authorisationHolders.map(_.id.map(assertContainsText(doc, _)))
-      }
-    }
+          val htmlTable =
+            HtmlTable("ID", "Category Code")(authorisationHolders.map(a => (a.id.getOrElse(""), a.categoryCode.getOrElse(""))))
+          val tableComponent = table(htmlTable)
+          val rendered = view(form, authorisationHolders)
 
-    "display authorisation holder category code in the table when available" in {
-
-      forAll(listOf(arbitrary[AuthorisationHolder])) { authorisationHolders =>
-
-        val doc = asDocument(view(form, authorisationHolders))
-
-        authorisationHolders.map(_.categoryCode.map(assertContainsText(doc, _)))
+          rendered must include(tableComponent)
+        }
       }
     }
   }
