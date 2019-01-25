@@ -16,8 +16,9 @@
 
 package views
 
-import forms.DeclarationFormMapping.addPreviousDocumentMapping
+import forms.DeclarationFormMapping._
 import generators.Generators
+import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen.listOf
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
@@ -42,12 +43,11 @@ class AddPreviousDocumentsSpec
   def view(form: Form[PreviousDocument] = form,
            previousDocuments: Seq[PreviousDocument] = emptyPreviousDocuments): Html =
     add_previous_documents(form, previousDocuments)(fakeRequest, messages, appConfig)
+  lazy val form = Form(previousDocumentMapping)
 
   val view: () => Html = () => add_previous_documents(form, emptyPreviousDocuments)(fakeRequest, messages, appConfig)
 
   val messagePrefix = "addPreviousDocument"
-
-  lazy val form = Form(addPreviousDocumentMapping)
 
   "Previous Documents Page" should {
 
@@ -86,7 +86,7 @@ class AddPreviousDocumentsSpec
 
     "display previous documents table heading for single item if previous document is available" in {
 
-      forAll(arbitraryAddPreviousDocument.arbitrary) { previousDocument: PreviousDocument =>
+      forAll{ previousDocument: PreviousDocument =>
 
         val previousDocumentsSeq = Seq(previousDocument)
         val doc = asDocument(view(form, previousDocumentsSeq))
@@ -97,7 +97,7 @@ class AddPreviousDocumentsSpec
 
     "display previous documents table heading for multiple items if previous documents are available" in {
 
-      forAll(listOf(arbitraryAddPreviousDocument.arbitrary)) { previousDocuments =>
+      forAll(listOf(arbitrary[PreviousDocument])) { previousDocuments =>
 
         whenever(previousDocuments.size > 1) {
 
@@ -110,7 +110,7 @@ class AddPreviousDocumentsSpec
 
     "display table for previous documents" in {
 
-      forAll(listOf(arbitraryAddPreviousDocument.arbitrary)) { previousDocuments =>
+      forAll(listOf(arbitrary[PreviousDocument])) { previousDocuments =>
 
         whenever(previousDocuments.nonEmpty) {
 
