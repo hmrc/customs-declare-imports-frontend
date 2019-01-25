@@ -60,10 +60,12 @@
             @components.input_text(form("lineNumeric"), messages("addPreviousDocument.lineNumeric"))
         </fieldset>
 
-        <button id="Add" value="Add" name="submit">
+        <button id="Add" name="submit">
             @messages("addPreviousDocument.addPreviousDocumentButton")
         </button>
 
-        <a href="#" class="button" id="Next">@messages("common.button.continue")</a>
+        <a href="@routes.ObligationGuaranteeController.display().url" class="button" id="Next">
+            @messages("common.button.continue")
+        </a>
     }
 }
