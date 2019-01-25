@@ -191,9 +191,9 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "valid values are bound" in {
 
-        forAll(arbitraryAddPreviousDocument.arbitrary) { arbitraryAddPreviousDocument =>
+        forAll(arbitrary[PreviousDocument]) { arbitraryAddPreviousDocument =>
 
-          Form(addPreviousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument).fold(
+          Form(previousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument).fold(
             error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
             result => result mustBe arbitraryAddPreviousDocument
           )
@@ -205,9 +205,9 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "category code length is greater than 1" in {
 
-        forAll(arbitraryAddPreviousDocument.arbitrary, minStringLength(2)) { (arbitraryAddPreviousDocument, invalidCategoryCode) =>
+        forAll(arbitrary[PreviousDocument], minStringLength(2)) { (arbitraryAddPreviousDocument, invalidCategoryCode) =>
 
-          Form(addPreviousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
+          Form(previousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
             error => error.error("categoryCode") must haveMessage("Document Category  should be less than or equal to 1 character"),
             _ => fail("Should not succeed")
           )
@@ -216,9 +216,9 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "id length is greater than 35" in {
 
-        forAll(arbitraryAddPreviousDocument.arbitrary, minStringLength(36)) { (arbitraryAddPreviousDocument, invalidId) =>
+        forAll(arbitrary[PreviousDocument], minStringLength(36)) { (arbitraryAddPreviousDocument, invalidId) =>
 
-          Form(addPreviousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(id = Some(invalidId))).fold(
+          Form(previousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(id = Some(invalidId))).fold(
             error => error.error("id") must haveMessage("Document Reference should be less than or equal to 35 characters"),
             _ => fail("Should not succeed")
           )
@@ -227,9 +227,9 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "type code length is greater than 3" in {
 
-        forAll(arbitraryAddPreviousDocument.arbitrary, minStringLength(4)) { (arbitraryAddPreviousDocument, invalidTypeCode) =>
+        forAll(arbitrary[PreviousDocument], minStringLength(4)) { (arbitraryAddPreviousDocument, invalidTypeCode) =>
 
-          Form(addPreviousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(typeCode = Some(invalidTypeCode))).fold(
+          Form(previousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(typeCode = Some(invalidTypeCode))).fold(
             error => error.error("typeCode") must haveMessage("Previous Document Type should be less than or equal to 3 characters"),
             _ => fail("Should not succeed")
           )
@@ -238,9 +238,9 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "line numeric is less than 0" in {
 
-        forAll(arbitraryAddPreviousDocument.arbitrary, intBetweenRange(Int.MinValue, 0)) { (arbitraryAddPreviousDocument, invalidLineNumberic) =>
+        forAll(arbitrary[PreviousDocument], intBetweenRange(Int.MinValue, 0)) { (arbitraryAddPreviousDocument, invalidLineNumberic) =>
 
-          Form(addPreviousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(lineNumeric = Some(invalidLineNumberic))).fold(
+          Form(previousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(lineNumeric = Some(invalidLineNumberic))).fold(
             error => error.error("lineNumeric") must haveMessage("Goods Item Identifier should be greater than 0 and less than or equal to 999"),
             _ => fail("Should not succeed")
           )
@@ -249,9 +249,9 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "line numeric is greater than 999" in {
 
-        forAll(arbitraryAddPreviousDocument.arbitrary, intBetweenRange(1000, Int.MaxValue)) { (arbitraryAddPreviousDocument, invalidLineNumberic) =>
+        forAll(arbitrary[PreviousDocument], intBetweenRange(1000, Int.MaxValue)) { (arbitraryAddPreviousDocument, invalidLineNumberic) =>
 
-          Form(addPreviousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(lineNumeric = Some(invalidLineNumberic))).fold(
+          Form(previousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(lineNumeric = Some(invalidLineNumberic))).fold(
             error => error.error("lineNumeric") must haveMessage("Goods Item Identifier should be greater than 0 and less than or equal to 999"),
             _ => fail("Should not succeed")
           )
@@ -260,7 +260,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "Document Category, Document Reference, Previous Document Type and Goods Item Identifier are missing" in {
 
-        Form(addPreviousDocumentMapping).bind(Map[String, String]()).fold(
+        Form(previousDocumentMapping).bind(Map[String, String]()).fold(
           error => error must haveErrorMessage("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier"),
           _ => fail("Should not succeed")
         )

@@ -16,7 +16,7 @@
 
 package services.cachekeys
 
-import uk.gov.hmrc.wco.dec.AuthorisationHolder
+import uk.gov.hmrc.wco.dec.{AuthorisationHolder, PreviousDocument}
 
 trait Identifier[A]
 
@@ -25,4 +25,6 @@ case class CacheKey[A](key: String, identifier: Identifier[A])
 object CacheKey {
 
   val authorisationHolders = CacheKey("AuthorisationHolders", new Identifier[Seq[AuthorisationHolder]] {})
+
+  val previousDocuments = CacheKey("PreviousDocuments", new Identifier[Seq[PreviousDocument]] {})
 }

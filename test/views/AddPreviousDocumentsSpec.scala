@@ -16,7 +16,7 @@
 
 package views
 
-import forms.DeclarationFormMapping.addPreviousDocumentMapping
+import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
@@ -33,7 +33,7 @@ class AddPreviousDocumentsSpec
     with PropertyChecks
     with Generators {
 
-  lazy val form = Form(addPreviousDocumentMapping)
+  lazy val form = Form(previousDocumentMapping)
 
   val view: () => Html = () => add_previous_documents(form)(fakeRequest, messages, appConfig)
 
