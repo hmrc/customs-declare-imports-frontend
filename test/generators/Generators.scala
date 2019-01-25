@@ -128,6 +128,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       id            <- option(alphaNumStr.map(_.take(17)))
       categoryCode  <- option(alphaNumStr.map(_.take(4)))
+      if id.exists(_.nonEmpty) || categoryCode.exists(_.nonEmpty)
     } yield AuthorisationHolder(id, categoryCode)
   }
 
