@@ -16,11 +16,10 @@
 
 package services
 
-import com.google.inject.{ImplementedBy, Inject}
+import com.google.inject.Inject
 import config.AppConfig
 import domain.auth.SignedInUser
 import javax.inject.Singleton
-import play.api.Logger
 import play.api.http.{ContentTypes, HeaderNames, Status}
 import play.api.mvc.Codec
 import repositories.declaration.{Submission, SubmissionRepository}
@@ -44,19 +43,18 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
                                                  httpClient: HttpClient,
                                                  submissionRepository: SubmissionRepository) {
 
-  def submitImportDeclaration(metaData: MetaData, localReferenceNumber: String, token: String)
+  def submitImportDeclaration(metaData: MetaData, localReferenceNumber: String)
                                       (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] = {
-    postMetaData(appConfig.submitImportDeclarationUri, metaData, localReferenceNumber, token, onSuccessfulSubmission)
+    postMetaData(appConfig.submitImportDeclarationUri, metaData, localReferenceNumber, onSuccessfulSubmission)
   }
 
 
   private def postMetaData(uri: String,
                            metaData: MetaData,
                            localReferenceNumber: String,
-                           authToken: String,
                            onSuccess: (MetaData, CustomsDeclarationsResponse) => Future[CustomsDeclarationsResponse] = onSuccess)
                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
-    doPost(uri, metaData.toXml, localReferenceNumber, authToken).flatMap(onSuccess(metaData, _))
+    doPost(uri, metaData.toXml, localReferenceNumber).flatMap(onSuccess(metaData, _))
 
   //noinspection ConvertExpressionToSAM
   private implicit val responseReader: HttpReads[CustomsDeclarationsResponse] = new HttpReads[CustomsDeclarationsResponse] {
@@ -96,21 +94,20 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
       )
     ).map(_ => resp)
 
-  private def doPost(uri: String, body: String, localReferenceNumber: String , authToken: String)
+  private def doPost(uri: String, body: String, localReferenceNumber: String )
                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
 
     httpClient.POSTString[CustomsDeclarationsResponse](
       url = s"${appConfig.customsDeclareImportsEndpoint}$uri",
       body = body,
-      headers = headers(localReferenceNumber, authToken)
+      headers = headers(localReferenceNumber)
     )(responseReader, hc, ec)
   }
 
 
-  private def headers(localReferenceNumber: String, authToken: String): Seq[(String, String)] = Seq(
+  private def headers(localReferenceNumber: String): Seq[(String, String)] = Seq(
     HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8),
-    BackEndHeaderNames.XLrnHeaderName -> localReferenceNumber,
-    HeaderNames.AUTHORIZATION -> authToken
+    BackEndHeaderNames.XLrnHeaderName -> localReferenceNumber
   )
 
 }

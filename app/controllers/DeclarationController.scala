@@ -79,7 +79,6 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
   def onSubmitComplete: Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
     val data: Map[String, String] = formDataAsMap()
     implicit val user: SignedInUser = req.user
-    val authToken: Option[String] =  req.session.data.get("authToken")
 
     //TODO handle if auth token is missing
     implicit val errors: Map[String, Seq[ValidationError]] = validate(data)
@@ -88,7 +87,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
         val props = merged.filterNot(entry => navigationKeys.contains(entry._1) || knownBad.contains(entry._1) || entry._2.trim.isEmpty)
         updateMetaData(MetaData.fromProperties(props)).flatMap({ metadata =>
           val localReferenceNumber = metadata.get.declaration.get.functionalReferenceId.get
-          client.submitImportDeclaration(metadata.get, localReferenceNumber, authToken.get).map { resp =>
+          client.submitImportDeclaration(metadata.get, localReferenceNumber).map { resp =>
             Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId))
           }
         })

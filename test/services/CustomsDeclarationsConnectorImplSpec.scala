@@ -115,7 +115,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
         withSubmissionRepository() { repo =>
           withCustomsDeclarationsConnector(http, repo) { connector =>
             connector.
-              submitImportDeclaration(aRandomSubmitDeclaration, "", declarantAuthToken).
+              submitImportDeclaration(aRandomSubmitDeclaration, "").
               failed.futureValue.
               asInstanceOf[GatewayTimeoutException].
               message must be(http.gatewayTimeoutMessage(HttpVerbs.POST, submitUrl, ex))
@@ -130,7 +130,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
         withSubmissionRepository() { repo =>
           withCustomsDeclarationsConnector(http, repo) { connector =>
             connector.
-              submitImportDeclaration(aRandomSubmitDeclaration, "", declarantAuthToken).
+              submitImportDeclaration(aRandomSubmitDeclaration, "").
               failed.futureValue.
               asInstanceOf[BadGatewayException].
               message must be(http.badGatewayMessage(HttpVerbs.POST, submitUrl, ex))
@@ -143,7 +143,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
       withHttpClient(expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.INTERNAL_SERVER_ERROR, headers)) { http =>
         withSubmissionRepository() { repo =>
           withCustomsDeclarationsConnector(http, repo) { connector =>
-            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, "", declarantAuthToken).failed.futureValue.asInstanceOf[Upstream5xxResponse]
+            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, "").failed.futureValue.asInstanceOf[Upstream5xxResponse]
             ex.upstreamResponseCode must be(Status.INTERNAL_SERVER_ERROR)
             ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
           }
@@ -155,7 +155,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
       withHttpClient(expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.BAD_REQUEST, headers)) { http =>
         withSubmissionRepository() { repo =>
           withCustomsDeclarationsConnector(http, repo) { connector =>
-            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, "", declarantAuthToken).failed.futureValue.asInstanceOf[Upstream4xxResponse]
+            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, "").failed.futureValue.asInstanceOf[Upstream4xxResponse]
             ex.upstreamResponseCode must be(Status.BAD_REQUEST)
             ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
           }
@@ -167,7 +167,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
       withHttpClient(expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.UNAUTHORIZED, headers)) { http =>
         withSubmissionRepository() { repo =>
           withCustomsDeclarationsConnector(http, repo) { connector =>
-            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, "", declarantAuthToken).failed.futureValue.asInstanceOf[Upstream4xxResponse]
+            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, "").failed.futureValue.asInstanceOf[Upstream4xxResponse]
             ex.upstreamResponseCode must be(Status.UNAUTHORIZED)
             ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
           }
@@ -276,7 +276,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
       withHttpClient(expectation) { http =>
         withSubmissionRepository() { repo =>
           withCustomsDeclarationsConnector(http, repo) { connector =>
-            whenReady(connector.submitImportDeclaration(submission, declarantLocalReferenceNumber, declarantAuthToken)) { _ =>
+            whenReady(connector.submitImportDeclaration(submission, declarantLocalReferenceNumber)) { _ =>
               test(headers, http, expectation.right.get, repo, connector)
             }
           }
@@ -288,7 +288,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
       withHttpClient(expectation) { http =>
         withSubmissionRepository() { repo =>
           withCustomsDeclarationsConnector(http, repo) { connector =>
-            whenReady(connector.submitImportDeclaration(submission, "", declarantAuthToken)) { _ =>
+            whenReady(connector.submitImportDeclaration(submission, "")) { _ =>
               test(headers, http, expectation.right.get, repo, connector)
             }
           }

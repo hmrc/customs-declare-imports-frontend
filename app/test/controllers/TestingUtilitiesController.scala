@@ -26,14 +26,14 @@ import play.api.mvc.{Action, AnyContent}
 import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString}
 import repositories.declaration.{Submission, SubmissionRepository}
 import services.CustomsDeclarationsConnector
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.{BaseController, FrontendController}
 import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TestingUtilitiesController @Inject()(actions: Actions, submissionRepository: SubmissionRepository, connector: CustomsDeclarationsConnector)
-                                          (implicit val appConfig: AppConfig, ec: ExecutionContext) extends BaseController {
+                                          (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController {
 
   def displaySubmissions(eori: String): Action[AnyContent] = Action.async { implicit req =>
     submissionRepository.findByEori(eori).map { found =>
@@ -82,26 +82,19 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
 
     val maybeLrn = MetaData.fromXml(authenticatedRequest.body).declaration.get.functionalReferenceId
 
-    val session = authenticatedRequest.request.session
-    val mayBeAuthToken = session.data.get("authToken")
-    for((k,v) <- session.data){Logger.info(s"SESSION DATA: $k  $v")}
-
-    mayBeAuthToken.fold(Future.successful(BadRequest("Auth Token is missing"))){ authToken =>
       //In order to keep the interface the same between current connector and new backend implementation have kept
       //badgeIdentifier as input but in new backend we are actually using this to pass in LRN
-        if(maybeLrn.isEmpty) {
-          Future.successful(BadRequest("Local Reference Number is required in metadata"))
-        } else {
-          connector.submitImportDeclaration(MetaData.fromXml(authenticatedRequest.body), maybeLrn.get, token = authToken).map { resp =>
-            Created(resp.conversationId)
-          }recover{
-            case e: Throwable =>
-              Logger.error("Error calling backend", e)
-              InternalServerError("Error calling backend")
-          }
+      if(maybeLrn.isEmpty) {
+        Future.successful(BadRequest("Local Reference Number is required in metadata"))
+      } else {
+        connector.submitImportDeclaration(MetaData.fromXml(authenticatedRequest.body), maybeLrn.get).map { resp =>
+          Created(resp.conversationId)
+        }recover{
+          case e: Throwable =>
+            Logger.error("Error calling backend", e)
+            InternalServerError("Error calling backend")
         }
-    }
-
+      }
 
   }
 
