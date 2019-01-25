@@ -17,7 +17,7 @@
 package uk.gov.hmrc.customs.test
 
 import org.scalatest.matchers.{MatchResult, Matcher}
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 trait FormMatchers {
 
@@ -31,5 +31,17 @@ trait FormMatchers {
       )
   }
 
+  class FormHasError(right: String) extends Matcher[Form[_]] {
+
+    override def apply(left: Form[_]): MatchResult =
+      MatchResult(
+        left.errors.exists(_.message == right),
+        s""""$left" does not contain message "$right"""",
+        s""""$left" does contain messages "$right""""
+      )
+  }
+
   def haveMessage(right: String) = new ErrorHasMessage(right)
+
+  def haveErrorMessage(right: String) = new FormHasError(right)
 }

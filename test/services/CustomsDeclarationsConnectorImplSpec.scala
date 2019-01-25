@@ -43,7 +43,6 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
   // any required implicits (++ those in CustomsSpec)
 
   implicit val mc: ReactiveMongoComponent = component[ReactiveMongoComponent]
-  implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val user: SignedInUser = userFixture(eori = Some(randomString(17)))
 
   // some basic fixtures and helpers

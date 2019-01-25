@@ -22,26 +22,29 @@
 @(form:Form[GoodsItemValueInformation])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
-    title = messages("goodsItem.title"),
-    bodyClasses = None) {
+  title = messages("governmentAgencyGoodsItemValue.title"),
+  bodyClasses = None) {
 
-    @helpers.form(action = GovernmentAgencyGoodsItemsController.submitGoodsItemValueSection()) {
+  @helpers.form(action = GovernmentAgencyGoodsItemsController.submitGoodsItemValueSection()) {
 
+		<fieldset>
+			<legend>
+				<h1>@messages("governmentAgencyGoodsItemValue.title")</h1>
+			</legend>
+			@components.input_text(field = form("customsValueAmount"),label = messages("governmentAgencyGoodsItemValue.customsValueAmount"))
+			@components.input_text(field = form("sequenceNumeric"),label = messages("governmentAgencyGoodsItemValue.numericSequence"))
+			@components.input_text(field = form("statisticalValueAmount.currencyId"),label = messages("governmentAgencyGoodsItemValue.currencyCode"))
+			@components.input_text(field = form("statisticalValueAmount.value"),label = messages("governmentAgencyGoodsItemValue.currencyValue"))
+			@components.input_text(field = form("transactionNatureCode"),label = messages("governmentAgencyGoodsItemValue.natureOfTransactionCode"))
+			@components.input_text(field = form("destination.countryCode"),label = messages("governmentAgencyGoodsItemValue.destinationCountryCode"))
+			@components.input_text(field = form("destination.regionId"),label = messages("governmentAgencyGoodsItemValue.destinationRegionID"))
+			@components.input_text(field = form("ucr.id"),label = messages("governmentAgencyGoodsItemValue.UCRID"))
+			@components.input_text(field = form("ucr.traderAssignedReferenceId"),label = messages("governmentAgencyGoodsItemValue.traderAssignedReferenceID"))
+			@components.input_text(field = form("exportCountry.id"),label = messages("governmentAgencyGoodsItemValue.exportCountry"))
+			@components.input_text(field = form("valuationAdjustment.additionCode"),label = messages("governmentAgencyGoodsItemValue.valuationAdjustmentAdditionCode"))
+		</fieldset>
 
-<h2 class="heading-medium">Government Agency Goods Item Value </h2>
-@components.input_text(field = form("customsValueAmount"),label = "Customs Value Amount")
-@components.input_text(field = form("sequenceNumeric"),label = "Sequence Numeric")
-@components.input_text(field = form("statisticalValueAmount.currencyId"),label = "Currency code")
-@components.input_text(field = form("statisticalValueAmount.value"),label = "Currency value")
-@components.input_text(field = form("transactionNatureCode"),label = "transactionNatureCode code")
-@components.input_text(field = form("destination.countryCode"),label = "Destination country  code")
-@components.input_text(field = form("destination.regionId"),label = "Destination regionId")
-@components.input_text(field = form("ucr.id"),label = "UCR Id")
-@components.input_text(field = form("ucr.traderAssignedReferenceId"),label = "trader Assigned ReferenceId")
-@components.input_text(field = form("exportCountry.id"),label = "export Country")
-@components.input_text(field = form("valuationAdjustment.additionCode"),label = "Valuation Adjustment addition Code")
+		@components.submit_button()
 
-@components.submit_button()
-
-}
+	}
 }

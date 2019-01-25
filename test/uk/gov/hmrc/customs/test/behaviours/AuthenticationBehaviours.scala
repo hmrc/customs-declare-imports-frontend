@@ -74,7 +74,7 @@ trait AuthenticationBehaviours extends CustomsSpec with CustomsFixtures with Moc
     test(Map(cfg.headerName -> token), userSession(user), authenticationTags)
   }
 
-  def withoutSignedInUser()(test: => Unit): Unit = {
+  def withoutSignedInUser()(test: (Map[String, String], Map[String, String]) => Unit): Unit = {
     when(
       authConnector
         .authorise(
@@ -84,7 +84,7 @@ trait AuthenticationBehaviours extends CustomsSpec with CustomsFixtures with Moc
     ).thenReturn(
       Future.failed(notLoggedInException)
     )
-    test
+    test(Map(cfg.headerName -> token), authenticationTags)
   }
 
   def userSession(user: SignedInUser): Map[String, String] = Map(
