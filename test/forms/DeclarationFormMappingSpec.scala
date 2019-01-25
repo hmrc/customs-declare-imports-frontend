@@ -24,7 +24,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
-import uk.gov.hmrc.wco.dec.{AdditionalInformation, AuthorisationHolder, PreviousDocument}
+import uk.gov.hmrc.wco.dec.{AdditionalInformation, AuthorisationHolder, PreviousDocument, RoleBasedParty}
 
 class DeclarationFormMappingSpec extends WordSpec
   with MustMatchers
@@ -41,8 +41,8 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll { additionalInfo: AdditionalInformation =>
 
           Form(additionalInformationMapping).fillAndValidate(additionalInfo).fold(
-              error      => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
-              result     => result mustBe additionalInfo
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe additionalInfo
           )
         }
       }
@@ -55,7 +55,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementCode = Some(invalidCode))).fold(
               error => error.error("statementCode") must haveMessage("statement code should be less than or equal to 17 characters"),
-              _     => fail("Should not succeed")
+              _ => fail("Should not succeed")
             )
           }
         }
@@ -65,11 +65,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
         "statement description length is greater than 512" in {
 
-          forAll(arbitrary[AdditionalInformation], minStringLength(513))  { (additionalInfo, invalidDescription) =>
+          forAll(arbitrary[AdditionalInformation], minStringLength(513)) { (additionalInfo, invalidDescription) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementDescription = Some(invalidDescription))).fold(
               error => error.error("statementDescription") must haveMessage("statement description should be less than or equal to 512 characters"),
-              _     => fail("Should not succeed")
+              _ => fail("Should not succeed")
             )
           }
         }
@@ -79,11 +79,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
         "statement type code length is greater than 3" in {
 
-          forAll(arbitrary[AdditionalInformation], minStringLength(4))  { (additionalInfo, invalidTypeCode) =>
+          forAll(arbitrary[AdditionalInformation], minStringLength(4)) { (additionalInfo, invalidTypeCode) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementTypeCode = Some(invalidTypeCode))).fold(
               error => error.error("statementTypeCode") must haveMessage("statement type code should be less than or equal to 3 characters"),
-              _     => fail("Should not succeed")
+              _ => fail("Should not succeed")
             )
           }
         }
@@ -115,7 +115,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           Form(authorisationHolderMapping).fillAndValidate(authorisationHolder.copy(id = Some(invalidId))).fold(
             error => error.error("id") must haveMessage("ID should be less than or equal to 17 characters"),
-            _     => fail("Should not succeed")
+            _ => fail("Should not succeed")
           )
         }
       }
@@ -126,7 +126,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           Form(authorisationHolderMapping).fillAndValidate(authorisationHolder.copy(categoryCode = Some(invalidCategoryCode))).fold(
             error => error.error("categoryCode") must haveMessage("Category Code should be less than or equal to 4 characters"),
-            _     => fail("Should not succeed")
+            _ => fail("Should not succeed")
           )
         }
       }
@@ -135,7 +135,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
         Form(authorisationHolderMapping).bind(Map[String, String]()).fold(
           error => error must haveErrorMessage("You must provide an ID or category code"),
-          _     => fail("Should not succeed")
+          _ => fail("Should not succeed")
         )
       }
     }
@@ -219,6 +219,60 @@ class DeclarationFormMappingSpec extends WordSpec
         Form(previousDocumentMapping).bind(Map[String, String]()).fold(
           error => error must haveErrorMessage("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier"),
           _ => fail("Should not succeed")
+        )
+      }
+    }
+  }
+
+  "roleBasedPartyMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { roleParty: RoleBasedParty =>
+
+          Form(roleBasedPartyMapping).fillAndValidate(roleParty).fold(
+            _       => fail("form should not fail"),
+            success => success mustBe roleParty
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "id is longer than 17 characters" in {
+
+        forAll(arbitrary[RoleBasedParty], minStringLength(18)) {
+          (roleParty, id) =>
+
+            val data = roleParty.copy(id = Some(id))
+            Form(roleBasedPartyMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("role based party id  should be less than or equal to 17 characters"),
+              _      => fail("should not succeed")
+            )
+        }
+      }
+
+      "roleCode is longer than 3 characters" in {
+
+        forAll(arbitrary[RoleBasedParty], minStringLength(4)) {
+          (roleParty, roleCode) =>
+
+            val data = roleParty.copy(roleCode = Some(roleCode))
+            Form(roleBasedPartyMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("role Code  should be less than or equal to 3 characters"),
+              _ => fail("should not succeed")
+            )
+        }
+      }
+
+      "neither id or roleCode is supplied" in {
+
+        Form(roleBasedPartyMapping).bind(Map.empty[String, String]).fold(
+          _ must haveErrorMessage("You must provide an ID or role code"),
+          _ => fail("should not succeed")
         )
       }
     }
