@@ -48,10 +48,6 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
                                       (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] = {
     postMetaData(appConfig.submitImportDeclarationUri, metaData, localReferenceNumber, token, onSuccessfulSubmission)
   }
- def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
-                                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
-    postMetaData(appConfig.cancelImportDeclarationUri, metaData, badgeIdentifier.get, "")
-
 
 
   private def postMetaData(uri: String,
@@ -104,7 +100,7 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
 
     httpClient.POSTString[CustomsDeclarationsResponse](
-      url = s"${appConfig.customsDeclarationsEndpoint}$uri",
+      url = s"${appConfig.customsDeclareImportsEndpoint}$uri",
       body = body,
       headers = headers(localReferenceNumber, authToken)
     )(responseReader, hc, ec)
@@ -112,7 +108,6 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
 
 
   private def headers(localReferenceNumber: String, authToken: String): Seq[(String, String)] = Seq(
-    HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
     HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8),
     BackEndHeaderNames.XLrnHeaderName -> localReferenceNumber,
     HeaderNames.AUTHORIZATION -> authToken

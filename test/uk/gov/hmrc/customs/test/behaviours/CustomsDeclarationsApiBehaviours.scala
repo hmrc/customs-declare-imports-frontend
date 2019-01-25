@@ -46,10 +46,6 @@ trait CustomsDeclarationsApiBehaviours extends CustomsSpec with MockitoSugar{
     test(connector.addExpectedSubmission(request))
   }
 
-  def withCustomsDeclarationsApiCancellation(request: MetaData)(test: Future[CustomsDeclarationsResponse] => Unit): Unit = {
-    test(connector.addExpectedCancellation(request))
-  }
-
   override protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder =
     super.customise(builder).overrides(bind[CustomsDeclarationsConnector].to(connector))
 
@@ -74,19 +70,10 @@ class MockCustomsDeclarationsConnector(mockConfig : AppConfig, mockhttpClient: H
                                       (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
     expectedSubmissions.getOrElse(metaData, throw new IllegalArgumentException("Unexpected API submission call"))
 
-  override def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String])
-                                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
-    expectedCancellations.getOrElse(metaData, throw new IllegalArgumentException("Unexpected API cancellation call"))
 
   def addExpectedSubmission(meta: MetaData): Future[CustomsDeclarationsResponse] = {
     val resp = toResponse(meta, submissionSchemas)
     expectedSubmissions.put(meta, resp)
-    resp
-  }
-
-  def addExpectedCancellation(meta: MetaData): Future[CustomsDeclarationsResponse] = {
-    val resp = toResponse(meta, cancellationSchemas)
-    expectedCancellations.put(meta, resp)
     resp
   }
 
