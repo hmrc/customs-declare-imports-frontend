@@ -36,7 +36,7 @@ class PreviousDocumentsController @Inject()(actions: Actions, cacheService: Cust
   def form = Form(previousDocumentMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori) { implicit req =>
-    Ok(add_previous_documents(form))
+    Ok(add_previous_documents(form, Seq()))
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>

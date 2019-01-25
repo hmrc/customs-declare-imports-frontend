@@ -49,7 +49,7 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
     new PreviousDocumentsController(new FakeActions(user), mockCustomsCacheService)
 
   def view(form: Form[_] = form, documents: List[PreviousDocument] = List()): String =
-    add_previous_documents(form)(fakeRequest, messages, appConfig).body
+    add_previous_documents(form, Seq())(fakeRequest, messages, appConfig).body
 
   ".onPageLoad" should {
 
