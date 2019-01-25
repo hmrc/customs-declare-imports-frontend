@@ -35,19 +35,27 @@ class PreviousDocumentsController @Inject()(actions: Actions, cacheService: Cust
 
   def form = Form(previousDocumentMapping)
 
-  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori) { implicit req =>
-    Ok(add_previous_documents(form, Seq()))
+  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+
+    cacheService.getByKey(req.eori, CacheKey.previousDocuments).map { documents =>
+
+      Ok(add_previous_documents(form, documents.getOrElse(Seq.empty)))
+    }
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
     form.bindFromRequest().fold(
       formErrors =>
-        Future.successful(BadRequest(add_previous_documents(formErrors))),
-      document   =>
+        cacheService.getByKey(req.eori, CacheKey.previousDocuments).map { documents =>
+
+          BadRequest(add_previous_documents(formErrors, documents.getOrElse(Seq.empty)))
+        },
+
+      document =>
         cacheService.upsert(req.eori, CacheKey.previousDocuments)
                            (() => Seq(document), document +: _)
-        .map(_ => Redirect(routes.PreviousDocumentsController.onPageLoad()))
+          .map(_ => Redirect(routes.PreviousDocumentsController.onPageLoad()))
     )
   }
 }

@@ -17,7 +17,6 @@
 package controllers
 
 import domain.auth.{EORI, SignedInUser}
-import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
@@ -49,7 +48,7 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
     new PreviousDocumentsController(new FakeActions(user), mockCustomsCacheService)
 
   def view(form: Form[_] = form, documents: List[PreviousDocument] = List()): String =
-    add_previous_documents(form, Seq())(fakeRequest, messages, appConfig).body
+    add_previous_documents(form, documents)(fakeRequest, messages, appConfig).body
 
   ".onPageLoad" should {
 
