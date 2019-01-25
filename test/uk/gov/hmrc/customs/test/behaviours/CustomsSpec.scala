@@ -30,7 +30,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.concurrent.Execution.Implicits
-import play.api.libs.json.{Json, Writes}
+import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.test.FakeRequest
 import services.CustomsCacheService
 import uk.gov.hmrc.customs.test.{CustomsFixtures, CustomsFutures}
@@ -94,8 +94,17 @@ trait CustomsSpec extends PlaySpec
     bind[CustomsCacheService].to(mockCustomsCacheService))
 
   // toJson strips out Some and None and replaces them with string values
-  def toFormParams[T](cc: T)(implicit ev: Writes[T]): List[(String, String)] =
-    Json.toJson(cc).as[Map[String, String]].toList
+  def asFormParams(cc: Product): List[(String, String)] =
+    cc.getClass.getDeclaredFields.toList
+      .map { f =>
+        f.setAccessible(true)
+        (f.getName, f.get(cc))
+      }
+      .map {
+        case (n, Some(a)) => (n, a.toString)
+        case (n, None)    => (n, "")
+        case (n, a)       => (n, a.toString)
+      }
 
   override def beforeEach = {
     super.beforeEach()

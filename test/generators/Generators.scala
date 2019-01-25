@@ -99,6 +99,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       id <- option(arbitrary[String].map(_.take(17)))
     } yield Office(id)
   }
+
   implicit val arbitraryObligationGuarantee: Arbitrary[ObligationGuarantee] = Arbitrary {
     for {
       amount <- option(arbitrary[BigDecimal].map(_.max(9999999999999999.99999)))
@@ -159,6 +160,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       id <- option(arbitrary[String].map(_.take(35)))
       typeCode <- option(arbitrary[String].map(_.take(3)))
       lineNumeric <- option(intBetweenRange(1, 999))
+      if categoryCode.nonEmpty || id.nonEmpty || typeCode.nonEmpty || lineNumeric.nonEmpty
     } yield PreviousDocument(categoryCode, id, typeCode, lineNumeric)
   }
 
@@ -191,6 +193,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       previousCode <- option(arbitrary[String].map(_.take(17)))
     } yield GovernmentProcedure(currentCode, previousCode)
   }
+
   implicit val arbitraryGovernmentAgencyGoodsItemAdditionalDocument: Arbitrary[GovernmentAgencyGoodsItemAdditionalDocument] = Arbitrary {
     for {
       categoryCode <- option(arbitrary[String].map(_.take(3)))

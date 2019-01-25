@@ -18,12 +18,16 @@ package controllers
 
 import com.google.inject.Inject
 import config.AppConfig
+import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
+import services.cachekeys.CacheKey
 import views.html.add_previous_documents
+
+import scala.concurrent.Future
 
 class PreviousDocumentsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
                                            (implicit appConfig: AppConfig, override val messagesApi: MessagesApi)
@@ -33,5 +37,17 @@ class PreviousDocumentsController @Inject()(actions: Actions, cacheService: Cust
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori) { implicit req =>
     Ok(add_previous_documents(form))
+  }
+
+  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+
+    form.bindFromRequest().fold(
+      formErrors =>
+        Future.successful(BadRequest(add_previous_documents(formErrors))),
+      document   =>
+        cacheService.upsert(req.eori, CacheKey.previousDocuments)
+                           (() => Seq(document), document +: _)
+        .map(_ => Redirect(routes.PreviousDocumentsController.onPageLoad()))
+    )
   }
 }

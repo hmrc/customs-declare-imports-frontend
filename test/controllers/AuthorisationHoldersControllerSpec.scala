@@ -113,7 +113,7 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
         forAll { (user: SignedInUser, authHolder: AuthorisationHolder) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(toFormParams(authHolder): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(authHolder): _*)
           val result  = controller(Some(user)).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
@@ -124,7 +124,7 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
     "return UNAUTHORIZED" when {
 
-      "user does not have en eori" in {
+      "user does not have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
 
@@ -152,7 +152,7 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
               .getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.authorisationHolders))(any(), any(), any()))
               .thenReturn(Future.successful(existingData))
 
-            val request = fakeRequest.withFormUrlEncodedBody(toFormParams(data): _*)
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(data): _*)
             val badForm = form.fillAndValidate(data)
             val result  = controller(Some(user)).onSubmit(request)
 
@@ -168,7 +168,7 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
         forAll { (user: SignedInUser, authHolder: AuthorisationHolder) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(toFormParams(authHolder): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(authHolder): _*)
           await(controller(Some(user)).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
