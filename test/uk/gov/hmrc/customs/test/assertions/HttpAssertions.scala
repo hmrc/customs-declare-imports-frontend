@@ -30,6 +30,8 @@ trait HttpAssertions extends CustomsAssertions {
 
   def wasOk(resp: Future[Result]): Unit = status(resp) must be (Status.OK)
 
+  def wasBadRequest(resp: Future[Result]): Unit = status(resp) must be (Status.BAD_REQUEST)
+
   def wasRedirected(toUri: String, resp: Future[Result]): Unit = {
     status(resp) must be(Status.SEE_OTHER)
     header(HeaderNames.LOCATION, resp) must be(Some(toUri))

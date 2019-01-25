@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,17 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package services.cachekeys
+@import viewmodels.HtmlTable
 
-import uk.gov.hmrc.wco.dec.AuthorisationHolder
+@(table: HtmlTable[_, _])
 
-trait Identifier[A]
-
-case class CacheKey[A](key: String, identifier: Identifier[A])
-
-object CacheKey {
-
-  val authorisationHolders = CacheKey("AuthorisationHolders", new Identifier[Seq[AuthorisationHolder]] {})
+@if(table.rows.nonEmpty) {
+    <table>
+        <thead>
+            @table_header(table.header)
+        </thead>
+        <tbody>
+            @table.rows.map(r => table_row(r)).foldRight(List[Html]())(_ :: _)
+        </tbody>
+    </table>
 }

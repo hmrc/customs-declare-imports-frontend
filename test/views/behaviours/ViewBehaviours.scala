@@ -28,7 +28,7 @@ trait ViewBehaviours extends ViewSpecBase {
     "behave like a page with a heading" when {
       "rendered" must {
 
-        "display the correct page title" in {
+        "display the correct page heading" in {
           val doc = asDocument(view())
           assertPageTitleEqualsMessage(doc, s"$messageKeyPrefix.heading")
         }

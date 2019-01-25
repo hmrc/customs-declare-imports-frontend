@@ -16,20 +16,16 @@
 
 package services
 
-import domain.GovernmentAgencyGoodsItem
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.crypto.{ApplicationCrypto, Protected}
 import uk.gov.hmrc.customs.test.behaviours.{AuthenticationBehaviours, CustomsSpec}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItemAdditionalDocument, GovernmentAgencyGoodsItemAdditionalDocumentSubmitter}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class CustomsCacheServiceSpec extends CustomsSpec with AuthenticationBehaviours {
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val aKey = randomString(16)
   val aValue = randomString(48)
