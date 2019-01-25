@@ -119,9 +119,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryAdditionalInfo: Arbitrary[AdditionalInformation] = Arbitrary {
     for {
-      statementCode         <- option(alphaNumStr.map(_.take(17)))
-      statementDescription  <- option(alphaNumStr.map(_.take(512)))
-      statementTypeCode     <- option(alphaNumStr.map(_.take(3)))
+      statementCode <- option(arbitrary[String].map(_.take(17)))
+      statementDescription <- option(arbitrary[String].map(_.take(512)))
+      statementTypeCode <- option(arbitrary[String].map(_.take(3)))
     } yield AdditionalInformation(statementCode, statementDescription, statementTypeCode)
   }
 
@@ -238,12 +238,12 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       marksNumbersId <- option(arbitrary[String].map(_.take(512)))
       quantity <- option(arbitrary[Int].map(_.max(99999)))
       typeCode <- option(arbitrary[String].map(_.take(2)))
-      typpackingMaterialDescriptioneCode <- option(arbitrary[String].map(_.take(256)))
+      packingCode <- option(arbitrary[String].map(_.take(256)))
       lengthMeasure <- option(arbitrary[Long].map(_.max(999999999)))
       widthMeasure <- option(arbitrary[Long].map(_.max(999999999)))
       heightMeasure <- option(arbitrary[Long].map(_.max(999999999)))
       volumeMeasure <- option(arbitraryMeasure.arbitrary)
-    } yield Packaging(sequenceNumeric, marksNumbersId, quantity, typeCode, typpackingMaterialDescriptioneCode,
+    } yield Packaging(sequenceNumeric, marksNumbersId, quantity, typeCode, packingCode,
       lengthMeasure, widthMeasure, heightMeasure, volumeMeasure)
   }
 
