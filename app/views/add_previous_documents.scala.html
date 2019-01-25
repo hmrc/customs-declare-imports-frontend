@@ -24,6 +24,8 @@
 
 @main_template(title = messages("addPreviousDocument.title"), bodyClasses = None) {
 
+@helpers.form(action = PreviousDocumentsController.onSubmit()) {
+
     @components.back_link("")
 
     @components.error_summary(form.errors)
@@ -63,5 +65,5 @@
         </button>
 
         <a href="#" class="button" id="Next">@messages("common.button.continue")</a>
-
+    }
 }

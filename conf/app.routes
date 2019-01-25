@@ -10,6 +10,7 @@ GET         /submit-declaration/add-authorisation-holder       controllers.Autho
 POST        /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onSubmit()
 
 GET         /submit-declaration/add-previous-documents         controllers.PreviousDocumentsController.onPageLoad()
+POST         /submit-declaration/add-previous-documents         controllers.PreviousDocumentsController.onSubmit()
 
 
 POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
