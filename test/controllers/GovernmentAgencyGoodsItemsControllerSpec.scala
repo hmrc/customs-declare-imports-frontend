@@ -33,7 +33,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   with Generators
   with PropertyChecks {
 
-  val goodsItemsListUri = uriWithContextPath("/submit-declaration-goods/gov-agency-goods-items")
   val goodsItemsPageUri = uriWithContextPath("/submit-declaration-goods/goods-item-value")
   val goodsItemsUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-item")
   val navigateToSelectedGoodsItemPageUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-items")
@@ -49,35 +48,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   val postMethod = "POST"
 
   "GovernmentAgencyGoodsItemsController" should {
-
-    "require Authentication" in withFeatures((enabled(Feature.submit))) {
-      withoutSignedInUser() { (_, _) =>
-        withRequest(get, goodsItemsListUri) { resp =>
-          wasRedirected(ggLoginRedirectUri(goodsItemsListUri), resp)
-        }
-      }
-    }
-
-    " return 200" in withFeatures((enabled(Feature.submit))) {
-      withCaching(None)
-      withSignedInUser() { (headers, session, tags) =>
-        withRequest(get, goodsItemsListUri, headers, session, tags) {
-          wasOk
-        }
-      }
-    }
-
-    "display GoodsItems Page with no goods items displayed" in withFeatures((enabled(Feature.submit))) {
-      withSignedInUser() { (headers, session, tags) =>
-        withCaching(None)
-        withRequest(get, goodsItemsListUri, headers, session, tags) { resp =>
-          val content = contentAsHtml(resp)
-          content should include element withValue("No Goods Shipments available")
-
-        }
-      }
-    }
-
 
     "display GoodsItems values with single field Page" in withFeatures((enabled(Feature.submit))) {
       withSignedInUser() { (headers, session, tags) =>
@@ -239,7 +209,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     assertNavigation(Map("add" -> "AddRefundRecipientParties"),
       "/customs-declare-imports/submit-declaration-goods/add-manufacturers")
     assertNavigation(Map("add" -> "SaveGoodsItem"),
-      "/customs-declare-imports/submit-declaration-goods/gov-agency-goods-items")
+      "/customs-declare-imports/submit-declaration-goods/save-goods-item")
     assertNavigation(Map("add" -> "wrong-url"), "", Status.BAD_REQUEST)
   }
 

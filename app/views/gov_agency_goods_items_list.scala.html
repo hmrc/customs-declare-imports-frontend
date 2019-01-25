@@ -27,8 +27,6 @@
 
     <h1 class="heading-large">@messages("governmentAgencyGoodsItem.title")</h1>
 
-    @helpers.form(action = GovernmentAgencyGoodsItemsController.submitGoodsItems()) {
-
         @if(govAgencyGoodsItems.nonEmpty) {
             <p>@messages("governmentAgencyGoodsItem.numberGovAgencyGoodsItems") @govAgencyGoodsItems.size</p>
 
@@ -69,8 +67,8 @@
         }
 
         <div class="section">
-            <button id="AddGAGIAddDoc" value="AddGoodsItem" name = "submit" class="button">@messages("governmentAgencyGoodsItem.addGoodsItem")</button>
-            <button class="button" type="next" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+            <a href="/customs-declare-imports/submit-declaration-goods/goods-item-value" class="button" id="Add">@messages("governmentAgencyGoodsItem.addGoodsItem")</a>
+            <a href="/customs-declare-imports/submit-declaration/check-your-answers" class="button" id="Next">@messages("common.button.continue")</a>
         </div>
-    }
+
 }
