@@ -43,5 +43,20 @@ class DomesticDutyTaxPartyController @Inject()(actions: Actions, cache: CustomsC
     }
   }
 
-  def onSubmit: Action[AnyContent] = ???
+  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+
+    form.bindFromRequest().fold(
+      errors =>
+        cache.getByKey(req.eori, CacheKey.domesticDutyTaxParty).map { roles =>
+          BadRequest(role_based_party(errors, roles.getOrElse(Seq.empty), messageKeyPrefix))
+        },
+
+      roleBasedParty =>
+        cache
+          .upsert(req.eori, CacheKey.domesticDutyTaxParty)
+                 (() => Seq(roleBasedParty), roleBasedParty +: _)
+          .map(_ => Redirect(routes.DomesticDutyTaxPartyController.onPageLoad()))
+    )
+
+  }
 }
