@@ -109,7 +109,7 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
 
     behave like badRequestEndpoint("/submit-declaration/add-domestic-duty-tax-party", POST)
     behave like authenticatedEndpoint("/submit-declaration/add-domestic-duty-tax-party", POST)
-    
+
     "return SEE_OTHER" when {
 
       "valid data is submitted" in {

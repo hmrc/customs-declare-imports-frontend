@@ -340,20 +340,20 @@ roleBasedParty.id=ID
 roleBasedParty.roleCode=Role Code
 
 ## Additional supply chain actors
-additionalSupplyChainActor.title=Additional fiscal references
-additionalSupplyChainActor.heading=Additional fiscal references
-additionalSupplyChainActor.table.heading=1 Additional fiscal reference added
-additionalSupplyChainActor.table.multiple.heading={0} Additional fiscal references added
-additionalSupplyChainActor.table.empty=No additional fiscal references available
-additionalSupplyChainActor.add=Add additional fiscal reference
+additionalSupplyChainActor.title=Additional supply chain actor(s)
+additionalSupplyChainActor.heading=Additional supply chain actor(s)
+additionalSupplyChainActor.table.heading=1 Additional supply chain actor added
+additionalSupplyChainActor.table.multiple.heading={0} Additional supply chain actors added
+additionalSupplyChainActor.table.empty=No Additional supply chain actors available
+additionalSupplyChainActor.add=Add additional supply chain actor
 
 ## Domestic duty tax parties
-domesticDutyTaxParties.title=Additional supply chain actor(s)
-domesticDutyTaxParties.heading=Additional supply chain actor(s)
-domesticDutyTaxParties.table.heading=1 Additional supply chain actor added
-domesticDutyTaxParties.table.multiple.heading={0} Additional supply chain actors added
-domesticDutyTaxParties.table.empty=No Additional supply chain actors available
-domesticDutyTaxParties.add=Add additional supply chain actor
+domesticDutyTaxParties.title=Additional fiscal references
+domesticDutyTaxParties.heading=Additional fiscal references
+domesticDutyTaxParties.table.heading=1 Additional fiscal reference added
+domesticDutyTaxParties.table.multiple.heading={0} Additional fiscal references added
+domesticDutyTaxParties.table.empty=No additional fiscal references available
+domesticDutyTaxParties.add=Add additional fiscal reference
 
 ## Add Previous Documents
 addPreviousDocument.title=Previous Documents
