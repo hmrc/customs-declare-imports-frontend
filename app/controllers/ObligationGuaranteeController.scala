@@ -74,7 +74,7 @@ class ObligationGuaranteeController @Inject()(actions: Actions, cache: CustomsCa
               else
                 Future.successful(Ok(views.html.obligation_guarantee(obligationGuaranteesForm, Seq.empty)))
             })
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItems()))
+        case Some("next") => Future.successful(Redirect(goodsitems.routes.GoodsItemsListController.onPageLoad()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
 

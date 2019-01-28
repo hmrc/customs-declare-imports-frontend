@@ -40,7 +40,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
   submissionRepository: SubmissionRepository)(implicit val messagesApi: MessagesApi, val appConfig: AppConfig,
   ec: ExecutionContext) extends FrontendController with I18nSupport {
 
-  val GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY = "GovAgencyGoodsItems"
+  val GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY = "GovAgencyGoodsItemsList"
 
   private val navigationKeys = Set("next-page", "last-page", "force-last")
 
