@@ -24,7 +24,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
-import uk.gov.hmrc.wco.dec.{AdditionalInformation, AuthorisationHolder, PreviousDocument, RoleBasedParty}
+import uk.gov.hmrc.wco.dec._
 
 class DeclarationFormMappingSpec extends WordSpec
   with MustMatchers

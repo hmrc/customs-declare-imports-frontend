@@ -16,9 +16,8 @@
 
 package services.cachekeys
 
-import uk.gov.hmrc.wco.dec.{PreviousDocument, RoleBasedParty}
+import uk.gov.hmrc.wco.dec._
 import domain.GovernmentAgencyGoodsItem
-import uk.gov.hmrc.wco.dec.AuthorisationHolder
 
 trait Identifier[A]
 
