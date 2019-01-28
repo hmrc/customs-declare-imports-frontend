@@ -80,22 +80,17 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
   def submitDeclarationXml: Action[String] = actions.auth.async(parse.tolerantText) { implicit authenticatedRequest =>
     implicit val user: SignedInUser = authenticatedRequest.user
 
-    val maybeLrn = MetaData.fromXml(authenticatedRequest.body).declaration.get.functionalReferenceId
+    val maybeLrn = MetaData.fromXml(authenticatedRequest.body).declaration.flatMap(_.functionalReferenceId)
 
-      //In order to keep the interface the same between current connector and new backend implementation have kept
-      //badgeIdentifier as input but in new backend we are actually using this to pass in LRN
-      if(maybeLrn.isEmpty) {
-        Future.successful(BadRequest("Local Reference Number is required in metadata"))
-      } else {
-        connector.submitImportDeclaration(MetaData.fromXml(authenticatedRequest.body), maybeLrn.get).map { resp =>
+    maybeLrn.fold(Future.successful(BadRequest("Local Reference Number is required in metadata"))){ lrn =>
+        connector.submitImportDeclaration(MetaData.fromXml(authenticatedRequest.body), lrn).map { resp =>
           Created(resp.conversationId)
         }recover{
           case e: Throwable =>
             Logger.error("Error calling backend", e)
             InternalServerError("Error calling backend")
         }
-      }
-
+    }
   }
 
 }

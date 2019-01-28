@@ -80,16 +80,26 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     val data: Map[String, String] = formDataAsMap()
     implicit val user: SignedInUser = req.user
 
-    //TODO handle if auth token is missing
     implicit val errors: Map[String, Seq[ValidationError]] = validate(data)
     if (errors.isEmpty) {
       cacheSubmission(data ++ Map("force-last" -> "false")) { (merged, _) =>
         val props = merged.filterNot(entry => navigationKeys.contains(entry._1) || knownBad.contains(entry._1) || entry._2.trim.isEmpty)
-        updateMetaData(MetaData.fromProperties(props)).flatMap({ metadata =>
-          val localReferenceNumber = metadata.get.declaration.get.functionalReferenceId.get
-          client.submitImportDeclaration(metadata.get, localReferenceNumber).map { resp =>
-            Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId))
+        updateMetaData(MetaData.fromProperties(props)).flatMap({ maybeMetaData =>
+          maybeMetaData match {
+              case Some(metadata) => {
+                metadata.declaration.flatMap(declaration => declaration.functionalReferenceId)
+                  .fold(Future.successful(InternalServerError("Lrn Is Required"))) {
+                    localReferenceNumber =>
+                    client.submitImportDeclaration(metadata, localReferenceNumber).map { resp =>
+                      Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId))
+                    }
+                }
+              }
+              case None => {
+               Future.successful(InternalServerError("MetaData is required"))
+             }
           }
+
         })
 
       }
