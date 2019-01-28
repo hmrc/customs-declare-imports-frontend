@@ -176,6 +176,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       id <- option(arbitrary[String].map(_.take(17)))
       roleCode <- option(arbitrary[String].map(_.take(3)))
+      if id.exists(_.nonEmpty) || roleCode.exists(_.nonEmpty)
     } yield RoleBasedParty(id, roleCode)
   }
 

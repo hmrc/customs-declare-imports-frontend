@@ -1,0 +1,63 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.wco.dec.RoleBasedParty
+
+@import config.AppConfig
+@import controllers.routes._
+@import uk.gov.hmrc.play.views.html._
+@import viewmodels.HtmlTable
+
+@(form: Form[_], roleBasedParties: Seq[RoleBasedParty])(implicit r: Request[_], messages: Messages, appConfig: AppConfig)
+
+@main_template(title = messages("roleBasedParty.title"), bodyClasses = None) {
+
+@helpers.form(action = RoleBasedPartyController.onSubmit()) {
+
+ @components.back_link("")
+
+ @components.error_summary(form.errors)
+
+ <h1 class="heading-large">@messages("roleBasedParty.heading")</h1>
+
+ @if(roleBasedParties.isEmpty) {
+  <p>@messages("roleBasedParty.table.empty")</p>
+ } else {
+  @if(roleBasedParties.size == 1) {
+   <p>@messages("roleBasedParty.table.heading")</p>
+  } else {
+   <p>@messages("roleBasedParty.table.multiple.heading", roleBasedParties.size)</p>
+  }
+ }
+
+ @components.table.table(
+  HtmlTable(
+   messages("roleBasedParty.id"),
+   messages("roleBasedParty.roleCode")
+  )(roleBasedParties.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
+
+ <fieldset>
+  @components.input_text(form("id"), messages("roleBasedParty.id"))
+  @components.input_text(form("roleCode"), messages("roleBasedParty.roleCode"))
+ </fieldset>
+
+ <button id="Add" name="submit">@messages("roleBasedParty.add")</button>
+
+ <a href="@routes.AuthorisationHoldersController.onSubmit().url" class="button" id="Next">
+  @messages("common.button.continue")
+ </a>
+}
+}
