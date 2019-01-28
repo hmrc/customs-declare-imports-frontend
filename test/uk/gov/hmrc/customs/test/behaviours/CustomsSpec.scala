@@ -18,9 +18,10 @@ package uk.gov.hmrc.customs.test.behaviours
 
 import akka.stream.Materializer
 import config.AppConfig
+import domain.auth.EORI
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
+import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -33,6 +34,7 @@ import play.api.libs.concurrent.Execution.Implicits
 import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.test.FakeRequest
 import services.CustomsCacheService
+import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.{CustomsFixtures, CustomsFutures}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -86,6 +88,15 @@ trait CustomsSpec extends PlaySpec
 
     when(mockCustomsCacheService.cache[T](any(), any(), any())(any(), any(), any()))
       .thenReturn(Future.successful(CacheMap(id, Map.empty)))
+  }
+
+  def withCleanCache[T](eori: EORI, key: CacheKey[T], data: Option[T])(test: => Unit): Unit = {
+    reset(mockCustomsCacheService)
+
+    when(mockCustomsCacheService.getByKey(eqTo(eori), eqTo(key))(any(), any(), any()))
+      .thenReturn(Future.successful(data))
+
+    test
   }
 
   // composite template method to be overridden by sub-types to customise the app

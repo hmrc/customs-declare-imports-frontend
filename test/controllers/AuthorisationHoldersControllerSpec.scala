@@ -41,8 +41,7 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
   with Generators
   with OptionValues
   with MockitoSugar
-  with EndpointBehaviours
-  with BeforeAndAfterEach {
+  with EndpointBehaviours {
 
   def form = Form(authorisationHolderMapping)
 
