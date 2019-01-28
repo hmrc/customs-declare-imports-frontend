@@ -28,7 +28,7 @@ import services.{CustomsCacheService, CustomsDeclarationsConnector}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import uk.gov.hmrc.wco.dec.{GoodsShipment, GovernmentAgencyGoodsItem, MetaData}
+import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, MetaData}
 import domain.ObligationGuarantee._
 import forms.ObligationGuaranteeForm
 import domain.DeclarationFormats._
@@ -73,23 +73,37 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
       cacheSubmission(data) { (_, _) =>
         Future.successful(Redirect(routes.DeclarationController.displaySubmitForm(data("next-page"))))
       }
-    } else invalid(name, data)
+    } else { invalid(name, data) }
   }
 
   def onSubmitComplete: Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
     val data: Map[String, String] = formDataAsMap()
     implicit val user: SignedInUser = req.user
+
     implicit val errors: Map[String, Seq[ValidationError]] = validate(data)
     if (errors.isEmpty) {
       cacheSubmission(data ++ Map("force-last" -> "false")) { (merged, _) =>
         val props = merged.filterNot(entry => navigationKeys.contains(entry._1) || knownBad.contains(entry._1) || entry._2.trim.isEmpty)
-        updateMetaData(MetaData.fromProperties(props)).flatMap( metadata =>
-          client.submitImportDeclaration(metadata.get).map { resp =>
-          Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId))
+        updateMetaData(MetaData.fromProperties(props)).flatMap({ maybeMetaData =>
+          maybeMetaData match {
+              case Some(metadata) => {
+                metadata.declaration.flatMap(declaration => declaration.functionalReferenceId)
+                  .fold(Future.successful(InternalServerError("Lrn Is Required"))) {
+                    localReferenceNumber =>
+                    client.submitImportDeclaration(metadata, localReferenceNumber).map { resp =>
+                      Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId))
+                    }
+                }
+              }
+              case None => {
+               Future.successful(InternalServerError("MetaData is required"))
+             }
+          }
+
         })
 
       }
-    } else invalid(data("last-page"), data)
+    } else { invalid(data("last-page"), data) }
   }
 
   private def invalid(name: String, data: Map[String, String])(implicit req: AuthenticatedRequest[AnyContent], errors: Map[String, Seq[ValidationError]]): Future[Result] = Future.successful(BadRequest(views.html.generic_view(name, data)))
