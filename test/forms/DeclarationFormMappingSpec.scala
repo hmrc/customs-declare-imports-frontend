@@ -249,7 +249,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             val data = roleParty.copy(id = Some(id))
             Form(roleBasedPartyMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("role based party id  should be less than or equal to 17 characters"),
+              _ must haveErrorMessage("Role based party id should be less than or equal to 17 characters"),
               _      => fail("should not succeed")
             )
         }
@@ -262,7 +262,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             val data = roleParty.copy(roleCode = Some(roleCode))
             Form(roleBasedPartyMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("role Code  should be less than or equal to 3 characters"),
+              _ must haveErrorMessage("Role code should be less than or equal to 3 characters"),
               _ => fail("should not succeed")
             )
         }

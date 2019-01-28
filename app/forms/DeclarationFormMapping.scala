@@ -96,7 +96,7 @@ object DeclarationFormMapping {
   )(NamedEntityWithAddress.apply)(NamedEntityWithAddress.unapply)
 
   val roleBasedPartyMapping = mapping(
-    "id" -> optional(text.verifying("Role based party id  should be less than or equal to 17 characters", _.length <= 17)), // max 17 chars
+    "id" -> optional(text.verifying("Role based party id should be less than or equal to 17 characters", _.length <= 17)), // max 17 chars
     "roleCode" -> optional(text.verifying("Role code should be less than or equal to 3 characters", _.length <= 3)) // max 3 chars
   )(RoleBasedParty.apply)(RoleBasedParty.unapply)
     .verifying("You must provide an ID or role code", require1Field[RoleBasedParty](_.id, _.roleCode))
