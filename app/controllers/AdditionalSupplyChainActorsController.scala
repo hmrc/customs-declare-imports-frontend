@@ -26,17 +26,18 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import domain.DeclarationFormats._
 
-class RoleBasedPartyController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                        (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
+class AdditionalSupplyChainActorsController @Inject()(actions: Actions, cache: CustomsCacheService)
+                                                     (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
   extends CustomsController {
 
   val form = Form(roleBasedPartyMapping)
+  val messageKeyPrefix = "additionalSupplyChainActor"
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
-    cache.getByKey(req.eori, CacheKey.roleBasedParty).map { roles =>
+    cache.getByKey(req.eori, CacheKey.additionalSupplyChainActors).map { roles =>
 
-      Ok(views.html.role_based_party(form, roles.getOrElse(Seq.empty)))
+      Ok(views.html.role_based_party(form, roles.getOrElse(Seq.empty), messageKeyPrefix))
     }
   }
 
@@ -44,16 +45,16 @@ class RoleBasedPartyController @Inject()(actions: Actions, cache: CustomsCacheSe
 
     form.bindFromRequest().fold(
       errors =>
-        cache.getByKey(req.eori, CacheKey.roleBasedParty).map { roles =>
+        cache.getByKey(req.eori, CacheKey.additionalSupplyChainActors).map { roles =>
 
-          BadRequest(views.html.role_based_party(errors, roles.getOrElse(Seq.empty)))
+          BadRequest(views.html.role_based_party(errors, roles.getOrElse(Seq.empty), messageKeyPrefix))
         },
 
       roleBasedParty =>
         cache
-          .upsert(req.eori, CacheKey.roleBasedParty)
+          .upsert(req.eori, CacheKey.additionalSupplyChainActors)
                  (() => Seq(roleBasedParty), roleBasedParty +: _)
-          .map(_ => Redirect(routes.RoleBasedPartyController.onPageLoad()))
+          .map(_ => Redirect(routes.AdditionalSupplyChainActorsController.onPageLoad()))
     )
   }
 }

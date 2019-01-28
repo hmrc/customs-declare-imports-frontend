@@ -36,7 +36,7 @@ import views.html.role_based_party
 
 import scala.concurrent.Future
 
-class RoleBasedPartyControllerSpec extends CustomsSpec
+class AdditionalSupplyChainActorsControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
   with MockitoSugar
@@ -46,18 +46,18 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
   val form = Form(roleBasedPartyMapping)
 
   def controller(user: Option[SignedInUser]) =
-    new RoleBasedPartyController(new FakeActions(user), mockCustomsCacheService)
+    new AdditionalSupplyChainActorsController(new FakeActions(user), mockCustomsCacheService)
 
   def view(form: Form[RoleBasedParty], roles: Seq[RoleBasedParty]): String =
-    role_based_party(form, roles)(fakeRequest, messages, appConfig).body
+    role_based_party(form, roles, "additionalSupplyChainActor")(fakeRequest, messages, appConfig).body
 
   val listGen: Gen[Option[List[RoleBasedParty]]] =
     option(listOf(arbitrary[RoleBasedParty]))
 
   ".onPageLoad" should {
 
-    behave like okEndpoint("/submit-declaration/add-role-based-party")
-    behave like authenticatedEndpoint("/submit-declaration/add-role-based-party")
+    behave like okEndpoint("/submit-declaration/add-additional-supply-chain-actors")
+    behave like authenticatedEndpoint("/submit-declaration/add-additional-supply-chain-actors")
 
     "return OK" when {
 
@@ -91,7 +91,7 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
       forAll(arbitrary[SignedInUser], listGen) {
         (user, data) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.roleBasedParty, data) {
+          withCleanCache(EORI(user.eori.value), CacheKey.additionalSupplyChainActors, data) {
 
             val result = controller(Some(user)).onPageLoad(fakeRequest)
 
@@ -104,8 +104,8 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
 
   ".onSubmit" should {
 
-    behave like badRequestEndpoint("/submit-declaration/add-role-based-party", POST)
-    behave like authenticatedEndpoint("/submit-declaration/add-role-based-party", POST)
+    behave like badRequestEndpoint("/submit-declaration/add-additional-supply-chain-actors", POST)
+    behave like authenticatedEndpoint("/submit-declaration/add-additional-supply-chain-actors", POST)
 
     "return SEE_OTHER" when {
 
@@ -117,7 +117,7 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
           val result = controller(Some(user)).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.RoleBasedPartyController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(routes.AdditionalSupplyChainActorsController.onPageLoad().url)
         }
       }
     }
@@ -147,7 +147,7 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
         forAll(arbitrary[SignedInUser], badData, listGen) {
           (user, badData, cacheData) =>
 
-            withCleanCache(EORI(user.eori.value), CacheKey.roleBasedParty, cacheData) {
+            withCleanCache(EORI(user.eori.value), CacheKey.additionalSupplyChainActors, cacheData) {
 
               val request = fakeRequest.withFormUrlEncodedBody(asFormParams(badData): _*)
               val popForm = form.fillAndValidate(badData)
@@ -170,7 +170,7 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
           await(controller(Some(user)).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.roleBasedParty))(any(), any())(any(), any(), any(), any())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionalSupplyChainActors))(any(), any())(any(), any(), any(), any())
         }
       }
     }

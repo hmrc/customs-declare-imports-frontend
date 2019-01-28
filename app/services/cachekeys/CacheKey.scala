@@ -29,7 +29,7 @@ object CacheKey {
 
   val previousDocuments = CacheKey("PreviousDocuments", new Identifier[Seq[PreviousDocument]] {})
 
-  val roleBasedParty = CacheKey("RoleBasedParty", new Identifier[Seq[RoleBasedParty]] {})
+  val additionalSupplyChainActors = CacheKey("AdditionalSupplyChainActors", new Identifier[Seq[RoleBasedParty]] {})
 
   val govAgencyGoodsItemsList = CacheKey("GovAgencyGoodsItemsList", new Identifier[Seq[GovernmentAgencyGoodsItem]] {})
   val goodsItem = CacheKey("GovAgencyGoodsItem", new Identifier[GovernmentAgencyGoodsItem] {})

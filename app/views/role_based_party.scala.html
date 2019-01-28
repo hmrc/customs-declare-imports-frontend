@@ -21,25 +21,25 @@
 @import uk.gov.hmrc.play.views.html._
 @import viewmodels.HtmlTable
 
-@(form: Form[_], roleBasedParties: Seq[RoleBasedParty])(implicit r: Request[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], roleBasedParties: Seq[RoleBasedParty], messageKeyPrefix: String)(implicit r: Request[_], messages: Messages, appConfig: AppConfig)
 
-@main_template(title = messages("roleBasedParty.title"), bodyClasses = None) {
+@main_template(title = messages(s"$messageKeyPrefix.title"), bodyClasses = None) {
 
-@helpers.form(action = RoleBasedPartyController.onSubmit()) {
+@helpers.form(action = AdditionalSupplyChainActorsController.onSubmit()) {
 
  @components.back_link("")
 
  @components.error_summary(form.errors)
 
- <h1 class="heading-large">@messages("roleBasedParty.heading")</h1>
+ <h1 class="heading-large">@messages(s"$messageKeyPrefix.heading")</h1>
 
  @if(roleBasedParties.isEmpty) {
-  <p>@messages("roleBasedParty.table.empty")</p>
+  <p>@messages(s"$messageKeyPrefix.table.empty")</p>
  } else {
   @if(roleBasedParties.size == 1) {
-   <p>@messages("roleBasedParty.table.heading")</p>
+   <p>@messages(s"$messageKeyPrefix.table.heading")</p>
   } else {
-   <p>@messages("roleBasedParty.table.multiple.heading", roleBasedParties.size)</p>
+   <p>@messages(s"$messageKeyPrefix.table.multiple.heading", roleBasedParties.size)</p>
   }
  }
 
@@ -54,7 +54,7 @@
   @components.input_text(form("roleCode"), messages("roleBasedParty.roleCode"))
  </fieldset>
 
- <button id="Add" name="submit">@messages("roleBasedParty.add")</button>
+ <button id="Add" name="submit">@messages(s"$messageKeyPrefix.add")</button>
 
  <a href="@routes.AuthorisationHoldersController.onSubmit().url" class="button" id="Next">
   @messages("common.button.continue")

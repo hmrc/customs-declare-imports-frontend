@@ -37,26 +37,26 @@ class RoleBasedPartySpec extends ViewBehaviours
 
   val form = Form(roleBasedPartyMapping)
 
-  def view(form: Form[RoleBasedParty], roles: Seq[RoleBasedParty] = Seq.empty): Html =
-    views.html.role_based_party(form, roles)(fakeRequest, messages, appConfig)
+  def view(form: Form[RoleBasedParty], roles: Seq[RoleBasedParty], messageKeyPrefix: String): Html =
+    views.html.role_based_party(form, roles, messageKeyPrefix)(fakeRequest, messages, appConfig)
 
-  val view: () => Html = () => view(form)
-  val listView: Seq[RoleBasedParty] => Html = xs => view(form, xs)
+  def view(messageKeyPrefix: String): () => Html = () => view(form, Seq.empty, messageKeyPrefix)
+  def listView(messageKeyPrefix: String): Seq[RoleBasedParty] => Html = xs => view(form, xs, messageKeyPrefix)
 
-  val messageKeyPrefix = "roleBasedParty"
+  val messageKeyPrefix = "additionalSupplyChainActor"
 
   "Role Based Party page" should {
 
-    behave like normalPage(view, messageKeyPrefix)
-    behave like pageWithBackLink(view)
-    behave like pageWithTableHeadings(listView, arbitrary[RoleBasedParty], messageKeyPrefix)
+    behave like normalPage(view(messageKeyPrefix), messageKeyPrefix)
+    behave like pageWithBackLink(view(messageKeyPrefix))
+    behave like pageWithTableHeadings(listView(messageKeyPrefix), arbitrary[RoleBasedParty], messageKeyPrefix)
 
     "contain id field" in {
 
       forAll { roleBasedParty: RoleBasedParty =>
 
         val popForm = form.fillAndValidate(roleBasedParty)
-        val html = view(popForm)
+        val html = view(popForm, Seq.empty, messageKeyPrefix)
         val input = input_text(popForm("id"), "ID")
 
         html must include(input)
@@ -68,7 +68,7 @@ class RoleBasedPartySpec extends ViewBehaviours
       forAll { roleBasedParty: RoleBasedParty =>
 
         val popForm = form.fillAndValidate(roleBasedParty)
-        val html = view(popForm)
+        val html = view(popForm, Seq.empty, messageKeyPrefix)
         val input = input_text(popForm("roleCode"), "Role Code")
 
         html must include(input)
@@ -81,7 +81,7 @@ class RoleBasedPartySpec extends ViewBehaviours
 
         val htmlTable =
           table(HtmlTable("ID", "Role Code")(roles.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
-        val html = listView(roles)
+        val html = listView(messageKeyPrefix)(roles)
         
         html must include(htmlTable)
       }
