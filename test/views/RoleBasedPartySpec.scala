@@ -43,47 +43,51 @@ class RoleBasedPartySpec extends ViewBehaviours
   def view(messageKeyPrefix: String): () => Html = () => view(form, Seq.empty, messageKeyPrefix)
   def listView(messageKeyPrefix: String): Seq[RoleBasedParty] => Html = xs => view(form, xs, messageKeyPrefix)
 
-  val messageKeyPrefix = "additionalSupplyChainActor"
+  val messageKeyPrefixes =
+    List("additionalSupplyChainActor", "domesticDutyTaxParties")
 
-  "Role Based Party page" should {
+  for (messageKeyPrefix <- messageKeyPrefixes) {
 
-    behave like normalPage(view(messageKeyPrefix), messageKeyPrefix)
-    behave like pageWithBackLink(view(messageKeyPrefix))
-    behave like pageWithTableHeadings(listView(messageKeyPrefix), arbitrary[RoleBasedParty], messageKeyPrefix)
+    s"Role Based Party page for '$messageKeyPrefix'" should {
 
-    "contain id field" in {
+      behave like normalPage(view(messageKeyPrefix), messageKeyPrefix)
+      behave like pageWithBackLink(view(messageKeyPrefix))
+      behave like pageWithTableHeadings(listView(messageKeyPrefix), arbitrary[RoleBasedParty], messageKeyPrefix)
 
-      forAll { roleBasedParty: RoleBasedParty =>
+      "contain id field" in {
 
-        val popForm = form.fillAndValidate(roleBasedParty)
-        val html = view(popForm, Seq.empty, messageKeyPrefix)
-        val input = input_text(popForm("id"), "ID")
+        forAll { roleBasedParty: RoleBasedParty =>
 
-        html must include(input)
+          val popForm = form.fillAndValidate(roleBasedParty)
+          val html = view(popForm, Seq.empty, messageKeyPrefix)
+          val input = input_text(popForm("id"), "ID")
+
+          html must include(input)
+        }
       }
-    }
 
-    "contain roleCode field" in {
+      "contain roleCode field" in {
 
-      forAll { roleBasedParty: RoleBasedParty =>
+        forAll { roleBasedParty: RoleBasedParty =>
 
-        val popForm = form.fillAndValidate(roleBasedParty)
-        val html = view(popForm, Seq.empty, messageKeyPrefix)
-        val input = input_text(popForm("roleCode"), "Role Code")
+          val popForm = form.fillAndValidate(roleBasedParty)
+          val html = view(popForm, Seq.empty, messageKeyPrefix)
+          val input = input_text(popForm("roleCode"), "Role Code")
 
-        html must include(input)
+          html must include(input)
+        }
       }
-    }
 
-    "contain table of data" in {
+      "contain table of data" in {
 
-      forAll(listOf(arbitrary[RoleBasedParty])) { roles =>
+        forAll(listOf(arbitrary[RoleBasedParty])) { roles =>
 
-        val htmlTable =
-          table(HtmlTable("ID", "Role Code")(roles.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
-        val html = listView(messageKeyPrefix)(roles)
-        
-        html must include(htmlTable)
+          val htmlTable =
+            table(HtmlTable("ID", "Role Code")(roles.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
+          val html = listView(messageKeyPrefix)(roles)
+
+          html must include(htmlTable)
+        }
       }
     }
   }

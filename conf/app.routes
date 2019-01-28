@@ -17,6 +17,8 @@ POST        /submit-declaration/add-previous-documents         controllers.Previ
 GET         /submit-declaration/add-additional-supply-chain-actors   controllers.AdditionalSupplyChainActorsController.onPageLoad()
 POST        /submit-declaration/add-additional-supply-chain-actors   controllers.AdditionalSupplyChainActorsController.onSubmit()
 
+GET         /submit-declaration/add-domestic-duty-tax-party    controllers.DomesticDutyTaxPartyController.onPageLoad()
+
 POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
 GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)
 GET         /submit-declaration/:name                          controllers.DeclarationController.displaySubmitForm(name)
