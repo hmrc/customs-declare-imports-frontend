@@ -18,22 +18,22 @@ package test.controllers
 
 import config.AppConfig
 import controllers.Actions
+import domain.auth.SignedInUser
 import javax.inject.{Inject, Singleton}
+import play.api.Logger
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.{Action, AnyContent}
 import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString}
 import repositories.declaration.{Submission, SubmissionRepository}
 import services.CustomsDeclarationsConnector
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.{BaseController, FrontendController}
 import uk.gov.hmrc.wco.dec.MetaData
 
-import scala.concurrent.ExecutionContext
-import scala.xml.NodeSeq
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TestingUtilitiesController @Inject()(actions: Actions, submissionRepository: SubmissionRepository, connector: CustomsDeclarationsConnector)
-                                          (implicit val appConfig: AppConfig, ec: ExecutionContext) extends BaseController {
+                                          (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController {
 
   def displaySubmissions(eori: String): Action[AnyContent] = Action.async { implicit req =>
     submissionRepository.findByEori(eori).map { found =>
@@ -77,10 +77,19 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
     }
   }
 
-  def submitDeclarationXml: Action[String] = actions.auth.async(parse.tolerantText) { implicit req =>
-    implicit val user = req.user
-    connector.submitImportDeclaration(MetaData.fromXml(req.body)).map { resp =>
-      Created(resp.conversationId)
+  def submitDeclarationXml: Action[String] = actions.auth.async(parse.tolerantText) { implicit authenticatedRequest =>
+    implicit val user: SignedInUser = authenticatedRequest.user
+
+    val maybeLrn = MetaData.fromXml(authenticatedRequest.body).declaration.flatMap(_.functionalReferenceId)
+
+    maybeLrn.fold(Future.successful(BadRequest("Local Reference Number is required in metadata"))){ lrn =>
+        connector.submitImportDeclaration(MetaData.fromXml(authenticatedRequest.body), lrn).map { resp =>
+          Created(resp.conversationId)
+        }recover{
+          case e: Throwable =>
+            Logger.error("Error calling backend", e)
+            InternalServerError("Error calling backend")
+        }
     }
   }
 

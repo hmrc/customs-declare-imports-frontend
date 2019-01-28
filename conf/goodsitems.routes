@@ -1,0 +1,4 @@
+# microservice specific routes
+
+GET    /gov-agency-goods-items        controllers.goodsitems.GoodsItemsListController.onPageLoad()
+GET   /save-goods-item              controllers.goodsitems.GoodsItemsListController.saveGoodsItem()

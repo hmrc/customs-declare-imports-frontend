@@ -55,7 +55,7 @@ class AppConfigSpec extends CustomsSpec with FeatureBehaviours {
     }
 
     "have a submit import declarations uri" in {
-      cfg.submitImportDeclarationUri must be ("/")
+      cfg.submitImportDeclarationUri must be ("/declaration")
     }
 
     "have a cancel import declarations uri" in {
@@ -63,7 +63,7 @@ class AppConfigSpec extends CustomsSpec with FeatureBehaviours {
     }
 
     "have customs declarations endpoint" in {
-      cfg.customsDeclarationsEndpoint must be ("http://localhost:6790")
+      cfg.customsDeclareImportsEndpoint must be ("http://localhost:6794")
     }
 
     "have customs declarations API version" in {

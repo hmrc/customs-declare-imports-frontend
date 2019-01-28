@@ -16,7 +16,9 @@
 
 package services.cachekeys
 
-import uk.gov.hmrc.wco.dec.{AuthorisationHolder, PreviousDocument, RoleBasedParty}
+import uk.gov.hmrc.wco.dec.{PreviousDocument, RoleBasedParty}
+import domain.GovernmentAgencyGoodsItem
+import uk.gov.hmrc.wco.dec.AuthorisationHolder
 
 trait Identifier[A]
 
@@ -29,4 +31,8 @@ object CacheKey {
   val previousDocuments = CacheKey("PreviousDocuments", new Identifier[Seq[PreviousDocument]] {})
 
   val roleBasedParty = CacheKey("RoleBasedParty", new Identifier[Seq[RoleBasedParty]] {})
+
+  val govAgencyGoodsItemsList = CacheKey("GovAgencyGoodsItemsList", new Identifier[Seq[GovernmentAgencyGoodsItem]] {})
+  val goodsItem = CacheKey("GovAgencyGoodsItem", new Identifier[GovernmentAgencyGoodsItem] {})
+  val govAgencyGoodsItemReference = CacheKey("GovAgencyGoodsItemReference", new Identifier[GovernmentAgencyGoodsItem] {})
 }

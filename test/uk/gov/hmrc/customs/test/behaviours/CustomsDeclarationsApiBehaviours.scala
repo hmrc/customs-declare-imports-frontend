@@ -18,29 +18,32 @@ package uk.gov.hmrc.customs.test.behaviours
 
 import java.util.UUID
 
+import config.AppConfig
 import domain.auth.SignedInUser
+import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import repositories.declaration.SubmissionRepository
 import services.{CustomsDeclarationsConnector, CustomsDeclarationsResponse}
 import uk.gov.hmrc.customs.test.assertions.XmlAssertions
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 
-trait CustomsDeclarationsApiBehaviours extends CustomsSpec {
+trait CustomsDeclarationsApiBehaviours extends CustomsSpec with MockitoSugar{
 
-  private lazy val connector = new MockCustomsDeclarationsConnector()
+  val mockAppConfig: AppConfig = mock[AppConfig]
+  val mockHttpClient: HttpClient = mock[HttpClient]
+  val mockSubmissionRepository: SubmissionRepository = mock[SubmissionRepository]
+  private lazy val connector = new MockCustomsDeclarationsConnector(mockAppConfig, mockHttpClient, mockSubmissionRepository)
 
   def withCustomsDeclarationsApiSubmission(request: MetaData)
                                           (test: Future[CustomsDeclarationsResponse] => Unit): Unit = {
     test(connector.addExpectedSubmission(request))
-  }
-
-  def withCustomsDeclarationsApiCancellation(request: MetaData)(test: Future[CustomsDeclarationsResponse] => Unit): Unit = {
-    test(connector.addExpectedCancellation(request))
   }
 
   override protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder =
@@ -48,23 +51,25 @@ trait CustomsDeclarationsApiBehaviours extends CustomsSpec {
 
 }
 
-class MockCustomsDeclarationsConnector extends CustomsDeclarationsConnector with XmlAssertions {
+
+
+class MockCustomsDeclarationsConnector(mockConfig : AppConfig, mockhttpClient: HttpClient, repo: SubmissionRepository) extends CustomsDeclarationsConnector(appConfig = mockConfig,
+                                                                              httpClient = mockhttpClient,
+                                                                              repo)
+  with XmlAssertions {
 
   val expectedSubmissions: mutable.Map[MetaData, Future[CustomsDeclarationsResponse]] = mutable.Map.empty
 
   val expectedCancellations: mutable.Map[MetaData, Future[CustomsDeclarationsResponse]] = mutable.Map.empty
 
-  val submissionSchemas = Seq("/DocumentMetaData_2_DMS.xsd", "/WCO_DEC_2_DMS.xsd")
+  val submissionSchemas: Seq[String] = Seq("/DocumentMetaData_2_DMS.xsd", "/WCO_DEC_2_DMS.xsd")
 
-  val cancellationSchemas = Seq("/CANCEL_METADATA.xsd","/CANCEL.xsd")
+  val cancellationSchemas: Seq[String] = Seq("/CANCEL_METADATA.xsd","/CANCEL.xsd")
 
-  override def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String])
+  override def submitImportDeclaration(metaData: MetaData, localReferenceNumber: String)
                                       (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
     expectedSubmissions.getOrElse(metaData, throw new IllegalArgumentException("Unexpected API submission call"))
 
-  override def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String])
-                                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
-    expectedCancellations.getOrElse(metaData, throw new IllegalArgumentException("Unexpected API cancellation call"))
 
   def addExpectedSubmission(meta: MetaData): Future[CustomsDeclarationsResponse] = {
     val resp = toResponse(meta, submissionSchemas)
@@ -72,15 +77,12 @@ class MockCustomsDeclarationsConnector extends CustomsDeclarationsConnector with
     resp
   }
 
-  def addExpectedCancellation(meta: MetaData): Future[CustomsDeclarationsResponse] = {
-    val resp = toResponse(meta, cancellationSchemas)
-    expectedCancellations.put(meta, resp)
-    resp
-  }
-
   private def toResponse(meta: MetaData, schemas: Seq[String]): Future[CustomsDeclarationsResponse] =
-    if (isValidXml(meta.toXml, schemas)) Future.successful(CustomsDeclarationsResponse(conversationId))
-    else Future.failed(Upstream4xxResponse("You sent bad XML", Status.BAD_REQUEST, Status.INTERNAL_SERVER_ERROR))
+    if (isValidXml(meta.toXml, schemas)) {
+      Future.successful(CustomsDeclarationsResponse(conversationId))
+    } else {
+      Future.failed(Upstream4xxResponse("You sent bad XML", Status.BAD_REQUEST, Status.INTERNAL_SERVER_ERROR))
+    }
 
   private def conversationId: String = UUID.randomUUID().toString
 
