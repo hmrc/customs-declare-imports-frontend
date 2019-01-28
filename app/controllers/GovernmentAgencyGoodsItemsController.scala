@@ -27,11 +27,10 @@ import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import uk.gov.hmrc.wco.dec.{NamedEntityWithAddress, _}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 
 @Singleton
@@ -52,29 +51,10 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
   val GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY = "GovAgencyGoodsItems"
   val GOV_AGENCY_GOODS_ITEM_CACHE_KEY = "GovAgencyGoodsItem"
 
-  def showGoodsItems(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
-    implicit req =>
-      cacheService.fetchAndGetEntry[List[GovernmentAgencyGoodsItem]](req.user.eori.get, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY).flatMap(listItems =>
-        cacheService.cache[GovernmentAgencyGoodsItem](req.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, GovernmentAgencyGoodsItem()).map(_ =>
-          Ok(views.html.gov_agency_goods_items_list(listItems.getOrElse(List.empty)))))
-  }
-
-  def submitGoodsItems(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
-    implicit req =>
-      val optionSelected = req.body.asFormUrlEncoded.get("submit").headOption
-      optionSelected match {
-        case Some("AddGoodsItem") =>
-          Future.successful(Ok(views.html.goods_item_value(goodsItemValueInformationForm)))
-
-        case Some("next") => Future.successful(Redirect(routes.DeclarationController.displaySubmitForm("check-your-answers")))
-        case _ => Logger.error("wrong selection => " + optionSelected.get)
-          Future.successful(BadRequest("This action is not allowed"))
-      }
-  }
 
   def showGoodsItemValuePage(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req =>
-      cacheService.fetchAndGetEntry[GoodsItemValueInformation](req.user.eori.get, goodsItemValueInformationKey)(hc,goodsItemValueFormats, MdcLoggingExecutionContext.fromLoggingDetails).map {
+      cacheService.fetchAndGetEntry[GoodsItemValueInformation](req.user.eori.get, goodsItemValueInformationKey)(hc, goodsItemValueFormats, MdcLoggingExecutionContext.fromLoggingDetails).map {
         case Some(form) => Ok(views.html.goods_item_value(goodsItemValueInformationForm.fill(form)))
         case _ => Ok(views.html.goods_item_value(goodsItemValueInformationForm))
       }
@@ -90,7 +70,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
           val updatedGoodsItem = GovernmentAgencyGoodsItem(goodsItemValue = Some(form))
 
           cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, updatedGoodsItem).map {
-            _ => Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+            _ => Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
           }
         })
 
@@ -102,33 +82,33 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
         Ok(views.html.gov_agency_goods_items(res)))
   }
 
-  def saveGoodsItem(): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
+  def saveGoodsItem(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>
       val optionSelected = request.body.asFormUrlEncoded.get("add").headOption
       optionSelected match {
         case Some("AddGovernmentAgencyGoodsItemAdditionalDocument") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGovAgencyGoodsItemsAdditionalDocuments()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showGovAgencyGoodsItemsAdditionalDocuments()))
         case Some("AddAdditionalInformation") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations()))
         case Some("AddMutualRecognitionParties") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
         case Some("AddDomesticDutyTaxParties") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
         case Some("AddGovernmentProcedures") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGovernmentProcedures()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showGovernmentProcedures()))
         case Some("AddOrigins") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showOrigins()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showOrigins()))
         case Some("AddManufacturers") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
         case Some("AddPackagings") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showPackagings()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showPackagings()))
         case Some("AddPreviousDocuments") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showPreviousDocuments()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showPreviousDocuments()))
         case Some("AddRefundRecipientParties") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
-        case Some("SaveGoodsItem") => saveGoodsItem(request.user.eori.get).map { _ =>
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItems())
-        }
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
+        case Some("SaveGoodsItem") => Future.successful(
+          Redirect(goodsitems.routes.GoodsItemsListController.saveGoodsItem()))
+
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This request is not allowed"))
       }
@@ -234,7 +214,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                 }
               })
 
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
@@ -260,7 +240,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                 }
               })
 
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
@@ -292,7 +272,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                       Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentform, updatedGoodsItem.additionalDocuments))
                   }
                 })
-          case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+          case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
           case _ => Logger.error("wrong selection => " + optionSelected.get)
             Future.successful(BadRequest("This action is not allowed"))
         }
@@ -318,7 +298,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                   Ok(views.html.goods_items_role_based_parties(roleBasedPartiesForm, updatedGoodsItem.aeoMutualRecognitionParties))
                 }
               })
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
@@ -344,7 +324,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                   Ok(views.html.goods_items_origins(originsForm, updatedGoodsItem.origins))
                 }
               })
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
@@ -369,7 +349,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                   Ok(views.html.goods_items_named_entity_parties(namedEntityWithAddressForm, updatedGoodsItem.manufacturers))
                 }
               })
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
@@ -394,7 +374,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                   Ok(views.html.goods_items_packagings(packagingForm, updatedGoodsItem.packagings))
                 }
               })
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
@@ -419,27 +399,9 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                   Ok(views.html.goods_items_previousdocs(previousDocumentForm, updatedGoodsItem.previousDocuments))
                 }
               })
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
   }
-
-  private  def saveGoodsItem(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
-    cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](eori, GOV_AGENCY_GOODS_ITEM_CACHE_KEY).flatMap {
-      goodsItem =>
-        cacheService.fetchAndGetEntry[List[GovernmentAgencyGoodsItem]](eori, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY).flatMap {
-          goodsItemsList =>
-            val listToSave = if (goodsItemsList.isDefined && goodsItem.isDefined)
-              goodsItemsList.get :+ goodsItem.get
-            else if (goodsItemsList.isEmpty && goodsItem.isDefined)
-              List(goodsItem.get)
-            else
-              List.empty
-
-            cacheService.cache[List[GovernmentAgencyGoodsItem]](eori, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY,
-              listToSave).map(res => true)
-
-        }
-    }
 }

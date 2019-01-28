@@ -16,7 +16,7 @@
 
 package services
 
-import com.google.inject.{ImplementedBy, Inject}
+import com.google.inject.Inject
 import config.AppConfig
 import domain.auth.SignedInUser
 import javax.inject.Singleton
@@ -29,37 +29,32 @@ import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@ImplementedBy(classOf[CustomsDeclarationsConnectorImpl])
-trait CustomsDeclarationsConnector {
 
-  def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse]
 
-  def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse]
-
+object BackEndHeaderNames {
+  val Authorization = "Authorization"
+  val XLrnHeaderName = "X-Local-Reference-Number"
+  val XClientIdName = "X-Client-ID"
+  val XConversationIdName = "X-Conversation-ID"
 }
 
 @Singleton
-class CustomsDeclarationsConnectorImpl @Inject()(appConfig: AppConfig,
+class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
                                                  httpClient: HttpClient,
-                                                 submissionRepository: SubmissionRepository)
-  extends CustomsDeclarationsConnector {
+                                                 submissionRepository: SubmissionRepository) {
 
-  override def submitImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
-                                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
-    postMetaData(appConfig.submitImportDeclarationUri, metaData, badgeIdentifier, onSuccessfulSubmission)
+  def submitImportDeclaration(metaData: MetaData, localReferenceNumber: String)
+                                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] = {
+    postMetaData(appConfig.submitImportDeclarationUri, metaData, localReferenceNumber, onSuccessfulSubmission)
+  }
 
-  override def cancelImportDeclaration(metaData: MetaData, badgeIdentifier: Option[String] = None)
-                                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
-    postMetaData(appConfig.cancelImportDeclarationUri, metaData, badgeIdentifier)
 
   private def postMetaData(uri: String,
                            metaData: MetaData,
-                           badgeIdentifier: Option[String] = None,
+                           localReferenceNumber: String,
                            onSuccess: (MetaData, CustomsDeclarationsResponse) => Future[CustomsDeclarationsResponse] = onSuccess)
                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
-    doPost(uri, metaData.toXml, badgeIdentifier).flatMap(onSuccess(metaData, _))
+    doPost(uri, metaData.toXml, localReferenceNumber).flatMap(onSuccess(metaData, _))
 
   //noinspection ConvertExpressionToSAM
   private implicit val responseReader: HttpReads[CustomsDeclarationsResponse] = new HttpReads[CustomsDeclarationsResponse] {
@@ -99,19 +94,21 @@ class CustomsDeclarationsConnectorImpl @Inject()(appConfig: AppConfig,
       )
     ).map(_ => resp)
 
-  private def doPost(uri: String, body: String, badgeIdentifier: Option[String] = None)
-                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
-    httpClient.POSTString[CustomsDeclarationsResponse](
-      url = s"${appConfig.customsDeclarationsEndpoint}$uri",
-      body = body,
-      headers = headers(badgeIdentifier)
-    )(responseReader, hc, ec)
+  private def doPost(uri: String, body: String, localReferenceNumber: String )
+                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
 
-  private def headers(badgeIdentifier: Option[String]): Seq[(String, String)] = Seq(
-    "X-Client-ID" -> appConfig.developerHubClientId,
-    HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
-    HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8)
-  ) ++ badgeIdentifier.map(id => "X-Badge-Identifier" -> id)
+    httpClient.POSTString[CustomsDeclarationsResponse](
+      url = s"${appConfig.customsDeclareImportsEndpoint}$uri",
+      body = body,
+      headers = headers(localReferenceNumber)
+    )(responseReader, hc, ec)
+  }
+
+
+  private def headers(localReferenceNumber: String): Seq[(String, String)] = Seq(
+    HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8),
+    BackEndHeaderNames.XLrnHeaderName -> localReferenceNumber
+  )
 
 }
 

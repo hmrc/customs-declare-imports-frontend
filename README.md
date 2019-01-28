@@ -80,6 +80,11 @@ update a feature status. Use `curl -X GET http://$CDS_IMPORTS_HOST/customs-decla
 For example, to update the default feature status to `enabled`, you could do `curl -X GET http://$CDS_IMPORTS_HOST/customs-declare-imports/test-only/feature/default/enabled`.
 Alternatively, you could pass the same system property when starting the application; e.g. `sbt "run -Dmicroservice.services.customs-declare-imports-frontend.features.default=enabled"`
 
+
+###TestEndpoints
+
+in order to enable the test endpoint we need to specify that we use a different router when starting play.
+`sbt run -Dapplication.router=testOnlyDoNotUseInAppConf.Routes`
 ## License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")

@@ -16,7 +16,6 @@
 
 package controllers
 
-import com.google.common.cache.CacheLoader
 import config.AppConfig
 import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
@@ -27,8 +26,6 @@ import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.authorisation_holder
-
-import scala.concurrent.Future
 
 class AuthorisationHoldersController @Inject()
   (actions: Actions, cacheService: CustomsCacheService)
