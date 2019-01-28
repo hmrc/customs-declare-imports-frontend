@@ -21,11 +21,17 @@
 @import uk.gov.hmrc.play.views.html._
 @import viewmodels.HtmlTable
 
-@(form: Form[_], roleBasedParties: Seq[RoleBasedParty], messageKeyPrefix: String)(implicit r: Request[_], messages: Messages, appConfig: AppConfig)
+@(
+ form: Form[_],
+ roleBasedParties: Seq[RoleBasedParty],
+ messageKeyPrefix: String,
+ submitAction: Call,
+ continueUrl: Call
+)(implicit r: Request[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(title = messages(s"$messageKeyPrefix.title"), bodyClasses = None) {
 
-@helpers.form(action = AdditionalSupplyChainActorsController.onSubmit()) {
+@helpers.form(action = submitAction) {
 
  @components.back_link("")
 
@@ -56,7 +62,7 @@
 
  <button id="Add" name="submit">@messages(s"$messageKeyPrefix.add")</button>
 
- <a href="@routes.AuthorisationHoldersController.onSubmit().url" class="button" id="Next">
+ <a href="@continueUrl.url" class="button" id="Next">
   @messages("common.button.continue")
  </a>
 }

@@ -21,10 +21,13 @@ import config.AppConfig
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import domain.DeclarationFormats._
+import play.twirl.api.Html
+import uk.gov.hmrc.wco.dec.RoleBasedParty
+import views.html.role_based_party
 
 class AdditionalSupplyChainActorsController @Inject()(actions: Actions, cache: CustomsCacheService)
                                                      (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
@@ -33,11 +36,16 @@ class AdditionalSupplyChainActorsController @Inject()(actions: Actions, cache: C
   val form = Form(roleBasedPartyMapping)
   val messageKeyPrefix = "additionalSupplyChainActor"
 
+  def view(form: Form[_], roles: Seq[RoleBasedParty])(implicit r: Request[_]): Html =
+    role_based_party(form, roles, messageKeyPrefix,
+      routes.AdditionalSupplyChainActorsController.onSubmit(),
+      routes.AuthorisationHoldersController.onPageLoad())
+
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
     cache.getByKey(req.eori, CacheKey.additionalSupplyChainActors).map { roles =>
 
-      Ok(views.html.role_based_party(form, roles.getOrElse(Seq.empty), messageKeyPrefix))
+      Ok(view(form, roles.getOrElse(Seq.empty)))
     }
   }
 
@@ -47,7 +55,7 @@ class AdditionalSupplyChainActorsController @Inject()(actions: Actions, cache: C
       errors =>
         cache.getByKey(req.eori, CacheKey.additionalSupplyChainActors).map { roles =>
 
-          BadRequest(views.html.role_based_party(errors, roles.getOrElse(Seq.empty), messageKeyPrefix))
+          BadRequest(view(errors, roles.getOrElse(Seq.empty)))
         },
 
       roleBasedParty =>

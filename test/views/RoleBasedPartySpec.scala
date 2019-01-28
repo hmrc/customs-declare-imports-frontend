@@ -16,6 +16,7 @@
 
 package views
 
+import controllers.routes
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalacheck.Arbitrary._
@@ -38,7 +39,13 @@ class RoleBasedPartySpec extends ViewBehaviours
   val form = Form(roleBasedPartyMapping)
 
   def view(form: Form[RoleBasedParty], roles: Seq[RoleBasedParty], messageKeyPrefix: String): Html =
-    views.html.role_based_party(form, roles, messageKeyPrefix)(fakeRequest, messages, appConfig)
+    views.html.role_based_party(
+      form,
+      roles,
+      messageKeyPrefix,
+      routes.StartController.displayStartPage(),
+      routes.StartController.displayStartPage()
+    )(fakeRequest, messages, appConfig)
 
   def view(messageKeyPrefix: String): () => Html = () => view(form, Seq.empty, messageKeyPrefix)
   def listView(messageKeyPrefix: String): Seq[RoleBasedParty] => Html = xs => view(form, xs, messageKeyPrefix)

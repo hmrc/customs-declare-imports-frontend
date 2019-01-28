@@ -47,7 +47,13 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
     new DomesticDutyTaxPartyController(new FakeActions(Some(user)), mockCustomsCacheService)
 
   def view(form: Form[RoleBasedParty] = form, roles: Seq[RoleBasedParty] = Seq.empty): String =
-    role_based_party(form, roles, "domesticDutyTaxParties")(fakeRequest, messages, appConfig).body
+    role_based_party(
+      form,
+      roles,
+      "domesticDutyTaxParties",
+      routes.DomesticDutyTaxPartyController.onSubmit(),
+      routes.ObligationGuaranteeController.display()
+    )(fakeRequest, messages, appConfig).body
 
   val listGen: Gen[Option[List[RoleBasedParty]]] = option(listOf(arbitrary[RoleBasedParty]))
 
@@ -101,6 +107,9 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
 
   ".onSubmit" should {
 
+    behave like badRequestEndpoint("/submit-declaration/add-domestic-duty-tax-party", POST)
+    behave like authenticatedEndpoint("/submit-declaration/add-domestic-duty-tax-party", POST)
+    
     "return SEE_OTHER" when {
 
       "valid data is submitted" in {

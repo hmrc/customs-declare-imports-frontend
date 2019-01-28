@@ -18,6 +18,7 @@ GET         /submit-declaration/add-additional-supply-chain-actors   controllers
 POST        /submit-declaration/add-additional-supply-chain-actors   controllers.AdditionalSupplyChainActorsController.onSubmit()
 
 GET         /submit-declaration/add-domestic-duty-tax-party    controllers.DomesticDutyTaxPartyController.onPageLoad()
+POST        /submit-declaration/add-domestic-duty-tax-party    controllers.DomesticDutyTaxPartyController.onSubmit()
 
 POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
 GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)

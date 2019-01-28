@@ -49,7 +49,13 @@ class AdditionalSupplyChainActorsControllerSpec extends CustomsSpec
     new AdditionalSupplyChainActorsController(new FakeActions(user), mockCustomsCacheService)
 
   def view(form: Form[RoleBasedParty], roles: Seq[RoleBasedParty]): String =
-    role_based_party(form, roles, "additionalSupplyChainActor")(fakeRequest, messages, appConfig).body
+    role_based_party(
+      form,
+      roles,
+      "additionalSupplyChainActor",
+      routes.AdditionalSupplyChainActorsController.onSubmit(),
+      routes.AuthorisationHoldersController.onPageLoad()
+    )(fakeRequest, messages, appConfig).body
 
   val listGen: Gen[Option[List[RoleBasedParty]]] =
     option(listOf(arbitrary[RoleBasedParty]))
