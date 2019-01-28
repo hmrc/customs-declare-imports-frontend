@@ -80,7 +80,7 @@ class RoleBasedPartySpec extends ViewBehaviours
       forAll(listOf(arbitrary[RoleBasedParty])) { roles =>
 
         val htmlTable =
-          table(HtmlTable("ID", "Role Code")(roles.map(r => (r.id, r.roleCode))))
+          table(HtmlTable("ID", "Role Code")(roles.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
         val html = listView(roles)
         
         html must include(htmlTable)

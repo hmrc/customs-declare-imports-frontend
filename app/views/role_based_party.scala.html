@@ -47,7 +47,7 @@
   HtmlTable(
    messages("roleBasedParty.id"),
    messages("roleBasedParty.roleCode")
-  )(roleBasedParties.map(r => (r.id, r.roleCode))))
+  )(roleBasedParties.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
 
  <fieldset>
   @components.input_text(form("id"), messages("roleBasedParty.id"))
