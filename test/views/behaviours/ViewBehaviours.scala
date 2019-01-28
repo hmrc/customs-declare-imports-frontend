@@ -16,10 +16,17 @@
 
 package views.behaviours
 
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Gen
+import org.scalacheck.Gen.listOf
+import org.scalatest.prop.PropertyChecks
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.wco.dec.AuthorisationHolder
+import viewmodels.HtmlTable
 import views.ViewSpecBase
+import views.html.components.table.table
 
-trait ViewBehaviours extends ViewSpecBase {
+trait ViewBehaviours extends ViewSpecBase with PropertyChecks {
 
   def normalPage(view: () => HtmlFormat.Appendable,
                  messageKeyPrefix: String,
@@ -74,7 +81,47 @@ trait ViewBehaviours extends ViewSpecBase {
     "behave like a page with a back link" must {
       "have a back link" in {
         val doc = asDocument(view())
-        assertRenderedById(doc, "back-link")
+        assertRenderedById(doc, "link-back")
+      }
+    }
+  }
+
+  def pageWithTableHeadings[A](
+    view: Seq[A] => HtmlFormat.Appendable,
+    data: Gen[A],
+    messageKeyPrefix: String): Unit = {
+
+    "behave like a page with a table" must {
+
+      "display empty table heading" in {
+
+        val doc = asDocument(view(Seq.empty))
+
+        assertContainsText(doc, messages(s"$messageKeyPrefix.table.empty"))
+      }
+
+      "display a table heading for single item" in {
+
+        forAll(data) { singleItem =>
+
+          val doc = asDocument(view(Seq(singleItem)))
+
+          assertContainsText(doc, messages(s"$messageKeyPrefix.table.heading"))
+        }
+      }
+
+
+      "display a table with multiple items in" in {
+
+        forAll(listOf(data)) { multipleItems =>
+
+          whenever(multipleItems.size > 1) {
+
+            val doc = asDocument(view(multipleItems))
+
+            assertContainsText(doc, messages(s"$messageKeyPrefix.table.multiple.heading", multipleItems.size))
+          }
+        }
       }
     }
   }

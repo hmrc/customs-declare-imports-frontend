@@ -335,6 +335,15 @@ authorisationHolder.id=ID
 authorisationHolder.categoryCode=Category Code
 authorisationHolder.addAuthorisationHolderButton=Add Authorisation Holder
 
+roleBasedParty.title=Role based parties
+roleBasedParty.heading=Role based parties
+roleBasedParty.table.heading=1 Role based party added
+roleBasedParty.table.multiple.heading={0} Role based parties added
+roleBasedParty.table.empty=No role based parties available
+roleBasedParty.id=ID
+roleBasedParty.roleCode=Role Code
+roleBasedParty.add=Add role based party
+
 ## Add Previous Documents
 addPreviousDocument.title=Previous Documents
 addPreviousDocument.heading=Previous Documents
