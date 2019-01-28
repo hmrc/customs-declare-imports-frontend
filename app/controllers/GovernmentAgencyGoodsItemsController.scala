@@ -70,7 +70,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
           val updatedGoodsItem = GovernmentAgencyGoodsItem(goodsItemValue = Some(form))
 
           cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, GOV_AGENCY_GOODS_ITEM_CACHE_KEY, updatedGoodsItem).map {
-            _ => Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+            _ => Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
           }
         })
 
@@ -87,27 +87,27 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
       val optionSelected = request.body.asFormUrlEncoded.get("add").headOption
       optionSelected match {
         case Some("AddGovernmentAgencyGoodsItemAdditionalDocument") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGovAgencyGoodsItemsAdditionalDocuments()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showGovAgencyGoodsItemsAdditionalDocuments()))
         case Some("AddAdditionalInformation") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations()))
         case Some("AddMutualRecognitionParties") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
         case Some("AddDomesticDutyTaxParties") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties()))
         case Some("AddGovernmentProcedures") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGovernmentProcedures()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showGovernmentProcedures()))
         case Some("AddOrigins") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showOrigins()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showOrigins()))
         case Some("AddManufacturers") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
         case Some("AddPackagings") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showPackagings()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showPackagings()))
         case Some("AddPreviousDocuments") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showPreviousDocuments()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showPreviousDocuments()))
         case Some("AddRefundRecipientParties") => Future.successful(
-          Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
+          Redirect(routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()))
         case Some("SaveGoodsItem") => Future.successful(
-          Redirect(controllers.goodsitems.routes.GoodsItemsListController.saveGoodsItem()))
+          Redirect(goodsitems.routes.GoodsItemsListController.saveGoodsItem()))
 
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This request is not allowed"))
@@ -214,7 +214,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                 }
               })
 
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
@@ -240,7 +240,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                 }
               })
 
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
@@ -272,7 +272,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                       Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentform, updatedGoodsItem.additionalDocuments))
                   }
                 })
-          case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+          case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
           case _ => Logger.error("wrong selection => " + optionSelected.get)
             Future.successful(BadRequest("This action is not allowed"))
         }
@@ -298,7 +298,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                   Ok(views.html.goods_items_role_based_parties(roleBasedPartiesForm, updatedGoodsItem.aeoMutualRecognitionParties))
                 }
               })
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
@@ -324,7 +324,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                   Ok(views.html.goods_items_origins(originsForm, updatedGoodsItem.origins))
                 }
               })
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
@@ -349,7 +349,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                   Ok(views.html.goods_items_named_entity_parties(namedEntityWithAddressForm, updatedGoodsItem.manufacturers))
                 }
               })
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
@@ -374,7 +374,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                   Ok(views.html.goods_items_packagings(packagingForm, updatedGoodsItem.packagings))
                 }
               })
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }
@@ -399,7 +399,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                   Ok(views.html.goods_items_previousdocs(previousDocumentForm, updatedGoodsItem.previousDocuments))
                 }
               })
-        case Some("next") => Future.successful(Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
+        case Some("next") => Future.successful(Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage()))
         case _ => Logger.error("wrong selection => " + optionSelected.get)
           Future.successful(BadRequest("This action is not allowed"))
       }

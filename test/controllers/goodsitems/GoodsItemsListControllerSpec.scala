@@ -69,8 +69,8 @@ class GoodsItemsListControllerSpec extends CustomsSpec
 
     "display goodsItem data from cache" in {
       withSignedInUser() { (headers, session, tags) =>
-        forAll(arbitrary[SignedInUser], goodsItemsListGen) {
-          case (user, data) =>
+        forAll(goodsItemsListGen) {
+          case (data) =>
             withCaching(data)
             withRequest(get, goodsItemsListUri, headers, session, tags) { resp =>
               val content = contentAsString(resp)

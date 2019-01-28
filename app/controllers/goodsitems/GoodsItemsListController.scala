@@ -43,8 +43,8 @@ class GoodsItemsListController @Inject()
         case Some(goodsItem) =>
           cacheService.upsert(request.eori, CacheKey.govAgencyGoodsItemsList)(() => Seq(goodsItem),
             goodsItem +: _).map(res =>
-              Redirect(controllers.goodsitems.routes.GoodsItemsListController.onPageLoad()))
-        case _ => Future.successful(Redirect(controllers.goodsitems.routes.GoodsItemsListController.onPageLoad()))
+              Redirect(routes.GoodsItemsListController.onPageLoad()))
+        case _ => Future.successful(Redirect(routes.GoodsItemsListController.onPageLoad()))
       }
   }
 }
