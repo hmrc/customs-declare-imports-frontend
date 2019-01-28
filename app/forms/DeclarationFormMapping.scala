@@ -123,13 +123,6 @@ object DeclarationFormMapping {
       "heightMeasure" -> optional(longNumber), //: Option[Long] = None, // unsigned int max 999999999999999
       "volumeMeasure" -> optional(measureMapping))(Packaging.apply)(Packaging.unapply)
 
-  val previousDocumentMapping = mapping(
-    "categoryCode" -> optional(text.verifying("category Code  should be less than 4 characters", _.length <= 3)), //: Option[String] = None, // max 3 chars
-    "id" -> optional(text.verifying("previous documents Id should be less than or equal to 70 characters", _.length <= 70)), //: Option[String] = None, // max 70 chars
-    "typeCode" -> optional(text.verifying("type Code  should be 3 characters", _.length <= 3)), //: Option[String] = None, // max 3 chars
-    "lineNumeric" -> optional(number(0, 99999)) //: Option[Int] = None, // max 99999999
-  )(PreviousDocument.apply)(PreviousDocument.unapply)
-
   val contactMapping = mapping("name" -> optional(text.verifying("name should be less than or equal to 70 characters", _.length <= 70)) //: Option[String] = None, // max 70 chars
   )(Contact.apply)(Contact.unapply)
 
@@ -179,6 +172,14 @@ object DeclarationFormMapping {
     )(AuthorisationHolder.apply)(AuthorisationHolder.unapply)
       .verifying("You must provide an ID or category code", require1Field[AuthorisationHolder](_.id, _.categoryCode))
 
+  val previousDocumentMapping = mapping(
+    "categoryCode" -> optional(text.verifying("Document Category  should be less than or equal to 1 character", _.length <= 1)), //: Option[String] = None, // max 3 chars
+    "id" -> optional(text.verifying("Document Reference should be less than or equal to 35 characters", _.length <= 35)), //: Option[String] = None, // max 70 chars
+    "typeCode" -> optional(text.verifying("Previous Document Type should be less than or equal to 3 characters", _.length <= 3)), //: Option[String] = None, // max 3 chars
+    "lineNumeric" -> optional(number
+      .verifying("Goods Item Identifier should be greater than 0 and less than or equal to 999", lineNumeric => (lineNumeric > 0 && lineNumeric <= 999))) //: Option[Int] = None, // max 99999999
+  )(PreviousDocument.apply)(PreviousDocument.unapply)
+    .verifying("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier", require1Field[PreviousDocument](_.categoryCode, _.id, _.typeCode, _.lineNumeric))
 
   def require1Field[T](fs: (T => Option[_])*): T => Boolean =
     t => fs.exists(f => f(t).nonEmpty)

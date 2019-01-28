@@ -24,7 +24,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
-import uk.gov.hmrc.wco.dec.{AdditionalInformation, AuthorisationHolder}
+import uk.gov.hmrc.wco.dec.{AdditionalInformation, AuthorisationHolder, PreviousDocument}
 
 class DeclarationFormMappingSpec extends WordSpec
   with MustMatchers
@@ -136,6 +136,89 @@ class DeclarationFormMappingSpec extends WordSpec
         Form(authorisationHolderMapping).bind(Map[String, String]()).fold(
           error => error must haveErrorMessage("You must provide an ID or category code"),
           _     => fail("Should not succeed")
+        )
+      }
+    }
+  }
+
+  "addPreviousDocumentMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll(arbitrary[PreviousDocument]) { arbitraryAddPreviousDocument =>
+
+          Form(previousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument).fold(
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe arbitraryAddPreviousDocument
+          )
+        }
+      }
+    }
+
+    "fail to bind" when {
+
+      "category code length is greater than 1" in {
+
+        forAll(arbitrary[PreviousDocument], minStringLength(2)) { (arbitraryAddPreviousDocument, invalidCategoryCode) =>
+
+          Form(previousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
+            error => error.error("categoryCode") must haveMessage("Document Category  should be less than or equal to 1 character"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "id length is greater than 35" in {
+
+        forAll(arbitrary[PreviousDocument], minStringLength(36)) { (arbitraryAddPreviousDocument, invalidId) =>
+
+          Form(previousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(id = Some(invalidId))).fold(
+            error => error.error("id") must haveMessage("Document Reference should be less than or equal to 35 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "type code length is greater than 3" in {
+
+        forAll(arbitrary[PreviousDocument], minStringLength(4)) { (arbitraryAddPreviousDocument, invalidTypeCode) =>
+
+          Form(previousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(typeCode = Some(invalidTypeCode))).fold(
+            error => error.error("typeCode") must haveMessage("Previous Document Type should be less than or equal to 3 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "line numeric is less than 0" in {
+
+        forAll(arbitrary[PreviousDocument], intBetweenRange(Int.MinValue, 0)) { (arbitraryAddPreviousDocument, invalidLineNumberic) =>
+
+          Form(previousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(lineNumeric = Some(invalidLineNumberic))).fold(
+            error => error.error("lineNumeric") must haveMessage("Goods Item Identifier should be greater than 0 and less than or equal to 999"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "line numeric is greater than 999" in {
+
+        forAll(arbitrary[PreviousDocument], intBetweenRange(1000, Int.MaxValue)) { (arbitraryAddPreviousDocument, invalidLineNumberic) =>
+
+          Form(previousDocumentMapping).fillAndValidate(arbitraryAddPreviousDocument.copy(lineNumeric = Some(invalidLineNumberic))).fold(
+            error => error.error("lineNumeric") must haveMessage("Goods Item Identifier should be greater than 0 and less than or equal to 999"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "Document Category, Document Reference, Previous Document Type and Goods Item Identifier are missing" in {
+
+        Form(previousDocumentMapping).bind(Map[String, String]()).fold(
+          error => error must haveErrorMessage("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier"),
+          _ => fail("Should not succeed")
         )
       }
     }

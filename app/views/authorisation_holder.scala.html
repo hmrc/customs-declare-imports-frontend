@@ -53,10 +53,12 @@
         @components.input_text(form("categoryCode"), messages("authorisationHolder.categoryCode"))
     </fieldset>
 
-    <button id="Add" value="Add" name="submit">
+    <button id="Add" name="submit">
         @messages("authorisationHolder.addAuthorisationHolderButton")
     </button>
 
-    <a href="#" class="button" id="Next">@messages("common.button.continue")</a>
+    <a href="@routes.ObligationGuaranteeController.display().url" class="button" id="Next">
+        @messages("common.button.continue")
+    </a>
     }
 }

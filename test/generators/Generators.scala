@@ -156,10 +156,11 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryPreviousDocument: Arbitrary[PreviousDocument] = Arbitrary {
     for {
-      categoryCode <- option(arbitrary[String].map(_.take(3)))
-      id <- option(arbitrary[String].map(_.take(70)))
+      categoryCode <- option(arbitrary[String].map(_.take(1)))
+      id <- option(arbitrary[String].map(_.take(35)))
       typeCode <- option(arbitrary[String].map(_.take(3)))
-      lineNumeric <- option(arbitrary[Int].map(_.max(99999)))
+      lineNumeric <- option(intBetweenRange(1, 999))
+      if categoryCode.nonEmpty || id.nonEmpty || typeCode.nonEmpty || lineNumeric.nonEmpty
     } yield PreviousDocument(categoryCode, id, typeCode, lineNumeric)
   }
 
@@ -192,6 +193,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       previousCode <- option(arbitrary[String].map(_.take(17)))
     } yield GovernmentProcedure(currentCode, previousCode)
   }
+
   implicit val arbitraryGovernmentAgencyGoodsItemAdditionalDocument: Arbitrary[GovernmentAgencyGoodsItemAdditionalDocument] = Arbitrary {
     for {
       categoryCode <- option(arbitrary[String].map(_.take(3)))
@@ -319,6 +321,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   def intLessThan(max: Int): Gen[Int] =
     choose(Int.MinValue, max - 1)
+
+  def intBetweenRange(min: Int, max: Int): Gen[Int] =
+    choose(min, max)
 
   def minStringLength(length: Int): Gen[String] =
     for {

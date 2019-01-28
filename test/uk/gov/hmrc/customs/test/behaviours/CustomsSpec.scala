@@ -22,6 +22,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.Application
@@ -29,6 +30,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.concurrent.Execution.Implicits
+import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.test.FakeRequest
 import services.CustomsCacheService
 import uk.gov.hmrc.customs.test.{CustomsFixtures, CustomsFutures}
@@ -41,7 +43,9 @@ import scala.reflect.ClassTag
 trait CustomsSpec extends PlaySpec
   with OneAppPerSuite
   with CustomsFutures
-  with CustomsFixtures with MockitoSugar {
+  with CustomsFixtures
+  with MockitoSugar
+  with BeforeAndAfterEach {
 
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val mat: Materializer = app.materializer
@@ -89,4 +93,26 @@ trait CustomsSpec extends PlaySpec
   protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder = builder.overrides(
     bind[CustomsCacheService].to(mockCustomsCacheService))
 
+  // toJson strips out Some and None and replaces them with string values
+  def asFormParams(cc: Product): List[(String, String)] =
+    cc.getClass.getDeclaredFields.toList
+      .map { f =>
+        f.setAccessible(true)
+        (f.getName, f.get(cc))
+      }
+      .map {
+        case (n, Some(a)) => (n, a.toString)
+        case (n, None)    => (n, "")
+        case (n, a)       => (n, a.toString)
+      }
+
+  override def beforeEach = {
+    super.beforeEach()
+
+    when(mockCustomsCacheService.getByKey(any(), any())(any(), any(), any()))
+      .thenReturn(Future.successful(None))
+
+    when(mockCustomsCacheService.upsert(any(), any())(any(), any())(any(), any(), any(), any()))
+      .thenReturn(Future.successful(()))
+  }
 }

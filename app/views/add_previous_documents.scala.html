@@ -1,0 +1,71 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import uk.gov.hmrc.play.views.html._
+@import controllers.routes._
+@import viewmodels.HtmlTable
+@import uk.gov.hmrc.wco.dec.PreviousDocument
+
+@(form:Form[_], previousDocuments: Seq[PreviousDocument])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@main_template(title = messages("addPreviousDocument.title"), bodyClasses = None) {
+
+@helpers.form(action = PreviousDocumentsController.onSubmit()) {
+
+    @components.back_link("")
+
+    @components.error_summary(form.errors)
+
+    <h1 class="heading-large">@messages("addPreviousDocument.heading")</h1>
+
+    @if(previousDocuments.isEmpty) {
+        <p>@messages("addPreviousDocument.table.empty")</p>
+    } else {
+        @if(previousDocuments.size == 1) {
+            <p>@previousDocuments.size @messages("addPreviousDocument.table.heading")</p>
+        } else {
+            <p>@previousDocuments.size @messages("addPreviousDocument.table.multiple.heading")</p>
+        }
+     }
+
+        @components.table.table(
+            HtmlTable(
+                    messages("addPreviousDocument.categoryCode"),
+                    messages("addPreviousDocument.id"),
+                    messages("addPreviousDocument.typeCode"),
+                    messages("addPreviousDocument.lineNumeric")
+            )(previousDocuments.map(a => (a.categoryCode.getOrElse(""),
+                                          a.id.getOrElse(""),
+                                          a.typeCode.getOrElse(""),
+                                          a.lineNumeric.getOrElse("")))))
+
+        <fieldset>
+            @components.input_text(form("categoryCode"), messages("addPreviousDocument.categoryCode"))
+            @components.input_text(form("id"), messages("addPreviousDocument.id"))
+            @components.input_text(form("typeCode"), messages("addPreviousDocument.typeCode"))
+            @components.input_text(form("lineNumeric"), messages("addPreviousDocument.lineNumeric"))
+        </fieldset>
+
+        <button id="Add" name="submit">
+            @messages("addPreviousDocument.addPreviousDocumentButton")
+        </button>
+
+        <a href="@routes.AuthorisationHoldersController.onPageLoad().url" class="button" id="Next">
+            @messages("common.button.continue")
+        </a>
+    }
+}

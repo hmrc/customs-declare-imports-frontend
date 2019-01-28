@@ -49,7 +49,7 @@ class SubmissionJourney {
     "warehouse-and-customs-offices",
     "delivery-terms",
     "deferred-payment",
-    "guarantee-type",
+    "add-previous-documents",
     "check-your-answers"
   )
 

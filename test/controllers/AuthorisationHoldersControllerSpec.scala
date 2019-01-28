@@ -28,8 +28,6 @@ import org.scalatest.{BeforeAndAfterEach, OptionValues}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
-import play.api.libs.json.{Json, Writes}
-import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
@@ -56,20 +54,10 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
   val authHoldersGen = option(listOf(arbitrary[AuthorisationHolder]))
 
-  override def beforeEach = {
-    super.beforeEach()
-
-    when(mockCustomsCacheService.getByKey(any(), any())(any(), any(), any()))
-      .thenReturn(Future.successful(None))
-
-    when(mockCustomsCacheService.upsert(any(), any())(any(), any())(any(), any(), any(), any()))
-      .thenReturn(Future.successful(()))
-  }
-
   ".onPageLoad" should {
 
-    behave like okEndpoint("/submit-declaration-goods/add-authorisation-holder")
-    behave like authenticatedEndpoint("/submit-declaration-goods/add-authorisation-holder")
+    behave like okEndpoint("/submit-declaration/add-authorisation-holder")
+    behave like authenticatedEndpoint("/submit-declaration/add-authorisation-holder")
 
     "return OK" when {
 
@@ -116,8 +104,8 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
   ".onSubmit" should {
 
-    behave like badRequestEndpoint("/submit-declaration-goods/add-authorisation-holder", POST)
-    behave like authenticatedEndpoint("/submit-declaration-goods/add-authorisation-holder", POST)
+    behave like badRequestEndpoint("/submit-declaration/add-authorisation-holder", POST)
+    behave like authenticatedEndpoint("/submit-declaration/add-authorisation-holder", POST)
 
     "return SEE_OTHER" when {
 
@@ -125,7 +113,7 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
         forAll { (user: SignedInUser, authHolder: AuthorisationHolder) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(getCCParams(authHolder): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(authHolder): _*)
           val result  = controller(Some(user)).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
@@ -136,7 +124,7 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
     "return UNAUTHORIZED" when {
 
-      "user does not have en eori" in {
+      "user does not have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
 
@@ -164,7 +152,7 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
               .getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.authorisationHolders))(any(), any(), any()))
               .thenReturn(Future.successful(existingData))
 
-            val request = fakeRequest.withFormUrlEncodedBody(getCCParams(data): _*)
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(data): _*)
             val badForm = form.fillAndValidate(data)
             val result  = controller(Some(user)).onSubmit(request)
 
@@ -180,7 +168,7 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
 
         forAll { (user: SignedInUser, authHolder: AuthorisationHolder) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(getCCParams(authHolder): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(authHolder): _*)
           await(controller(Some(user)).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
@@ -189,9 +177,4 @@ class AuthorisationHoldersControllerSpec extends CustomsSpec
       }
     }
   }
-
-  // toJson strips out Some and None and replaces them with string values
-  def getCCParams[T](cc: T)(implicit ev: Writes[T]): List[(String, String)] =
-    Json.toJson(cc).as[Map[String, String]].toList
-
 }
