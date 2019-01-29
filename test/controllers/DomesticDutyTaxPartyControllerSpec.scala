@@ -19,7 +19,7 @@ package controllers
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq => eqTo, _}
+import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
@@ -34,30 +34,33 @@ import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
 import uk.gov.hmrc.wco.dec.RoleBasedParty
 import views.html.role_based_party
 
-import scala.concurrent.Future
-
-class RoleBasedPartyControllerSpec extends CustomsSpec
+class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
   with MockitoSugar
   with OptionValues
   with EndpointBehaviours {
 
-  val form = Form(roleBasedPartyMapping)
+  def form = Form(roleBasedPartyMapping)
 
-  def controller(user: Option[SignedInUser]) =
-    new RoleBasedPartyController(new FakeActions(user), mockCustomsCacheService)
+  def controller(user: SignedInUser) =
+    new DomesticDutyTaxPartyController(new FakeActions(Some(user)), mockCustomsCacheService)
 
-  def view(form: Form[RoleBasedParty], roles: Seq[RoleBasedParty]): String =
-    role_based_party(form, roles)(fakeRequest, messages, appConfig).body
+  def view(form: Form[RoleBasedParty] = form, roles: Seq[RoleBasedParty] = Seq.empty): String =
+    role_based_party(
+      form,
+      roles,
+      "domesticDutyTaxParties",
+      routes.DomesticDutyTaxPartyController.onSubmit(),
+      routes.ObligationGuaranteeController.display()
+    )(fakeRequest, messages, appConfig).body
 
-  val listGen: Gen[Option[List[RoleBasedParty]]] =
-    option(listOf(arbitrary[RoleBasedParty]))
+  val listGen: Gen[Option[List[RoleBasedParty]]] = option(listOf(arbitrary[RoleBasedParty]))
 
   ".onPageLoad" should {
 
-    behave like okEndpoint("/submit-declaration/add-role-based-party")
-    behave like authenticatedEndpoint("/submit-declaration/add-role-based-party")
+    behave like okEndpoint("/submit-declaration/add-domestic-duty-tax-party")
+    behave like authenticatedEndpoint("/submit-declaration/add-domestic-duty-tax-party")
 
     "return OK" when {
 
@@ -65,10 +68,10 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
 
         forAll { user: SignedInUser =>
 
-          val result = controller(Some(user)).onPageLoad(fakeRequest)
+          val result = controller(user).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
-          contentAsString(result) mustBe view(form, Seq.empty)
+          contentAsString(result) mustBe view()
         }
       }
     }
@@ -79,7 +82,7 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
 
         forAll { user: UnauthenticatedUser =>
 
-          val result = controller(Some(user.user)).onPageLoad(fakeRequest)
+          val result = controller(user.user).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
         }
@@ -91,12 +94,12 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
       forAll(arbitrary[SignedInUser], listGen) {
         (user, data) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.roleBasedParty, data) {
+          withCleanCache(EORI(user.eori.value), CacheKey.domesticDutyTaxParty, data) {
 
-            val result = controller(Some(user)).onPageLoad(fakeRequest)
+            val result = controller(user).onPageLoad(fakeRequest)
 
             status(result) mustBe OK
-            contentAsString(result) mustBe view(form, data.getOrElse(Seq.empty))
+            contentAsString(result) mustBe view(roles = data.getOrElse(Seq.empty))
           }
       }
     }
@@ -104,8 +107,8 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
 
   ".onSubmit" should {
 
-    behave like badRequestEndpoint("/submit-declaration/add-role-based-party", POST)
-    behave like authenticatedEndpoint("/submit-declaration/add-role-based-party", POST)
+    behave like badRequestEndpoint("/submit-declaration/add-domestic-duty-tax-party", POST)
+    behave like authenticatedEndpoint("/submit-declaration/add-domestic-duty-tax-party", POST)
 
     "return SEE_OTHER" when {
 
@@ -114,10 +117,10 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
         forAll { (user: SignedInUser, role: RoleBasedParty) =>
 
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(role): _*)
-          val result = controller(Some(user)).onSubmit(request)
+          val result  = controller(user).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.RoleBasedPartyController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(routes.DomesticDutyTaxPartyController.onPageLoad().url)
         }
       }
     }
@@ -128,7 +131,7 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
 
         forAll { user: UnauthenticatedUser =>
 
-          val result = controller(Some(user.user)).onSubmit(fakeRequest)
+          val result = controller(user.user).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
         }
@@ -147,11 +150,11 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
         forAll(arbitrary[SignedInUser], badData, listGen) {
           (user, badData, cacheData) =>
 
-            withCleanCache(EORI(user.eori.value), CacheKey.roleBasedParty, cacheData) {
+            withCleanCache(EORI(user.eori.value), CacheKey.domesticDutyTaxParty, cacheData) {
 
               val request = fakeRequest.withFormUrlEncodedBody(asFormParams(badData): _*)
               val popForm = form.fillAndValidate(badData)
-              val result  = controller(Some(user)).onSubmit(request)
+              val result  = controller(user).onSubmit(request)
 
               status(result) mustBe BAD_REQUEST
               contentAsString(result) mustBe view(popForm, cacheData.getOrElse(Seq.empty))
@@ -167,10 +170,10 @@ class RoleBasedPartyControllerSpec extends CustomsSpec
         forAll { (user: SignedInUser, role: RoleBasedParty) =>
 
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(role): _*)
-          await(controller(Some(user)).onSubmit(request))
+          await(controller(user).onSubmit(request))
 
-          verify(mockCustomsCacheService, atLeastOnce())
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.roleBasedParty))(any(), any())(any(), any(), any(), any())
+          verify(mockCustomsCacheService, atLeastOnce)
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.domesticDutyTaxParty))(any(), any())(any(), any(), any(), any())
         }
       }
     }

@@ -338,14 +338,24 @@ authorisationHolder.categoryCode=Category Code
 authorisationHolder.addAuthorisationHolderButton=Add Authorisation Holder
 
 ## Role based party
-roleBasedParty.title=Additional supply chain actor(s)
-roleBasedParty.heading=Additional supply chain actor(s)
-roleBasedParty.table.heading=1 Additional supply chain actor added
-roleBasedParty.table.multiple.heading={0} Additional supply chain actors added
-roleBasedParty.table.empty=No Additional supply chain actors available
 roleBasedParty.id=ID
 roleBasedParty.roleCode=Role Code
-roleBasedParty.add=Add additional supply chain actor
+
+## Additional supply chain actors
+additionalSupplyChainActor.title=Additional supply chain actor(s)
+additionalSupplyChainActor.heading=Additional supply chain actor(s)
+additionalSupplyChainActor.table.heading=1 Additional supply chain actor added
+additionalSupplyChainActor.table.multiple.heading={0} Additional supply chain actors added
+additionalSupplyChainActor.table.empty=No Additional supply chain actors available
+additionalSupplyChainActor.add=Add additional supply chain actor
+
+## Domestic duty tax parties
+domesticDutyTaxParties.title=Additional fiscal references
+domesticDutyTaxParties.heading=Additional fiscal references
+domesticDutyTaxParties.table.heading=1 Additional fiscal reference added
+domesticDutyTaxParties.table.multiple.heading={0} Additional fiscal references added
+domesticDutyTaxParties.table.empty=No additional fiscal references available
+domesticDutyTaxParties.add=Add additional fiscal reference
 
 ## Add Previous Documents
 addPreviousDocument.title=Previous Documents
