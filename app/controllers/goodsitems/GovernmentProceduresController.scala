@@ -40,10 +40,9 @@ class GovernmentProceduresController @Inject()(actions: Actions, cacheService: C
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map {
-        case Some(goodsItem) => Ok(views.html.goods_items_government_procedures(governmentProcedureForm, goodsItem.governmentProcedures))
-        case _ => Ok(views.html.goods_items_government_procedures(governmentProcedureForm, Seq.empty))
-      }
+      cacheService.getByKey(req.eori, CacheKey.goodsItem).map (goodsItem =>
+        Ok(views.html.goods_items_government_procedures(governmentProcedureForm,
+          goodsItem.map(_.governmentProcedures).getOrElse(Seq.empty))))
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async {
