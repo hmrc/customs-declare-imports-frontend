@@ -12,6 +12,8 @@ common.feedbackFirst=This is a new service - your
 common.feedbackSecond=feedback
 common.feedbackThird=will help us to improve it.
 common.error.summary.title=There is a problem
+common.id=ID
+common.roleCode=Role code
 
 ## common buttons with shared labels
 common.button.startNow=Start now
@@ -336,14 +338,24 @@ authorisationHolder.categoryCode=Category Code
 authorisationHolder.addAuthorisationHolderButton=Add Authorisation Holder
 
 ## Role based party
-roleBasedParty.title=Additional supply chain actor(s)
-roleBasedParty.heading=Additional supply chain actor(s)
-roleBasedParty.table.heading=1 Additional supply chain actor added
-roleBasedParty.table.multiple.heading={0} Additional supply chain actors added
-roleBasedParty.table.empty=No Additional supply chain actors available
 roleBasedParty.id=ID
 roleBasedParty.roleCode=Role Code
-roleBasedParty.add=Add additional supply chain actor
+
+## Additional supply chain actors
+additionalSupplyChainActor.title=Additional supply chain actor(s)
+additionalSupplyChainActor.heading=Additional supply chain actor(s)
+additionalSupplyChainActor.table.heading=1 Additional supply chain actor added
+additionalSupplyChainActor.table.multiple.heading={0} Additional supply chain actors added
+additionalSupplyChainActor.table.empty=No Additional supply chain actors available
+additionalSupplyChainActor.add=Add additional supply chain actor
+
+## Domestic duty tax parties
+domesticDutyTaxParties.title=Additional fiscal references
+domesticDutyTaxParties.heading=Additional fiscal references
+domesticDutyTaxParties.table.heading=1 Additional fiscal reference added
+domesticDutyTaxParties.table.multiple.heading={0} Additional fiscal references added
+domesticDutyTaxParties.table.empty=No additional fiscal references available
+domesticDutyTaxParties.add=Add additional fiscal reference
 
 ## Add Previous Documents
 addPreviousDocument.title=Previous Documents
@@ -386,7 +398,7 @@ governmentAgencyGoodsItem.previousDocuments=Previous documents
 governmentAgencyGoodsItem.refundRecipientParties=Refund recipient parties
 governmentAgencyGoodsItem.saveGoodsItem=Save goods item
 
-governmentAgencyGoodsItemAdd.title=Government Agency Goods Item Additional Documents
+governmentAgencyGoodsItemAdd.title=Additional documents
 governmentAgencyGoodsItemAdd.countryCode=Country code
 governmentAgencyGoodsItemAdd.documentName=Document name
 governmentAgencyGoodsItemAdd.id=ID
@@ -394,9 +406,8 @@ governmentAgencyGoodsItemAdd.typeCodeOfDocument=Type code of document
 governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument=LPCO exemption code of document
 governmentAgencyGoodsItemAdd.submitterName=Submitter name
 governmentAgencyGoodsItemAdd.submitterRoleCode=Submitter role code
-governmentAgencyGoodsItemAdd.addDocuments=Add Documents
+governmentAgencyGoodsItemAdd.addDocuments=Add additional document
 governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs=No of goods item additional docs added:
-governmentAgencyGoodsItemAdd.noAdditionalDocuments=No additional documents available
 governmentAgencyGoodsItemAdd.writeOffQuantity=Write off quantity
 governmentAgencyGoodsItemAdd.writeOffAmount=Write off amount
 
@@ -420,3 +431,7 @@ governmentAgencyGoodsItemValue.UCRID=Unique Consignment Reference (UCR) ID
 governmentAgencyGoodsItemValue.traderAssignedReferenceID=Trader assigned reference ID
 governmentAgencyGoodsItemValue.exportCountry=Export country
 governmentAgencyGoodsItemValue.valuationAdjustmentAdditionCode=Valuation adjustment addition code
+
+governmentAgencyGoodsItemMutual.title=Mutual recognition parties
+governmentAgencyGoodsItemMutual.mutualPartiesAdded=mutual recognition parties added
+governmentAgencyGoodsItemMutual.addMutualParties=Add mutual recognition parties

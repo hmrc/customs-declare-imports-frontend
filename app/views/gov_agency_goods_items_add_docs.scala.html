@@ -26,49 +26,46 @@
     bodyClasses = None) {
 
     @helpers.form(action = GovernmentAgencyGoodsItemsController.handleGovAgencyGoodsItemsAdditionalDocumentsSubmit()) {
-
-        <legend>
-            <h1>@messages("governmentAgencyGoodsItemAdd.title")</h1>
-        </legend>
-
-        @if(additionalDocuments.nonEmpty) {
-            <p>@messages("governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs") @additionalDocuments.size</p>
-
-            <table>
-                <thead>
-                <tr>
-                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.countryCode")</th>
-                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.documentName")</th>
-                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.id")</th>
-                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.typeCodeOfDocument")</th>
-                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument")</th>
-                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.submitterName")</th>
-                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.submitterRoleCode")</th>
-                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.writeOffQuantity")</th>
-                    <th scope="col">@messages("governmentAgencyGoodsItemAdd.writeOffAmount")</th>
-                </tr>
-                </thead>
-                <tbody>
-                    @for(item <- additionalDocuments) {
-                        <tr>
-                            <td scope="row">@item.categoryCode</td>
-                            <td scope="row">@item.name</td>
-                            <td scope="row">@item.id</td>
-                            <td scope="row">@item.typeCode</td>
-                            <td scope="row">@item.lpcoExemptionCode</td>
-                            <td scope="row">@item.submitter.map(_.name)</td>
-                            <td scope="row">@item.submitter.map(_.roleCode)</td>
-                            <td scope="row">@item.writeOff.map(_.quantity)</td>
-                            <td scope="row">@item.writeOff.map(_.amount)</td>
-                       </tr>
-                    }
-                </tbody>
-            </table>
-        } else {
-            <p>@messages("governmentAgencyGoodsItemAdd.noAdditionalDocuments")</p>
-        }
-
         <fieldset>
+            <legend>
+                <h1>@messages("governmentAgencyGoodsItemAdd.title")</h1>
+            </legend>
+
+            @if(additionalDocuments.nonEmpty) {
+                <p>@messages("governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs") @additionalDocuments.size</p>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.countryCode")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.documentName")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.id")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.typeCodeOfDocument")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.submitterName")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.submitterRoleCode")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.writeOffQuantity")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.writeOffAmount")</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        @for(item <- additionalDocuments) {
+                            <tr>
+                                <td scope="row">@item.categoryCode</td>
+                                <td scope="row">@item.name</td>
+                                <td scope="row">@item.id</td>
+                                <td scope="row">@item.typeCode</td>
+                                <td scope="row">@item.lpcoExemptionCode</td>
+                                <td scope="row">@item.submitter.map(_.name)</td>
+                                <td scope="row">@item.submitter.map(_.roleCode)</td>
+                                <td scope="row">@item.writeOff.map(_.quantity)</td>
+                                <td scope="row">@item.writeOff.map(_.amount)</td>
+                           </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
             @components.input_text(field = form("categoryCode"),label = messages("governmentAgencyGoodsItemAdd.countryCode"))
             @components.input_text(field = form("name"),label = messages("governmentAgencyGoodsItemAdd.documentName"))
             @components.input_text(field = form("id"),label = messages("governmentAgencyGoodsItemAdd.id"))

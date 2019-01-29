@@ -26,7 +26,7 @@
 
 @helpers.form(action = AuthorisationHoldersController.onSubmit()) {
 
-    @components.back_link("")
+    @components.back_link()
 
     @components.error_summary(form.errors)
 
@@ -57,7 +57,7 @@
         @messages("authorisationHolder.addAuthorisationHolderButton")
     </button>
 
-    <a href="@routes.ObligationGuaranteeController.display().url" class="button" id="Next">
+    <a href="@routes.DomesticDutyTaxPartyController.onPageLoad().url" class="button" id="Next">
         @messages("common.button.continue")
     </a>
     }
