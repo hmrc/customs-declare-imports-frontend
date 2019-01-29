@@ -12,6 +12,8 @@ common.feedbackFirst=This is a new service - your
 common.feedbackSecond=feedback
 common.feedbackThird=will help us to improve it.
 common.error.summary.title=There is a problem
+common.id=ID
+common.roleCode=Role code
 
 ## common buttons with shared labels
 common.button.startNow=Start now
@@ -419,3 +421,7 @@ governmentAgencyGoodsItemValue.UCRID=Unique Consignment Reference (UCR) ID
 governmentAgencyGoodsItemValue.traderAssignedReferenceID=Trader assigned reference ID
 governmentAgencyGoodsItemValue.exportCountry=Export country
 governmentAgencyGoodsItemValue.valuationAdjustmentAdditionCode=Valuation adjustment addition code
+
+governmentAgencyGoodsItemMutual.title=Mutual recognition parties
+governmentAgencyGoodsItemMutual.mutualPartiesAdded=mutual recognition parties added
+governmentAgencyGoodsItemMutual.addMutualParties=Add mutual recognition parties
