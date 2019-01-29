@@ -27,9 +27,16 @@ object DeclarationFormMapping {
     "roleCode" -> optional(text.verifying("roleCode is only 3 characters", _.length <= 3))
   )(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.apply)(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.unapply)
 
-
-  val amountMapping = mapping("currencyId" -> optional(text.verifying("currencyId is only 3 characters", _.length <= 3)),
-    "value" -> optional(bigDecimal.verifying("amount must not be negative", a => a > 0)))(Amount.apply)(Amount.unapply)
+  val amountMapping = mapping(
+    "currencyId" -> optional(
+      text
+        .verifying("Currency ID is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
+    "value" -> optional(
+      bigDecimal
+        .verifying("Amount cannot be greater than 9999999999999999", _.precision <= 16)
+        .verifying("Amount cannot have more than 2 decimal places", _.scale <= 2)
+        .verifying("Amount must not be negative", _ >= 0))
+  )(Amount.apply)(Amount.unapply)
 
   val measureMapping = mapping("unitCode" -> optional(text.verifying("unitCode is only 5 characters", _.length <= 5)),
     "value" -> optional(bigDecimal.verifying("value must not be negative", a => a > 0)))(Measure.apply)(Measure.unapply)
@@ -146,7 +153,7 @@ object DeclarationFormMapping {
 
 
   val customsValuationMapping = mapping("methodCode" -> optional(text.verifying(" Charges code should be less than or equal to 3 characters", _.length <= 3)), // max 3 chars; not valid outside GovernmentAgencyGoodsItem
-    "freightChargeAmount" -> optional(bigDecimal), //default(bigDecimal, None),
+    "freightChargeAmount" -> optional(bigDecimal), // default(bigDecimal, None),
     "chargeDeductions" -> seq(chargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
 
 

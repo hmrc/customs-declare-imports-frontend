@@ -25,7 +25,8 @@ import uk.gov.hmrc.wco.dec._
 
 trait Generators extends SignedInUserGen with ViewModelGenerators {
 
-  implicit val dontShrink: Shrink[String] = Shrink.shrinkAny
+  implicit val dontShrinkStrings: Shrink[String] = Shrink.shrinkAny
+  implicit val dontShrinkDecimals: Shrink[BigDecimal] = Shrink.shrinkAny
 
   def genIntersperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
 
@@ -94,6 +95,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   def stringsExceptSpecificValues(excluded: Set[String]): Gen[String] =
     nonEmptyString suchThat (!excluded.contains(_))
 
+  def currencyGen: Gen[String] = oneOf(config.Options.currencyTypes.map(_._2))
+
   implicit val arbitraryOffice: Arbitrary[Office] = Arbitrary {
     for {
       id <- option(arbitrary[String].map(_.take(17)))
@@ -127,8 +130,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryAuthorisationHolder: Arbitrary[AuthorisationHolder] = Arbitrary {
     for {
-      id            <- option(alphaNumStr.map(_.take(17)))
-      categoryCode  <- option(alphaNumStr.map(_.take(4)))
+      id <- option(alphaNumStr.map(_.take(17)))
+      categoryCode <- option(alphaNumStr.map(_.take(4)))
       if id.exists(_.nonEmpty) || categoryCode.exists(_.nonEmpty)
     } yield AuthorisationHolder(id, categoryCode)
   }
@@ -142,8 +145,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryAmount: Arbitrary[Amount] = Arbitrary {
     for {
-      currencyId <- option(arbitrary[String].map(_.take(3)))
-      value <- option(arbitrary[BigDecimal].map(_.max(9999999999999999.99999)))
+      currencyId <- option(currencyGen)
+      value <- option(posDecimal(16, 2))
     } yield Amount(currencyId, value)
   }
 
@@ -325,6 +328,17 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   def intBetweenRange(min: Int, max: Int): Gen[Int] =
     choose(min, max)
+
+  def posDecimal(precision: Int, scale: Int): Gen[BigDecimal] =
+    decimal(0, precision, scale)
+
+  implicit val chooseBigInt: Choose[BigInt] =
+    Choose.xmap[Long, BigInt](BigInt(_), _.toLong)
+
+  def decimal(minSize: Int, maxSize: Int, scale: Int): Gen[BigDecimal] = {
+    val min = if (minSize <= 0) BigInt(0) else BigInt("1" + ("0" * (minSize - 1)))
+    choose[BigInt](min, BigInt("9" * maxSize)).map(BigDecimal(_, scale))
+  }
 
   def minStringLength(length: Int): Gen[String] =
     for {
