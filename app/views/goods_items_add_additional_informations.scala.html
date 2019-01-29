@@ -31,6 +31,7 @@
             <h1>@messages("governmentAgencyGoodsItemAdditionalInfo.title")</h1>
         </legend>
 
+        @components.error_summary(form.errors)
 
         @if(additionalInformations.nonEmpty) {
             <p>@additionalInformations.size @messages("governmentAgencyGoodsItemAdditionalInfo.p.additionalInformationAdded")</p>
@@ -66,7 +67,7 @@
 
         <div class="section">
             <button class="button" id="Add" value="Add" name = "submit">@messages("governmentAgencyGoodsItemAdditionalInfo.addAdditionalInformation")</button>
-            <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+            <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
         </div>
     }
 }

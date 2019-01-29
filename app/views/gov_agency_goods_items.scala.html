@@ -25,8 +25,6 @@
     title = messages("governmentAgencyGoodsItem.title"),
     bodyClasses = None) {
 
-    @helpers.form(action = GovernmentAgencyGoodsItemsController.saveGoodsItem()) {
-
         <h1 class="heading-large">@messages("governmentAgencyGoodsItem.title")</h1>
 
         <table>
@@ -35,21 +33,24 @@
                     <th scope="row">@messages("governmentAgencyGoodsItem.additionalDocuments")</th>
                     <td>@goodsItem.map(_.additionalDocuments.size)</td>
                     <td>
-                        <button id="AddGAGIAddDoc" value="AddGovernmentAgencyGoodsItemAdditionalDocument" name="add" class="button">@messages("governmentAgencyGoodsItem.add") <span class="visually-hidden">@messages("governmentAgencyGoodsItem.additionalDocuments")</span></button>
+                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGovAgencyGoodsItemsAdditionalDocuments().url" name="add" class="button" id="AddGAGIAddDoc">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.additionalDocuments")</span></a>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">@messages("governmentAgencyGoodsItem.additionalInformation")</th>
                     <td>@goodsItem.map(_.additionalInformations.size)</td>
                     <td>
-                        <button id="AddAdditionalInformation" value="AddAdditionalInformation" name="add" class="button">@messages("governmentAgencyGoodsItem.add") <span class="visually-hidden">@messages("governmentAgencyGoodsItem.additionalInformation")</span></button>
+                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations().url" name="add" class="button" id="AddAdditionalInformation">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.additionalInformation")</span></a>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">@messages("governmentAgencyGoodsItem.mutualRecognitionParties")</th>
                     <td>@goodsItem.map(_.aeoMutualRecognitionParties.size)</td>
                     <td>
-                        <button id="AddMutualRecognitionParties" value="AddMutualRecognitionParties" name="add" class="button">@messages("governmentAgencyGoodsItem.add") <span class="visually-hidden">@messages("governmentAgencyGoodsItem.mutualRecognitionParties")</span></button>
+                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties().url" name="add" class="button" id="AddMutualRecognitionParties">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.mutualRecognitionParties")</span></a>
                         </div>
                     </td>
                 </tr>
@@ -57,21 +58,24 @@
                     <th scope="row">@messages("governmentAgencyGoodsItem.domesticDutyParties")</th>
                     <td>@goodsItem.map(_.domesticDutyTaxParties.size)</td>
                     <td>
-                        <button id="AddDomesticDutyTaxParties" value="AddDomesticDutyTaxParties" name="add" class="button">@messages("governmentAgencyGoodsItem.add") <span class="visually-hidden">@messages("governmentAgencyGoodsItem.domesticDutyParties")</span></button>
+                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties().url" name="add" class="button" id="AddDomesticDutyTaxParties">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.domesticDutyParties")</span></a>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">@messages("governmentAgencyGoodsItem.governmentProcedures")</th>
                     <td>@goodsItem.map(_.governmentProcedures.size)</td>
                     <td>
-                        <button id="AddGovernmentProcedures" value="AddGovernmentProcedures" name="add" class="button">@messages("governmentAgencyGoodsItem.add") <span class="visually-hidden">@messages("governmentAgencyGoodsItem.governmentProcedures")</span></button>
+                        <a href="@controllers.goodsitems.routes.GovernmentProceduresController.onPageLoad().url" name="add" class="button" id="AddGovernmentProcedures">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.governmentProcedures")</span></a>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">@messages("governmentAgencyGoodsItem.originOfGoods")</th>
                     <td>@goodsItem.map(_.origins.size)</td>
                     <td>
-                        <button id="AddOrigins" value="AddOrigins" name="add"  class="button">@messages("governmentAgencyGoodsItem.add") <span class="visually-hidden">@messages("governmentAgencyGoodsItem.originOfGoods")</span></button>
+                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showOrigins().url" name="add" class="button" id="AddOrigins">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.originOfGoods")</span></a>
                     </td>
                 </tr>
                 <tr>
@@ -79,36 +83,39 @@
                     <th scope="row">@messages("governmentAgencyGoodsItem.manufacturers")</th>
                     <td>@goodsItem.map(_.manufacturers.size)</td>
                     <td>
-                        <button id="AddManufacturers" value="AddManufacturers" name="add"  class="button">@messages("governmentAgencyGoodsItem.add") <span class="visually-hidden">@messages("governmentAgencyGoodsItem.manufacturers")</span></button>
+                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties().url" name="add" class="button" id="AddManufacturers">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.manufacturers")</span></a>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">@messages("governmentAgencyGoodsItem.packagings")</th>
                     <td>@goodsItem.map(_.packagings.size)</td>
                     <td>
-                        <button id="AddPackagings" value="AddPackagings" name="add" class="button">@messages("governmentAgencyGoodsItem.add") <span class="visually-hidden">@messages("governmentAgencyGoodsItem.packagings")</span></button>
+                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showPackagings().url" name="add" class="button" id="AddPackagings">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.packagings")</span></a>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">@messages("governmentAgencyGoodsItem.previousDocuments")</th>
                     <td>@goodsItem.map(_.previousDocuments.size)</td>
                     <td>
-                        <button id="AddPreviousDocuments" value="AddPreviousDocuments" name="add" class="button">@messages("governmentAgencyGoodsItem.add") <span class="visually-hidden">@messages("governmentAgencyGoodsItem.previousDocuments")</span></button>
+                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showPreviousDocuments().url" name="add" class="button" id="AddPreviousDocuments">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.previousDocuments")</span></a>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">@messages("governmentAgencyGoodsItem.refundRecipientParties")</th>
                     <td>@goodsItem.map(_.refundRecipientParties.size)</td>
                     <td>
-                        <button id="AddRefundRecipientParties" value="AddRefundRecipientParties" name="add" class="button">@messages("governmentAgencyGoodsItem.add") <span class="visually-hidden">@messages("governmentAgencyGoodsItem.refundRecipientParties")</span></button>
+                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties().url" name="add" class="button" id="AddRefundRecipientParties">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.refundRecipientParties")</span></a>
                     </td>
                 </tr>
             </tbody>
         </table>
 
-
     <div class="section">
-        <button id="SaveGoodsItem" value="SaveGoodsItem" name = "add" class="button">@messages("governmentAgencyGoodsItem.saveGoodsItem")</button>
+        <a href="@controllers.goodsitems.routes.GoodsItemsListController.saveGoodsItem().url" name="add" class="button" id="SaveGoodsItem">@messages("governmentAgencyGoodsItem.saveGoodsItem")</a>
     </div>
-    }
+
 }

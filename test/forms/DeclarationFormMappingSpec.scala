@@ -24,7 +24,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
-import uk.gov.hmrc.wco.dec._
+import uk.gov.hmrc.wco.dec.{GovernmentProcedure, _}
 
 class DeclarationFormMappingSpec extends WordSpec
   with MustMatchers
@@ -274,6 +274,60 @@ class DeclarationFormMappingSpec extends WordSpec
           _ must haveErrorMessage("You must provide an ID or role code"),
           _ => fail("should not succeed")
         )
+      }
+    }
+  }
+
+  //govermentprocedures
+  "GovernmentProcedure Mapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { govermentProcedure: GovernmentProcedure =>
+          Form(governmentProcedureMapping).fillAndValidate(govermentProcedure).fold(
+            _       => fail("form should not fail"),
+            success => success mustBe govermentProcedure
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "Current Code and Previous Code are missing" in {
+
+        Form(governmentProcedureMapping).bind(Map[String, String]()).fold(
+          error => error must haveErrorMessage("To add procedure codes you must provide Current Code or Previous code"),
+          _ => fail("Should not succeed")
+        )
+      }
+
+      "currentCode is longer than 7 characters" in {
+
+        forAll(arbitrary[GovernmentProcedure], minStringLength(8)) {
+          (governmentProcedure, code) =>
+
+            val data = governmentProcedure.copy(currentCode = Some(code))
+            Form(governmentProcedureMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Current code should be less than or equal to 7 characters"),
+              _      => fail("should not succeed")
+            )
+        }
+      }
+
+      "previousCode is longer than 7 characters" in {
+
+        forAll(arbitrary[GovernmentProcedure], minStringLength(8)) {
+          (governmentProcedure, code) =>
+
+            val data = governmentProcedure.copy(previousCode = Some(code))
+            Form(governmentProcedureMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Previous code  should be less than or equal to 7 characters"),
+              _ => fail("should not succeed")
+            )
+        }
       }
     }
   }
