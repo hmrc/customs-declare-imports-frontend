@@ -218,7 +218,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(None)
       withRequest(get, goodsItemsAdditionalDocsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No additional documents available")
         content should include element withAttrValue("name", "categoryCode")
         content should include element withAttrValue("name", "name")
         content should include element withAttrValue("name", "id")

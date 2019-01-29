@@ -386,7 +386,7 @@ governmentAgencyGoodsItem.previousDocuments=Previous documents
 governmentAgencyGoodsItem.refundRecipientParties=Refund recipient parties
 governmentAgencyGoodsItem.saveGoodsItem=Save goods item
 
-governmentAgencyGoodsItemAdd.title=Government Agency Goods Item Additional Documents
+governmentAgencyGoodsItemAdd.title=Additional documents
 governmentAgencyGoodsItemAdd.countryCode=Country code
 governmentAgencyGoodsItemAdd.documentName=Document name
 governmentAgencyGoodsItemAdd.id=ID
@@ -394,9 +394,8 @@ governmentAgencyGoodsItemAdd.typeCodeOfDocument=Type code of document
 governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument=LPCO exemption code of document
 governmentAgencyGoodsItemAdd.submitterName=Submitter name
 governmentAgencyGoodsItemAdd.submitterRoleCode=Submitter role code
-governmentAgencyGoodsItemAdd.addDocuments=Add Documents
+governmentAgencyGoodsItemAdd.addDocuments=Add additional document
 governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs=No of goods item additional docs added:
-governmentAgencyGoodsItemAdd.noAdditionalDocuments=No additional documents available
 governmentAgencyGoodsItemAdd.writeOffQuantity=Write off quantity
 governmentAgencyGoodsItemAdd.writeOffAmount=Write off amount
 
