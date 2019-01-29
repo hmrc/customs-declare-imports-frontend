@@ -215,15 +215,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryAddress: Arbitrary[Address] = Arbitrary {
     for {
       cityName <- option(arbitrary[String].map(_.take(35))) // max length 35
-
       countryCode <- option(arbitrary[String].map(_.take(2))) // 2 chars [a-zA-Z] ISO 3166-1 2-alpha
-
       countrySubDivisionCode <- option(arbitrary[String].map(_.take(9))) // max 9 chars
-
       countrySubDivisionName <- option(arbitrary[String].map(_.take(35))) // max 35 chars
-
       line <- option(arbitrary[String].map(_.take(70))) // max 70 chars
-
       postcodeId <- option(arbitrary[String].map(_.take(9))) // max 9 chars
     } yield Address(cityName, countryCode, countrySubDivisionCode, countrySubDivisionName, line, postcodeId)
   }
@@ -318,6 +313,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       previousDocuments <- Gen.listOfN(1, arbitraryPreviousDocument.arbitrary)
     } yield GovernmentAgencyGoodsItem(goodsItemValue, additionalDocuments, additionalInformations, aeoMutualRecognitionParties,
       domesticParties, governmentProcedures, manufacturers, origins, packagings, previousDocuments)
+  }
+
+  implicit val arbitraryChargeDeduction: Arbitrary[ChargeDeduction] = Arbitrary {
+    for {
+      typeCode <- option(arbitrary[String].map(_.take(3)))
+      amount   <- option(arbitrary[Amount])
+    } yield {
+      ChargeDeduction(typeCode, amount)
+    }
   }
 
   def intGreaterThan(min: Int): Gen[Int] =

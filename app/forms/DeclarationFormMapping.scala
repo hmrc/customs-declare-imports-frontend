@@ -147,9 +147,10 @@ object DeclarationFormMapping {
     "communications" -> seq(communicationMapping))(ImportExportParty.apply)(ImportExportParty.unapply)
 
   val chargeDeductionMapping = mapping(
-    "chargesTypeCode" -> optional(text.verifying(" Charges code should be less than or equal to 3 characters", _.length <= 3)),
+    "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 3 characters", _.length <= 3)),
     "otherChargeDeductionAmount" -> optional(amountMapping) // Option[Amount] = None
   )(ChargeDeduction.apply)(ChargeDeduction.unapply)
+    .verifying("Charges code, currency id or amount are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
 
 
   val customsValuationMapping = mapping("methodCode" -> optional(text.verifying(" Charges code should be less than or equal to 3 characters", _.length <= 3)), // max 3 chars; not valid outside GovernmentAgencyGoodsItem

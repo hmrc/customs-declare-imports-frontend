@@ -352,4 +352,45 @@ class DeclarationFormMappingSpec extends WordSpec
       }
     }
   }
+
+  "chargeDeductionMapping" should {
+
+    "bind" when {
+
+      "valid values are passed" in {
+
+        forAll { charge: ChargeDeduction =>
+
+          Form(chargeDeductionMapping).fillAndValidate(charge).fold(
+            e => fail(s"form should not fail: ${e.errors}"),
+            _ mustBe charge
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "type code is longer than 3 characters" in {
+
+        forAll(arbitrary[ChargeDeduction], stringsLongerThan(3)) {
+          (charge, typeCode) =>
+
+            val data = charge.copy(chargesTypeCode = Some(typeCode))
+            Form(chargeDeductionMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Charges code should be less than or equal to 3 characters"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "type code and amount are missing" in {
+
+        Form(chargeDeductionMapping).bind(Map[String, String]()).fold(
+          _ must haveErrorMessage("Charges code, currency id or amount are required"),
+          _ => fail("form should not succeed")
+        )
+      }
+    }
+  }
 }
