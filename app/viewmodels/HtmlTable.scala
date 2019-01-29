@@ -16,8 +16,6 @@
 
 package viewmodels
 
-import com.sun.xml.internal.ws.client.sei.ResponseBuilder.Header
-
 sealed abstract case class HtmlTable[A, B](header: HtmlTableRow[A], rows: Seq[HtmlTableRow[B]])
 
 object HtmlTable {
@@ -31,6 +29,9 @@ object HtmlTable {
 
   def apply[A, B](header1: A, header2: A)(values: Seq[(B, B)]): HtmlTable[A, B] =
     new HtmlTable(HtmlTableRow(header1, List(header2)), values.map { case (a, b) => HtmlTableRow(a, List(b))}) {}
+
+  def apply[A, B](header1: A, header2: A, header3: A)(values: Seq[(B, B, B)]): HtmlTable[A, B] =
+    new HtmlTable(HtmlTableRow(header1, List(header2, header3)), values.map { case (a, b, c) => HtmlTableRow(a, List(b, c))}) {}
 
   def apply[A, B](header1: A, header2: A, header3: A, header4: A)(values: Seq[(B, B, B, B)]): HtmlTable[A, B] =
     new HtmlTable(
