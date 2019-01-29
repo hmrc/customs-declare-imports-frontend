@@ -280,7 +280,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(None)
       withRequest(get, addMutualRecognitionPartiesPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No Mutual recognition Parties available")
         content should include element withAttrValue("name", "id")
         content should include element withAttrValue("name", "roleCode")
       }
@@ -292,7 +291,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
       withRequest(get, addMutualRecognitionPartiesPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("1 Goods Item Mutual recognition Parties added")
+        contentAsString(resp) must include("1 mutual recognition parties added")
         content should include element withAttrValue("name", "roleCode")
         content should include element withAttrValue("name", "id")
       }
