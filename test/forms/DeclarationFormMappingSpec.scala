@@ -350,6 +350,34 @@ class DeclarationFormMappingSpec extends WordSpec
             )
         }
       }
+
+      "has a currency with no value" in {
+
+        forAll { amount: Amount =>
+
+          whenever(amount.currencyId.nonEmpty) {
+
+            Form(amountMapping).bind(Map("currencyId" -> amount.currencyId.getOrElse(""))).fold(
+              _ must haveErrorMessage("Amount is required when currency is provided"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
+
+      "has a value with no currency" in {
+
+        forAll { amount: Amount =>
+
+          whenever(amount.value.nonEmpty) {
+
+            Form(amountMapping).bind(Map("value" -> amount.value.fold("")(_.toString))).fold(
+              _ must haveErrorMessage("Currency is required when amount is provided"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
     }
   }
 

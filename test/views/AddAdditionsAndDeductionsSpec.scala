@@ -29,7 +29,7 @@ import uk.gov.hmrc.wco.dec.ChargeDeduction
 import viewmodels.HtmlTable
 import views.behaviours.ViewBehaviours
 import views.html.add_additions_and_deductions
-import views.html.components.input_text
+import views.html.components.{input_select, input_text}
 import views.html.components.table.table
 
 class AddAdditionsAndDeductionsSpec extends ViewBehaviours
@@ -76,7 +76,10 @@ class AddAdditionsAndDeductionsSpec extends ViewBehaviours
 
           val popForm = form.fillAndValidate(charge)
           val html = view(popForm, data)
-          html must include(input_text(popForm("otherChargeDeductionAmount.currencyId"), "Currency"))
+          val input =
+            input_select(popForm("otherChargeDeductionAmount.currencyId"), "Currency", config.Options.currencyTypes.toMap)
+
+          html must include(input)
       }
     }
 

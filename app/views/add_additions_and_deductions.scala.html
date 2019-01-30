@@ -15,6 +15,7 @@
  *@
 
 @import config.AppConfig
+@import config.Options.currencyTypes
 @import controllers.routes._
 @import uk.gov.hmrc.play.views.html._
 @import viewmodels.HtmlTable
@@ -53,7 +54,7 @@
 
         <fieldset>
             @components.input_text(form("chargesTypeCode"), messages("addAdditionsAndDeductions.type"))
-            @components.input_text(form("otherChargeDeductionAmount.currencyId"), messages("addAdditionsAndDeductions.currency"))
+            @components.input_select(form("otherChargeDeductionAmount.currencyId"), messages("addAdditionsAndDeductions.currency"), currencyTypes.toMap)
             @components.input_text(form("otherChargeDeductionAmount.value"), messages("addAdditionsAndDeductions.value"))
         </fieldset>
 
