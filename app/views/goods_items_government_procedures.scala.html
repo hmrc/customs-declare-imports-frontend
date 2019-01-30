@@ -31,7 +31,7 @@
 
 <h2 class="heading-medium">Goods Item Government Procedures</h2>
 @if(governmentProcedures.nonEmpty) {
-<p>>@governmentProcedures.size Government Procedures added</p>
+    <p>@governmentProcedures.size Government Procedures added</p>
 
 <table>
     <thead>
@@ -47,11 +47,7 @@
     }
     </tbody>
 </table>
-} else {
-<p>No Government Procedures available</p>
-
 }
-
 @components.input_text(field = form("currentCode"),label = "Requested Procedure Code")
 @components.input_text(field = form("previousCode"),label = "Previous Procedure Code")
 
