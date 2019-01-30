@@ -111,10 +111,11 @@ trait CustomsSpec extends PlaySpec
         f.setAccessible(true)
         (f.getName, f.get(cc))
       }
-      .map {
-        case (n, Some(a)) => (n, a.toString)
-        case (n, None)    => (n, "")
-        case (n, a)       => (n, a.toString)
+      .flatMap {
+        case (n, Some(p: Product)) => asFormParams(p).map { case (k, v) => (s"$n.$k", v) }
+        case (n, Some(a))    => List((n, a.toString))
+        case (n, None)       => List((n, ""))
+        case (n, a)          => List((n, a.toString))
       }
 
   override def beforeEach = {

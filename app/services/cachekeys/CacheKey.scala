@@ -31,6 +31,8 @@ object CacheKey {
 
   val roleBasedParty = CacheKey("RoleBasedParty", new Identifier[Seq[RoleBasedParty]] {})
 
+  val additionsAndDeductions = CacheKey("AdditionsAndDeductions", new Identifier[Seq[ChargeDeduction]] {})
+
   val govAgencyGoodsItemsList = CacheKey("GovAgencyGoodsItemsList", new Identifier[Seq[GovernmentAgencyGoodsItem]] {})
   val goodsItem = CacheKey("GovAgencyGoodsItem", new Identifier[GovernmentAgencyGoodsItem] {})
   val govAgencyGoodsItemReference = CacheKey("GovAgencyGoodsItemReference", new Identifier[GovernmentAgencyGoodsItem] {})
