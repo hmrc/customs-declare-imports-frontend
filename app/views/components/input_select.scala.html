@@ -40,12 +40,12 @@
         name="@field.name"
         @if(field.hasErrors){aria-describedby="error-message-@{field.id}-input" }>
 
-        <option>Please Select</option>
+        <option value="">Please Select</option>
 
         @for(opt <- options) {
             <option
                 value="@opt._1"
-                @if(field.value.contains(opt._1)){"selected"} else { "" }
+                @if(field.value.contains(opt._1)){ selected }
             >@opt._2</option>
         }
     </select>
