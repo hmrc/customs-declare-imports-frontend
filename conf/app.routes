@@ -18,6 +18,7 @@ GET         /submit-declaration/add-role-based-party           controllers.RoleB
 POST        /submit-declaration/add-role-based-party           controllers.RoleBasedPartyController.onSubmit()
 
 GET         /submit-declaration/add-additions-and-deductions   controllers.AdditionsAndDeductionsController.onPageLoad()
+POST        /submit-declaration/add-additions-and-deductions   controllers.AdditionsAndDeductionsController.onSubmit()
 
 POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
 GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)
