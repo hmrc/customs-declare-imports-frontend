@@ -14,8 +14,11 @@ POST        /submit-declaration/add-authorisation-holder       controllers.Autho
 GET         /submit-declaration/add-previous-documents         controllers.PreviousDocumentsController.onPageLoad()
 POST        /submit-declaration/add-previous-documents         controllers.PreviousDocumentsController.onSubmit()
 
-GET         /submit-declaration/add-role-based-party           controllers.RoleBasedPartyController.onPageLoad()
-POST        /submit-declaration/add-role-based-party           controllers.RoleBasedPartyController.onSubmit()
+GET         /submit-declaration/add-additional-supply-chain-actors   controllers.AdditionalSupplyChainActorsController.onPageLoad()
+POST        /submit-declaration/add-additional-supply-chain-actors   controllers.AdditionalSupplyChainActorsController.onSubmit()
+
+GET         /submit-declaration/add-domestic-duty-tax-party    controllers.DomesticDutyTaxPartyController.onPageLoad()
+POST        /submit-declaration/add-domestic-duty-tax-party    controllers.DomesticDutyTaxPartyController.onSubmit()
 
 GET         /submit-declaration/add-additions-and-deductions   controllers.AdditionsAndDeductionsController.onPageLoad()
 POST        /submit-declaration/add-additions-and-deductions   controllers.AdditionsAndDeductionsController.onSubmit()
