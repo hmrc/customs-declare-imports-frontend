@@ -184,8 +184,8 @@ object DeclarationFormMapping {
 
   val transportEquipmentMapping = mapping(
     "sequenceNumeric" -> ignored[Int](0),
-    "id" -> optional(text.verifying("ID must be 17 characters or less", _.size <= 17))
-      .verifying("ID is required", _.nonEmpty),
+    "id" -> optional(text.verifying("Container Identification number must be 17 characters or less", _.size <= 17))
+      .verifying("Container Identification number is required", _.nonEmpty),
     "seals" -> ignored[Seq[Seal]](Seq.empty)
   )(TransportEquipment.apply)(TransportEquipment.unapply)
 

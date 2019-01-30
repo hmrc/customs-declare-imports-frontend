@@ -301,7 +301,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll(stringsLongerThan(17)) { id =>
 
           Form(transportEquipmentMapping).bind(Map("id" -> id)).fold(
-            _ must haveErrorMessage("ID must be 17 characters or less"),
+            _ must haveErrorMessage("Container Identification number must be 17 characters or less"),
             _ => fail("form should fail")
           )
         }
@@ -310,7 +310,7 @@ class DeclarationFormMappingSpec extends WordSpec
       "id is not provided" in {
 
         Form(transportEquipmentMapping).bind(Map[String, String]()).fold(
-          _ must haveErrorMessage("ID is required"),
+          _ must haveErrorMessage("Container Identification number is required"),
           _ => fail("form should fail")
         )
       }
