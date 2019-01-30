@@ -322,7 +322,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       typeCode <- option(arbitrary[String].map(_.take(2)))
       amount   <- option(arbitrary[Amount])
-      if typeCode.nonEmpty || amount.exists(a => a.value.nonEmpty || a.currencyId.nonEmpty)
+      if typeCode.exists(_.nonEmpty) || amount.exists(a => a.value.nonEmpty || a.currencyId.nonEmpty)
     } yield {
       ChargeDeduction(typeCode, amount)
     }
