@@ -40,7 +40,7 @@ class DomesticDutyTaxPartyController @Inject()(actions: Actions, cache: CustomsC
   def view(form: Form[_], roles: Seq[RoleBasedParty])(implicit r: Request[_]): Html =
     role_based_party(form, roles, messageKeyPrefix,
       routes.DomesticDutyTaxPartyController.onSubmit(),
-      routes.ObligationGuaranteeController.display())
+      routes.AdditionsAndDeductionsController.onPageLoad())
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 

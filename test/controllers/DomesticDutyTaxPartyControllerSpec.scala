@@ -52,7 +52,7 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
       roles,
       "domesticDutyTaxParties",
       routes.DomesticDutyTaxPartyController.onSubmit(),
-      routes.ObligationGuaranteeController.display()
+      routes.AdditionsAndDeductionsController.onPageLoad()
     )(fakeRequest, messages, appConfig).body
 
   val listGen: Gen[Option[List[RoleBasedParty]]] = option(listOf(arbitrary[RoleBasedParty]))

@@ -98,8 +98,8 @@ class AddAdditionsAndDeductionsSpec extends ViewBehaviours
         val htmlTable = HtmlTable("Type", "Currency", "Value")(
           data.map(c => (
             c.chargesTypeCode.getOrElse(""),
-            c.otherChargeDeductionAmount.map(_.currencyId).getOrElse(""),
-            c.otherChargeDeductionAmount.map(_.value).getOrElse("")))
+            c.otherChargeDeductionAmount.flatMap(_.currencyId).getOrElse(""),
+            c.otherChargeDeductionAmount.flatMap(_.value).getOrElse("")))
         )
 
         val html = view(charges = data)

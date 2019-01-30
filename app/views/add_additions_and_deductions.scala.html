@@ -32,7 +32,7 @@
 
 @main_template(title = messages("addAdditionsAndDeductions.title"), bodyClasses = None) {
 
-    @helpers.form(action = PreviousDocumentsController.onSubmit()) {
+    @helpers.form(action = AdditionsAndDeductionsController.onSubmit()) {
 
         @components.back_link()
 
@@ -47,8 +47,8 @@
                 messages("addAdditionsAndDeductions.value")
             )(charges.map { c => (
                 c.chargesTypeCode.getOrElse(""),
-                c.otherChargeDeductionAmount.map(_.currencyId).getOrElse(""),
-                c.otherChargeDeductionAmount.map(_.value).getOrElse(""))
+                c.otherChargeDeductionAmount.flatMap(_.currencyId).getOrElse(""),
+                c.otherChargeDeductionAmount.flatMap(_.value).getOrElse(""))
             }), Some(tableHeader))
 
         <fieldset>
@@ -61,7 +61,7 @@
             @messages("addAdditionsAndDeductions.add")
         </button>
 
-        <a href="@routes.RoleBasedPartyController.onPageLoad().url" class="button" id="Next">
+        <a href="@routes.ObligationGuaranteeController.display().url" class="button" id="Next">
             @messages("common.button.continue")
         </a>
     }
