@@ -317,7 +317,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             val data = amount.copy(value = Some(deduction))
             Form(amountMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Amount cannot be greater than 9999999999999999"),
+              _ must haveErrorMessage("Amount cannot be greater than 99999999999999.99"),
               _ => fail("form should not succeed")
             )
         }
@@ -401,12 +401,12 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "type code is longer than 3 characters" in {
 
-        forAll(arbitrary[ChargeDeduction], stringsLongerThan(3)) {
+        forAll(arbitrary[ChargeDeduction], stringsLongerThan(2)) {
           (charge, typeCode) =>
 
             val data = charge.copy(chargesTypeCode = Some(typeCode))
             Form(chargeDeductionMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Charges code should be less than or equal to 3 characters"),
+              _ must haveErrorMessage("Charges code should be less than or equal to 2 characters"),
               _ => fail("form should not succeed")
             )
         }

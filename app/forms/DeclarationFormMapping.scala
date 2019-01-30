@@ -40,7 +40,7 @@ object DeclarationFormMapping {
         .verifying("Currency ID is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
     "value" -> optional(
       bigDecimal
-        .verifying("Amount cannot be greater than 9999999999999999", _.precision <= 16)
+        .verifying("Amount cannot be greater than 99999999999999.99", _.precision <= 16)
         .verifying("Amount cannot have more than 2 decimal places", _.scale <= 2)
         .verifying("Amount must not be negative", _ >= 0))
   )(Amount.apply)(Amount.unapply)
@@ -156,7 +156,7 @@ object DeclarationFormMapping {
     "communications" -> seq(communicationMapping))(ImportExportParty.apply)(ImportExportParty.unapply)
 
   val chargeDeductionMapping = mapping(
-    "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 3 characters", _.length <= 3)),
+    "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 2 characters", _.length <= 2)),
     "otherChargeDeductionAmount" -> optional(amountMapping) // Option[Amount] = None
   )(ChargeDeduction.apply)(ChargeDeduction.unapply)
     .verifying("Charges code, currency id or amount are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
