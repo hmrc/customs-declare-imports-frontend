@@ -24,7 +24,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
-import uk.gov.hmrc.wco.dec._
+import uk.gov.hmrc.wco.dec.{GovernmentProcedure, _}
 
 class DeclarationFormMappingSpec extends WordSpec
   with MustMatchers
@@ -233,7 +233,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll { roleParty: RoleBasedParty =>
 
           Form(roleBasedPartyMapping).fillAndValidate(roleParty).fold(
-            _       => fail("form should not fail"),
+            _ => fail("form should not fail"),
             success => success mustBe roleParty
           )
         }
@@ -250,7 +250,7 @@ class DeclarationFormMappingSpec extends WordSpec
             val data = roleParty.copy(id = Some(id))
             Form(roleBasedPartyMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("Role based party id should be less than or equal to 17 characters"),
-              _      => fail("should not succeed")
+              _ => fail("should not succeed")
             )
         }
       }
@@ -313,6 +313,199 @@ class DeclarationFormMappingSpec extends WordSpec
           _ must haveErrorMessage("Container Identification number is required"),
           _ => fail("form should fail")
         )
+      }
+    }
+  }
+
+  "amountMapping" should {
+
+    "bind" when {
+
+      "valid values are passed" in {
+
+        forAll { amount: Amount =>
+
+          Form(amountMapping).fillAndValidate(amount).fold(
+            e => fail(s"form should not fail: ${e.errors}"),
+            success => success mustBe amount
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "currencyId is not a currency" in {
+
+        val badData = stringsExceptSpecificValues(config.Options.currencyTypes.map(_._2).toSet)
+        forAll(arbitrary[Amount], badData) {
+          (amount, currency) =>
+
+            val data = amount.copy(currencyId = Some(currency))
+            Form(amountMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Currency ID is not a valid currency"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "value has a precision greater than 16" in {
+
+        forAll(arbitrary[Amount], decimal(17, 30, 0)) {
+          (amount, deduction) =>
+
+            val data = amount.copy(value = Some(deduction))
+            Form(amountMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount cannot be greater than 99999999999999.99"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "value has a scale greater than 2" in {
+
+        val badData = choose(3, 10).flatMap(posDecimal(16, _))
+
+        forAll(arbitrary[Amount], badData) {
+          (amount, deduction) =>
+
+            val data = amount.copy(value = Some(deduction))
+            Form(amountMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount cannot have more than 2 decimal places"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "value is less than 0" in {
+
+        forAll(arbitrary[Amount], intLessThan(0)) {
+          (amount, deduction) =>
+
+            val data = amount.copy(value = Some(BigDecimal(deduction)))
+            Form(amountMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount must not be negative"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "has a currency with no value" in {
+
+        forAll { amount: Amount =>
+
+          whenever(amount.currencyId.nonEmpty) {
+
+            Form(amountMapping).bind(Map("currencyId" -> amount.currencyId.getOrElse(""))).fold(
+              _ must haveErrorMessage("Amount is required when currency is provided"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
+
+      "has a value with no currency" in {
+
+        forAll { amount: Amount =>
+
+          whenever(amount.value.nonEmpty) {
+
+            Form(amountMapping).bind(Map("value" -> amount.value.fold("")(_.toString))).fold(
+              _ must haveErrorMessage("Currency is required when amount is provided"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
+    }
+  }
+
+  "chargeDeductionMapping" should {
+
+    "bind" when {
+
+      "valid values are passed" in {
+
+        forAll { charge: ChargeDeduction =>
+
+          Form(chargeDeductionMapping).fillAndValidate(charge).fold(
+            e => fail(s"form should not fail: ${e.errors}"),
+            _ mustBe charge
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "type code is longer than 3 characters" in {
+
+        forAll(arbitrary[ChargeDeduction], stringsLongerThan(2)) {
+          (charge, typeCode) =>
+
+            val data = charge.copy(chargesTypeCode = Some(typeCode))
+            Form(chargeDeductionMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Charges code should be less than or equal to 2 characters"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "type code and amount are missing" in {
+
+        Form(chargeDeductionMapping).bind(Map[String, String]()).fold(
+          _ must haveErrorMessage("Charges code, currency id or amount are required"),
+          _ => fail("form should not succeed")
+        )
+      }
+    }
+  }
+
+  "GovernmentProcedure Mapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { govermentProcedure: GovernmentProcedure =>
+          Form(governmentProcedureMapping).fillAndValidate(govermentProcedure).fold(
+            _ => fail("form should not fail"),
+            success => success mustBe govermentProcedure
+          )
+        }
+      }
+    }
+    "Current Code and Previous Code are missing" in {
+
+      Form(governmentProcedureMapping).bind(Map[String, String]()).fold(
+        _ must haveErrorMessage("To add procedure codes you must provide Current Code or Previous code"),
+        _ => fail("Should not succeed")
+      )
+    }
+
+    "currentCode is longer than 2 characters" in {
+
+      forAll(arbitrary[GovernmentProcedure], minStringLength(2)) {
+        (governmentProcedure, code) =>
+
+          val data = governmentProcedure.copy(currentCode = Some(code))
+          Form(governmentProcedureMapping).fillAndValidate(data).fold(
+            _ must haveErrorMessage("Current code should be less than or equal to 2 characters"),
+            _ => fail("should not succeed")
+          )
+      }
+    }
+
+    "previousCode is longer than 2 characters" in {
+
+      forAll(arbitrary[GovernmentProcedure], minStringLength(2)) {
+        (governmentProcedure, code) =>
+
+          val data = governmentProcedure.copy(previousCode = Some(code))
+          Form(governmentProcedureMapping).fillAndValidate(data).fold(
+            _ must haveErrorMessage("Previous code  should be less than or equal to 2 characters"),
+            _ => fail("should not succeed")
+          )
       }
     }
   }

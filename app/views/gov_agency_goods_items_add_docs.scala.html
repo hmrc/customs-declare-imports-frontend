@@ -79,7 +79,7 @@
 
         <div class="section">
             <button class="button" id="Add" value="Add" name = "submit">@messages("governmentAgencyGoodsItemAdd.addDocuments")</button>
-            <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+            <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
         </div>
     }
 }

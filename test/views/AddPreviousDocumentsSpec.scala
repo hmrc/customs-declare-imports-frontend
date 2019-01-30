@@ -115,13 +115,18 @@ class AddPreviousDocumentsSpec
         whenever(previousDocuments.nonEmpty) {
 
           val htmlTable =
-            HtmlTable(messages("addPreviousDocument.categoryCode"),
+            HtmlTable(
+              messages("addPreviousDocument.categoryCode"),
               messages("addPreviousDocument.id"),
               messages("addPreviousDocument.typeCode"),
-              messages("addPreviousDocument.lineNumeric"))(previousDocuments.map(a => (a.categoryCode.getOrElse(""),
-              a.id.getOrElse(""),
-              a.typeCode.getOrElse(""),
-              a.lineNumeric.getOrElse(""))))
+              messages("addPreviousDocument.lineNumeric")
+            )(previousDocuments.map { a =>
+              (a.categoryCode.getOrElse(""),
+                a.id.getOrElse(""),
+                a.typeCode.getOrElse(""),
+                a.lineNumeric.getOrElse(""))
+            })
+
           val tableComponent = table(htmlTable)
           val rendered = view(form, previousDocuments)
 
