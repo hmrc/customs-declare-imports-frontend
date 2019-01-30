@@ -94,11 +94,7 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
       forAll(arbitrary[SignedInUser], goodsItemGen) {
         case (user, data) =>
           withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, data) {
-            when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
-              .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
-
             val result = controller(Some(user)).onPageLoad(fakeRequest)
-
             status(result) mustBe OK
             contentAsString(result) mustBe view(govProcedures = data.map(_.governmentProcedures).getOrElse(Seq.empty))
           }

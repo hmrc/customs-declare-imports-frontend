@@ -54,7 +54,7 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
 
   val goodsItemGen = option(arbitrary[GovernmentAgencyGoodsItem])
 
-  def view(form: Form[PreviousDocument] = form, previousDocuments : Seq[PreviousDocument] = Seq()): String =
+  def view(form: Form[PreviousDocument] = form, previousDocuments: Seq[PreviousDocument] = Seq()): String =
     goods_items_previousdocs(form, previousDocuments)(fakeRequest, messages, appConfig).body
 
   ".onPageLoad" should {
@@ -96,11 +96,12 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
 
           when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any(), any()))
             .thenReturn(Future.successful(data))
-          withCaching(data)
-          val result = controller(Some(user)).onPageLoad(fakeRequest)
+          withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, data) {
+            val result = controller(Some(user)).onPageLoad(fakeRequest)
 
-          status(result) mustBe OK
-          contentAsString(result) mustBe view(previousDocuments = data.map(_.previousDocuments).getOrElse(Seq.empty))
+            status(result) mustBe OK
+            contentAsString(result) mustBe view(previousDocuments = data.map(_.previousDocuments).getOrElse(Seq.empty))
+          }
       }
     }
   }
@@ -152,15 +153,16 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
             id <- stringsLongerThan(70)
           } yield gp.copy(categoryCode = Some(categoryCode), typeCode = Some(typeCode), id = Some(id))
 
-        forAll(arbitrary[SignedInUser], badData) {
-          case (user, data) =>
+        forAll(arbitrary[SignedInUser], badData, goodsItemGen) {
+          case (user, formData, data) =>
+            withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, data) {
+              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+              val badForm = form.fillAndValidate(formData)
+              val result = controller(Some(user)).onSubmit(request)
 
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(data): _*)
-            val badForm = form.fillAndValidate(data)
-            val result = controller(Some(user)).onSubmit(request)
-
-            status(result) mustBe BAD_REQUEST
-            contentAsString(result) mustBe view(badForm,Seq.empty)
+              status(result) mustBe BAD_REQUEST
+              contentAsString(result) mustBe view(badForm, data.map(_.previousDocuments).getOrElse(Seq.empty))
+            }
         }
       }
     }

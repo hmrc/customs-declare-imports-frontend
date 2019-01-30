@@ -56,7 +56,7 @@ class PreviousDocumentsController @Inject()(actions: Actions, cacheService: Cust
               case None => GovernmentAgencyGoodsItem(previousDocuments = Seq(form))
             }
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
+            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
               Ok(views.html.goods_items_previousdocs(previousDocumentForm, updatedGoodsItem.previousDocuments))
             }
           })

@@ -34,10 +34,10 @@
     <p>@docs.size Goods Item Previous Documents added</p>
         <table>
             <thead>
-            <th scope="col">Category Code</th>
-            <th scope="col">Id</th>
-            <th scope="col">typeCode</th>
-            <th scope="col">lineNumeric</th>
+            <th scope="col">Document Category</th>
+            <th scope="col">Previous Document Reference</th>
+            <th scope="col">Previous Document Type</th>
+            <th scope="col">Goods Item Identifier</th>
             </thead>
             <tbody>
             @for(item <- docs) {
@@ -50,14 +50,11 @@
             }
             </tbody>
         </table>
-        } else {
-            <p>No Previous Documents available</p>
-        }
-
-        @components.input_text(field = form("categoryCode"),label = "Category Code")
-        @components.input_text(field = form("id"),label = "Id")
-        @components.input_text(field = form("typeCode"),label = "typeCode")
-        @components.input_text(field = form("lineNumeric"),label = "lineNumeric")
+}
+        @components.input_text(field = form("categoryCode"),label = "Document Category")
+        @components.input_text(field = form("id"),label = "Previous Document Reference")
+        @components.input_text(field = form("typeCode"),label = "Previous Document Type")
+        @components.input_text(field = form("lineNumeric"),label = "Goods Item Identifier")
 
     <div class="section">
         <button class="button" id="Add" value="Add" name = "submit">Add Previous Docs</button>
