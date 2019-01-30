@@ -44,16 +44,11 @@ class AdditionsAndDeductionsController @Inject()(actions: Actions, cache: Custom
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
     form.bindFromRequest().fold(
-      errors => {
-
-        println(form)
-        println(errors)
-
+      errors =>
         cache.getByKey(req.eori, CacheKey.additionsAndDeductions).map { charges =>
 
           BadRequest(add_additions_and_deductions(errors, charges.getOrElse(Seq.empty)))
-        }
-      },
+        },
 
       charge =>
         cache
