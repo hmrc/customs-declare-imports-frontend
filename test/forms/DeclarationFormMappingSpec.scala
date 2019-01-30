@@ -224,6 +224,67 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
+  "addAdditionalDocumentMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll(arbitrary[AdditionalDocument]) { arbitraryAddAdditionalDocument =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAddAdditionalDocument).fold(
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe arbitraryAddAdditionalDocument
+          )
+        }
+      }
+    }
+
+    "fail to bind" when {
+
+      "id length is greater than 7" in {
+
+        forAll(arbitrary[AdditionalDocument], intBetweenRange(9999999, Int.MaxValue)) { (arbitraryAdditionalDocument, invalidId) =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(id = Some(invalidId.toString))).fold(
+            error => error.error("id") must haveMessage("Deferred Payment ID should be less than or equal to 7 characters"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
+
+      "categoryCode length is greater than 1" in {
+
+        forAll(arbitrary[AdditionalDocument], minStringLength(2)) { (arbitraryAdditionalDocument, invalidCategoryCode) =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
+            error => error.error("categoryCode") must haveMessage("Deferred Payment Category should be less than or equal to 1 character"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
+
+      "typeCode length is greater than 3" in {
+
+        forAll(arbitrary[AdditionalDocument], minStringLength(4)) { (arbitraryAdditionalDocument, invalidTypeCode) =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(typeCode = Some(invalidTypeCode))).fold(
+            error => error.error("typeCode") must haveMessage("Deferred Payment Type should be less than or equal to 3 characters"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
+
+      "Deferred Payment ID, Deferred Payment Category, Deferred Payment Type are missing" in {
+
+        Form(additionalDocumentMapping).bind(Map[String, String]()).fold(
+          error => error must haveErrorMessage("You must provide a Deferred Payment ID or Deferred Payment Category or Deferred Payment Type"),
+          _ => fail("Should not succeed")
+        )
+      }
+    }
+  }
+
   "roleBasedPartyMapping" should {
 
     "bind" when {

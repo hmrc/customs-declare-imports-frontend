@@ -164,6 +164,14 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield PreviousDocument(categoryCode, id, typeCode, lineNumeric)
   }
 
+  implicit val arbitraryAdditionalDocument: Arbitrary[AdditionalDocument] = Arbitrary {
+    for {
+      id           <- option(intBetweenRange(0, 9999999).map(_.toString))
+      categoryCode <- option(arbitrary[String].map(_.take(1)))
+      typeCode     <- option(arbitrary[String].map(_.take(3)))
+    } yield AdditionalDocument(id, categoryCode, typeCode)
+  }
+
   implicit val arbitraryOrigin: Arbitrary[Origin] = Arbitrary {
     for {
       countryCode <- option(arbitrary[String].map(_.take(4)))
