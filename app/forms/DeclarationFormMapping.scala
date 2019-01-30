@@ -201,7 +201,7 @@ object DeclarationFormMapping {
     .verifying("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier", require1Field[PreviousDocument](_.categoryCode, _.id, _.typeCode, _.lineNumeric))
 
   val transportEquipmentMapping = mapping(
-    "sequenceNumeric" -> ignored[Int](0),
+    "sequenceNumeric" -> ignored[Int](1),
     "id" -> optional(text.verifying("Container Identification number must be 17 characters or less", _.size <= 17))
       .verifying("Container Identification number is required", _.nonEmpty),
     "seals" -> ignored[Seq[Seal]](Seq.empty)

@@ -44,15 +44,19 @@ class ContainerIdentificationNumberController @Inject()(actions: Actions, cache:
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
     form.bindFromRequest().fold(
-      errors    =>
+      errors =>
         cache.getByKey(req.eori, CacheKey.containerIdNos).map { transports =>
           BadRequest(container_identification_number(errors, transports.getOrElse(Seq.empty)))
         },
 
       transport =>
         cache
-          .upsert(req.eori, CacheKey.containerIdNos)
-                 (() => Seq(transport), transport +: _)
+          .upsert(req.eori, CacheKey.containerIdNos)(
+            () => Seq(transport),
+            transports => {
+              val prevSeqNum = transports.maxBy(_.sequenceNumeric).sequenceNumeric
+              transport.copy(sequenceNumeric = prevSeqNum + 1) +: transports
+            })
           .map(_ => Redirect(routes.ContainerIdentificationNumberController.onPageLoad()))
     )
   }
