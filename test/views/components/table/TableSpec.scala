@@ -31,7 +31,8 @@ class TableSpec extends ViewSpecBase
   with OptionValues
   with ViewMatchers {
 
-  def view(testTable: HtmlTable[String, String]): Html = table(testTable)
+  def view(testTable: HtmlTable[String, String], caption: Option[String] = None): Html =
+    table(testTable, caption)
 
   "table" should {
 
@@ -80,6 +81,27 @@ class TableSpec extends ViewSpecBase
           val tableRow = table_row(row)
           view(table) must include(tableRow)
         }
+      }
+    }
+
+    "don't display caption" in {
+
+      forAll { table: HtmlTable[String, String] =>
+
+        val doc = asDocument(view(table))
+        doc.getElementsByTag("caption").size() mustBe 0
+      }
+    }
+
+    "display caption" in {
+
+      forAll {
+        (table: HtmlTable[String, String], caption: String) =>
+
+          whenever(table.rows.nonEmpty) {
+
+            view(table, Some(caption)) must include(Html(s"<caption>$caption</caption>"))
+          }
       }
     }
   }

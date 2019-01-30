@@ -31,36 +31,32 @@ import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.RoleBasedParty
-import views.html.role_based_party
+import uk.gov.hmrc.wco.dec.ChargeDeduction
+import views.html.add_additions_and_deductions
 
-class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
+class AdditionsAndDeductionsControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
-  with MockitoSugar
   with OptionValues
+  with MockitoSugar
   with EndpointBehaviours {
 
-  def form = Form(roleBasedPartyMapping)
+  val form = Form(chargeDeductionMapping)
+
+  def view(form: Form[ChargeDeduction] = form, charges: Seq[ChargeDeduction] = Seq.empty): String =
+    add_additions_and_deductions(form, charges)(fakeRequest, messages, appConfig).body
 
   def controller(user: SignedInUser) =
-    new DomesticDutyTaxPartyController(new FakeActions(Some(user)), mockCustomsCacheService)
+    new AdditionsAndDeductionsController(new FakeActions(Some(user)), mockCustomsCacheService)
 
-  def view(form: Form[RoleBasedParty] = form, roles: Seq[RoleBasedParty] = Seq.empty): String =
-    role_based_party(
-      form,
-      roles,
-      "domesticDutyTaxParties",
-      routes.DomesticDutyTaxPartyController.onSubmit(),
-      routes.AdditionsAndDeductionsController.onPageLoad()
-    )(fakeRequest, messages, appConfig).body
+  val listGen: Gen[Option[List[ChargeDeduction]]] = option(listOf(arbitrary[ChargeDeduction]))
 
-  val listGen: Gen[Option[List[RoleBasedParty]]] = option(listOf(arbitrary[RoleBasedParty]))
+  val uri = "/submit-declaration/add-additions-and-deductions"
 
   ".onPageLoad" should {
 
-    behave like okEndpoint("/submit-declaration/add-domestic-duty-tax-party")
-    behave like authenticatedEndpoint("/submit-declaration/add-domestic-duty-tax-party")
+    behave like okEndpoint(uri)
+    behave like authenticatedEndpoint(uri)
 
     "return OK" when {
 
@@ -94,12 +90,12 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
       forAll(arbitrary[SignedInUser], listGen) {
         (user, data) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.domesticDutyTaxParty, data) {
+          withCleanCache(EORI(user.eori.value), CacheKey.additionsAndDeductions, data) {
 
             val result = controller(user).onPageLoad(fakeRequest)
 
             status(result) mustBe OK
-            contentAsString(result) mustBe view(roles = data.getOrElse(Seq.empty))
+            contentAsString(result) mustBe view(charges = data.getOrElse(Seq.empty))
           }
       }
     }
@@ -107,27 +103,27 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
 
   ".onSubmit" should {
 
-    behave like badRequestEndpoint("/submit-declaration/add-domestic-duty-tax-party", POST)
-    behave like authenticatedEndpoint("/submit-declaration/add-domestic-duty-tax-party", POST)
+    behave like badRequestEndpoint(uri, POST)
+    behave like authenticatedEndpoint(uri, POST)
 
     "return SEE_OTHER" when {
 
       "valid data is submitted" in {
 
-        forAll { (user: SignedInUser, role: RoleBasedParty) =>
+        forAll { (user: SignedInUser, charge: ChargeDeduction) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(role): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(charge): _*)
           val result  = controller(user).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.DomesticDutyTaxPartyController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(routes.AdditionsAndDeductionsController.onPageLoad().url)
         }
       }
     }
 
     "return UNAUTHORIZED" when {
 
-      "user has no eori number" in {
+      "user has no eori" in {
 
         forAll { user: UnauthenticatedUser =>
 
@@ -143,23 +139,24 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
       "invalid data is submitted" in {
 
         val badData = for {
-          r  <- arbitrary[RoleBasedParty]
-          id <- minStringLength(18)
-        } yield r.copy(id = Some(id))
+          charge <- arbitrary[ChargeDeduction]
+          code   <- minStringLength(4)
+        } yield charge.copy(chargesTypeCode = Some(code))
 
         forAll(arbitrary[SignedInUser], badData, listGen) {
-          (user, badData, cacheData) =>
+          (user, submittedData, cachedData) =>
 
-            withCleanCache(EORI(user.eori.value), CacheKey.domesticDutyTaxParty, cacheData) {
+            withCleanCache(EORI(user.eori.value), CacheKey.additionsAndDeductions, cachedData) {
 
-              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(badData): _*)
-              val popForm = form.fillAndValidate(badData)
+              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(submittedData): _*)
+              val popForm = form.fillAndValidate(submittedData)
               val result  = controller(user).onSubmit(request)
 
               status(result) mustBe BAD_REQUEST
-              contentAsString(result) mustBe view(popForm, cacheData.getOrElse(Seq.empty))
+              contentAsString(result) mustBe view(popForm, cachedData.getOrElse(Seq.empty))
             }
         }
+
       }
     }
 
@@ -167,13 +164,13 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
 
       "valid data is submitted" in {
 
-        forAll { (user: SignedInUser, role: RoleBasedParty) =>
+        forAll { (user: SignedInUser, charge: ChargeDeduction) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(role): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(charge): _*)
           await(controller(user).onSubmit(request))
 
-          verify(mockCustomsCacheService, atLeastOnce)
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.domesticDutyTaxParty))(any(), any())(any(), any(), any(), any())
+          verify(mockCustomsCacheService, atLeastOnce())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionsAndDeductions))(any(), any())(any(), any(), any(), any())
         }
       }
     }

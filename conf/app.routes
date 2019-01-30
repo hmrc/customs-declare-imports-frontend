@@ -20,6 +20,9 @@ POST        /submit-declaration/add-additional-supply-chain-actors   controllers
 GET         /submit-declaration/add-domestic-duty-tax-party    controllers.DomesticDutyTaxPartyController.onPageLoad()
 POST        /submit-declaration/add-domestic-duty-tax-party    controllers.DomesticDutyTaxPartyController.onSubmit()
 
+GET         /submit-declaration/add-additions-and-deductions   controllers.AdditionsAndDeductionsController.onPageLoad()
+POST        /submit-declaration/add-additions-and-deductions   controllers.AdditionsAndDeductionsController.onSubmit()
+
 POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
 GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)
 GET         /submit-declaration/:name                          controllers.DeclarationController.displaySubmitForm(name)

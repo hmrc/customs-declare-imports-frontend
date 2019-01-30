@@ -368,6 +368,16 @@ addPreviousDocument.table.multiple.heading=Previous Documents added
 addPreviousDocument.table.empty=No Previous Documents available
 addPreviousDocument.addPreviousDocumentButton=Add Previous Document
 
+## Add Additions and Deductions
+addAdditionsAndDeductions.title=Additions and Deductions
+addAdditionsAndDeductions.heading=Additions and Deductions
+addAdditionsAndDeductions.type=Type
+addAdditionsAndDeductions.currency=Currency
+addAdditionsAndDeductions.value=Value
+addAdditionsAndDeductions.table.heading=1 Addition and deduction added
+addAdditionsAndDeductions.table.multiple.heading={0} Additions and deductions added
+addAdditionsAndDeductions.add=Add additions and deduction
+
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Government agency goods item
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
