@@ -162,7 +162,7 @@ object DeclarationFormMapping {
       "accessCode" -> optional(text.verifying("AccessCode should be less than or equal to 4 characters", _.length <= 4)),
       "guaranteeOffice" -> optional(officeMapping))(ObligationGuarantee.apply)(ObligationGuarantee.unapply)
 
- val guaranteesFormMapping = mapping("guarantees" -> seq(obligationGauranteeMapping))(ObligationGuaranteeForm.apply)(ObligationGuaranteeForm.unapply)
+  val guaranteesFormMapping = mapping("guarantees" -> seq(obligationGauranteeMapping))(ObligationGuaranteeForm.apply)(ObligationGuaranteeForm.unapply)
 
   val authorisationHolderMapping =
     mapping(
@@ -181,6 +181,13 @@ object DeclarationFormMapping {
       .verifying("Goods Item Identifier should be greater than 0 and less than or equal to 999", lineNumeric => (lineNumeric > 0 && lineNumeric <= 999))) //: Option[Int] = None, // max 99999999
   )(PreviousDocument.apply)(PreviousDocument.unapply)
     .verifying("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier", require1Field[PreviousDocument](_.categoryCode, _.id, _.typeCode, _.lineNumeric))
+
+  val transportEquipmentMapping = mapping(
+    "sequenceNumeric" -> ignored[Int](0),
+    "id" -> optional(text.verifying("ID must be 17 characters or less", _.size <= 17))
+      .verifying("ID is required", _.nonEmpty),
+    "seals" -> ignored[Seq[Seal]](Seq.empty)
+  )(TransportEquipment.apply)(TransportEquipment.unapply)
 
   def require1Field[T](fs: (T => Option[_])*): T => Boolean =
     t => fs.exists(f => f(t).nonEmpty)
