@@ -302,7 +302,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(None)
       withRequest(get, addGovtProcedureCodesPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No Government Procedures available")
         content should include element withAttrValue("name", "currentCode")
         content should include element withAttrValue("name", "previousCode")
       }
@@ -314,7 +313,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
       withRequest(get, addGovtProcedureCodesPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
-        contentAsString(resp) must include("1 Government Procedures added")
+        contentAsString(resp) must include("1 government procedures added")
         content should include element withAttrValue("name", "currentCode")
         content should include element withAttrValue("name", "previousCode")
       }
