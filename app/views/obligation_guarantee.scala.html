@@ -28,56 +28,52 @@
   @helpers.form(action = ObligationGuaranteeController.submit()) {
 
 		@components.back_link()
+		<fieldset>
+			<legend>
+				<h1>@messages("obligationGuarantees.title")</h1>
+			</legend>
 
-		<legend>
-			<h1>@messages("obligationGuarantees.title")</h1>
-		</legend>
+			@if(guarantees.nonEmpty) {
+				<table class="form-group">
+					<caption>@guarantees.size @messages("obligationGuarantees.obligationGuaranteesAdded")</caption>
+					<thead>
+						<tr>
+							<th scope="col">@messages("obligationGuarantees.amount")</th>
+							<th scope="col">@messages("obligationGuarantees.id")</th>
+							<th scope="col">@messages("obligationGuarantees.referenceId")</th>
+							<th scope="col">@messages("obligationGuarantees.securityDetailsCode")</th>
+							<th scope="col">@messages("obligationGuarantees.accessCode")</th>
+							<th scope="col">@messages("obligationGuarantees.guarantorOfficeId")</th>
+						</tr>
+				  </thead>
+				  <tbody>
+				 	@for(item <- guarantees) {
+						<tr>
+							<td scope="row">@item.amount</td>
+							<td>@item.id</td>
+							<td>@item.referenceId</td>
+							<td>@item.securityDetailsCode</td>
+							<td>@item.accessCode</td>
+							<td>@item.guaranteeOffice.map(_.id)</td>
+						</tr>
+					}
+				 </tbody>
+				</table>
+			}
 
-		@if(guarantees.nonEmpty) {
-		 <p>@guarantees.size @messages("obligationGuarantees.obligationGuaranteesAdded")</p>
-
-			<table class="form-group">
-				<thead>
-					<tr>
-						<th scope="col">@messages("obligationGuarantees.amount")</th>
-						<th scope="col">@messages("obligationGuarantees.id")</th>
-						<th scope="col">@messages("obligationGuarantees.referenceId")</th>
-						<th scope="col">@messages("obligationGuarantees.securityDetailsCode")</th>
-						<th scope="col">@messages("obligationGuarantees.accessCode")</th>
-						<th scope="col">@messages("obligationGuarantees.guarantorOfficeId")</th>
-					</tr>
-			  </thead>
-			  <tbody>
-			 	@for(item <- guarantees) {
-					<tr>
-						<td scope="row">@item.amount</td>
-						<td>@item.id</td>
-						<td>@item.referenceId</td>
-						<td>@item.securityDetailsCode</td>
-						<td>@item.accessCode</td>
-						<td>@item.guaranteeOffice.map(_.id)</td>
-					</tr>
-				}
-			 </tbody>
-			</table>
-		} else {
-			<p>@messages("obligationGuarantees.noObligationGuaranteesAdded")</p>
-		}
-
-		<div class="grid-row">
-			<div class="column-two-thirds">
-				<fieldset>
-					@components.input_text(field = form("amount"),label = messages("obligationGuarantees.amount"))
-					@components.input_text(field = form("id"),label = messages("obligationGuarantees.id"))
-					@components.input_text(field = form("referenceId"),label = messages("obligationGuarantees.referenceId"))
-					@components.input_text(field = form("securityDetailsCode"),label = messages("obligationGuarantees.securityDetailsCode"))
-					@components.input_text(field = form("accessCode"),label = messages("obligationGuarantees.accessCode"))
-					@components.input_text(field = form("guaranteeOffice.get.id"),label = messages("obligationGuarantees.guarantorOfficeId"))
-				</fieldset>
-
-				<button id="Add" value="Add" name = "submit">@messages("obligationGuarantees.addObligationGuarantees")</button>
-				<button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
+			<div class="grid-row">
+				<div class="column-two-thirds">
+						@components.input_text(field = form("amount"),label = messages("obligationGuarantees.amount"))
+						@components.input_text(field = form("id"),label = messages("obligationGuarantees.id"))
+						@components.input_text(field = form("referenceId"),label = messages("obligationGuarantees.referenceId"))
+						@components.input_text(field = form("securityDetailsCode"),label = messages("obligationGuarantees.securityDetailsCode"))
+						@components.input_text(field = form("accessCode"),label = messages("obligationGuarantees.accessCode"))
+						@components.input_text(field = form("guaranteeOffice.get.id"),label = messages("obligationGuarantees.guarantorOfficeId"))
+				</div>
 			</div>
-		</div>
+		</fieldset>
+
+		<button id="Add" value="Add" name = "submit">@messages("obligationGuarantees.addObligationGuarantees")</button>
+		<button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
 	}
 }
