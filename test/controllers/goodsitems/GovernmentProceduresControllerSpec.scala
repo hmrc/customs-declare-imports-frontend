@@ -147,8 +147,8 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
         val badData =
           for {
             gp <- arbitrary[GovernmentProcedure]
-            current <- stringsLongerThan(7)
-            previous <- stringsLongerThan(7)
+            current <- stringsLongerThan(2)
+            previous <- stringsLongerThan(2)
           } yield gp.copy(currentCode = Some(current), previousCode = Some(previous))
 
         forAll(arbitrary[SignedInUser], badData) {
