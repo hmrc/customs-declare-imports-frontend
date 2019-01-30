@@ -26,8 +26,8 @@ object DeclarationFormMapping {
   def require1Field[T](fs: (T => Option[_])*): T => Boolean =
     t => fs.exists(f => f(t).nonEmpty)
 
-  def requireAllDependants[T](primary: T => Option[_])(fs: T => Option[_]): T => Boolean =
-    t => primary(t).fold(true)(_ => fs(t).nonEmpty)
+  def requireAllDependantFields[T](primary: T => Option[_])(fs: (T => Option[_])*): T => Boolean =
+    t => primary(t).fold(true)(_ => fs.forall(f => f(t).nonEmpty))
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text),
@@ -44,8 +44,8 @@ object DeclarationFormMapping {
         .verifying("Amount cannot have more than 2 decimal places", _.scale <= 2)
         .verifying("Amount must not be negative", _ >= 0))
   )(Amount.apply)(Amount.unapply)
-    .verifying("Amount is required when currency is provided", requireAllDependants[Amount](_.currencyId)(_.value))
-    .verifying("Currency is required when amount is provided", requireAllDependants[Amount](_.value)(_.currencyId))
+    .verifying("Amount is required when currency is provided", requireAllDependantFields[Amount](_.currencyId)(_.value))
+    .verifying("Currency is required when amount is provided", requireAllDependantFields[Amount](_.value)(_.currencyId))
 
   val measureMapping = mapping("unitCode" -> optional(text.verifying("unitCode is only 5 characters", _.length <= 5)),
     "value" -> optional(bigDecimal.verifying("value must not be negative", a => a > 0)))(Measure.apply)(Measure.unapply)

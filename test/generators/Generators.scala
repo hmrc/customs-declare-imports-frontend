@@ -144,10 +144,12 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   }
 
   implicit val arbitraryAmount: Arbitrary[Amount] = Arbitrary {
-    for {
-      currencyId <- option(currencyGen)
-      value <- option(posDecimal(16, 2))
-    } yield Amount(currencyId, value)
+    val amount = for {
+      currencyId <- currencyGen
+      value <- posDecimal(16, 2)
+    } yield Amount(Some(currencyId), Some(value))
+
+    option(amount).map(_.fold(Amount(None, None))(identity))
   }
 
   implicit val arbitraryWriteOff: Arbitrary[WriteOff] = Arbitrary {
