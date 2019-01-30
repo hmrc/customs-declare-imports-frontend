@@ -19,14 +19,15 @@ package controllers.goodsitems
 import config.AppConfig
 import controllers.{Actions, CustomsController}
 import domain.DeclarationFormats._
-import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
+import javax.inject.{Inject, Singleton}
 
 import scala.concurrent.Future
 
+@Singleton
 class GoodsItemsListController @Inject()
 (actions: Actions, cacheService: CustomsCacheService)
   (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {

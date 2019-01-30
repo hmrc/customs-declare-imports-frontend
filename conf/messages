@@ -447,6 +447,6 @@ governmentAgencyGoodsItemMutual.addMutualParties=Add mutual recognition parties
 
 governmentprocedures.title=Government procedures
 governmentprocedures.govProceduresAdded=government procedures added
-governmentprocedures.currentCode=Current code
-governmentprocedures.previousCode=Previous code
+governmentprocedures.currentCode=Requested Procedure Code
+governmentprocedures.previousCode=Previous Procedure Code
 governmentprocedures.addGovProcedures=Add government procedure

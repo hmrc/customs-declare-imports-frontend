@@ -195,8 +195,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryGovernmentProcedure: Arbitrary[GovernmentProcedure] = Arbitrary {
     for {
-      currentCode <- option(arbitrary[String].map(_.take(70)))
-      previousCode <- option(arbitrary[String].map(_.take(17)))
+      currentCode <- option(arbitrary[String].map(_.take(2)))
+      previousCode <- option(arbitrary[String].map(_.take(2)))
+      if currentCode.exists(_.nonEmpty) || previousCode.exists(_.nonEmpty)
     } yield GovernmentProcedure(currentCode, previousCode)
   }
 
@@ -304,7 +305,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryGovernmentAgencyGoodsItem: Arbitrary[GovernmentAgencyGoodsItem] = Arbitrary {
     for {
       goodsItemValue <- option(arbitraryGoodsItemValueInformation.arbitrary)
-      additionalDocuments <- Gen.listOfN(1, arbitraryGovernmentAgencyGoodsItemAdditionalDocument.arbitrary)
+      additionalDocuments <- Gen.listOf(arbitraryGovernmentAgencyGoodsItemAdditionalDocument.arbitrary)
       additionalInformations <- Gen.listOfN(1, arbitraryAdditionalInfo.arbitrary)
       aeoMutualRecognitionParties <- Gen.listOfN(1, arbitraryRoleBasedParty.arbitrary)
       domesticParties <- Gen.listOfN(1, arbitraryRoleBasedParty.arbitrary)
@@ -321,7 +322,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       typeCode <- option(arbitrary[String].map(_.take(2)))
       amount   <- option(arbitrary[Amount])
-      if typeCode.nonEmpty || amount.nonEmpty
+      if typeCode.nonEmpty || amount.exists(a => a.value.nonEmpty || a.currencyId.nonEmpty)
     } yield {
       ChargeDeduction(typeCode, amount)
     }

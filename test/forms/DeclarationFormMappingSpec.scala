@@ -24,7 +24,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
-import uk.gov.hmrc.wco.dec._
+import uk.gov.hmrc.wco.dec.{GovernmentProcedure, _}
 
 class DeclarationFormMappingSpec extends WordSpec
   with MustMatchers
@@ -233,7 +233,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll { roleParty: RoleBasedParty =>
 
           Form(roleBasedPartyMapping).fillAndValidate(roleParty).fold(
-            _       => fail("form should not fail"),
+            _ => fail("form should not fail"),
             success => success mustBe roleParty
           )
         }
@@ -250,7 +250,7 @@ class DeclarationFormMappingSpec extends WordSpec
             val data = roleParty.copy(id = Some(id))
             Form(roleBasedPartyMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("Role based party id should be less than or equal to 17 characters"),
-              _      => fail("should not succeed")
+              _ => fail("should not succeed")
             )
         }
       }
@@ -287,7 +287,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll { amount: Amount =>
 
           Form(amountMapping).fillAndValidate(amount).fold(
-            e       => fail(s"form should not fail: ${e.errors}"),
+            e => fail(s"form should not fail: ${e.errors}"),
             success => success mustBe amount
           )
         }
@@ -295,7 +295,6 @@ class DeclarationFormMappingSpec extends WordSpec
     }
 
     "fail" when {
-
       "currencyId is not a currency" in {
 
         val badData = stringsExceptSpecificValues(config.Options.currencyTypes.map(_._2).toSet)
@@ -418,6 +417,54 @@ class DeclarationFormMappingSpec extends WordSpec
           _ must haveErrorMessage("Charges code, currency id or amount are required"),
           _ => fail("form should not succeed")
         )
+      }
+    }
+  }
+  "GovernmentProcedure Mapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { govermentProcedure: GovernmentProcedure =>
+          Form(governmentProcedureMapping).fillAndValidate(govermentProcedure).fold(
+            _ => fail("form should not fail"),
+            success => success mustBe govermentProcedure
+          )
+        }
+      }
+    }
+    "Current Code and Previous Code are missing" in {
+
+      Form(governmentProcedureMapping).bind(Map[String, String]()).fold(
+        _ must haveErrorMessage("To add procedure codes you must provide Current Code or Previous code"),
+        _ => fail("Should not succeed")
+      )
+    }
+
+    "currentCode is longer than 2 characters" in {
+
+      forAll(arbitrary[GovernmentProcedure], minStringLength(2)) {
+        (governmentProcedure, code) =>
+
+          val data = governmentProcedure.copy(currentCode = Some(code))
+          Form(governmentProcedureMapping).fillAndValidate(data).fold(
+            _ must haveErrorMessage("Current code should be less than or equal to 2 characters"),
+            _ => fail("should not succeed")
+          )
+      }
+    }
+
+    "previousCode is longer than 2 characters" in {
+
+      forAll(arbitrary[GovernmentProcedure], minStringLength(2)) {
+        (governmentProcedure, code) =>
+
+          val data = governmentProcedure.copy(previousCode = Some(code))
+          Form(governmentProcedureMapping).fillAndValidate(data).fold(
+            _ must haveErrorMessage("Previous code  should be less than or equal to 2 characters"),
+            _ => fail("should not succeed")
+          )
       }
     }
   }
