@@ -368,6 +368,17 @@ addPreviousDocument.table.multiple.heading=Previous Documents added
 addPreviousDocument.table.empty=No Previous Documents available
 addPreviousDocument.addPreviousDocumentButton=Add Previous Document
 
+## Add Deferred Payments
+addDeferredPayment.title=Deferred Payments
+addDeferredPayment.heading=Deferred Payments
+addDeferredPayment.id=Deferred Payment ID
+addDeferredPayment.categoryCode=Deferred Payment Category
+addDeferredPayment.typeCode=Deferred Payment Type
+addDeferredPayment.table.heading=Deferred Payment added
+addDeferredPayment.table.multiple.heading=Deferred Payments added
+addDeferredPayment.table.empty.heading=No Deferred Payments available
+addDeferredPayment.addDeferredPaymentButton=Add Deferred Payment
+
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Government agency goods item
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
