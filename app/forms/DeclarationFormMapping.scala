@@ -102,9 +102,10 @@ object DeclarationFormMapping {
     .verifying("You must provide an ID or role code", require1Field[RoleBasedParty](_.id, _.roleCode))
 
   val governmentProcedureMapping = mapping(
-    "currentCode" -> optional(text.verifying("current Code  should be less than or equal to 7 characters", _.length <= 7)), // max 7 chars
-    "previousCode" -> optional(text.verifying("previous Code  should be less than or equal to 7 characters", _.length <= 7)) // max 7 chars
+    "currentCode" -> optional(text.verifying("Current code should be less than or equal to 2 characters", _.length <= 2)), // max 7 chars
+    "previousCode" -> optional(text.verifying("Previous code  should be less than or equal to 2 characters", _.length <= 2)) // max 7 chars
   )(GovernmentProcedure.apply)(GovernmentProcedure.unapply)
+    .verifying("To add procedure codes you must provide Current Code or Previous code", require1Field[GovernmentProcedure](_.currentCode, _.previousCode))
 
   val originMapping = mapping(
     "countryCode" -> optional(text.verifying("country Code  should be max of 4 characters", _.length <= 4)), // max 4 chars //expects ISO-3166-1 alpha2 code

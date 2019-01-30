@@ -25,8 +25,9 @@
   title = messages("governmentprocedures.title"),
   bodyClasses = None) {
 
-  @helpers.form(action = GovernmentAgencyGoodsItemsController.handleGovernmentProceduresSubmit()) {
+    @helpers.form(action = controllers.goodsitems.routes.GovernmentProceduresController.onSubmit()) {
 
+    @components.error_summary(form.errors)
     <fieldset>
       <legend>
         <h1>@messages("governmentprocedures.title")</h1>
@@ -56,10 +57,10 @@
       @components.input_text(field = form("previousCode"),label = messages("governmentprocedures.previousCode"))
     </fieldset>
 
-    <div class="section">
-        <button class="button" id="Add" value="Add" name = "submit">@messages("governmentprocedures.addGovProcedures")</button>
-        <button class="button" id="next" name="submit" value="next">@messages("common.button.continue")</button>
-    </div>
+<div class="section">
+    <button class="button" id="Add" value="Add" name = "submit">Add Government Procedure</button>
+    <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
+</div>
 
-  }
+}
 }
