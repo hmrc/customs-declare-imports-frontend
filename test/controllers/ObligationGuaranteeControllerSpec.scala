@@ -94,7 +94,6 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
           stringResult must include("ReferenceId should be less than or equal to 35 characters")
           stringResult must include("SecurityDetailsCode should be less than or equal to 3 characters")
           stringResult must include("AccessCode should be less than or equal to 4 characters")
-          stringResult must include("No obligation guarantees added")
         }
       }
     }
@@ -105,8 +104,6 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
         withRequestAndFormBody(postMethod, requestUri, headers, session, tags, emptyValidPayload) { resp =>
           val stringResult = contentAsString(resp)
           status(resp) must be(Status.OK)
-
-          stringResult must include("No obligation guarantees added")
         }
       }
     }

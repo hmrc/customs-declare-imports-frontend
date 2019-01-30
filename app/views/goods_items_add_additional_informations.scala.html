@@ -26,40 +26,33 @@
     bodyClasses = None) {
 
     @helpers.form(action = GovernmentAgencyGoodsItemsController.handleGoodsItemsAdditionalInformationsSubmit()) {
-
-        <legend>
-            <h1>@messages("governmentAgencyGoodsItemAdditionalInfo.title")</h1>
-        </legend>
-
-        @components.error_summary(form.errors)
-
-        @if(additionalInformations.nonEmpty) {
-            <p>@additionalInformations.size @messages("governmentAgencyGoodsItemAdditionalInfo.p.additionalInformationAdded")</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th scope="col">@messages("governmentAgencyGoodsItemAdditionalInfo.statementCode")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItemAdditionalInfo.statementDescription")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItemAdditionalInfo.statementTypeCode")</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @for(item <- additionalInformations) {
-                    <tr>
-                        <td scope="row">@item.statementCode</td>
-                        <td>@item.statementDescription</td>
-                        <td>@item.statementTypeCode</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-        } else {
-            <p>@messages("governmentAgencyGoodsItemAdditionalInfo.noAdditionalInfo")</p>
-        }
-
-
         <fieldset>
+            <legend>
+                <h1>@messages("governmentAgencyGoodsItemAdditionalInfo.title")</h1>
+            </legend>
+
+            @if(additionalInformations.nonEmpty) {
+                <table class="form-group">
+                    <caption>@additionalInformations.size @messages("governmentAgencyGoodsItemAdditionalInfo.p.additionalInformationAdded")</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">@messages("governmentAgencyGoodsItemAdditionalInfo.statementCode")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItemAdditionalInfo.statementDescription")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItemAdditionalInfo.statementTypeCode")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for(item <- additionalInformations) {
+                        <tr>
+                            <td scope="row">@item.statementCode</td>
+                            <td>@item.statementDescription</td>
+                            <td>@item.statementTypeCode</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
+
             @components.input_text(field = form("statementCode"),label = messages("governmentAgencyGoodsItemAdditionalInfo.statementCode"))
             @components.input_text(field = form("statementDescription"),label = messages("governmentAgencyGoodsItemAdditionalInfo.statementDescription"))
             @components.input_text(field = form("statementTypeCode"),label = messages("governmentAgencyGoodsItemAdditionalInfo.statementTypeCode"))

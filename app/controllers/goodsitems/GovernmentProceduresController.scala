@@ -29,8 +29,6 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.GovernmentProcedure
 
-import scala.concurrent.Future
-
 @Singleton
 class GovernmentProceduresController @Inject()(actions: Actions, cacheService: CustomsCacheService)
   (implicit appConfig: AppConfig, override val messagesApi: MessagesApi)
@@ -40,7 +38,7 @@ class GovernmentProceduresController @Inject()(actions: Actions, cacheService: C
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map (goodsItem =>
+      cacheService.getByKey(req.eori, CacheKey.goodsItem).map(goodsItem =>
         Ok(views.html.goods_items_government_procedures(governmentProcedureForm,
           goodsItem.map(_.governmentProcedures).getOrElse(Seq.empty))))
   }
@@ -49,7 +47,10 @@ class GovernmentProceduresController @Inject()(actions: Actions, cacheService: C
     implicit request =>
       governmentProcedureForm.bindFromRequest().fold(
         (formWithErrors: Form[GovernmentProcedure]) =>
-          Future.successful(BadRequest(views.html.goods_items_government_procedures(formWithErrors, List.empty))),
+          cacheService.getByKey(request.eori, CacheKey.goodsItem).map { goodsItem =>
+            BadRequest(views.html.goods_items_government_procedures(formWithErrors,
+              goodsItem.map(_.governmentProcedures).getOrElse(Seq.empty)))
+          },
         form =>
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {

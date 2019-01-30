@@ -35,8 +35,8 @@
 
 <table>
     <thead>
-    <th scope="col">Current Code</th>
-    <th scope="col">Previous Code</th>
+    <th scope="col">Requested Procedure Code</th>
+    <th scope="col">Previous Procedure Code</th>
     </thead>
     <tbody>
     @for(item <- governmentProcedures) {
@@ -52,8 +52,8 @@
 
 }
 
-@components.input_text(field = form("currentCode"),label = "Current Code")
-@components.input_text(field = form("previousCode"),label = "Previous Code")
+@components.input_text(field = form("currentCode"),label = "Requested Procedure Code")
+@components.input_text(field = form("previousCode"),label = "Previous Procedure Code")
 
 <div class="section">
     <button class="button" id="Add" value="Add" name = "submit">Add Government Procedure</button>

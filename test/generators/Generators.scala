@@ -190,8 +190,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryGovernmentProcedure: Arbitrary[GovernmentProcedure] = Arbitrary {
     for {
-      currentCode <- option(arbitrary[String].map(_.take(7)))
-      previousCode <- option(arbitrary[String].map(_.take(7)))
+      currentCode <- option(arbitrary[String].map(_.take(2)))
+      previousCode <- option(arbitrary[String].map(_.take(2)))
       if currentCode.exists(_.nonEmpty) || previousCode.exists(_.nonEmpty)
     } yield GovernmentProcedure(currentCode, previousCode)
   }

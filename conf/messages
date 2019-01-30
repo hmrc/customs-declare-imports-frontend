@@ -315,7 +315,6 @@ contains.optional=When specified, the value of this field must be one of the ava
 
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
-obligationGuarantees.noObligationGuaranteesAdded=No obligation guarantees added
 obligationGuarantees.amount=Amount
 obligationGuarantees.id=ID
 obligationGuarantees.referenceId=Reference ID

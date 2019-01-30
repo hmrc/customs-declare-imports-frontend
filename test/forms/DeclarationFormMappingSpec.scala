@@ -278,7 +278,6 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
-  //govermentprocedures
   "GovernmentProcedure Mapping" should {
 
     "bind" when {
@@ -299,32 +298,32 @@ class DeclarationFormMappingSpec extends WordSpec
       "Current Code and Previous Code are missing" in {
 
         Form(governmentProcedureMapping).bind(Map[String, String]()).fold(
-          error => error must haveErrorMessage("To add procedure codes you must provide Current Code or Previous code"),
+          _ must haveErrorMessage("To add procedure codes you must provide Current Code or Previous code"),
           _ => fail("Should not succeed")
         )
       }
 
-      "currentCode is longer than 7 characters" in {
+      "currentCode is longer than 2 characters" in {
 
-        forAll(arbitrary[GovernmentProcedure], minStringLength(8)) {
+        forAll(arbitrary[GovernmentProcedure], minStringLength(2)) {
           (governmentProcedure, code) =>
 
             val data = governmentProcedure.copy(currentCode = Some(code))
             Form(governmentProcedureMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Current code should be less than or equal to 7 characters"),
+              _ must haveErrorMessage("Current code should be less than or equal to 2 characters"),
               _      => fail("should not succeed")
             )
         }
       }
 
-      "previousCode is longer than 7 characters" in {
+      "previousCode is longer than 2 characters" in {
 
-        forAll(arbitrary[GovernmentProcedure], minStringLength(8)) {
+        forAll(arbitrary[GovernmentProcedure], minStringLength(2)) {
           (governmentProcedure, code) =>
 
             val data = governmentProcedure.copy(previousCode = Some(code))
             Form(governmentProcedureMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Previous code  should be less than or equal to 7 characters"),
+              _ must haveErrorMessage("Previous code  should be less than or equal to 2 characters"),
               _ => fail("should not succeed")
             )
         }
