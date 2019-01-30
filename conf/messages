@@ -434,3 +434,9 @@ governmentAgencyGoodsItemValue.valuationAdjustmentAdditionCode=Valuation adjustm
 governmentAgencyGoodsItemMutual.title=Mutual recognition parties
 governmentAgencyGoodsItemMutual.mutualPartiesAdded=mutual recognition parties added
 governmentAgencyGoodsItemMutual.addMutualParties=Add mutual recognition parties
+
+governmentprocedures.title=Government procedures
+governmentprocedures.govProceduresAdded=government procedures added
+governmentprocedures.currentCode=Requested Procedure Code
+governmentprocedures.previousCode=Previous Procedure Code
+governmentprocedures.addGovProcedures=Add government procedure

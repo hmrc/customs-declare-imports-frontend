@@ -22,34 +22,40 @@
 @(form:Form[_], governmentProcedures: Seq[GovernmentProcedure])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
-    title = messages("governmentprocedures.title"),
-    bodyClasses = None) {
+  title = messages("governmentprocedures.title"),
+  bodyClasses = None) {
 
     @helpers.form(action = controllers.goodsitems.routes.GovernmentProceduresController.onSubmit()) {
 
     @components.error_summary(form.errors)
+    <fieldset>
+      <legend>
+        <h1>@messages("governmentprocedures.title")</h1>
+      </legend>
 
-<h2 class="heading-medium">Goods Item Government Procedures</h2>
-@if(governmentProcedures.nonEmpty) {
-    <p>@governmentProcedures.size Government Procedures added</p>
+      @if(governmentProcedures.nonEmpty) {
+        <table class="form-group">
+          <caption>@governmentProcedures.size @messages("governmentprocedures.govProceduresAdded")</caption>
+          <thead>
+            <tr>
+              <th scope="col">@messages("governmentprocedures.currentCode")</th>
+              <th scope="col">@messages("governmentprocedures.previousCode")</th>
+            </tr>
+          </thead>
+          <tbody>
+          @for(item <- governmentProcedures) {
+            <tr>
+              <td scope="row">@item.currentCode</td>
+              <td scope="row">@item.previousCode</td>
+           </tr>
+          }
+          </tbody>
+        </table>
+      }
 
-<table>
-    <thead>
-    <th scope="col">Requested Procedure Code</th>
-    <th scope="col">Previous Procedure Code</th>
-    </thead>
-    <tbody>
-    @for(item <- governmentProcedures) {
-    <tr>
-        <td scope="row">@item.currentCode</td>
-        <td scope="row">@item.previousCode</td>
-   </tr>
-    }
-    </tbody>
-</table>
-}
-@components.input_text(field = form("currentCode"),label = "Requested Procedure Code")
-@components.input_text(field = form("previousCode"),label = "Previous Procedure Code")
+      @components.input_text(field = form("currentCode"),label = messages("governmentprocedures.currentCode"))
+      @components.input_text(field = form("previousCode"),label = messages("governmentprocedures.previousCode"))
+    </fieldset>
 
 <div class="section">
     <button class="button" id="Add" value="Add" name = "submit">Add Government Procedure</button>
