@@ -42,7 +42,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   val addOriginsPageUri = uriWithContextPath("/submit-declaration-goods/add-origins")
   val addManufacturersPageUri = uriWithContextPath("/submit-declaration-goods/add-manufacturers")
   val addPackagingsPageUri = uriWithContextPath("/submit-declaration-goods/add-packagings")
-  val addPreviousDocsPageUri = uriWithContextPath("/submit-declaration-goods/add-previous-documents")
   val get = "GET"
   val postMethod = "POST"
 
@@ -356,34 +355,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
         content should include element withAttrValue("name", "heightMeasure")
         content should include element withAttrValue("name", "volumeMeasure.unitCode")
         content should include element withAttrValue("name", "volumeMeasure.value")
-      }
-    }
-  }
-
-  "show addPreviousDocsPage fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(None)
-      withRequest(get, addPreviousDocsPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No Previous Documents available")
-        content should include element withAttrValue("name", "categoryCode")
-        content should include element withAttrValue("name", "id")
-        content should include element withAttrValue("name", "typeCode")
-        content should include element withAttrValue("name", "lineNumeric")
-      }
-    }
-  }
-
-  "pre-populate addPreviousDocsPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
-      withRequest(get, addPreviousDocsPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("1 Goods Item Previous Documents added")
-        content should include element withAttrValue("name", "categoryCode")
-        content should include element withAttrValue("name", "id")
-        content should include element withAttrValue("name", "typeCode")
-        content should include element withAttrValue("name", "lineNumeric")
       }
     }
   }

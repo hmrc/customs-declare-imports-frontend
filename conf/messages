@@ -367,6 +367,7 @@ addPreviousDocument.table.heading=Previous Document added
 addPreviousDocument.table.multiple.heading=Previous Documents added
 addPreviousDocument.table.empty=No Previous Documents available
 addPreviousDocument.addPreviousDocumentButton=Add Previous Document
+addPreviousDocument.goodsitem.title=Goods Item Previous Documents
 
 ## Add Additions and Deductions
 addAdditionsAndDeductions.title=Additions and Deductions

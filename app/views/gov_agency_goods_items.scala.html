@@ -99,7 +99,7 @@
                     <th scope="row">@messages("governmentAgencyGoodsItem.previousDocuments")</th>
                     <td>@goodsItem.map(_.previousDocuments.size)</td>
                     <td>
-                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showPreviousDocuments().url" name="add" class="button" id="AddPreviousDocuments">@messages("governmentAgencyGoodsItem.add")
+                        <a href="@controllers.goodsitems.routes.PreviousDocumentsController.onPageLoad().url" name="add" class="button" id="AddPreviousDocuments">@messages("governmentAgencyGoodsItem.add")
                             <span class="visually-hidden">@messages("governmentAgencyGoodsItem.previousDocuments")</span></a>
                     </td>
                 </tr>
