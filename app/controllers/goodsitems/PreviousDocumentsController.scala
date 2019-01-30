@@ -27,9 +27,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.wco.dec.{GovernmentProcedure, PreviousDocument}
-
-import scala.concurrent.Future
+import uk.gov.hmrc.wco.dec.PreviousDocument
 
 @Singleton
 class PreviousDocumentsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
@@ -49,7 +47,8 @@ class PreviousDocumentsController @Inject()(actions: Actions, cacheService: Cust
     implicit request =>
       previousDocumentForm.bindFromRequest().fold(
         (formWithErrors: Form[PreviousDocument]) =>
-          Future.successful(BadRequest(views.html.goods_items_previousdocs(formWithErrors, List.empty))),
+          cacheService.getByKey(request.eori, CacheKey.goodsItem).map(goodsItem =>
+          BadRequest(views.html.goods_items_previousdocs(formWithErrors, goodsItem.map(_.previousDocuments).getOrElse(Seq.empty)))),
         form =>
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {

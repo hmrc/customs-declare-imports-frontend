@@ -49,7 +49,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
 
   def showGoodsItemValuePage(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit req =>
-      cacheService.fetchAndGetEntry[GoodsItemValueInformation](req.user.eori.get,
+      cacheService.fetchAndGetEntry[GoodsItemValueInformation](req.eori.value,
         goodsItemValueInformationKey).map {
         case Some(form) => Ok(views.html.goods_item_value(goodsItemValueInformationForm.fill(form)))
         case _ => Ok(views.html.goods_item_value(goodsItemValueInformationForm))
@@ -65,7 +65,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
           Logger.info("goodsItemValue form --->" + form)
           val updatedGoodsItem = GovernmentAgencyGoodsItem(goodsItemValue = Some(form))
 
-          cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, CacheKey.goodsItem.key, updatedGoodsItem).map {
+          cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map {
             _ => Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
           }
         })
@@ -73,7 +73,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
 
   def showGoodsItemPage(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>
-      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.user.eori.get, CacheKey.goodsItem.key).map(res =>
+      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key).map(res =>
         Ok(views.html.gov_agency_goods_items(res)))
   }
 
@@ -136,7 +136,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
               case None => GovernmentAgencyGoodsItem(additionalInformations = Seq(form))
             }
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
+            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
               Ok(views.html.goods_items_add_additional_informations(additionalInformationform, updatedGoodsItem.additionalInformations))
             }
           })
@@ -155,7 +155,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
                 case None => GovernmentAgencyGoodsItem(additionalDocuments = Seq(form))
               }
 
-              cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, CacheKey.goodsItem.key, updatedGoodsItem).map {
+              cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map {
                 _ =>
                   Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentform, updatedGoodsItem.additionalDocuments))
               }
@@ -175,7 +175,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
               case None => GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = Seq(form))
             }
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, CacheKey.goodsItem.key,
+            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key,
               updatedGoodsItem).map { _ =>
               Ok(views.html.goods_items_role_based_parties(roleBasedPartiesForm, updatedGoodsItem.aeoMutualRecognitionParties))
             }
@@ -194,7 +194,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
               case None => GovernmentAgencyGoodsItem(origins = Seq(form))
             }
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, CacheKey.goodsItem.key,
+            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key,
               updatedGoodsItem).map { _ =>
               Ok(views.html.goods_items_origins(originsForm, updatedGoodsItem.origins))
             }
@@ -213,7 +213,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
               case None => GovernmentAgencyGoodsItem(manufacturers = Seq(form))
             }
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
+            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
               Ok(views.html.goods_items_named_entity_parties(namedEntityWithAddressForm, updatedGoodsItem.manufacturers))
             }
           })
@@ -232,7 +232,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
               case None => GovernmentAgencyGoodsItem(packagings = Seq(form))
             }
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.user.eori.get, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
+            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
               Ok(views.html.goods_items_packagings(packagingForm, updatedGoodsItem.packagings))
             }
           })

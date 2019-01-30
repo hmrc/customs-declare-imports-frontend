@@ -29,36 +29,36 @@
 
     @components.error_summary(form.errors)
 
-        <h2 class="heading-medium">Goods Item Government Procedures</h2>
-        @if(governmentProcedures.nonEmpty) {
-        <p>>@governmentProcedures.size Government Procedures added</p>
+<h2 class="heading-medium">Goods Item Government Procedures</h2>
+@if(governmentProcedures.nonEmpty) {
+<p>>@governmentProcedures.size Government Procedures added</p>
 
-        <table>
-            <thead>
-            <th scope="col">Current Code</th>
-            <th scope="col">Previous Code</th>
-            </thead>
-            <tbody>
-            @for(item <- governmentProcedures) {
-            <tr>
-                <td scope="row">@item.currentCode</td>
-                <td scope="row">@item.previousCode</td>
-           </tr>
-            }
-            </tbody>
-        </table>
-        } else {
-        <p>No Government Procedures available</p>
-
-        }
-
-        @components.input_text(field = form("currentCode"),label = "Current Code")
-        @components.input_text(field = form("previousCode"),label = "Previous Code")
-
-        <div class="section">
-            <button class="button" id="Add" value="Add" name = "submit">Add Government Procedure</button>
-            <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
-        </div>
-
+<table>
+    <thead>
+    <th scope="col">Requested Procedure Code</th>
+    <th scope="col">Previous Procedure Code</th>
+    </thead>
+    <tbody>
+    @for(item <- governmentProcedures) {
+    <tr>
+        <td scope="row">@item.currentCode</td>
+        <td scope="row">@item.previousCode</td>
+   </tr>
     }
+    </tbody>
+</table>
+} else {
+<p>No Government Procedures available</p>
+
+}
+
+@components.input_text(field = form("currentCode"),label = "Requested Procedure Code")
+@components.input_text(field = form("previousCode"),label = "Previous Procedure Code")
+
+<div class="section">
+    <button class="button" id="Add" value="Add" name = "submit">Add Government Procedure</button>
+    <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
+</div>
+
+}
 }

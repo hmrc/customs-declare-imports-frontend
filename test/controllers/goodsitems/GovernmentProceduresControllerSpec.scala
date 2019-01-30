@@ -59,8 +59,8 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
 
   ".onPageLoad" should {
 
-    behave like okEndpoint("/submit-declaration-goods/add-government-procedures")
-    behave like authenticatedEndpoint("/submit-declaration-goods/add-government-procedures")
+    behave like okEndpoint(addGovtProcedureCodesPageUri)
+    behave like authenticatedEndpoint(addGovtProcedureCodesPageUri)
 
     "return OK" when {
 
@@ -93,14 +93,15 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
 
       forAll(arbitrary[SignedInUser], goodsItemGen) {
         case (user, data) =>
+          withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, data) {
+            when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
+              .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
 
-          when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any(), any()))
-            .thenReturn(Future.successful(data))
-          withCaching(data)
-          val result = controller(Some(user)).onPageLoad(fakeRequest)
+            val result = controller(Some(user)).onPageLoad(fakeRequest)
 
-          status(result) mustBe OK
-          contentAsString(result) mustBe view(govProcedures = data.map(_.governmentProcedures).getOrElse(Seq.empty))
+            status(result) mustBe OK
+            contentAsString(result) mustBe view(govProcedures = data.map(_.governmentProcedures).getOrElse(Seq.empty))
+          }
       }
     }
   }
@@ -151,15 +152,17 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
             previous <- stringsLongerThan(2)
           } yield gp.copy(currentCode = Some(current), previousCode = Some(previous))
 
-        forAll(arbitrary[SignedInUser], badData) {
-          case (user, data) =>
+        forAll(arbitrary[SignedInUser], badData, goodsItemGen) {
+          case (user, invalidFormData, data) =>
+            withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, data) {
 
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(data): _*)
-            val badForm = form.fillAndValidate(data)
-            val result = controller(Some(user)).onSubmit(request)
+              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(invalidFormData): _*)
+              val badForm = form.fillAndValidate(invalidFormData)
+              val result = controller(Some(user)).onSubmit(request)
 
-            status(result) mustBe BAD_REQUEST
-            contentAsString(result) mustBe view(badForm,Seq.empty)
+              status(result) mustBe BAD_REQUEST
+              contentAsString(result) mustBe view(badForm, data.map(_.governmentProcedures).getOrElse(Seq.empty))
+            }
         }
       }
     }
