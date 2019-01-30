@@ -18,8 +18,9 @@
 @import uk.gov.hmrc.play.views.html._
 @import controllers.routes._
 @import uk.gov.hmrc.wco.dec.PreviousDocument
+@import viewmodels.HtmlTable
 
-@(form:Form[_], docs: Seq[PreviousDocument])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
+@(form:Form[_], previousDocuments: Seq[PreviousDocument])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
     title = messages("previousDocuments.title"),
@@ -29,32 +30,32 @@
 
     @components.error_summary(form.errors)
 
-    <h2 class="heading-medium">Government Agency Goods Item Previous Documents</h2>
-    @if(docs.nonEmpty) {
-    <p>@docs.size Goods Item Previous Documents added</p>
-        <table>
-            <thead>
-            <th scope="col">Document Category</th>
-            <th scope="col">Previous Document Reference</th>
-            <th scope="col">Previous Document Type</th>
-            <th scope="col">Goods Item Identifier</th>
-            </thead>
-            <tbody>
-            @for(item <- docs) {
-            <tr>
-                <td scope="row">@item.categoryCode</td>
-                <td scope="row">@item.id</td>
-                <td scope="row">@item.typeCode</td>
-                <td scope="row">@item.lineNumeric</td>
-           </tr>
-            }
-            </tbody>
-        </table>
-}
-        @components.input_text(field = form("categoryCode"),label = "Document Category")
-        @components.input_text(field = form("id"),label = "Previous Document Reference")
-        @components.input_text(field = form("typeCode"),label = "Previous Document Type")
-        @components.input_text(field = form("lineNumeric"),label = "Goods Item Identifier")
+    <h2 class="heading-medium">@messages("addPreviousDocument.goodsitem.title")</h2>
+    @if(previousDocuments.isEmpty) {
+    } else {
+        @if(previousDocuments.size == 1) {
+    <p>@previousDocuments.size @messages("addPreviousDocument.table.heading")</p>
+    } else {
+        <p>@previousDocuments.size @messages("addPreviousDocument.table.multiple.heading")</p>
+    }
+    }
+
+        @components.table.table(
+        HtmlTable(
+        messages("addPreviousDocument.categoryCode"),
+        messages("addPreviousDocument.id"),
+        messages("addPreviousDocument.typeCode"),
+        messages("addPreviousDocument.lineNumeric")
+        )(previousDocuments.map(a => (a.categoryCode.getOrElse(""),
+        a.id.getOrElse(""),
+        a.typeCode.getOrElse(""),
+        a.lineNumeric.getOrElse("")))))
+
+
+        @components.input_text(field = form("categoryCode"),label = messages("addPreviousDocument.categoryCode"))
+        @components.input_text(field = form("id"),label = messages("addPreviousDocument.id"))
+        @components.input_text(field = form("typeCode"),label = messages("addPreviousDocument.typeCode"))
+        @components.input_text(field = form("lineNumeric"),label = messages("addPreviousDocument.lineNumeric"))
 
     <div class="section">
         <button class="button" id="Add" value="Add" name = "submit">Add Previous Docs</button>
