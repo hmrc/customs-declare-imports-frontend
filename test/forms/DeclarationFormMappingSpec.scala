@@ -571,11 +571,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "valid values are bound" in {
 
-        forAll { securityDetails: SecurityDetailsCode =>
+        forAll { guarantee: GuaranteeType =>
 
-          Form(guaranteeTypeMapping).fillAndValidate(securityDetails.value).fold(
+          Form(guaranteeTypeMapping).fillAndValidate(guarantee.value).fold(
             _ => fail("form should not fail"),
-            _ mustBe securityDetails.value
+            _ mustBe guarantee.value
           )
         }
       }

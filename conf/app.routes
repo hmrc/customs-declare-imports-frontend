@@ -29,6 +29,8 @@ POST        /submit-declaration/add-additions-and-deductions   controllers.Addit
 GET         /submit-declaration/add-container-identification-number   controllers.ContainerIdentificationNumberController.onPageLoad()
 POST        /submit-declaration/add-container-identification-number   controllers.ContainerIdentificationNumberController.onSubmit()
 
+GET         /submit-declaration/add-guarantee-type             controllers.GuaranteeTypeController.onPageLoad()
+
 POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
 GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)
 GET         /submit-declaration/:name                          controllers.DeclarationController.displaySubmitForm(name)

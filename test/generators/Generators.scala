@@ -28,7 +28,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val dontShrinkStrings: Shrink[String] = Shrink.shrinkAny
   implicit val dontShrinkDecimals: Shrink[BigDecimal] = Shrink.shrinkAny
 
-  case class SecurityDetailsCode(value: ObligationGuarantee)
+  case class GuaranteeType(value: ObligationGuarantee)
 
   def genIntersperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
 
@@ -343,9 +343,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     }
   }
 
-  implicit val arbitrarySecurityDetailsCode: Arbitrary[SecurityDetailsCode] = Arbitrary {
+  implicit val arbitrarySecurityDetailsCode: Arbitrary[GuaranteeType] = Arbitrary {
     arbitrary[Char]
-      .map(c => SecurityDetailsCode(ObligationGuarantee(securityDetailsCode = Some(c.toString))))
+      .map(c => GuaranteeType(ObligationGuarantee(securityDetailsCode = Some(c.toString))))
   }
 
   def intGreaterThan(min: Int): Gen[Int] =

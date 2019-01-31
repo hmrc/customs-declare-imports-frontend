@@ -41,5 +41,20 @@ class GuaranteeTypeController @Inject()(actions: Actions, cache: CustomsCacheSer
     }
   }
 
-  def onSubmit: Action[AnyContent] = ???
+  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+
+    form.bindFromRequest().fold(
+      errors =>
+        cache.getByKey(req.eori, CacheKey.guaranteeType).map { types =>
+
+          BadRequest(guarantee_type(errors, types.getOrElse(Seq.empty)))
+        },
+
+      guarantee =>
+        cache
+          .upsert(req.eori, CacheKey.guaranteeType)
+                 (() => Seq(guarantee), guarantee +: _)
+          .map(_ => Redirect(routes.GuaranteeTypeController.onPageLoad()))
+    )
+  }
 }

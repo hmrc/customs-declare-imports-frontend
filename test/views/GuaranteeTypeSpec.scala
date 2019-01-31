@@ -53,7 +53,7 @@ class GuaranteeTypeSpec extends ViewBehaviours
 
     "render security details code input" in {
 
-      forAll { details: SecurityDetailsCode =>
+      forAll { details: GuaranteeType =>
 
         val popForm = form.fillAndValidate(details.value)
         val input   = input_text(popForm("securityDetailsCode"), "Security details code")
@@ -65,7 +65,7 @@ class GuaranteeTypeSpec extends ViewBehaviours
 
     "render table of all security details codes" in {
 
-      val dataGen = listOf(arbitrary[SecurityDetailsCode]).map(_.map(_.value))
+      val dataGen = listOf(arbitrary[GuaranteeType]).map(_.map(_.value))
 
       forAll(dataGen) { details =>
 
