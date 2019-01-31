@@ -43,7 +43,6 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
   val originsForm: Form[Origin] = Form(originMapping)
   val namedEntityWithAddressForm: Form[NamedEntityWithAddress] = Form(namedEntityWithAddressMapping)
   val packagingForm: Form[Packaging] = Form(packagingMapping)
-  val previousDocumentForm: Form[PreviousDocument] = Form(previousDocumentMapping)
 
   val goodsItemValueInformationKey = "goodsItemValueInformation"
 
@@ -78,12 +77,6 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
         Ok(views.html.gov_agency_goods_items(res)))
   }
 
-  def showPreviousDocuments(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
-        Ok(views.html.goods_items_previousdocs(previousDocumentForm, goodsItem.map(_.previousDocuments).getOrElse(Seq.empty)))
-      }
-  }
 
   def showPackagings(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit req =>
@@ -245,21 +238,4 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
           })
   }
 
-  def handlePreviousDcoumentsSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit request =>
-      previousDocumentForm.bindFromRequest().fold(
-        (formWithErrors: Form[PreviousDocument]) =>
-          Future.successful(BadRequest(views.html.goods_items_previousdocs(formWithErrors, List.empty))),
-        form =>
-          cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
-            val updatedGoodsItem = res match {
-              case Some(goodsItem) => goodsItem.copy(previousDocuments = goodsItem.previousDocuments :+ form)
-              case None => GovernmentAgencyGoodsItem(previousDocuments = Seq(form))
-            }
-
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
-              Ok(views.html.goods_items_previousdocs(previousDocumentForm, updatedGoodsItem.previousDocuments))
-            }
-          })
-  }
 }

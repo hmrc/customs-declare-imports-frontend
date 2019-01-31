@@ -95,7 +95,6 @@ trait CustomsSpec extends PlaySpec
 
     when(mockCustomsCacheService.getByKey(eqTo(eori), eqTo(key))(any(), any(), any()))
       .thenReturn(Future.successful(data))
-
     test
   }
 

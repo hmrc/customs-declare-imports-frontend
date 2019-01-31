@@ -18,48 +18,48 @@
 @import uk.gov.hmrc.play.views.html._
 @import controllers.routes._
 @import uk.gov.hmrc.wco.dec.PreviousDocument
+@import viewmodels.HtmlTable
 
-@(form:Form[_], docs: Seq[PreviousDocument])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
+@(form:Form[_], previousDocuments: Seq[PreviousDocument])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
     title = messages("previousDocuments.title"),
     bodyClasses = None) {
 
-    @helpers.form(action = GovernmentAgencyGoodsItemsController.handlePreviousDcoumentsSubmit()) {
+    @helpers.form(action = controllers.goodsitems.routes.PreviousDocumentsController.onSubmit()) {
 
-<h2 class="heading-medium">Government Agency Goods Item Previous Documents</h2>
-@if(docs.nonEmpty) {
-<p>@docs.size Goods Item Previous Documents added</p>
-    <table>
-        <thead>
-        <th scope="col">Category Code</th>
-        <th scope="col">Id</th>
-        <th scope="col">typeCode</th>
-        <th scope="col">lineNumeric</th>
-        </thead>
-        <tbody>
-        @for(item <- docs) {
-        <tr>
-            <td scope="row">@item.categoryCode</td>
-            <td scope="row">@item.id</td>
-            <td scope="row">@item.typeCode</td>
-            <td scope="row">@item.lineNumeric</td>
-       </tr>
-        }
-        </tbody>
-    </table>
+    @components.error_summary(form.errors)
+
+    <h2 class="heading-medium">@messages("addPreviousDocument.goodsitem.title")</h2>
+    @if(previousDocuments.isEmpty) {
     } else {
-        <p>No Previous Documents available</p>
+        @if(previousDocuments.size == 1) {
+    <p>@previousDocuments.size @messages("addPreviousDocument.table.heading")</p>
+    } else {
+        <p>@previousDocuments.size @messages("addPreviousDocument.table.multiple.heading")</p>
+    }
     }
 
-@components.input_text(field = form("categoryCode"),label = "Category Code")
-@components.input_text(field = form("id"),label = "Id")
-@components.input_text(field = form("typeCode"),label = "typeCode")
-@components.input_text(field = form("lineNumeric"),label = "lineNumeric")
+        @components.table.table(
+        HtmlTable(
+        messages("addPreviousDocument.categoryCode"),
+        messages("addPreviousDocument.id"),
+        messages("addPreviousDocument.typeCode"),
+        messages("addPreviousDocument.lineNumeric")
+        )(previousDocuments.map(a => (a.categoryCode.getOrElse(""),
+        a.id.getOrElse(""),
+        a.typeCode.getOrElse(""),
+        a.lineNumeric.getOrElse("")))))
 
-<div class="section">
-    <button class="button" id="Add" value="Add" name = "submit">Add Previous Docs</button>
-    <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
-</div>
+
+        @components.input_text(field = form("categoryCode"),label = messages("addPreviousDocument.categoryCode"))
+        @components.input_text(field = form("id"),label = messages("addPreviousDocument.id"))
+        @components.input_text(field = form("typeCode"),label = messages("addPreviousDocument.typeCode"))
+        @components.input_text(field = form("lineNumeric"),label = messages("addPreviousDocument.lineNumeric"))
+
+    <div class="section">
+        <button class="button" id="Add" value="Add" name = "submit">Add Previous Docs</button>
+        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
+    </div>
 }
 }
