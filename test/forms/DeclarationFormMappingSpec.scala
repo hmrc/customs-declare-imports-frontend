@@ -278,6 +278,45 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
+  "transportEquipmentMapping" should {
+
+    "bind" when {
+
+      "valid values are provided" in {
+
+        forAll { transport: TransportEquipment =>
+
+          Form(transportEquipmentMapping).fillAndValidate(transport).fold(
+            _ => fail("form should not fail"),
+            _ mustBe transport
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "id is longer than 17 characters" in {
+
+        forAll(stringsLongerThan(17)) { id =>
+
+          Form(transportEquipmentMapping).bind(Map("id" -> id)).fold(
+            _ must haveErrorMessage("Container Identification number must be 17 characters or less"),
+            _ => fail("form should fail")
+          )
+        }
+      }
+
+      "id is not provided" in {
+
+        Form(transportEquipmentMapping).bind(Map[String, String]()).fold(
+          _ must haveErrorMessage("Container Identification number is required"),
+          _ => fail("form should fail")
+        )
+      }
+    }
+  }
+
   "amountMapping" should {
 
     "bind" when {
@@ -295,6 +334,7 @@ class DeclarationFormMappingSpec extends WordSpec
     }
 
     "fail" when {
+
       "currencyId is not a currency" in {
 
         val badData = stringsExceptSpecificValues(config.Options.currencyTypes.map(_._2).toSet)
@@ -420,6 +460,7 @@ class DeclarationFormMappingSpec extends WordSpec
       }
     }
   }
+
   "GovernmentProcedure Mapping" should {
 
     "bind" when {

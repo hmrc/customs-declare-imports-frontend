@@ -318,6 +318,12 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       domesticParties, governmentProcedures, manufacturers, origins, packagings, previousDocuments)
   }
 
+  implicit val arbitraryTransportEquipment = Arbitrary {
+    stringsWithMaxLength(17)
+      .suchThat(_.nonEmpty)
+      .map(s => TransportEquipment(0, Some(s)))
+  }
+
   implicit val arbitraryChargeDeduction: Arbitrary[ChargeDeduction] = Arbitrary {
     for {
       typeCode <- option(arbitrary[String].map(_.take(2)))
