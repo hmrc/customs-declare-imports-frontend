@@ -503,4 +503,44 @@ class DeclarationFormMappingSpec extends WordSpec
       }
     }
   }
+
+  "obligationGauranteeMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll(arbitrary[ObligationGuarantee]) { arbitraryObligationGuarantee =>
+
+          Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee).fold(
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe arbitraryObligationGuarantee
+          )
+        }
+      }
+    }
+
+    "fail to bind" when {
+
+      "reference id length is greater than 35" in {
+        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(35)){ (arbitraryObligationGuarantee, invalidReferenceId) =>
+
+          Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(referenceId = Some(invalidReferenceId))).fold(
+            error => error.error("referenceId") must haveMessage("ReferenceId should be less than or equal to 35 characters"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
+
+      "id length is greater than 35" in {
+        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(35)){(arbitraryObligationGuarantee, invalidId) =>
+
+          Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(id = Some(invalidId))).fold(
+            error => error.error("id") must haveMessage("Id should be less than or equal to 35 characters"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
+    }
+  }
 }
