@@ -18,18 +18,34 @@ package forms
 
 import domain.GoodsItemValueInformation
 import play.api.data.Forms._
+import play.api.data.Mapping
 import uk.gov.hmrc.wco.dec._
 
 object DeclarationFormMapping {
+
+  def require1Field[T](fs: (T => Option[_])*): T => Boolean =
+    t => fs.exists(f => f(t).nonEmpty)
+
+  def requireAllDependantFields[T](primary: T => Option[_])(fs: (T => Option[_])*): T => Boolean =
+    t => primary(t).fold(true)(_ => fs.forall(f => f(t).nonEmpty))
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text),
     "roleCode" -> optional(text.verifying("roleCode is only 3 characters", _.length <= 3))
   )(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.apply)(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.unapply)
 
-
-  val amountMapping = mapping("currencyId" -> optional(text.verifying("currencyId is only 3 characters", _.length <= 3)),
-    "value" -> optional(bigDecimal.verifying("amount must not be negative", a => a > 0)))(Amount.apply)(Amount.unapply)
+  val amountMapping: Mapping[Amount] = mapping(
+    "currencyId" -> optional(
+      text
+        .verifying("Currency ID is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
+    "value" -> optional(
+      bigDecimal
+        .verifying("Amount cannot be greater than 99999999999999.99", _.precision <= 16)
+        .verifying("Amount cannot have more than 2 decimal places", _.scale <= 2)
+        .verifying("Amount must not be negative", _ >= 0))
+  )(Amount.apply)(Amount.unapply)
+    .verifying("Amount is required when currency is provided", requireAllDependantFields[Amount](_.currencyId)(_.value))
+    .verifying("Currency is required when amount is provided", requireAllDependantFields[Amount](_.value)(_.currencyId))
 
   val measureMapping = mapping("unitCode" -> optional(text.verifying("unitCode is only 5 characters", _.length <= 5)),
     "value" -> optional(bigDecimal.verifying("value must not be negative", a => a > 0)))(Measure.apply)(Measure.unapply)
@@ -141,13 +157,14 @@ object DeclarationFormMapping {
     "communications" -> seq(communicationMapping))(ImportExportParty.apply)(ImportExportParty.unapply)
 
   val chargeDeductionMapping = mapping(
-    "chargesTypeCode" -> optional(text.verifying(" Charges code should be less than or equal to 3 characters", _.length <= 3)),
+    "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 2 characters", _.length <= 2)),
     "otherChargeDeductionAmount" -> optional(amountMapping) // Option[Amount] = None
   )(ChargeDeduction.apply)(ChargeDeduction.unapply)
+    .verifying("Charges code, currency id or amount are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
 
 
   val customsValuationMapping = mapping("methodCode" -> optional(text.verifying(" Charges code should be less than or equal to 3 characters", _.length <= 3)), // max 3 chars; not valid outside GovernmentAgencyGoodsItem
-    "freightChargeAmount" -> optional(bigDecimal), //default(bigDecimal, None),
+    "freightChargeAmount" -> optional(bigDecimal), // default(bigDecimal, None),
     "chargeDeductions" -> seq(chargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
 
 
@@ -163,7 +180,7 @@ object DeclarationFormMapping {
       "accessCode" -> optional(text.verifying("AccessCode should be less than or equal to 4 characters", _.length <= 4)),
       "guaranteeOffice" -> optional(officeMapping))(ObligationGuarantee.apply)(ObligationGuarantee.unapply)
 
- val guaranteesFormMapping = mapping("guarantees" -> seq(obligationGauranteeMapping))(ObligationGuaranteeForm.apply)(ObligationGuaranteeForm.unapply)
+  val guaranteesFormMapping = mapping("guarantees" -> seq(obligationGauranteeMapping))(ObligationGuaranteeForm.apply)(ObligationGuaranteeForm.unapply)
 
   val authorisationHolderMapping =
     mapping(
@@ -183,8 +200,13 @@ object DeclarationFormMapping {
   )(PreviousDocument.apply)(PreviousDocument.unapply)
     .verifying("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier", require1Field[PreviousDocument](_.categoryCode, _.id, _.typeCode, _.lineNumeric))
 
-  def require1Field[T](fs: (T => Option[_])*): T => Boolean =
-    t => fs.exists(f => f(t).nonEmpty)
+  val transportEquipmentMapping = mapping(
+    "sequenceNumeric" -> ignored[Int](1),
+    "id" -> optional(text.verifying("Container Identification number must be 17 characters or less", _.size <= 17))
+      .verifying("Container Identification number is required", _.nonEmpty),
+    "seals" -> ignored[Seq[Seal]](Seq.empty)
+  )(TransportEquipment.apply)(TransportEquipment.unapply)
+
 }
 
 case class ObligationGuaranteeForm (guarantees: Seq[ObligationGuarantee] = Seq.empty)

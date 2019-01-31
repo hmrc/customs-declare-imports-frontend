@@ -22,7 +22,6 @@ import generators.Generators
 import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import org.scalatest.OptionValues
 import org.scalatest.mockito.MockitoSugar
@@ -31,36 +30,32 @@ import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.RoleBasedParty
-import views.html.role_based_party
+import uk.gov.hmrc.wco.dec.TransportEquipment
+import views.html.container_identification_number
 
-class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
+class ContainerIdentificationNumberControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
-  with MockitoSugar
   with OptionValues
+  with MockitoSugar
   with EndpointBehaviours {
 
-  def form = Form(roleBasedPartyMapping)
+  val form = Form(transportEquipmentMapping)
+
+  def view(form: Form[TransportEquipment] = form, transports: Seq[TransportEquipment] = Seq.empty): String =
+    container_identification_number(form, transports)(fakeRequest, messages, appConfig).body
 
   def controller(user: SignedInUser) =
-    new DomesticDutyTaxPartyController(new FakeActions(Some(user)), mockCustomsCacheService)
+    new ContainerIdentificationNumberController(new FakeActions(Some(user)), mockCustomsCacheService)
 
-  def view(form: Form[RoleBasedParty] = form, roles: Seq[RoleBasedParty] = Seq.empty): String =
-    role_based_party(
-      form,
-      roles,
-      "domesticDutyTaxParties",
-      routes.DomesticDutyTaxPartyController.onSubmit(),
-      routes.AdditionsAndDeductionsController.onPageLoad()
-    )(fakeRequest, messages, appConfig).body
+  val listGen = option(listOf(arbitrary[TransportEquipment]))
 
-  val listGen: Gen[Option[List[RoleBasedParty]]] = option(listOf(arbitrary[RoleBasedParty]))
+  val uri = "/submit-declaration/add-container-identification-number"
 
   ".onPageLoad" should {
 
-    behave like okEndpoint("/submit-declaration/add-domestic-duty-tax-party")
-    behave like authenticatedEndpoint("/submit-declaration/add-domestic-duty-tax-party")
+    behave like okEndpoint(uri)
+    behave like authenticatedEndpoint(uri)
 
     "return OK" when {
 
@@ -78,7 +73,7 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
 
     "return UNAUTHORIZED" when {
 
-      "user has no eori number" in {
+      "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
 
@@ -94,12 +89,12 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
       forAll(arbitrary[SignedInUser], listGen) {
         (user, data) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.domesticDutyTaxParty, data) {
+          withCleanCache(EORI(user.eori.value), CacheKey.containerIdNos, data) {
 
             val result = controller(user).onPageLoad(fakeRequest)
 
             status(result) mustBe OK
-            contentAsString(result) mustBe view(roles = data.getOrElse(Seq.empty))
+            contentAsString(result) mustBe view(transports = data.getOrElse(Seq.empty))
           }
       }
     }
@@ -107,27 +102,27 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
 
   ".onSubmit" should {
 
-    behave like badRequestEndpoint("/submit-declaration/add-domestic-duty-tax-party", POST)
-    behave like authenticatedEndpoint("/submit-declaration/add-domestic-duty-tax-party", POST)
+    behave like badRequestEndpoint(uri, POST)
+    behave like authenticatedEndpoint(uri, POST)
 
     "return SEE_OTHER" when {
 
       "valid data is submitted" in {
 
-        forAll { (user: SignedInUser, role: RoleBasedParty) =>
+        forAll { (user: SignedInUser, transport: TransportEquipment) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(role): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(transport): _*)
           val result  = controller(user).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.DomesticDutyTaxPartyController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(routes.ContainerIdentificationNumberController.onPageLoad().url)
         }
       }
     }
 
     "return UNAUTHORIZED" when {
 
-      "user has no eori number" in {
+      "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
 
@@ -142,18 +137,16 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
 
       "invalid data is submitted" in {
 
-        val badData = for {
-          r  <- arbitrary[RoleBasedParty]
-          id <- minStringLength(18)
-        } yield r.copy(id = Some(id))
+        val badData =
+          stringsLongerThan(17).map(s => TransportEquipment(0, Some(s)))
 
         forAll(arbitrary[SignedInUser], badData, listGen) {
-          (user, badData, cacheData) =>
+          (user, submitData, cacheData) =>
 
-            withCleanCache(EORI(user.eori.value), CacheKey.domesticDutyTaxParty, cacheData) {
+            withCleanCache(EORI(user.eori.value), CacheKey.containerIdNos, cacheData) {
 
-              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(badData): _*)
-              val popForm = form.fillAndValidate(badData)
+              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(submitData): _*)
+              val popForm = form.fillAndValidate(submitData)
               val result  = controller(user).onSubmit(request)
 
               status(result) mustBe BAD_REQUEST
@@ -165,15 +158,15 @@ class DomesticDutyTaxPartyControllerSpec extends CustomsSpec
 
     "save data in cache" when {
 
-      "valid data is submitted" in {
+      "valid data is submitted "in {
 
-        forAll { (user: SignedInUser, role: RoleBasedParty) =>
+        forAll { (user: SignedInUser, transport: TransportEquipment) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(role): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(transport): _*)
           await(controller(user).onSubmit(request))
 
-          verify(mockCustomsCacheService, atLeastOnce)
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.domesticDutyTaxParty))(any(), any())(any(), any(), any(), any())
+          verify(mockCustomsCacheService, atLeastOnce())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.containerIdNos))(any(), any())(any(), any(), any(), any())
         }
       }
     }

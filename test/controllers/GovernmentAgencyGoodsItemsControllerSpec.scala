@@ -16,6 +16,7 @@
 
 package controllers
 
+import domain.GovernmentAgencyGoodsItem
 import domain.features.Feature
 import generators.Generators
 import org.scalatest.prop.PropertyChecks
@@ -105,7 +106,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
           stringResult must include("customs Value Amount must not be negative")
           stringResult must include("id=\"error-message-sequenceNumeric-input\">This field is required")
           stringResult must include("Real number value expected")
-          stringResult must include("id=\"error-message-statisticalValueAmount_currencyId-input\">currencyId is only 3 characters")
+          stringResult must include("id=\"error-message-statisticalValueAmount_currencyId-input\">Currency ID is not a valid currency")
           stringResult must include("valuationAdjustment should be less than or equal to 4 characters")
           stringResult must include("export Country code should be less than or equal to 2 characters")
           stringResult must include("country code is only 3 characters")
@@ -239,13 +240,20 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate addOriginsPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
-      withRequest(get, addOriginsPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("1 Goods Item Origins added")
-        content should include element withAttrValue("name", "countryCode")
-        content should include element withAttrValue("name", "regionId")
-        content should include element withAttrValue("name", "typeCode")
+
+      forAll { goodsItem: GovernmentAgencyGoodsItem =>
+
+        whenever(goodsItem.origins.size == 1) {
+
+          withCaching(Some(goodsItem))
+          withRequest(get, addOriginsPageUri, headers, session, tags) { resp =>
+            val content = contentAsHtml(resp)
+            contentAsString(resp) must include("1 Goods Item Origins added")
+            content should include element withAttrValue("name", "countryCode")
+            content should include element withAttrValue("name", "regionId")
+            content should include element withAttrValue("name", "typeCode")
+          }
+        }
       }
     }
   }
