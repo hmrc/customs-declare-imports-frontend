@@ -41,7 +41,7 @@
                     <th scope="row">@messages("governmentAgencyGoodsItem.additionalInformation")</th>
                     <td>@goodsItem.map(_.additionalInformations.size)</td>
                     <td>
-                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations().url" name="add" class="button" id="AddAdditionalInformation">@messages("governmentAgencyGoodsItem.add")
+                        <a href="@controllers.goodsitems.routes.AdditionalInformationController.onPageLoad().url" name="add" class="button" id="AddAdditionalInformation">@messages("governmentAgencyGoodsItem.add")
                             <span class="visually-hidden">@messages("governmentAgencyGoodsItem.additionalInformation")</span></a>
                     </td>
                 </tr>

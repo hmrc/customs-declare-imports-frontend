@@ -108,13 +108,6 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
       }
   }
 
-  def showGoodsItemsAdditionalInformations(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map {
-        case Some(goodsItem) => Ok(views.html.goods_items_add_additional_informations(additionalInformationform, goodsItem.additionalInformations))
-        case _ => Ok(views.html.goods_items_add_additional_informations(additionalInformationform, Seq.empty))
-      }
-  }
 
   def showGovAgencyGoodsItemsAdditionalDocuments(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit req =>
@@ -122,24 +115,6 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
         case Some(goodsItem) => Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentform, goodsItem.additionalDocuments))
         case _ => Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentform, Seq.empty))
       }
-  }
-
-  def handleGoodsItemsAdditionalInformationsSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit request =>
-      additionalInformationform.bindFromRequest().fold(
-        (formWithErrors: Form[AdditionalInformation]) =>
-          Future.successful(BadRequest(views.html.goods_items_add_additional_informations(formWithErrors, List.empty))),
-        form =>
-          cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
-            val updatedGoodsItem = res match {
-              case Some(goodsItem) => goodsItem.copy(additionalInformations = goodsItem.additionalInformations :+ form)
-              case None => GovernmentAgencyGoodsItem(additionalInformations = Seq(form))
-            }
-
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
-              Ok(views.html.goods_items_add_additional_informations(additionalInformationform, updatedGoodsItem.additionalInformations))
-            }
-          })
   }
 
   def handleGovAgencyGoodsItemsAdditionalDocumentsSubmit(): Action[AnyContent] =

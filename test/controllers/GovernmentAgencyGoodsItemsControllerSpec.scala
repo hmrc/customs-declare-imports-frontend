@@ -40,7 +40,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   val goodsItemsUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-item")
   val navigateToSelectedGoodsItemPageUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-items")
   val goodsItemsAdditionalDocsPageUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-items-additional-docs")
-  val goodsItemsAdditionalInfosPageUri = uriWithContextPath("/submit-declaration-goods/add-goods-items-additional-informations")
   val addMutualRecognitionPartiesPageUri = uriWithContextPath("/submit-declaration-goods/add-role-based-parties")
   val addOriginsPageUri = uriWithContextPath("/submit-declaration-goods/add-origins")
   val addManufacturersPageUri = uriWithContextPath("/submit-declaration-goods/add-manufacturers")
@@ -206,35 +205,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     }
   }
 
-
-  "show gov-agency-goods-items-additional-informations fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(None)
-      withRequest(get, goodsItemsAdditionalInfosPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        content should include element withAttrValue("name", "statementCode")
-        content should include element withAttrValue("name", "statementDescription")
-        content should include element withAttrValue("name", "statementTypeCode")
-      }
-    }
-  }
-  "pre-populate goods-items-additional-informations that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-
-      val goodsItemGen = listOfN(1, arbitrary[AdditionalInformation]).map { a =>
-        GovernmentAgencyGoodsItem(additionalInformations = a)
-      }
-
-      withCaching(goodsItemGen.sample)
-      withRequest(get, goodsItemsAdditionalInfosPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("1 additional information added")
-        content should include element withAttrValue("name", "statementCode")
-        content should include element withAttrValue("name", "statementDescription")
-        content should include element withAttrValue("name", "statementTypeCode")
-      }
-    }
-  }
 
   "show AddMutualRecognitionParties fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
