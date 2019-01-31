@@ -20,7 +20,7 @@ import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{atLeastOnce, verify, when}
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen.{listOf, option}
 import org.scalatest.OptionValues
@@ -34,7 +34,6 @@ import uk.gov.hmrc.wco.dec.AdditionalDocument
 import views.html.deferred_payments
 
 import scala.concurrent.Future
-
 
 
 class DeferredPaymentsControllerSpec extends CustomsSpec
@@ -102,4 +101,79 @@ class DeferredPaymentsControllerSpec extends CustomsSpec
     }
   }
 
+  ".onSubmit" should {
+
+    behave like badRequestEndpoint("/submit-declaration/add-deferred-payment", POST)
+    behave like authenticatedEndpoint("/submit-declaration/add-deferred-payment", POST)
+
+    "return SEE_OTHER" when {
+
+      "user submits valid data" in {
+
+        forAll { (user: SignedInUser, additionalDocument: AdditionalDocument) =>
+
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument): _*)
+          val result = controller(Some(user)).onSubmit(request)
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.DeferredPaymentsController.onPageLoad().url)
+        }
+      }
+    }
+
+    "return UNAUTHORIZED" when {
+
+      "user does not have an eori" in {
+
+        forAll { user: UnauthenticatedUser =>
+
+          val result = controller(Some(user.user)).onSubmit(fakeRequest)
+
+          status(result) mustBe UNAUTHORIZED
+        }
+      }
+    }
+
+    "return BAD_REQUEST" when {
+
+      "user submits invalid data" in {
+
+        val badData =
+          for {
+            ad <- arbitrary[AdditionalDocument]
+            categoryCode <- stringsLongerThan(1)
+          } yield ad.copy(categoryCode = Some(categoryCode))
+
+        forAll(arbitrary[SignedInUser], badData, additionalDocumentGen) {
+          case (user, data, existingData) =>
+
+            when(mockCustomsCacheService
+              .getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionalDocuments))(any(), any(), any()))
+              .thenReturn(Future.successful(existingData))
+
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(data): _*)
+            val badForm = form.fillAndValidate(data)
+            val result = controller(Some(user)).onSubmit(request)
+
+            status(result) mustBe BAD_REQUEST
+            contentAsString(result) mustBe view(badForm, existingData.getOrElse(Seq()))
+        }
+      }
+    }
+
+    "saves data in cache" when {
+
+      "valid data is provided" in {
+
+        forAll { (user: SignedInUser, additionalDocument: AdditionalDocument) =>
+
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument): _*)
+          await(controller(Some(user)).onSubmit(request))
+
+          verify(mockCustomsCacheService, atLeastOnce())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionalDocuments))(any(), any())(any(), any(), any(), any())
+        }
+      }
+    }
+  }
 }

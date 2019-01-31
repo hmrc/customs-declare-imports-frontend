@@ -24,6 +24,8 @@
 
 @main_template(title = messages("addDeferredPayment.title"), bodyClasses = None) {
 
+@helpers.form(action = DeferredPaymentsController.onSubmit()) {
+
     @components.back_link()
 
     @components.error_summary(form.errors)
@@ -53,12 +55,13 @@
         </fieldset>
 
         <button id="Add" name="submit">
-            @messages("addPreviousDocument.addPreviousDocumentButton")
+            @messages("addDeferredPayment.addDeferredPaymentButton")
         </button>
 
-        <a href="#" class="button" id="Next">
+        <a href="@routes.AdditionalSupplyChainActorsController.onPageLoad().url" class="button" id="Next">
             @messages("common.button.continue")
         </a>
+    }
 }
 
 
