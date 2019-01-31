@@ -20,7 +20,7 @@ import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{atLeastOnce, verify, when}
+import org.mockito.Mockito.{atLeastOnce, verify}
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen.{listOf, option}
 import org.scalatest.OptionValues
@@ -32,8 +32,6 @@ import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
 import uk.gov.hmrc.wco.dec.AdditionalDocument
 import views.html.deferred_payments
-
-import scala.concurrent.Future
 
 
 class DeferredPaymentsControllerSpec extends CustomsSpec
@@ -90,13 +88,14 @@ class DeferredPaymentsControllerSpec extends CustomsSpec
       forAll(arbitrary[SignedInUser], additionalDocumentGen) {
         case (user, data) =>
 
-          when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionalDocuments))(any(), any(), any()))
-            .thenReturn(Future.successful(data))
+          withCleanCache(EORI(user.eori.value), CacheKey.additionalDocuments, data){
 
-          val result = controller(Some(user)).onPageLoad(fakeRequest)
+            val result = controller(Some(user)).onPageLoad(fakeRequest)
 
-          status(result) mustBe OK
-          contentAsString(result) mustBe view(additionalDocuments = data.getOrElse(List()))
+            status(result) mustBe OK
+            contentAsString(result) mustBe view(additionalDocuments = data.getOrElse(List()))
+
+          }
       }
     }
   }
@@ -147,16 +146,15 @@ class DeferredPaymentsControllerSpec extends CustomsSpec
         forAll(arbitrary[SignedInUser], badData, additionalDocumentGen) {
           case (user, data, existingData) =>
 
-            when(mockCustomsCacheService
-              .getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionalDocuments))(any(), any(), any()))
-              .thenReturn(Future.successful(existingData))
+            withCleanCache(EORI(user.eori.value), CacheKey.additionalDocuments, existingData){
 
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(data): _*)
-            val badForm = form.fillAndValidate(data)
-            val result = controller(Some(user)).onSubmit(request)
+              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(data): _*)
+              val badForm = form.fillAndValidate(data)
+              val result = controller(Some(user)).onSubmit(request)
 
-            status(result) mustBe BAD_REQUEST
-            contentAsString(result) mustBe view(badForm, existingData.getOrElse(Seq()))
+              status(result) mustBe BAD_REQUEST
+              contentAsString(result) mustBe view(badForm, existingData.getOrElse(Seq()))
+            }
         }
       }
     }
