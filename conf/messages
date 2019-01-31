@@ -387,6 +387,17 @@ containerIdentificationNumber.table.heading=1 container identification number ad
 containerIdentificationNumber.table.multiple.heading={0} container identification numbers added
 containerIdentificationNumber.add=Add container identification number
 
+## Add Deferred Payments
+addDeferredPayment.title=Deferred Payments
+addDeferredPayment.heading=Deferred Payments
+addDeferredPayment.id=Deferred Payment ID
+addDeferredPayment.categoryCode=Deferred Payment Category
+addDeferredPayment.typeCode=Deferred Payment Type
+addDeferredPayment.table.heading=Deferred Payment added
+addDeferredPayment.table.multiple.heading=Deferred Payments added
+addDeferredPayment.table.empty.heading=No Deferred Payments available
+addDeferredPayment.addDeferredPaymentButton=Add Deferred Payment
+
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Government agency goods item
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
@@ -431,8 +442,8 @@ governmentAgencyGoodsItemAdd.writeOffAmount=Write off amount
 
 governmentAgencyGoodsItemAdditionalInfo.title=Additional information
 governmentAgencyGoodsItemAdditionalInfo.p.additionalInformationAdded=additional information added
-governmentAgencyGoodsItemAdditionalInfo.statementCode=Statement code
-governmentAgencyGoodsItemAdditionalInfo.statementDescription=Statement description
+governmentAgencyGoodsItemAdditionalInfo.statementCode=Code
+governmentAgencyGoodsItemAdditionalInfo.statementDescription=Description
 governmentAgencyGoodsItemAdditionalInfo.statementTypeCode=Statement type code
 governmentAgencyGoodsItemAdditionalInfo.noAdditionalInfo=No additional information added
 governmentAgencyGoodsItemAdditionalInfo.addAdditionalInformation=Add additional information

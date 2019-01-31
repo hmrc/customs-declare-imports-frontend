@@ -49,12 +49,20 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "fail with invalid statement code" when {
 
-        "statement code length is greater than 17" in {
+        "Code , Description are missing in additional information" in {
 
-          forAll(arbitrary[AdditionalInformation], minStringLength(18)) { (additionalInfo, invalidCode) =>
+          Form(additionalInformationMapping).bind(Map[String, String]()).fold(
+            _ must haveErrorMessage("You must provide Code or Description"),
+            _ => fail("Should not succeed")
+          )
+        }
+
+        "statement code length is greater than 5" in {
+
+          forAll(arbitrary[AdditionalInformation], minStringLength(6)) { (additionalInfo, invalidCode) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementCode = Some(invalidCode))).fold(
-              error => error.error("statementCode") must haveMessage("statement code should be less than or equal to 17 characters"),
+              error => error.error("statementCode") must haveMessage("Code should be less than or equal to 5 characters"),
               _ => fail("Should not succeed")
             )
           }
@@ -68,21 +76,7 @@ class DeclarationFormMappingSpec extends WordSpec
           forAll(arbitrary[AdditionalInformation], minStringLength(513)) { (additionalInfo, invalidDescription) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementDescription = Some(invalidDescription))).fold(
-              error => error.error("statementDescription") must haveMessage("statement description should be less than or equal to 512 characters"),
-              _ => fail("Should not succeed")
-            )
-          }
-        }
-      }
-
-      "fail with invalid statement type code" when {
-
-        "statement type code length is greater than 3" in {
-
-          forAll(arbitrary[AdditionalInformation], minStringLength(4)) { (additionalInfo, invalidTypeCode) =>
-
-            Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementTypeCode = Some(invalidTypeCode))).fold(
-              error => error.error("statementTypeCode") must haveMessage("statement type code should be less than or equal to 3 characters"),
+              error => error.error("statementDescription") must haveMessage("Description should be less than or equal to 512 characters"),
               _ => fail("Should not succeed")
             )
           }
@@ -218,6 +212,67 @@ class DeclarationFormMappingSpec extends WordSpec
 
         Form(previousDocumentMapping).bind(Map[String, String]()).fold(
           error => error must haveErrorMessage("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier"),
+          _ => fail("Should not succeed")
+        )
+      }
+    }
+  }
+
+  "addAdditionalDocumentMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll(arbitrary[AdditionalDocument]) { arbitraryAddAdditionalDocument =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAddAdditionalDocument).fold(
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe arbitraryAddAdditionalDocument
+          )
+        }
+      }
+    }
+
+    "fail to bind" when {
+
+      "id length is greater than 7" in {
+
+        forAll(arbitrary[AdditionalDocument], intBetweenRange(9999999, Int.MaxValue)) { (arbitraryAdditionalDocument, invalidId) =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(id = Some(invalidId.toString))).fold(
+            error => error.error("id") must haveMessage("Deferred Payment ID should be less than or equal to 7 characters"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
+
+      "categoryCode length is greater than 1" in {
+
+        forAll(arbitrary[AdditionalDocument], minStringLength(2)) { (arbitraryAdditionalDocument, invalidCategoryCode) =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
+            error => error.error("categoryCode") must haveMessage("Deferred Payment Category should be less than or equal to 1 character"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
+
+      "typeCode length is greater than 3" in {
+
+        forAll(arbitrary[AdditionalDocument], minStringLength(4)) { (arbitraryAdditionalDocument, invalidTypeCode) =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(typeCode = Some(invalidTypeCode))).fold(
+            error => error.error("typeCode") must haveMessage("Deferred Payment Type should be less than or equal to 3 characters"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
+
+      "Deferred Payment ID, Deferred Payment Category, Deferred Payment Type are missing" in {
+
+        Form(additionalDocumentMapping).bind(Map[String, String]()).fold(
+          error => error must haveErrorMessage("You must provide a Deferred Payment ID or Deferred Payment Category or Deferred Payment Type"),
           _ => fail("Should not succeed")
         )
       }

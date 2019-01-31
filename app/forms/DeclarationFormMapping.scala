@@ -64,13 +64,13 @@ object DeclarationFormMapping {
   )(GovernmentAgencyGoodsItemAdditionalDocument.apply)(GovernmentAgencyGoodsItemAdditionalDocument.unapply)
 
   lazy val additionalInformationMapping = mapping(
-    "statementCode" -> optional(text
-      .verifying("statement code should be less than or equal to 17 characters", _.length <= 17)),
-    "statementDescription" -> optional(text.verifying("statement description should be less than or equal to 512 characters", _.length <= 512)),
+    "statementCode" -> optional(text.verifying("Code should be less than or equal to 5 characters", _.length <= 5)),// max 17 in schema
+    "statementDescription" -> optional(text.verifying("Description should be less than or equal to 512 characters", _.length <= 512)),
     "limitDateTime" -> ignored[Option[String]](None),
     "statementTypeCode" -> optional(text.verifying("statement type code should be less than or equal to 3 characters", _.length <= 3)),
     "pointers" -> ignored[Seq[Pointer]](Seq.empty)
   )(AdditionalInformation.apply)(AdditionalInformation.unapply)
+    .verifying("You must provide Code or Description", require1Field[AdditionalInformation](_.statementCode, _.statementDescription))
 
   val destinationMapping = mapping("countryCode" -> optional(text.verifying("country code is only 3 characters", _.length <= 3)),
     "regionId" -> optional(text.verifying("regionId code is only 9 characters", _.length <= 9)))(Destination.apply)(Destination.unapply)
@@ -206,6 +206,13 @@ object DeclarationFormMapping {
       .verifying("Goods Item Identifier should be greater than 0 and less than or equal to 999", lineNumeric => (lineNumeric > 0 && lineNumeric <= 999))) //: Option[Int] = None, // max 99999999
   )(PreviousDocument.apply)(PreviousDocument.unapply)
     .verifying("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier", require1Field[PreviousDocument](_.categoryCode, _.id, _.typeCode, _.lineNumeric))
+
+  val additionalDocumentMapping = mapping(
+    "id" -> optional(text.verifying("Deferred Payment ID should be less than or equal to 7 characters", _.length <= 7)),
+    "categoryCode" -> optional(text.verifying("Deferred Payment Category should be less than or equal to 1 character", _.length <= 1)),
+    "typeCode" -> optional(text.verifying("Deferred Payment Type should be less than or equal to 3 characters", _.length <= 3))
+  )(AdditionalDocument.apply)(AdditionalDocument.unapply)
+    .verifying("You must provide a Deferred Payment ID or Deferred Payment Category or Deferred Payment Type", require1Field[AdditionalDocument](_.id, _.categoryCode, _.typeCode))
 
   val transportEquipmentMapping = mapping(
     "sequenceNumeric" -> ignored[Int](1),

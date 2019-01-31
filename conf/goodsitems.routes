@@ -8,3 +8,6 @@ POST  /add-government-procedures      controllers.goodsitems.GovernmentProcedure
 
 GET   /add-previous-documents       controllers.goodsitems.PreviousDocumentsController.onPageLoad()
 POST  /add-previous-documents      controllers.goodsitems.PreviousDocumentsController.onSubmit()
+
+GET   /add-goods-items-additional-informations       controllers.goodsitems.AdditionalInformationController.onPageLoad()
+POST  /add-goods-items-additional-informations       controllers.goodsitems.AdditionalInformationController.onSubmit()

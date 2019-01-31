@@ -124,10 +124,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryAdditionalInfo: Arbitrary[AdditionalInformation] = Arbitrary {
     for {
-      statementCode <- option(arbitrary[String].map(_.take(17)))
+      statementCode <- option(arbitrary[String].map(_.take(5)))
       statementDescription <- option(arbitrary[String].map(_.take(512)))
-      statementTypeCode <- option(arbitrary[String].map(_.take(3)))
-    } yield AdditionalInformation(statementCode, statementDescription, statementTypeCode)
+    } yield AdditionalInformation(statementCode, statementDescription)
   }
 
   implicit val arbitraryAuthorisationHolder: Arbitrary[AuthorisationHolder] = Arbitrary {
@@ -169,6 +168,14 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       lineNumeric <- option(intBetweenRange(1, 999))
       if categoryCode.nonEmpty || id.nonEmpty || typeCode.nonEmpty || lineNumeric.nonEmpty
     } yield PreviousDocument(categoryCode, id, typeCode, lineNumeric)
+  }
+
+  implicit val arbitraryAdditionalDocument: Arbitrary[AdditionalDocument] = Arbitrary {
+    for {
+      id           <- option(intBetweenRange(0, 9999999).map(_.toString))
+      categoryCode <- option(arbitrary[String].map(_.take(1)))
+      typeCode     <- option(arbitrary[String].map(_.take(3)))
+    } yield AdditionalDocument(id, categoryCode, typeCode)
   }
 
   implicit val arbitraryOrigin: Arbitrary[Origin] = Arbitrary {
