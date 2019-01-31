@@ -29,7 +29,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, MetaData}
-import domain.ObligationGuarantee._
 import forms.ObligationGuaranteeForm
 import domain.DeclarationFormats._
 
