@@ -30,21 +30,21 @@ import viewmodels.HtmlTable
 import views.behaviours.ViewBehaviours
 import views.html.components.input_text
 import views.html.components.table.table
-import views.html.security_details_code
+import views.html.guarantee_type
 
-class SecurityDetailsCodeSpec extends ViewBehaviours
+class GuaranteeTypeSpec extends ViewBehaviours
   with PropertyChecks
   with Generators
   with OptionValues
   with ViewMatchers {
 
-  val form = Form(securityDetailsCodeMapping)
+  val form = Form(guaranteeTypeMapping)
 
   def view(form: Form[_] = form, details: Seq[ObligationGuarantee] = Seq.empty): Html =
-    security_details_code(form, details)(fakeRequest, messages, appConfig)
+    guarantee_type(form, details)(fakeRequest, messages, appConfig)
 
   val simpleView: () => Html = () => view()
-  val messagePrefix = "securityDetailsCode"
+  val messagePrefix = "guaranteeType"
 
   "Security details code view" should {
 

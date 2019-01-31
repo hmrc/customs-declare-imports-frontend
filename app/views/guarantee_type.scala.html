@@ -26,13 +26,13 @@
 
 @tableHeader = @{
     if(securityDetails.size == 1) {
-        messages("securityDetailsCode.table.heading")
+        messages("guaranteeType.table.heading")
     } else {
-        messages("securityDetailsCode.table.multiple.heading", securityDetails.size)
+        messages("guaranteeType.table.multiple.heading", securityDetails.size)
     }
 }
 
-@main_template(title = messages("securityDetailsCode.title"), bodyClasses = None) {
+@main_template(title = messages("guaranteeType.title"), bodyClasses = None) {
 
     @helpers.form(action = AdditionsAndDeductionsController.onSubmit()) {
 
@@ -40,19 +40,19 @@
 
         @components.error_summary(form.errors)
 
-        <h1 class="heading-large">@messages("securityDetailsCode.heading")</h1>
+        <h1 class="heading-large">@messages("guaranteeType.heading")</h1>
 
         @components.table.table(
             HtmlTable(
-                messages("securityDetailsCode.code")
+                messages("guaranteeType.code")
             )(securityDetails.map(_.securityDetailsCode.getOrElse(""))), Some(tableHeader))
 
         <fieldset>
-            @components.input_text(form("securityDetailsCode"), messages("securityDetailsCode.code"))
+            @components.input_text(form("securityDetailsCode"), messages("guaranteeType.code"))
         </fieldset>
 
         <button id="Add" name="submit">
-            @messages("securityDetailsCode.add")
+            @messages("guaranteeType.add")
         </button>
 
         <a href="@routes.ObligationGuaranteeController.display().url" class="button" id="Next">

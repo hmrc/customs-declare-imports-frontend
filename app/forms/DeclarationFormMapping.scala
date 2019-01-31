@@ -182,7 +182,7 @@ object DeclarationFormMapping {
 
   val guaranteesFormMapping = mapping("guarantees" -> seq(obligationGauranteeMapping))(ObligationGuaranteeForm.apply)(ObligationGuaranteeForm.unapply)
 
-  val securityDetailsCodeMapping =
+  val guaranteeTypeMapping =
     mapping(
       "securityDetailsCode" ->
         optional(text.verifying("Security details code must be 1 character", _.length == 1))

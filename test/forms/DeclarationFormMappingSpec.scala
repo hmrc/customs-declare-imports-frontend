@@ -565,7 +565,7 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
-  "securityDetailsCodeMapping" should {
+  "guaranteeTypeMapping" should {
 
     "bind" when {
 
@@ -573,7 +573,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
         forAll { securityDetails: SecurityDetailsCode =>
 
-          Form(securityDetailsCodeMapping).fillAndValidate(securityDetails.value).fold(
+          Form(guaranteeTypeMapping).fillAndValidate(securityDetails.value).fold(
             _ => fail("form should not fail"),
             _ mustBe securityDetails.value
           )
@@ -589,7 +589,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           whenever(s.length > 1) {
 
-            Form(securityDetailsCodeMapping).bind(Map("securityDetailsCode" -> s)).fold(
+            Form(guaranteeTypeMapping).bind(Map("securityDetailsCode" -> s)).fold(
               _ must haveErrorMessage("Security details code must be 1 character"),
               _ => fail("form should not succeed")
             )
@@ -599,7 +599,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "security code has not been provided" in {
 
-        Form(securityDetailsCodeMapping).bind(Map[String, String]()).fold(
+        Form(guaranteeTypeMapping).bind(Map[String, String]()).fold(
           _ must haveErrorMessage("Security details code is required"),
           _ => fail("form should not succeed")
         )
