@@ -16,13 +16,16 @@
 
 package controllers
 
-import domain.GovernmentAgencyGoodsItem
+import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
 import domain.features.Feature
 import generators.Generators
+import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
+import uk.gov.hmrc.wco.dec.{status => _, _}
 
 class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
@@ -146,7 +149,8 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     "display good items page with pre-populated data on revisiting the page " in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
 
-        forAll(arbitraryGoodsItemValueInformation.arbitrary) { sampleData =>
+
+        arbitrary[GoodsItemValueInformation].sample.foreach { sampleData =>
 
           withCaching(Some(sampleData))
           withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>
@@ -216,7 +220,12 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   }
   "pre-populate goods-items-additional-informations that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
+
+      val goodsItemGen = listOfN(1, arbitrary[AdditionalInformation]).map { a =>
+        GovernmentAgencyGoodsItem(additionalInformations = a)
+      }
+
+      withCaching(goodsItemGen.sample)
       withRequest(get, goodsItemsAdditionalInfosPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 additional information added")
@@ -240,7 +249,12 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate AddMutualRecognitionParties that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
+
+      val goodsItemGen = listOfN(1, arbitrary[RoleBasedParty]).map { r =>
+        GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = r)
+      }
+
+      withCaching(goodsItemGen.sample)
       withRequest(get, addMutualRecognitionPartiesPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 mutual recognition parties added")
@@ -266,19 +280,17 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   "pre-populate addOriginsPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
 
-      forAll { goodsItem: GovernmentAgencyGoodsItem =>
+      val goodsItemGen = listOfN(1, arbitrary[Origin]).map { o =>
+        GovernmentAgencyGoodsItem(origins = o)
+      }
 
-        whenever(goodsItem.origins.size == 1) {
-
-          withCaching(Some(goodsItem))
-          withRequest(get, addOriginsPageUri, headers, session, tags) { resp =>
-            val content = contentAsHtml(resp)
-            contentAsString(resp) must include("1 Goods Item Origins added")
-            content should include element withAttrValue("name", "countryCode")
-            content should include element withAttrValue("name", "regionId")
-            content should include element withAttrValue("name", "typeCode")
-          }
-        }
+      withCaching(goodsItemGen.sample)
+      withRequest(get, addOriginsPageUri, headers, session, tags) { resp =>
+        val content = contentAsHtml(resp)
+        contentAsString(resp) must include("1 Goods Item Origins added")
+        content should include element withAttrValue("name", "countryCode")
+        content should include element withAttrValue("name", "regionId")
+        content should include element withAttrValue("name", "typeCode")
       }
     }
   }
@@ -303,7 +315,12 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate addManufacturersPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
+
+      val goodsItemGen = listOfN(1, arbitrary[NamedEntityWithAddress]).map { e =>
+        GovernmentAgencyGoodsItem(manufacturers = e)
+      }
+
+      withCaching(goodsItemGen.sample)
       withRequest(get, addManufacturersPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Manufacturers added")
@@ -341,7 +358,12 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate addPackagings that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
+
+      val goodsItemGen = listOfN(1, arbitrary[Packaging]).map { p =>
+        GovernmentAgencyGoodsItem(packagings = p)
+      }
+
+      withCaching(goodsItemGen.sample)
       withRequest(get, addPackagingsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Goods Item Packagings added")
