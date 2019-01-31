@@ -24,7 +24,7 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.customs.test.ViewMatchers
-import uk.gov.hmrc.wco.dec.{AdditionalDocument, AuthorisationHolder}
+import uk.gov.hmrc.wco.dec.AdditionalDocument
 import viewmodels.HtmlTable
 import views.behaviours.ViewBehaviours
 import views.html.components.input_text
