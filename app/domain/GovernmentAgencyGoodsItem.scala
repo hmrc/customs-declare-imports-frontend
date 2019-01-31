@@ -117,6 +117,8 @@ object DeclarationFormats {
   implicit val governmentAgencyGoodsItemFormats = Json.format[GovernmentAgencyGoodsItem]
 
   implicit val authorisationHolderFormats = Json.format[AuthorisationHolder]
+
+  implicit val additionalDocumentFormats = Json.format[AdditionalDocument]
 }
 
 object  ObligationGuarantee {

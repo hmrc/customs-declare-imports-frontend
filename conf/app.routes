@@ -14,6 +14,9 @@ POST        /submit-declaration/add-authorisation-holder       controllers.Autho
 GET         /submit-declaration/add-previous-documents         controllers.PreviousDocumentsController.onPageLoad()
 POST        /submit-declaration/add-previous-documents         controllers.PreviousDocumentsController.onSubmit()
 
+GET         /submit-declaration/add-deferred-payment           controllers.DeferredPaymentsController.onPageLoad()
+POST        /submit-declaration/add-deferred-payment           controllers.DeferredPaymentsController.onSubmit()
+
 GET         /submit-declaration/add-additional-supply-chain-actors   controllers.AdditionalSupplyChainActorsController.onPageLoad()
 POST        /submit-declaration/add-additional-supply-chain-actors   controllers.AdditionalSupplyChainActorsController.onSubmit()
 

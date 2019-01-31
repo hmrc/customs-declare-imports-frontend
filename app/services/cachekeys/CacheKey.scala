@@ -29,6 +29,8 @@ object CacheKey {
 
   val previousDocuments = CacheKey("PreviousDocuments", new Identifier[Seq[PreviousDocument]] {})
 
+  val additionalDocuments = CacheKey("AdditionalDocuments", new Identifier[Seq[AdditionalDocument]] {})
+
   val additionalSupplyChainActors = CacheKey("AdditionalSupplyChainActors", new Identifier[Seq[RoleBasedParty]] {})
   val domesticDutyTaxParty = CacheKey("DomesticDutyTaxParty", new Identifier[Seq[RoleBasedParty]] {})
 
