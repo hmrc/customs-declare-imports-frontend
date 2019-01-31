@@ -102,6 +102,9 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
 
   ".onSubmit" should {
 
+    behave like badRequestEndpoint(uri, POST)
+    behave like authenticatedEndpoint(uri, POST)
+
     "return SEE_OTHER" when {
 
       "valid data is posted" in {

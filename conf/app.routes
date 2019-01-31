@@ -30,6 +30,7 @@ GET         /submit-declaration/add-container-identification-number   controller
 POST        /submit-declaration/add-container-identification-number   controllers.ContainerIdentificationNumberController.onSubmit()
 
 GET         /submit-declaration/add-guarantee-type             controllers.GuaranteeTypeController.onPageLoad()
+POST        /submit-declaration/add-guarantee-type             controllers.GuaranteeTypeController.onSubmit()
 
 POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
 GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)
