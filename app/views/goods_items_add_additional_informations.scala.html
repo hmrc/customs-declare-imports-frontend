@@ -25,7 +25,9 @@
     title = messages("governmentAgencyGoodsItemAdditionalInfo.title"),
     bodyClasses = None) {
 
-    @helpers.form(action = GovernmentAgencyGoodsItemsController.handleGoodsItemsAdditionalInformationsSubmit()) {
+    @helpers.form(action = controllers.goodsitems.routes.AdditionalInformationController.onSubmit()) {
+    @components.error_summary(form.errors)
+
         <fieldset>
             <legend>
                 <h1>@messages("governmentAgencyGoodsItemAdditionalInfo.title")</h1>
@@ -38,7 +40,6 @@
                         <tr>
                             <th scope="col">@messages("governmentAgencyGoodsItemAdditionalInfo.statementCode")</th>
                             <th scope="col">@messages("governmentAgencyGoodsItemAdditionalInfo.statementDescription")</th>
-                            <th scope="col">@messages("governmentAgencyGoodsItemAdditionalInfo.statementTypeCode")</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,7 +47,6 @@
                         <tr>
                             <td scope="row">@item.statementCode</td>
                             <td>@item.statementDescription</td>
-                            <td>@item.statementTypeCode</td>
                         </tr>
                     }
                     </tbody>
@@ -55,7 +55,6 @@
 
             @components.input_text(field = form("statementCode"),label = messages("governmentAgencyGoodsItemAdditionalInfo.statementCode"))
             @components.input_text(field = form("statementDescription"),label = messages("governmentAgencyGoodsItemAdditionalInfo.statementDescription"))
-            @components.input_text(field = form("statementTypeCode"),label = messages("governmentAgencyGoodsItemAdditionalInfo.statementTypeCode"))
         </fieldset>
 
         <div class="section">

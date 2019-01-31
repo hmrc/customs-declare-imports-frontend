@@ -19,7 +19,6 @@ package forms
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
@@ -49,12 +48,20 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "fail with invalid statement code" when {
 
-        "statement code length is greater than 17" in {
+        "Code , Description are missing in additional information" in {
 
-          forAll(arbitrary[AdditionalInformation], minStringLength(18)) { (additionalInfo, invalidCode) =>
+          Form(additionalInformationMapping).bind(Map[String, String]()).fold(
+            _ must haveErrorMessage("You must provide Code or Description"),
+            _ => fail("Should not succeed")
+          )
+        }
+
+        "statement code length is greater than 5" in {
+
+          forAll(arbitrary[AdditionalInformation], minStringLength(6)) { (additionalInfo, invalidCode) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementCode = Some(invalidCode))).fold(
-              error => error.error("statementCode") must haveMessage("statement code should be less than or equal to 17 characters"),
+              error => error.error("statementCode") must haveMessage("Code should be less than or equal to 5 characters"),
               _ => fail("Should not succeed")
             )
           }
@@ -68,21 +75,7 @@ class DeclarationFormMappingSpec extends WordSpec
           forAll(arbitrary[AdditionalInformation], minStringLength(513)) { (additionalInfo, invalidDescription) =>
 
             Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementDescription = Some(invalidDescription))).fold(
-              error => error.error("statementDescription") must haveMessage("statement description should be less than or equal to 512 characters"),
-              _ => fail("Should not succeed")
-            )
-          }
-        }
-      }
-
-      "fail with invalid statement type code" when {
-
-        "statement type code length is greater than 3" in {
-
-          forAll(arbitrary[AdditionalInformation], minStringLength(4)) { (additionalInfo, invalidTypeCode) =>
-
-            Form(additionalInformationMapping).fillAndValidate(additionalInfo.copy(statementTypeCode = Some(invalidTypeCode))).fold(
-              error => error.error("statementTypeCode") must haveMessage("statement type code should be less than or equal to 3 characters"),
+              error => error.error("statementDescription") must haveMessage("Description should be less than or equal to 512 characters"),
               _ => fail("Should not succeed")
             )
           }
@@ -233,7 +226,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll { roleParty: RoleBasedParty =>
 
           Form(roleBasedPartyMapping).fillAndValidate(roleParty).fold(
-            _       => fail("form should not fail"),
+            _ => fail("form should not fail"),
             success => success mustBe roleParty
           )
         }
@@ -250,7 +243,7 @@ class DeclarationFormMappingSpec extends WordSpec
             val data = roleParty.copy(id = Some(id))
             Form(roleBasedPartyMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("Role based party id should be less than or equal to 17 characters"),
-              _      => fail("should not succeed")
+              _ => fail("should not succeed")
             )
         }
       }
@@ -286,7 +279,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
         forAll { govermentProcedure: GovernmentProcedure =>
           Form(governmentProcedureMapping).fillAndValidate(govermentProcedure).fold(
-            _       => fail("form should not fail"),
+            _ => fail("form should not fail"),
             success => success mustBe govermentProcedure
           )
         }
@@ -311,7 +304,7 @@ class DeclarationFormMappingSpec extends WordSpec
             val data = governmentProcedure.copy(currentCode = Some(code))
             Form(governmentProcedureMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("Current code should be less than or equal to 2 characters"),
-              _      => fail("should not succeed")
+              _ => fail("should not succeed")
             )
         }
       }
