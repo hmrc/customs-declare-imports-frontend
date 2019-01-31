@@ -16,10 +16,14 @@
 
 @import viewmodels.HtmlTable
 
-@(table: HtmlTable[_, _])
+@(table: HtmlTable[_, _], caption: Option[String] = None)
 
 @if(table.rows.nonEmpty) {
     <table>
+        @caption.map { s =>
+            <caption>@Html(s)</caption>
+        }
+
         <thead>
             @table_header(table.header)
         </thead>

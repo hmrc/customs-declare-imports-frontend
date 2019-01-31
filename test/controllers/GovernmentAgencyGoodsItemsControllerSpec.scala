@@ -16,13 +16,16 @@
 
 package controllers
 
+import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
 import domain.features.Feature
-import play.api.http.Status
+import generators.Generators
+import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen._
+import org.scalatest.prop.PropertyChecks
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
-import generators.Generators
-import org.scalatest.prop.PropertyChecks
+import uk.gov.hmrc.wco.dec.{status => _, _}
 
 class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
@@ -39,11 +42,9 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   val goodsItemsAdditionalDocsPageUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-items-additional-docs")
   val goodsItemsAdditionalInfosPageUri = uriWithContextPath("/submit-declaration-goods/add-goods-items-additional-informations")
   val addMutualRecognitionPartiesPageUri = uriWithContextPath("/submit-declaration-goods/add-role-based-parties")
-  val addGovtProcedureCodesPageUri = uriWithContextPath("/submit-declaration-goods/add-government-procedures")
   val addOriginsPageUri = uriWithContextPath("/submit-declaration-goods/add-origins")
   val addManufacturersPageUri = uriWithContextPath("/submit-declaration-goods/add-manufacturers")
   val addPackagingsPageUri = uriWithContextPath("/submit-declaration-goods/add-packagings")
-  val addPreviousDocsPageUri = uriWithContextPath("/submit-declaration-goods/add-previous-documents")
   val get = "GET"
   val postMethod = "POST"
 
@@ -109,7 +110,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
           stringResult must include("customs Value Amount must not be negative")
           stringResult must include("id=\"error-message-sequenceNumeric-input\">This field is required")
           stringResult must include("Real number value expected")
-          stringResult must include("id=\"error-message-statisticalValueAmount_currencyId-input\">currencyId is only 3 characters")
+          stringResult must include("id=\"error-message-statisticalValueAmount_currencyId-input\">Currency ID is not a valid currency")
           stringResult must include("valuationAdjustment should be less than or equal to 4 characters")
           stringResult must include("export Country code should be less than or equal to 2 characters")
           stringResult must include("country code is only 3 characters")
@@ -148,7 +149,8 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     "display good items page with pre-populated data on revisiting the page " in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
 
-        forAll(arbitraryGoodsItemValueInformation.arbitrary) { sampleData =>
+
+        arbitrary[GoodsItemValueInformation].sample.foreach { sampleData =>
 
           withCaching(Some(sampleData))
           withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>
@@ -186,33 +188,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   }
 
 
-  "navigate to respective page inputs based on the user action of Add goods items" in withFeatures(
-    (enabled(Feature.submit))) {
-    assertNavigation(Map("add" -> "AddGovernmentAgencyGoodsItemAdditionalDocument"),
-      "/customs-declare-imports/submit-declaration-goods/add-gov-agency-goods-items-additional-docs")
-    assertNavigation(Map("add" -> "AddAdditionalInformation"),
-      "/customs-declare-imports/submit-declaration-goods/add-goods-items-additional-informations")
-    assertNavigation(Map("add" -> "AddMutualRecognitionParties"),
-      "/customs-declare-imports/submit-declaration-goods/add-role-based-parties")
-    assertNavigation(Map("add" -> "AddDomesticDutyTaxParties"),
-      "/customs-declare-imports/submit-declaration-goods/add-role-based-parties")
-    assertNavigation(Map("add" -> "AddGovernmentProcedures"),
-      "/customs-declare-imports/submit-declaration-goods/add-government-procedures")
-    assertNavigation(Map("add" -> "AddOrigins"),
-      "/customs-declare-imports/submit-declaration-goods/add-origins")
-    assertNavigation(Map("add" -> "AddManufacturers"),
-      "/customs-declare-imports/submit-declaration-goods/add-manufacturers")
-    assertNavigation(Map("add" -> "AddPackagings"),
-      "/customs-declare-imports/submit-declaration-goods/add-packagings")
-    assertNavigation(Map("add" -> "AddPreviousDocuments"),
-      "/customs-declare-imports/submit-declaration-goods/add-previous-documents")
-    assertNavigation(Map("add" -> "AddRefundRecipientParties"),
-      "/customs-declare-imports/submit-declaration-goods/add-manufacturers")
-    assertNavigation(Map("add" -> "SaveGoodsItem"),
-      "/customs-declare-imports/submit-declaration-goods/save-goods-item")
-    assertNavigation(Map("add" -> "wrong-url"), "", Status.BAD_REQUEST)
-  }
-
   "show gov-agency-goods-items-additional-docs fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
       withCaching(None)
@@ -231,24 +206,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     }
   }
 
-  "pre-populate gov-agency-goods-items-additional-docs as a list on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
-      withRequest(get, goodsItemsAdditionalDocsPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No of goods item additional docs added: 1")
-        content should include element withAttrValue("name", "categoryCode")
-        content should include element withAttrValue("name", "name")
-        content should include element withAttrValue("name", "id")
-        content should include element withAttrValue("name", "typeCode")
-        content should include element withAttrValue("name", "lpcoExemptionCode")
-        content should include element withAttrValue("name", "submitter.name")
-        content should include element withAttrValue("name", "submitter.roleCode")
-        content should include element withAttrValue("name", "writeOff.quantity")
-        content should include element withAttrValue("name", "writeOff.amount")
-      }
-    }
-  }
 
   "show gov-agency-goods-items-additional-informations fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
@@ -263,7 +220,12 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   }
   "pre-populate goods-items-additional-informations that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
+
+      val goodsItemGen = listOfN(1, arbitrary[AdditionalInformation]).map { a =>
+        GovernmentAgencyGoodsItem(additionalInformations = a)
+      }
+
+      withCaching(goodsItemGen.sample)
       withRequest(get, goodsItemsAdditionalInfosPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 additional information added")
@@ -287,36 +249,17 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate AddMutualRecognitionParties that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
+
+      val goodsItemGen = listOfN(1, arbitrary[RoleBasedParty]).map { r =>
+        GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = r)
+      }
+
+      withCaching(goodsItemGen.sample)
       withRequest(get, addMutualRecognitionPartiesPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 mutual recognition parties added")
         content should include element withAttrValue("name", "roleCode")
         content should include element withAttrValue("name", "id")
-      }
-    }
-  }
-
-  "show addGovtProcedureCodesPage fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(None)
-      withRequest(get, addGovtProcedureCodesPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No Government Procedures available")
-        content should include element withAttrValue("name", "currentCode")
-        content should include element withAttrValue("name", "previousCode")
-      }
-    }
-  }
-
-  "pre-populate addGovtProcedureCodesPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
-      withRequest(get, addGovtProcedureCodesPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("1 Government Procedures added")
-        content should include element withAttrValue("name", "currentCode")
-        content should include element withAttrValue("name", "previousCode")
       }
     }
   }
@@ -336,7 +279,12 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate addOriginsPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
+
+      val goodsItemGen = listOfN(1, arbitrary[Origin]).map { o =>
+        GovernmentAgencyGoodsItem(origins = o)
+      }
+
+      withCaching(goodsItemGen.sample)
       withRequest(get, addOriginsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Goods Item Origins added")
@@ -367,7 +315,12 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate addManufacturersPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
+
+      val goodsItemGen = listOfN(1, arbitrary[NamedEntityWithAddress]).map { e =>
+        GovernmentAgencyGoodsItem(manufacturers = e)
+      }
+
+      withCaching(goodsItemGen.sample)
       withRequest(get, addManufacturersPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Manufacturers added")
@@ -405,7 +358,12 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
   "pre-populate addPackagings that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
+
+      val goodsItemGen = listOfN(1, arbitrary[Packaging]).map { p =>
+        GovernmentAgencyGoodsItem(packagings = p)
+      }
+
+      withCaching(goodsItemGen.sample)
       withRequest(get, addPackagingsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Goods Item Packagings added")
@@ -423,44 +381,4 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     }
   }
 
-  "show addPreviousDocsPage fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(None)
-      withRequest(get, addPreviousDocsPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No Previous Documents available")
-        content should include element withAttrValue("name", "categoryCode")
-        content should include element withAttrValue("name", "id")
-        content should include element withAttrValue("name", "typeCode")
-        content should include element withAttrValue("name", "lineNumeric")
-      }
-    }
-  }
-
-  "pre-populate addPreviousDocsPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(arbitraryGovernmentAgencyGoodsItem.arbitrary.sample)
-      withRequest(get, addPreviousDocsPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("1 Goods Item Previous Documents added")
-        content should include element withAttrValue("name", "categoryCode")
-        content should include element withAttrValue("name", "id")
-        content should include element withAttrValue("name", "typeCode")
-        content should include element withAttrValue("name", "lineNumeric")
-      }
-    }
-  }
-
-  private def assertNavigation(payload: Map[String, String], headerLocationUri: String,
-    respStatus: Int = Status.SEE_OTHER, postUri: String = navigateToSelectedGoodsItemPageUri) =
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(None)
-      withRequestAndFormBody(postMethod, postUri, headers, session, tags, payload) { resp =>
-        status(resp) must be(respStatus)
-        val header = resp.futureValue.header
-        header.headers.get("Location") must
-          be(if (headerLocationUri == "") None else Some(headerLocationUri))
-
-      }
-    }
 }

@@ -17,10 +17,9 @@
 package controllers.goodsitems
 
 import domain.GovernmentAgencyGoodsItem
-import domain.auth.SignedInUser
 import generators.Generators
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen.{listOf, option}
+import org.scalacheck.Gen._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.prop.PropertyChecks
 import play.api.test.Helpers._
@@ -42,7 +41,11 @@ class GoodsItemsListControllerSpec extends CustomsSpec
   val goodsItemsListUri = uriWithContextPath("/submit-declaration-goods/gov-agency-goods-items")
   val addGoodsItemUri = uriWithContextPath("/submit-declaration-goods/save-goods-item")
 
-  val goodsItemsListGen = option(listOf(arbitrary[GovernmentAgencyGoodsItem]))
+  val goodsItemsListGen = for {
+    i  <- choose(0, 10)
+    xs <- option(listOfN(i, arbitrary[GovernmentAgencyGoodsItem]))
+  } yield xs
+
   val goodsItemGen = option(arbitrary[GovernmentAgencyGoodsItem])
 
   def view(goodsItemsList: Seq[GovernmentAgencyGoodsItem] = Seq()): String =

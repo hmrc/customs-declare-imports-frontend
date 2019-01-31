@@ -23,6 +23,12 @@ POST        /submit-declaration/add-additional-supply-chain-actors   controllers
 GET         /submit-declaration/add-domestic-duty-tax-party    controllers.DomesticDutyTaxPartyController.onPageLoad()
 POST        /submit-declaration/add-domestic-duty-tax-party    controllers.DomesticDutyTaxPartyController.onSubmit()
 
+GET         /submit-declaration/add-additions-and-deductions   controllers.AdditionsAndDeductionsController.onPageLoad()
+POST        /submit-declaration/add-additions-and-deductions   controllers.AdditionsAndDeductionsController.onSubmit()
+
+GET         /submit-declaration/add-container-identification-number   controllers.ContainerIdentificationNumberController.onPageLoad()
+POST        /submit-declaration/add-container-identification-number   controllers.ContainerIdentificationNumberController.onSubmit()
+
 POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
 GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)
 GET         /submit-declaration/:name                          controllers.DeclarationController.displaySubmitForm(name)
@@ -33,16 +39,12 @@ GET       /submit-declaration-goods/goods-item-value        controllers.Governme
 POST       /submit-declaration-goods/goods-item-value        controllers.GovernmentAgencyGoodsItemsController.submitGoodsItemValueSection()
 
 POST       /submit-declaration-goods/add-gov-agency-goods-item        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
-POST      /submit-declaration-goods/add-gov-agency-goods-items        controllers.GovernmentAgencyGoodsItemsController.saveGoodsItem()
 
 GET       /submit-declaration-goods/add-gov-agency-goods-items-additional-docs       controllers.GovernmentAgencyGoodsItemsController.showGovAgencyGoodsItemsAdditionalDocuments()
 POST       /submit-declaration-goods/add-gov-agency-goods-items-additional-docs       controllers.GovernmentAgencyGoodsItemsController.handleGovAgencyGoodsItemsAdditionalDocumentsSubmit()
 
 GET       /submit-declaration-goods/add-goods-items-additional-informations       controllers.GovernmentAgencyGoodsItemsController.showGoodsItemsAdditionalInformations()
 POST       /submit-declaration-goods/add-goods-items-additional-informations       controllers.GovernmentAgencyGoodsItemsController.handleGoodsItemsAdditionalInformationsSubmit()
-
-GET       /submit-declaration-goods/add-government-procedures       controllers.GovernmentAgencyGoodsItemsController.showGovernmentProcedures()
-POST       /submit-declaration-goods/add-government-procedures      controllers.GovernmentAgencyGoodsItemsController.handleGovernmentProceduresSubmit()
 
 GET       /submit-declaration-goods/add-role-based-parties       controllers.GovernmentAgencyGoodsItemsController.showRoleBasedParties()
 POST       /submit-declaration-goods/add-role-based-parties      controllers.GovernmentAgencyGoodsItemsController.handleRoleBasedPartiesSubmit()
@@ -55,9 +57,6 @@ POST       /submit-declaration-goods/add-manufacturers      controllers.Governme
 
 GET       /submit-declaration-goods/add-packagings       controllers.GovernmentAgencyGoodsItemsController.showPackagings()
 POST       /submit-declaration-goods/add-packagings      controllers.GovernmentAgencyGoodsItemsController.handlePackagingsSubmit()
-
-GET       /submit-declaration-goods/add-previous-documents       controllers.GovernmentAgencyGoodsItemsController.showPreviousDocuments()
-POST       /submit-declaration-goods/add-previous-documents      controllers.GovernmentAgencyGoodsItemsController.handlePreviousDcoumentsSubmit()
 
 GET       /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.display()
 POST      /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()

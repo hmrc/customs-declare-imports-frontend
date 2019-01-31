@@ -2,3 +2,9 @@
 
 GET    /gov-agency-goods-items        controllers.goodsitems.GoodsItemsListController.onPageLoad()
 GET   /save-goods-item              controllers.goodsitems.GoodsItemsListController.saveGoodsItem()
+
+GET   /add-government-procedures       controllers.goodsitems.GovernmentProceduresController.onPageLoad()
+POST  /add-government-procedures      controllers.goodsitems.GovernmentProceduresController.onSubmit()
+
+GET   /add-previous-documents       controllers.goodsitems.PreviousDocumentsController.onPageLoad()
+POST  /add-previous-documents      controllers.goodsitems.PreviousDocumentsController.onSubmit()

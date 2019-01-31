@@ -16,8 +16,6 @@
 
 package viewmodels
 
-import com.sun.xml.internal.ws.client.sei.ResponseBuilder.Header
-
 sealed abstract case class HtmlTable[A, B](header: HtmlTableRow[A], rows: Seq[HtmlTableRow[B]])
 
 object HtmlTable {
