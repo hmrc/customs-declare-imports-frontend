@@ -509,4 +509,46 @@ class DeclarationFormMappingSpec extends WordSpec
       }
     }
   }
+
+  "securityDetailsCodeMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { securityDetails: SecurityDetailsCode =>
+
+          Form(securityDetailsCodeMapping).fillAndValidate(securityDetails.value).fold(
+            _ => fail("form should not fail"),
+            _ mustBe securityDetails.value
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "security code is longer than 1 character" in {
+
+        forAll { s: String =>
+
+          whenever(s.length > 1) {
+
+            Form(securityDetailsCodeMapping).bind(Map("securityDetailsCode" -> s)).fold(
+              _ must haveErrorMessage("Security details code must be 1 character"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
+
+      "security code has not been provided" in {
+
+        Form(securityDetailsCodeMapping).bind(Map[String, String]()).fold(
+          _ must haveErrorMessage("Security details code is required"),
+          _ => fail("form should not succeed")
+        )
+      }
+    }
+  }
 }
