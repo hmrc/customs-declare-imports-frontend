@@ -187,6 +187,8 @@ cancelconfirmpage.h1.issueWithCancelation=There is an issue with your cancelatio
 
 ## specific fields
 declaration.declarant.name=Declarant'’s name
+
+
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
 declaration.functionalReferenceId=LRN
 declaration.functionalReferenceId.hint=The reference is unique to the trader and usually provided by the software.
@@ -312,6 +314,16 @@ alpha.required=This is a mandatory field. It must consist of exactly {0} A-Z cha
 alpha.optional=When specified, this field must consist of exactly {0} A-Z characters
 contains.required=This is a mandatory field. Please select from one of the available options
 contains.optional=When specified, the value of this field must be one of the available options
+
+## Declarant details
+declarantDetails.title=Declarant
+declarantDetails.heading=Declarant
+declarantDetails.name=Name
+declarantDetails.address.line=Street and Number
+declarantDetails.address.cityName=City
+declarantDetails.address.countryCode=Country
+declarantDetails.address.postcode=Postcode
+declarantDetails.id=Identification No.
 
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees

@@ -86,6 +86,7 @@ class DeclarationControllerSpec extends CustomsSpec
       "declaration.declarant.id" -> "12345678912341234",
       "next-page" -> "references"
     )
+
     implicit val hc = HeaderCarrier()
 
     "return 303" in withFeatures(enabled(Feature.submit)) {
