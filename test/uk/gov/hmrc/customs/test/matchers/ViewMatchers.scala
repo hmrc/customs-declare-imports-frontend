@@ -16,10 +16,14 @@
 
 package uk.gov.hmrc.customs.test
 
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.scalatest.matchers.{MatchResult, Matcher}
 import play.twirl.api.Html
 
 trait ViewMatchers {
+
+  private def asDoc(html: Html): Document = Jsoup.parse(html.body)
 
   class HtmlContains(right: Html) extends Matcher[Html] {
     override def apply(left: Html): MatchResult =
@@ -29,5 +33,15 @@ trait ViewMatchers {
         s""""${left.toString.take(100)}" contained "${right.toString.take(100)}"""")
   }
 
+  class HtmlContainsId(id: String) extends Matcher[Html] {
+    override def apply(html: Html): MatchResult =
+      MatchResult(
+        asDoc(html).getElementById(id) != null,
+        s""""${html.toString.take(100)}" did not contain id "$id"""",
+        s""""${html.toString.take(100)}" contained "$id"""")
+  }
+
   def include(right: Html) = new HtmlContains(right)
+
+  def includeById(id: String) = new HtmlContainsId(id)
 }

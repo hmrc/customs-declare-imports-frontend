@@ -387,6 +387,25 @@ containerIdentificationNumber.table.heading=1 container identification number ad
 containerIdentificationNumber.table.multiple.heading={0} container identification numbers added
 containerIdentificationNumber.add=Add container identification number
 
+## Guarantee Type
+guaranteeType.title=Guarantee Type
+guaranteeType.heading=Guarantee Type
+guaranteeType.code=Security details code
+guaranteeType.table.heading=1 guarantee type added
+guaranteeType.table.multiple.heading={0} guarantee types added
+guaranteeType.add=Add guarantee type
+
+## Add Deferred Payments
+addDeferredPayment.title=Deferred Payments
+addDeferredPayment.heading=Deferred Payments
+addDeferredPayment.id=Deferred Payment ID
+addDeferredPayment.categoryCode=Deferred Payment Category
+addDeferredPayment.typeCode=Deferred Payment Type
+addDeferredPayment.table.heading=Deferred Payment added
+addDeferredPayment.table.multiple.heading=Deferred Payments added
+addDeferredPayment.table.empty.heading=No Deferred Payments available
+addDeferredPayment.addDeferredPaymentButton=Add Deferred Payment
+
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Government agency goods item
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available

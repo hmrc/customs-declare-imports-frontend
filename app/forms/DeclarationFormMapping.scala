@@ -182,6 +182,13 @@ object DeclarationFormMapping {
 
   val guaranteesFormMapping = mapping("guarantees" -> seq(obligationGauranteeMapping))(ObligationGuaranteeForm.apply)(ObligationGuaranteeForm.unapply)
 
+  val guaranteeTypeMapping =
+    mapping(
+      "securityDetailsCode" ->
+        optional(text.verifying("Security details code must be 1 character", _.length == 1))
+          .verifying("Security details code is required", _.nonEmpty)
+    )(ObligationGuarantee.apply(None, None, None, _, None, None))(ObligationGuarantee.unapply(_).map(_._4))
+
   val authorisationHolderMapping =
     mapping(
       "id" ->
@@ -199,6 +206,13 @@ object DeclarationFormMapping {
       .verifying("Goods Item Identifier should be greater than 0 and less than or equal to 999", lineNumeric => (lineNumeric > 0 && lineNumeric <= 999))) //: Option[Int] = None, // max 99999999
   )(PreviousDocument.apply)(PreviousDocument.unapply)
     .verifying("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier", require1Field[PreviousDocument](_.categoryCode, _.id, _.typeCode, _.lineNumeric))
+
+  val additionalDocumentMapping = mapping(
+    "id" -> optional(text.verifying("Deferred Payment ID should be less than or equal to 7 characters", _.length <= 7)),
+    "categoryCode" -> optional(text.verifying("Deferred Payment Category should be less than or equal to 1 character", _.length <= 1)),
+    "typeCode" -> optional(text.verifying("Deferred Payment Type should be less than or equal to 3 characters", _.length <= 3))
+  )(AdditionalDocument.apply)(AdditionalDocument.unapply)
+    .verifying("You must provide a Deferred Payment ID or Deferred Payment Category or Deferred Payment Type", require1Field[AdditionalDocument](_.id, _.categoryCode, _.typeCode))
 
   val transportEquipmentMapping = mapping(
     "sequenceNumeric" -> ignored[Int](1),

@@ -28,6 +28,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val dontShrinkStrings: Shrink[String] = Shrink.shrinkAny
   implicit val dontShrinkDecimals: Shrink[BigDecimal] = Shrink.shrinkAny
 
+  case class GuaranteeType(value: ObligationGuarantee)
+
   def genIntersperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
 
     val genValue: Gen[Option[String]] = Gen.frequency(frequencyN -> None, frequencyV -> Gen.const(Some(value)))
@@ -166,6 +168,14 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       lineNumeric <- option(intBetweenRange(1, 999))
       if categoryCode.nonEmpty || id.nonEmpty || typeCode.nonEmpty || lineNumeric.nonEmpty
     } yield PreviousDocument(categoryCode, id, typeCode, lineNumeric)
+  }
+
+  implicit val arbitraryAdditionalDocument: Arbitrary[AdditionalDocument] = Arbitrary {
+    for {
+      id           <- option(intBetweenRange(0, 9999999).map(_.toString))
+      categoryCode <- option(arbitrary[String].map(_.take(1)))
+      typeCode     <- option(arbitrary[String].map(_.take(3)))
+    } yield AdditionalDocument(id, categoryCode, typeCode)
   }
 
   implicit val arbitraryOrigin: Arbitrary[Origin] = Arbitrary {
@@ -326,11 +336,16 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryChargeDeduction: Arbitrary[ChargeDeduction] = Arbitrary {
     for {
       typeCode <- option(arbitrary[String].map(_.take(2)))
-      amount   <- option(arbitrary[Amount])
-      if typeCode.exists(_.nonEmpty) || amount.exists(a => a.value.nonEmpty || a.currencyId.nonEmpty)
+      amount   <- arbitrary[Amount]
+      if typeCode.exists(_.nonEmpty) || amount.currencyId.nonEmpty
     } yield {
-      ChargeDeduction(typeCode, amount)
+      ChargeDeduction(typeCode, amount.currencyId.map(_ => amount))
     }
+  }
+
+  implicit val arbitrarySecurityDetailsCode: Arbitrary[GuaranteeType] = Arbitrary {
+    arbitrary[Char]
+      .map(c => GuaranteeType(ObligationGuarantee(securityDetailsCode = Some(c.toString))))
   }
 
   def intGreaterThan(min: Int): Gen[Int] =

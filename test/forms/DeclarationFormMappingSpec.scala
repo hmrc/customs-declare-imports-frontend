@@ -218,6 +218,67 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
+  "addAdditionalDocumentMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll(arbitrary[AdditionalDocument]) { arbitraryAddAdditionalDocument =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAddAdditionalDocument).fold(
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe arbitraryAddAdditionalDocument
+          )
+        }
+      }
+    }
+
+    "fail to bind" when {
+
+      "id length is greater than 7" in {
+
+        forAll(arbitrary[AdditionalDocument], intBetweenRange(9999999, Int.MaxValue)) { (arbitraryAdditionalDocument, invalidId) =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(id = Some(invalidId.toString))).fold(
+            error => error.error("id") must haveMessage("Deferred Payment ID should be less than or equal to 7 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "categoryCode length is greater than 1" in {
+
+        forAll(arbitrary[AdditionalDocument], minStringLength(2)) { (arbitraryAdditionalDocument, invalidCategoryCode) =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
+            error => error.error("categoryCode") must haveMessage("Deferred Payment Category should be less than or equal to 1 character"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "typeCode length is greater than 3" in {
+
+        forAll(arbitrary[AdditionalDocument], minStringLength(4)) { (arbitraryAdditionalDocument, invalidTypeCode) =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(typeCode = Some(invalidTypeCode))).fold(
+            error => error.error("typeCode") must haveMessage("Deferred Payment Type should be less than or equal to 3 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "Deferred Payment ID, Deferred Payment Category, Deferred Payment Type are missing" in {
+
+        Form(additionalDocumentMapping).bind(Map[String, String]()).fold(
+          error => error must haveErrorMessage("You must provide a Deferred Payment ID or Deferred Payment Category or Deferred Payment Type"),
+          _ => fail("Should not succeed")
+        )
+      }
+    }
+  }
+
   "roleBasedPartyMapping" should {
 
     "bind" when {
@@ -507,6 +568,45 @@ class DeclarationFormMappingSpec extends WordSpec
   "obligationGauranteeMapping" should {
 
     "bind" when {
+      "valid values are bound" in {
+        forAll { guarantee: GuaranteeType =>
+
+          Form(guaranteeTypeMapping).fillAndValidate(guarantee.value).fold(
+            _ => fail("form should not fail"),
+            _ mustBe guarantee.value)
+        }
+      }
+    }
+
+    "fail" when {
+
+      "security code is longer than 1 character" in {
+
+        forAll { s: String =>
+
+          whenever(s.length > 1) {
+
+            Form(guaranteeTypeMapping).bind(Map("securityDetailsCode" -> s)).fold(
+              _ must haveErrorMessage("Security details code must be 1 character"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
+
+      "security code has not been provided" in {
+
+        Form(guaranteeTypeMapping).bind(Map[String, String]()).fold(
+          _ must haveErrorMessage("Security details code is required"),
+          _ => fail("form should not succeed")
+        )
+      }
+    }
+  }
+
+  "guaranteeTypeMapping" should {
+
+    "bind" when {
 
       "valid values are bound" in {
 
@@ -515,6 +615,7 @@ class DeclarationFormMappingSpec extends WordSpec
           Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee).fold(
             error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
             result => result mustBe arbitraryObligationGuarantee
+
           )
         }
       }
@@ -523,23 +624,24 @@ class DeclarationFormMappingSpec extends WordSpec
     "fail to bind" when {
 
       "reference id length is greater than 35" in {
-        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(35)){ (arbitraryObligationGuarantee, invalidReferenceId) =>
+        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(35)) { (arbitraryObligationGuarantee, invalidReferenceId) =>
 
           Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(referenceId = Some(invalidReferenceId))).fold(
             error => error.error("referenceId") must haveMessage("ReferenceId should be less than or equal to 35 characters"),
-            _     => fail("Should not succeed")
+            _ => fail("Should not succeed")
           )
         }
       }
 
       "id length is greater than 35" in {
-        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(35)){(arbitraryObligationGuarantee, invalidId) =>
+        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(35)) { (arbitraryObligationGuarantee, invalidId) =>
 
           Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(id = Some(invalidId))).fold(
             error => error.error("id") must haveMessage("Id should be less than or equal to 35 characters"),
-            _     => fail("Should not succeed")
+            _ => fail("Should not succeed")
           )
         }
+
       }
     }
   }
