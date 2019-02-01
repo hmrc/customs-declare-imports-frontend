@@ -27,6 +27,8 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.declarant_details
 
+import scala.concurrent.Future
+
 class DeclarantDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)
                                           (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
   extends CustomsController {
@@ -42,5 +44,15 @@ class DeclarantDetailsController @Inject()(actions: Actions, cache: CustomsCache
     }
   }
 
-  def onSubmit: Action[AnyContent] = ???
+  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+
+    form.bindFromRequest().fold(
+      errors    =>
+        Future.successful(BadRequest(declarant_details(errors))),
+      declarant =>
+        cache
+          .insert(req.eori, CacheKey.declarantDetails, declarant)
+          .map(_ => Redirect(routes.DeclarationController.displaySubmitForm("references")))
+    )
+  }
 }

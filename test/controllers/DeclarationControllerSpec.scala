@@ -76,51 +76,5 @@ class DeclarationControllerSpec extends CustomsSpec
         }
       }
     }
-
   }
-
-  s"$post $submitUri" should {
-    val payload = Map(
-      "declaration.declarant.name" -> "name1",
-      "declaration.declarant.address.line" -> "Address1",
-      "declaration.declarant.id" -> "12345678912341234",
-      "next-page" -> "references"
-    )
-
-    implicit val hc = HeaderCarrier()
-
-    "return 303" in withFeatures(enabled(Feature.submit)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withCaching(None)
-        withRequestAndFormBody(post, submitUri, headers, session, tags, payload) { resp =>
-          // TODO make assertions about handling of form submission
-          wasRedirected(journeyUri(SubmissionJourney.screens(1)), resp)
-        }
-      }
-    }
-    val errorsPayload = Map(
-      "declaration.declarant.name" -> "name1",
-      "declaration.declarant.address.line" -> "Address1",
-      "declaration.declarant.id" -> "41234",
-      "next-page" -> "references"
-    )
-
-    "return to same page with errors" in withFeatures(enabled(Feature.submit)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withRequestAndFormBody(post, submitUri, headers, session, tags, errorsPayload) {
-          // TODO make assertions about form error handling
-          wasHtml
-        }
-      }
-    }
-
-    "be behind a feature switch" in withFeatures(disabled(Feature.submit)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withRequest(post, submitUri, headers, session, tags) {
-          wasNotFound
-        }
-      }
-    }
-  }
-
 }

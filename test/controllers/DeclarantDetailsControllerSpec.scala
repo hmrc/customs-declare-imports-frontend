@@ -19,6 +19,8 @@ package controllers
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
 import generators.Generators
+import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
+import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
@@ -95,6 +97,79 @@ class DeclarantDetailsControllerSpec extends CustomsSpec
             status(result) mustBe OK
             contentAsString(result) mustBe view(popForm)
           }
+      }
+    }
+  }
+
+  "onSubmit" should {
+
+    behave like redirectedEndpoint(uri, "/submit-declaration/references", POST)
+    behave like authenticatedEndpoint(uri, POST)
+
+    "return SEE_OTHER" when {
+
+      "user posts valid data" in {
+
+        forAll { (user: SignedInUser, declarant: ImportExportParty) =>
+
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(declarant): _*)
+          val result = controller(user).onSubmit(request)
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.DeclarationController.displaySubmitForm("references").url)
+        }
+      }
+    }
+
+    "return UNAUTHORIZED" when {
+
+      "user doesn't have an eori" in {
+
+        forAll { user: UnauthenticatedUser =>
+
+          val result = controller(user.user).onSubmit(fakeRequest)
+
+          status(result) mustBe UNAUTHORIZED
+        }
+      }
+    }
+
+    "return BAD_REQUEST" when {
+
+      "user posts invalid data" in {
+
+        val badData = for {
+          declarant <- arbitrary[ImportExportParty]
+          id        <- minStringLength(18)
+        } yield {
+          declarant.copy(id = Some(id))
+        }
+
+        forAll(arbitrary[SignedInUser], badData) {
+          (user, formData) =>
+
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+            val popForm = form.fillAndValidate(formData)
+            val result  = controller(user).onSubmit(request)
+
+            status(result) mustBe BAD_REQUEST
+            contentAsString(result) mustBe view(popForm)
+        }
+      }
+    }
+
+    "store data in cache" when {
+
+      "user posts valid data" in {
+
+        forAll { (user: SignedInUser, declarant: ImportExportParty) =>
+
+          val request  = fakeRequest.withFormUrlEncodedBody(asFormParams(declarant): _*)
+          await(controller(user).onSubmit(request))
+
+          verify(mockCustomsCacheService, atLeastOnce)
+            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.declarantDetails), eqTo(declarant))(any(), any(), any())
+        }
       }
     }
   }

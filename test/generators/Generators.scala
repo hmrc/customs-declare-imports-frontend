@@ -226,12 +226,12 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryAddress: Arbitrary[Address] = Arbitrary {
     for {
-      cityName <- option(arbitrary[String].map(_.take(35))) // max length 35
+      cityName <- option(nonEmptyString.map(_.take(35))) // max length 35
       countryCode <- option(countryGen) // 2 chars [a-zA-Z] ISO 3166-1 2-alpha
-      countrySubDivisionCode <- option(arbitrary[String].map(_.take(9))) // max 9 chars
-      countrySubDivisionName <- option(arbitrary[String].map(_.take(35))) // max 35 chars
-      line <- option(arbitrary[String].map(_.take(70))) // max 70 chars
-      postcodeId <- option(arbitrary[String].map(_.take(9))) // max 9 chars
+      countrySubDivisionCode <- option(nonEmptyString.map(_.take(9))) // max 9 chars
+      countrySubDivisionName <- option(nonEmptyString.map(_.take(35))) // max 35 chars
+      line <- option(nonEmptyString.map(_.take(70))) // max 70 chars
+      postcodeId <- option(nonEmptyString.map(_.take(9))) // max 9 chars
     } yield Address(cityName, countryCode, countrySubDivisionCode, countrySubDivisionName, line, postcodeId)
   }
 
@@ -350,8 +350,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryImportExportParty: Arbitrary[ImportExportParty] = Arbitrary {
     for {
-      name    <- option(arbitrary[String].map(_.take(70)))
-      id      <- option(arbitrary[String].map(_.take(17)))
+      name    <- option(nonEmptyString.map(_.take(70)))
+      id      <- option(nonEmptyString.map(_.take(17)))
       address <- option(arbitrary[Address])
     } yield {
       ImportExportParty(name, id, address)
