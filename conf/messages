@@ -187,8 +187,6 @@ cancelconfirmpage.h1.issueWithCancelation=There is an issue with your cancelatio
 
 ## specific fields
 declaration.declarant.name=Declarant'’s name
-
-
 declaration.goodsShipment.ucr.traderAssignedReferenceId=Reference number / UCR (optional)
 declaration.functionalReferenceId=LRN
 declaration.functionalReferenceId.hint=The reference is unique to the trader and usually provided by the software.
