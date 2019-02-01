@@ -40,8 +40,8 @@ class GuaranteeTypeSpec extends ViewBehaviours
 
   val form = Form(guaranteeTypeMapping)
 
-  def view(form: Form[_] = form, details: Seq[ObligationGuarantee] = Seq.empty): Html =
-    guarantee_type(form, details)(fakeRequest, messages, appConfig)
+  def view(form: Form[_] = form, details: Seq[ObligationGuarantee] = Seq.empty, showForm: Boolean = true): Html =
+    guarantee_type(form, details, showForm)(fakeRequest, messages, appConfig)
 
   val simpleView: () => Html = () => view()
   val messagePrefix = "guaranteeType"
@@ -60,6 +60,27 @@ class GuaranteeTypeSpec extends ViewBehaviours
         val html    = view(popForm)
 
         html must include(input)
+      }
+    }
+
+    "hide security details code" when {
+
+      "showForm is false" in {
+
+        val input = input_text(form("securityDetailsCode"), "Security details code")
+        val html  = view(showForm = false)
+
+        html mustNot include(input)
+      }
+    }
+
+    "hide submit button" when {
+
+      "showForm is false" in {
+
+        val html = view(showForm = false)
+
+        html mustNot includeById("Add")
       }
     }
 

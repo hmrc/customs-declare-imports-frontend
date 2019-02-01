@@ -25,6 +25,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
+import uk.gov.hmrc.wco.dec.ObligationGuarantee
 import views.html.guarantee_type
 
 class GuaranteeTypeController @Inject()(actions: Actions, cache: CustomsCacheService)
@@ -37,7 +38,7 @@ class GuaranteeTypeController @Inject()(actions: Actions, cache: CustomsCacheSer
 
     cache.getByKey(req.eori, CacheKey.guaranteeType).map { types =>
 
-      Ok(guarantee_type(form, types.getOrElse(Seq.empty)))
+      Ok(guarantee_type(form, types.getOrElse(Seq.empty), showForm(types)))
     }
   }
 
@@ -47,7 +48,7 @@ class GuaranteeTypeController @Inject()(actions: Actions, cache: CustomsCacheSer
       errors =>
         cache.getByKey(req.eori, CacheKey.guaranteeType).map { types =>
 
-          BadRequest(guarantee_type(errors, types.getOrElse(Seq.empty)))
+          BadRequest(guarantee_type(errors, types.getOrElse(Seq.empty), showForm(types)))
         },
 
       guarantee =>
@@ -57,4 +58,7 @@ class GuaranteeTypeController @Inject()(actions: Actions, cache: CustomsCacheSer
           .map(_ => Redirect(routes.GuaranteeTypeController.onPageLoad()))
     )
   }
+
+  private def showForm(types: Option[Seq[ObligationGuarantee]]): Boolean =
+    types.fold(true)(_.length <= 9)
 }

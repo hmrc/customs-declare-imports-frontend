@@ -44,7 +44,7 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
   val form = Form(guaranteeTypeMapping)
 
   def view(form: Form[_] = form, details: Seq[ObligationGuarantee] = Seq.empty): String =
-    guarantee_type(form, details)(fakeRequest, messages, appConfig).body
+    guarantee_type(form, details, details.length <= 9)(fakeRequest, messages, appConfig).body
 
   def controller(user: SignedInUser) =
     new GuaranteeTypeController(new FakeActions(Some(user)), mockCustomsCacheService)
