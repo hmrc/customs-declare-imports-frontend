@@ -168,12 +168,15 @@ object DeclarationFormMapping {
     "chargeDeductions" -> seq(chargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
 
 
-  val officeMapping = mapping("id" -> optional(text.verifying("Office id should be less than or equal to 35 characters",
-    _.length <= 35)))(Office.apply)(Office.unapply)
+  val officeMapping = mapping("id" -> optional(text.verifying("Office id should be less than or equal to 8 characters",
+    _.length <= 8)))(Office.apply)(Office.unapply)
 
 
   val obligationGauranteeMapping =
-    mapping("amount" -> optional(bigDecimal.verifying("Amount must not be negative", a => a > 0)),
+    mapping("amount" -> optional(bigDecimal
+        .verifying("Amount cannot be greater than 99999999999999.99", _.precision <= 16)
+        .verifying("Amount cannot have more than 2 decimal places", _.scale <= 2)
+        .verifying("Amount must not be negative", _ >= 0)),
       "id" -> optional(text.verifying("Id should be less than or equal to 35 characters", _.length <= 35)), //max schema length is 70
       "referenceId" -> optional(text.verifying("ReferenceId should be less than or equal to 35 characters", _.length <= 35)),
       "securityDetailsCode" -> optional(text.verifying("SecurityDetailsCode should be less than or equal to 3 characters", _.length <= 3)),

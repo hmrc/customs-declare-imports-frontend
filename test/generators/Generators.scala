@@ -101,7 +101,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryOffice: Arbitrary[Office] = Arbitrary {
     for {
-      id <- option(arbitrary[String].map(_.take(17)))
+      id <- option(arbitrary[String].map(_.take(8)))
     } yield Office(id)
   }
 

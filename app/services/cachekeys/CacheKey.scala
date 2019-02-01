@@ -27,6 +27,8 @@ object CacheKey {
 
   val authorisationHolders = CacheKey("AuthorisationHolders", new Identifier[Seq[AuthorisationHolder]] {})
 
+  val guaranteeReference = CacheKey("GuaranteeReferences", new Identifier[Seq[ObligationGuarantee]] {})
+
   val previousDocuments = CacheKey("PreviousDocuments", new Identifier[Seq[PreviousDocument]] {})
 
   val additionalDocuments = CacheKey("AdditionalDocuments", new Identifier[Seq[AdditionalDocument]] {})
