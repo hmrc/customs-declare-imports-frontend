@@ -606,4 +606,153 @@ class DeclarationFormMappingSpec extends WordSpec
       }
     }
   }
+
+  "addressMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { address: Address =>
+
+          Form(addressMapping).fillAndValidate(address).fold(
+            _ => fail("form should not fail"),
+            _ mustBe address
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "cityName has more than 35 characters" in {
+
+        forAll(arbitrary[Address], minStringLength(36)) {
+          (address, cityName) =>
+
+            val data = address.copy(cityName = Some(cityName))
+            Form(addressMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("City name should be 35 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+
+      }
+
+      "country code is not valid" in {
+
+        forAll(arbitrary[Address], arbitrary[String]) {
+          (address, countryCode) =>
+
+            whenever(!config.Options.countryOptions.exists(_._1 == countryCode)) {
+
+              val data = address.copy(countryCode = Some(countryCode))
+              Form(addressMapping).fillAndValidate(data).fold(
+                _ must haveErrorMessage("Country code is invalid"),
+                _ => fail("form should not succeed")
+              )
+            }
+        }
+      }
+
+      "country sub division code has more than 9 characters" in {
+
+        forAll(arbitrary[Address], minStringLength(10)) {
+          (address, code) =>
+
+            val data = address.copy(countrySubDivisionCode = Some(code))
+            Form(addressMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Country sub division code should be 9 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "country sub division name has more than 70 characters" in {
+
+        forAll(arbitrary[Address], minStringLength(36)) {
+          (address, name) =>
+
+            val data = address.copy(countrySubDivisionName = Some(name))
+            Form(addressMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Country sub division name should be 35 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "line has more than 70 characters" in {
+
+        forAll(arbitrary[Address], minStringLength(71)) {
+          (address, line) =>
+
+            val data = address.copy(line = Some(line))
+            Form(addressMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Line should be 70 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "postcode has more than 9 characters" in {
+
+        forAll(arbitrary[Address], minStringLength(10)) {
+          (address, postcode) =>
+
+            val data = address.copy(postcodeId = Some(postcode))
+            Form(addressMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Postcode should be 9 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+
+      }
+    }
+  }
+
+  "importExportPartyMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { party: ImportExportParty =>
+
+          Form(importExportPartyMapping).fillAndValidate(party).fold(
+            _ => fail("form should not fail"),
+            _ mustBe party
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "name has more than 70 characters" in {
+
+        forAll(arbitrary[ImportExportParty], minStringLength(71)) {
+          (party, name) =>
+
+            val data = party.copy(name = Some(name))
+            Form(importExportPartyMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Name should have 70 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "id has more than 17 characters" in {
+
+        forAll(arbitrary[ImportExportParty], minStringLength(71)) {
+          (party, id) =>
+
+            val data = party.copy(id = Some(id))
+            Form(importExportPartyMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("ID should have 17 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+    }
+  }
 }
