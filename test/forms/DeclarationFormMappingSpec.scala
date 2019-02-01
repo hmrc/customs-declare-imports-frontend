@@ -564,4 +564,46 @@ class DeclarationFormMappingSpec extends WordSpec
       }
     }
   }
+
+  "guaranteeTypeMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { guarantee: GuaranteeType =>
+
+          Form(guaranteeTypeMapping).fillAndValidate(guarantee.value).fold(
+            _ => fail("form should not fail"),
+            _ mustBe guarantee.value
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "security code is longer than 1 character" in {
+
+        forAll { s: String =>
+
+          whenever(s.length > 1) {
+
+            Form(guaranteeTypeMapping).bind(Map("securityDetailsCode" -> s)).fold(
+              _ must haveErrorMessage("Security details code must be 1 character"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
+
+      "security code has not been provided" in {
+
+        Form(guaranteeTypeMapping).bind(Map[String, String]()).fold(
+          _ must haveErrorMessage("Security details code is required"),
+          _ => fail("form should not succeed")
+        )
+      }
+    }
+  }
 }

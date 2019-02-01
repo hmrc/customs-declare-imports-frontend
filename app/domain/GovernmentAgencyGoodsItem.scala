@@ -75,7 +75,7 @@ case class GovernmentAgencyGoodsItem(
 
   seller: Option[ImportExportParty] = None)
 
-object DeclarationFormats {
+object DeclarationFormats extends ObligationGuaranteeFormats {
 
   implicit val measureFormats = Json.format[Measure]
   implicit val amountFormats = Json.format[Amount]
@@ -121,7 +121,7 @@ object DeclarationFormats {
   implicit val additionalDocumentFormats = Json.format[AdditionalDocument]
 }
 
-object  ObligationGuarantee {
+trait ObligationGuaranteeFormats {
   implicit val officeFormats = Json.format[Office]
   implicit val guaranteeFormats = Json.format[ObligationGuarantee]
   implicit val guaranteeFormFormats = Json.format[ObligationGuaranteeForm]

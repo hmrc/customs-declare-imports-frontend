@@ -387,6 +387,14 @@ containerIdentificationNumber.table.heading=1 container identification number ad
 containerIdentificationNumber.table.multiple.heading={0} container identification numbers added
 containerIdentificationNumber.add=Add container identification number
 
+## Guarantee Type
+guaranteeType.title=Guarantee Type
+guaranteeType.heading=Guarantee Type
+guaranteeType.code=Security details code
+guaranteeType.table.heading=1 guarantee type added
+guaranteeType.table.multiple.heading={0} guarantee types added
+guaranteeType.add=Add guarantee type
+
 ## Add Deferred Payments
 addDeferredPayment.title=Deferred Payments
 addDeferredPayment.heading=Deferred Payments
