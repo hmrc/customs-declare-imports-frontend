@@ -60,5 +60,5 @@ class GuaranteeTypeController @Inject()(actions: Actions, cache: CustomsCacheSer
   }
 
   private def showForm(types: Option[Seq[ObligationGuarantee]]): Boolean =
-    types.fold(true)(_.length <= 9)
+    types.fold(true)(_.length < 9)
 }
