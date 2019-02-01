@@ -25,6 +25,8 @@ case class CacheKey[A](key: String, identifier: Identifier[A])
 
 object CacheKey {
 
+  val declarantDetails = CacheKey("DeclarantDetails", new Identifier[ImportExportParty] {})
+
   val authorisationHolders = CacheKey("AuthorisationHolders", new Identifier[Seq[AuthorisationHolder]] {})
 
   val previousDocuments = CacheKey("PreviousDocuments", new Identifier[Seq[PreviousDocument]] {})

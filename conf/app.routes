@@ -8,6 +8,8 @@ GET         /start                                             controllers.Start
 GET         /enrol                                             controllers.UnauthorisedController.enrol
 
 
+GET         /submit-declaration/declarant-details              controllers.DeclarantDetailsController.onPageLoad()
+
 GET         /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onPageLoad()
 POST        /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onSubmit()
 
