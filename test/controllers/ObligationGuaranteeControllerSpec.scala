@@ -103,7 +103,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
         withCaching(None)
         withRequestAndFormBody(postMethod, requestUri, headers, session, tags, emptyValidPayload) { resp =>
           val stringResult = contentAsString(resp)
-          status(resp) must be(Status.OK)
+          status(resp) must be(Status.BAD_REQUEST)
         }
       }
     }

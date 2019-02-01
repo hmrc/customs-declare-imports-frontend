@@ -182,6 +182,8 @@ object DeclarationFormMapping {
       "securityDetailsCode" -> optional(text.verifying("SecurityDetailsCode should be less than or equal to 3 characters", _.length <= 3)),
       "accessCode" -> optional(text.verifying("AccessCode should be less than or equal to 4 characters", _.length <= 4)),
       "guaranteeOffice" -> optional(officeMapping))(ObligationGuarantee.apply)(ObligationGuarantee.unapply)
+      .verifying("You must provide a Deferred Reference ID or ID or Amount of import duty and other charges or Access Code or Customs office of guarantee",
+        require1Field[ObligationGuarantee](_.referenceId, _.id, _.amount, _.accessCode, _.guaranteeOffice))
 
   val guaranteesFormMapping = mapping("guarantees" -> seq(obligationGauranteeMapping))(ObligationGuaranteeForm.apply)(ObligationGuaranteeForm.unapply)
 

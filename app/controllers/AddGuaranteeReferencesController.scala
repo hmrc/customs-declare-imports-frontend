@@ -38,24 +38,24 @@ class AddGuaranteeReferencesController @Inject()
       Ok(add_guarantee_references(form, guaranteeReferences.getOrElse(Seq())))
     }
   }
-}
 
-
-
-
-/*  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
     form.bindFromRequest().fold(
       errors =>
         cacheService.getByKey(req.eori, CacheKey.guaranteeReference).map { guaranteeReferences =>
           BadRequest(add_guarantee_references(errors, guaranteeReferences.getOrElse(Seq())))
         },
 
-      guaranteeReferences =>
+      guaranteeRefs =>
         cacheService
           .upsert(req.eori, CacheKey.guaranteeReference)
-          (() => Seq(guaranteeReferences), guaranteeReferences +: _)
+          (() => Seq(guaranteeRefs), guaranteeRefs +: _)
           .map { _ =>
-            Redirect(routes.DeferredPaymentsController.onPageLoad())
+            Redirect(routes.AddGuaranteeReferencesController.onPageLoad())
           }
     )
-  }*/
+  }
+}
+
+
+
