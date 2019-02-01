@@ -704,6 +704,67 @@ class DeclarationFormMappingSpec extends WordSpec
           )
         }
       }
+
+      "amount has a precision greater than 16" in {
+
+        forAll(arbitrary[ObligationGuarantee], decimal(17, 30, 0)) {
+          (arbitraryObligationGuarantee, invalidAmount) =>
+
+            val data = arbitraryObligationGuarantee.copy(amount = Some(invalidAmount))
+            Form(obligationGauranteeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount cannot be greater than 99999999999999.99"),
+              _ => fail("Should not succeed")
+            )
+        }
+      }
+
+      "amount has a scale greater than 2" in {
+
+        val badData = choose(3, 10).flatMap(posDecimal(16, _))
+
+        forAll(arbitrary[ObligationGuarantee], badData) {
+          (arbitraryObligationGuarantee, invalidAmount) =>
+
+            val data = arbitraryObligationGuarantee.copy(amount = Some(invalidAmount))
+            Form(obligationGauranteeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount cannot have more than 2 decimal places"),
+              _ => fail("Should not succeed")
+            )
+        }
+      }
+
+      "amount is less than 0" in {
+
+        forAll(arbitrary[ObligationGuarantee], intLessThan(0)) {
+          (arbitraryObligationGuarantee, invalidAmount) =>
+
+            val data = arbitraryObligationGuarantee.copy(amount = Some(BigDecimal(invalidAmount)))
+            Form(obligationGauranteeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount must not be negative"),
+              _ => fail("Should not succeed")
+            )
+        }
+      }
+
+      "access code length is greater than 4" in {
+        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(4)){(arbitraryObligationGuarantee, invalidAccessCode) =>
+
+          Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(accessCode = Some(invalidAccessCode))).fold(
+            error => error.error("accessCode") must haveMessage("AccessCode should be less than or equal to 4 characters"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
+
+      "guarantee office identifier length is greater than 8" in {
+        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(8)){(arbitraryObligationGuarantee, invalidOfficeId) =>
+
+          Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(guaranteeOffice = Some(Office(Some(invalidOfficeId))))).fold(
+            error => error.error("guaranteeOffice.id") must haveMessage("Office id should be less than or equal to 8 characters"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
     }
   }
 }

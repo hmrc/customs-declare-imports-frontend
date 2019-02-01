@@ -76,7 +76,7 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
     }
 
     val invalidPayload = Map(
-      "amount" -> "-0",
+      "amount" -> "-1",
       "referenceId" -> "name1nasdfghlertghoy asdflgothidlglfdleasdflksdf",
       "id" -> "Address1 Address1 Address1 Address1 Address1 Address1 Address1 Address1",
       "securityDetailsCode" -> "12345678912341234",
