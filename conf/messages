@@ -322,7 +322,7 @@ declarantDetails.address.line=Street and Number
 declarantDetails.address.cityName=City
 declarantDetails.address.countryCode=Country
 declarantDetails.address.postcode=Postcode
-declarantDetails.id=EORI
+declarantDetails.id=EORI number
 
 ## References
 references.title=Reference Numbers
@@ -341,7 +341,7 @@ exporterDetails.address.line=Street and Number
 exporterDetails.address.cityName=City
 exporterDetails.address.country=Country
 exporterDetails.address.postcode=Postcode
-exporterDetails.id=EORI
+exporterDetails.id=EORI number
 
 ## Representative details
 representativeDetails.title=Representative
@@ -351,7 +351,7 @@ representativeDetails.address.line=Street and Number
 representativeDetails.address.cityName=City
 representativeDetails.address.country=Country
 representativeDetails.address.postcode=Postcode
-representativeDetails.id=EORI
+representativeDetails.id=EORI number
 representativeDetails.statusCode=Status Code
 
 ## Obligation guarantees

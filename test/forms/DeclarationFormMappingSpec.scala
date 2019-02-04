@@ -749,7 +749,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             val data = party.copy(id = Some(id))
             Form(importExportPartyMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("ID should have 17 characters or less"),
+              _ must haveErrorMessage("EORI number should have 17 characters or less"),
               _ => fail("form should not succeed")
             )
         }
@@ -795,7 +795,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             val data = agent.copy(id = Some(id))
             Form(agentMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("ID should have 17 characters or less"),
+              _ must haveErrorMessage("EORI number should have 17 characters or less"),
               _ => fail("form should not succeed")
             )
         }
