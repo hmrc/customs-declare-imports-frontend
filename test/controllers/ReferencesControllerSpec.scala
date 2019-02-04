@@ -115,7 +115,7 @@ class ReferencesControllerSpec extends CustomsSpec
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.DeclarationController.displaySubmitForm("exporter-details").url)
+          redirectLocation(result) mustBe Some(routes.ExporterDetailsController.onPageLoad().url)
         }
       }
     }

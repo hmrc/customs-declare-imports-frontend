@@ -49,7 +49,7 @@ class ReferencesController @Inject()(actions: Actions, cache: CustomsCacheServic
         Future.successful(BadRequest(references(errors))),
       references =>
         cache.insert(req.eori, CacheKey.references, references).map { _ =>
-          Redirect(routes.DeclarationController.displaySubmitForm("exporter-details"))
+          Redirect(routes.ExporterDetailsController.onPageLoad())
         }
     )
   }
