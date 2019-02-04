@@ -52,7 +52,7 @@ class DeclarantDetailsController @Inject()(actions: Actions, cache: CustomsCache
       declarant =>
         cache
           .insert(req.eori, CacheKey.declarantDetails, declarant)
-          .map(_ => Redirect(routes.DeclarationController.displaySubmitForm("references")))
+          .map(_ => Redirect(routes.ReferencesController.onPageLoad()))
     )
   }
 }

@@ -116,7 +116,7 @@ class DeclarantDetailsControllerSpec extends CustomsSpec
           val result = controller(user).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.DeclarationController.displaySubmitForm("references").url)
+          redirectLocation(result) mustBe Some(routes.ReferencesController.onPageLoad().url)
         }
       }
     }
