@@ -530,6 +530,7 @@ class DeclarationFormMappingSpec extends WordSpec
         }
       }
     }
+
     "Current Code and Previous Code are missing" in {
 
       Form(governmentProcedureMapping).bind(Map[String, String]()).fold(
@@ -540,7 +541,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
     "currentCode is longer than 2 characters" in {
 
-      forAll(arbitrary[GovernmentProcedure], minStringLength(2)) {
+      forAll(arbitrary[GovernmentProcedure], minStringLength(3)) {
         (governmentProcedure, code) =>
 
           val data = governmentProcedure.copy(currentCode = Some(code))
@@ -553,7 +554,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
     "previousCode is longer than 2 characters" in {
 
-      forAll(arbitrary[GovernmentProcedure], minStringLength(2)) {
+      forAll(arbitrary[GovernmentProcedure], minStringLength(3)) {
         (governmentProcedure, code) =>
 
           val data = governmentProcedure.copy(previousCode = Some(code))
