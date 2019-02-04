@@ -387,8 +387,8 @@ addGuaranteeReferences.id=Id
 addGuaranteeReferences.amountAmount=Amount of import duty and other charges
 addGuaranteeReferences.accessCode=Access Code
 addGuaranteeReferences.officeId=Customs office of guarantee
-addGuaranteeReferences.table.heading=Guarantee reference added
-addGuaranteeReferences.table.multiple.heading=Guarantee references added
+addGuaranteeReferences.table.heading=1 Guarantee reference added
+addGuaranteeReferences.table.multiple.heading={0} Guarantee references added
 addGuaranteeReferences.addGuaranteeReference=Add guarantee reference
 
 ## Container Identification Number

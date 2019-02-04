@@ -168,8 +168,9 @@ object DeclarationFormMapping {
     "chargeDeductions" -> seq(chargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
 
 
-  val officeMapping = mapping("id" -> optional(text.verifying("Office id should be less than or equal to 8 characters",
-    _.length <= 8)))(Office.apply)(Office.unapply)
+  val officeMapping = mapping("id" -> optional(text
+    .verifying("Office id should be less than or equal to 8 characters", _.length <= 8))
+  )(Office.apply)(Office.unapply)
 
 
   val obligationGauranteeMapping =

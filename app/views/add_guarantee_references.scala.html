@@ -22,7 +22,15 @@
 
 @(form:Form[_], guaranteeReferences: Seq[ObligationGuarantee])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@main_template(title = messages("addGuaranteeReferences.title"), bodyClasses = None) {
+@tableHeader = @{
+    if(guaranteeReferences.size == 1){
+        messages("addGuaranteeReferences.table.heading")
+    } else {
+        messages("addGuaranteeReferences.table.multiple.heading", guaranteeReferences.size)
+    }
+}
+
+@main_template(title = messages("addGuaranteeReferences.title")) {
 
 @helpers.form(action = AddGuaranteeReferencesController.onSubmit()) {
 
@@ -31,14 +39,6 @@
     @components.error_summary(form.errors)
 
     <h1 class="heading-large">@messages("addGuaranteeReferences.heading")</h1>
-
-                @if(!guaranteeReferences.isEmpty) {
-                    @if(guaranteeReferences.size == 1) {
-                        <p>@guaranteeReferences.size @messages("addGuaranteeReferences.table.heading")</p>
-                    } else {
-                        <p>@guaranteeReferences.size @messages("addGuaranteeReferences.table.multiple.heading")</p>
-                    }
-                }
 
                @components.table.table(
                   HtmlTable(
@@ -51,7 +51,7 @@
                                                 a.id.getOrElse(""),
                                                 a.amount.getOrElse(""),
                                                 a.accessCode.getOrElse(""),
-                                                a.guaranteeOffice.getOrElse("")))))
+                                                a.guaranteeOffice.getOrElse("")))), Some(tableHeader))
 
            <fieldset>
                @components.input_text(form("referenceId"), messages("addGuaranteeReferences.referenceId"))

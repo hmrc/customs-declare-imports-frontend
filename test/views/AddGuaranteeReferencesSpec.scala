@@ -36,15 +36,13 @@ class AddGuaranteeReferencesSpec extends ViewBehaviours
   with PropertyChecks
   with Generators {
 
-  val emptyObligationGuarantee: Seq[ObligationGuarantee] = Seq.empty
-
   lazy val form = Form(obligationGauranteeMapping)
 
   def view(form: Form[ObligationGuarantee] = form,
-           guaranteeReferences: Seq[ObligationGuarantee] = emptyObligationGuarantee): Html =
+           guaranteeReferences: Seq[ObligationGuarantee] = Seq.empty): Html =
     add_guarantee_references(form, guaranteeReferences)(fakeRequest, messages, appConfig)
 
-  val view: () => Html = () => add_guarantee_references(form, emptyObligationGuarantee)(fakeRequest, messages, appConfig)
+  val view: () => Html = () => view(form, Seq.empty)
 
   val messagePrefix = "addGuaranteeReferences"
 
@@ -89,7 +87,7 @@ class AddGuaranteeReferencesSpec extends ViewBehaviours
         val obligationGuaranteeSeq = Seq(obligationGuarantee)
         val doc = asDocument(view(form, obligationGuaranteeSeq))
 
-        assertContainsText(doc, s"${obligationGuaranteeSeq.size} " + messages("addGuaranteeReferences.table.heading"))
+        assertContainsText(doc, messages("addGuaranteeReferences.table.heading"))
       }
     }
 
@@ -101,7 +99,7 @@ class AddGuaranteeReferencesSpec extends ViewBehaviours
 
           val doc = asDocument(view(form, obligationGuarantees))
 
-          assertContainsText(doc, s"${obligationGuarantees.size} " + messages("addGuaranteeReferences.table.multiple.heading"))
+          assertContainsText(doc, messages("addGuaranteeReferences.table.multiple.heading", {obligationGuarantees.size}))
         }
       }
     }
@@ -111,6 +109,11 @@ class AddGuaranteeReferencesSpec extends ViewBehaviours
       forAll(listOf(arbitrary[ObligationGuarantee])) { obligationGuarantees =>
 
         whenever(obligationGuarantees.nonEmpty) {
+
+          val tableTitle = obligationGuarantees.size match {
+            case 1 => messages(s"$messagePrefix.table.heading")
+            case x => messages(s"$messagePrefix.table.multiple.heading", x)
+          }
 
           val htmlTable =
             HtmlTable(
@@ -127,7 +130,7 @@ class AddGuaranteeReferencesSpec extends ViewBehaviours
                 a.guaranteeOffice.getOrElse(""))
             })
 
-          val tableComponent = table(htmlTable)
+          val tableComponent = table(htmlTable, Some(tableTitle))
           val rendered = view(form, obligationGuarantees)
 
           rendered must include(tableComponent)
