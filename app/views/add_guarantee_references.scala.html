@@ -51,21 +51,21 @@
                                                 a.id.getOrElse(""),
                                                 a.amount.getOrElse(""),
                                                 a.accessCode.getOrElse(""),
-                                                a.guaranteeOffice.getOrElse("")))), Some(tableHeader))
+                                                a.guaranteeOffice.flatMap(_.id).getOrElse("")))), Some(tableHeader))
 
            <fieldset>
                @components.input_text(form("referenceId"), messages("addGuaranteeReferences.referenceId"))
                @components.input_text(form("id"), messages("addGuaranteeReferences.id"))
                @components.input_text(form("amount"), messages("addGuaranteeReferences.amountAmount"))
                @components.input_text(form("accessCode"), messages("addGuaranteeReferences.accessCode"))
-               @components.input_text(form("guaranteeOffice"), messages("addGuaranteeReferences.officeId"))
+               @components.input_text(form("guaranteeOffice.id"), messages("addGuaranteeReferences.officeId"))
            </fieldset>
 
           <button id="Add" name="submit">
            @messages("addGuaranteeReferences.addGuaranteeReference")
           </button>
 
-          <a href="@routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="Next">
+          <a href="@goodsitems.routes.GoodsItemsListController.onPageLoad().url" class="button" id="Next">
            @messages("common.button.continue")
           </a>
     }

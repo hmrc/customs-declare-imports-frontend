@@ -76,7 +76,7 @@ class AddGuaranteeReferencesSpec extends ViewBehaviours
 
     "contain guarantee office id field" in {
 
-      val input = input_text(form("guaranteeOffice"), messages("addGuaranteeReferences.officeId"))
+      val input = input_text(form("guaranteeOffice.id"), messages("addGuaranteeReferences.officeId"))
       view() must include(input)
     }
 
@@ -127,7 +127,7 @@ class AddGuaranteeReferencesSpec extends ViewBehaviours
                 a.id.getOrElse(""),
                 a.amount.getOrElse(""),
                 a.accessCode.getOrElse(""),
-                a.guaranteeOffice.getOrElse(""))
+                a.guaranteeOffice.flatMap(_.id).getOrElse(""))
             })
 
           val tableComponent = table(htmlTable, Some(tableTitle))
