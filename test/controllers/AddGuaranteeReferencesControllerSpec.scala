@@ -19,6 +19,8 @@ package controllers
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
 import generators.Generators
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{atLeastOnce, verify}
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen.{listOf, option}
 import org.scalatest.OptionValues
@@ -155,20 +157,19 @@ class AddGuaranteeReferencesControllerSpec extends CustomsSpec
       }
     }
 
-/*    "saves data in cache" when {
+    "save data in cache" when {
 
-      "valid data is provided" in {
+      "valid data is submitted" in {
 
         forAll { (user: SignedInUser, obligationGuarantee: ObligationGuarantee) =>
 
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(obligationGuarantee): _*)
           await(controller(Some(user)).onSubmit(request))
 
-          verify(mockCustomsCacheService, atLeastOnce())
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionalDocuments))(any(), any())(any(), any(), any(), any())
+          verify(mockCustomsCacheService, atLeastOnce)
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.guaranteeReference))(any(), any())(any(), any(), any(), any())
         }
       }
-    }*/
+    }
   }
-
 }

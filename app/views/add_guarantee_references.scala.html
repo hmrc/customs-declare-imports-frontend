@@ -24,46 +24,49 @@
 
 @main_template(title = messages("addGuaranteeReferences.title"), bodyClasses = None) {
 
-@components.back_link()
+@helpers.form(action = AddGuaranteeReferencesController.onSubmit()) {
 
-@components.error_summary(form.errors)
+    @components.back_link()
 
-<h1 class="heading-large">@messages("addGuaranteeReferences.heading")</h1>
+    @components.error_summary(form.errors)
 
-            @if(!guaranteeReferences.isEmpty) {
-                @if(guaranteeReferences.size == 1) {
-                    <p>@guaranteeReferences.size @messages("addGuaranteeReferences.table.heading")</p>
-                } else {
-                    <p>@guaranteeReferences.size @messages("addGuaranteeReferences.table.multiple.heading")</p>
+    <h1 class="heading-large">@messages("addGuaranteeReferences.heading")</h1>
+
+                @if(!guaranteeReferences.isEmpty) {
+                    @if(guaranteeReferences.size == 1) {
+                        <p>@guaranteeReferences.size @messages("addGuaranteeReferences.table.heading")</p>
+                    } else {
+                        <p>@guaranteeReferences.size @messages("addGuaranteeReferences.table.multiple.heading")</p>
+                    }
                 }
-            }
 
-           @components.table.table(
-              HtmlTable(
-                      messages("addGuaranteeReferences.referenceId"),
-                      messages("addGuaranteeReferences.id"),
-                      messages("addGuaranteeReferences.amountAmount"),
-                      messages("addGuaranteeReferences.accessCode"),
-                      messages("addGuaranteeReferences.officeId")
-              )(guaranteeReferences.map(a => (a.referenceId.getOrElse(""),
-                                            a.id.getOrElse(""),
-                                            a.amount.getOrElse(""),
-                                            a.accessCode.getOrElse(""),
-                                            a.guaranteeOffice.getOrElse("")))))
+               @components.table.table(
+                  HtmlTable(
+                          messages("addGuaranteeReferences.referenceId"),
+                          messages("addGuaranteeReferences.id"),
+                          messages("addGuaranteeReferences.amountAmount"),
+                          messages("addGuaranteeReferences.accessCode"),
+                          messages("addGuaranteeReferences.officeId")
+                  )(guaranteeReferences.map(a => (a.referenceId.getOrElse(""),
+                                                a.id.getOrElse(""),
+                                                a.amount.getOrElse(""),
+                                                a.accessCode.getOrElse(""),
+                                                a.guaranteeOffice.getOrElse("")))))
 
-       <fieldset>
-           @components.input_text(form("referenceId"), messages("addGuaranteeReferences.referenceId"))
-           @components.input_text(form("id"), messages("addGuaranteeReferences.id"))
-           @components.input_text(form("amount"), messages("addGuaranteeReferences.amountAmount"))
-           @components.input_text(form("accessCode"), messages("addGuaranteeReferences.accessCode"))
-           @components.input_text(form("guaranteeOffice"), messages("addGuaranteeReferences.officeId"))
-       </fieldset>
+           <fieldset>
+               @components.input_text(form("referenceId"), messages("addGuaranteeReferences.referenceId"))
+               @components.input_text(form("id"), messages("addGuaranteeReferences.id"))
+               @components.input_text(form("amount"), messages("addGuaranteeReferences.amountAmount"))
+               @components.input_text(form("accessCode"), messages("addGuaranteeReferences.accessCode"))
+               @components.input_text(form("guaranteeOffice"), messages("addGuaranteeReferences.officeId"))
+           </fieldset>
 
-      <button id="Add" name="submit">
-       @messages("addGuaranteeReferences.addGuaranteeReference")
-      </button>
+          <button id="Add" name="submit">
+           @messages("addGuaranteeReferences.addGuaranteeReference")
+          </button>
 
-      <a href="#" class="button" id="Next">
-       @messages("common.button.continue")
-      </a>
+          <a href="#" class="button" id="Next">
+           @messages("common.button.continue")
+          </a>
+    }
 }
