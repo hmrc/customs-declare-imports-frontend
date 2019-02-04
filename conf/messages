@@ -338,7 +338,7 @@ exporterDetails.heading=Exporter
 exporterDetails.name=Name
 exporterDetails.address.line=Street and Number
 exporterDetails.address.cityName=City
-exporterDetails.address.countryCode=Country
+exporterDetails.address.country=Country
 exporterDetails.address.postcode=Postcode
 exporterDetails.id=Exporter Identification No.
 
