@@ -757,6 +757,68 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
+  "agentMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { agent: Agent =>
+
+          Form(agentMapping).fillAndValidate(agent).fold(
+            e => fail(s"form should not fail: $e"),
+            _ mustBe agent
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "name has more than 70 characters" in {
+
+        forAll(arbitrary[Agent], minStringLength(71)) {
+          (agent, name) =>
+
+            val data = agent.copy(name = Some(name))
+            Form(agentMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Name should have 70 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "id has more than 17 characters" in {
+
+        forAll(arbitrary[Agent], minStringLength(71)) {
+          (agent, id) =>
+
+            val data = agent.copy(id = Some(id))
+            Form(agentMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("ID should have 17 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "functionCode is not in list" in {
+
+        forAll(arbitrary[Agent], nonEmptyString.map(_.take(1))) {
+          (agent, code) =>
+
+            whenever(!config.Options.agentFunctionCodes.contains(code)) {
+
+              val data = agent.copy(functionCode = Some(code))
+              Form(agentMapping).fillAndValidate(data).fold(
+                _ must haveErrorMessage("Status code is not valid"),
+                _ => fail("form should not succeed")
+              )
+            }
+        }
+      }
+    }
+  }
+
   "referencesMapping" should {
 
     "bind" when {
