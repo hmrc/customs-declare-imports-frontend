@@ -242,7 +242,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(id = Some(invalidId.toString))).fold(
             error => error.error("id") must haveMessage("Deferred Payment ID should be less than or equal to 7 characters"),
-            _     => fail("Should not succeed")
+            _ => fail("Should not succeed")
           )
         }
       }
@@ -253,7 +253,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
             error => error.error("categoryCode") must haveMessage("Deferred Payment Category should be less than or equal to 1 character"),
-            _     => fail("Should not succeed")
+            _ => fail("Should not succeed")
           )
         }
       }
@@ -264,7 +264,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(typeCode = Some(invalidTypeCode))).fold(
             error => error.error("typeCode") must haveMessage("Deferred Payment Type should be less than or equal to 3 characters"),
-            _     => fail("Should not succeed")
+            _ => fail("Should not succeed")
           )
         }
       }
@@ -565,18 +565,15 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
-  "guaranteeTypeMapping" should {
+  "obligationGauranteeMapping" should {
 
     "bind" when {
-
       "valid values are bound" in {
-
         forAll { guarantee: GuaranteeType =>
 
           Form(guaranteeTypeMapping).fillAndValidate(guarantee.value).fold(
             _ => fail("form should not fail"),
-            _ mustBe guarantee.value
-          )
+            _ mustBe guarantee.value)
         }
       }
     }
@@ -603,6 +600,98 @@ class DeclarationFormMappingSpec extends WordSpec
           _ must haveErrorMessage("Security details code is required"),
           _ => fail("form should not succeed")
         )
+      }
+    }
+  }
+
+  "guaranteeTypeMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll(arbitrary[ObligationGuarantee]) { arbitraryObligationGuarantee =>
+
+          Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee).fold(
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe arbitraryObligationGuarantee
+
+          )
+        }
+      }
+    }
+
+    "fail to bind" when {
+
+      "reference id length is greater than 35" in {
+        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(35)) { (arbitraryObligationGuarantee, invalidReferenceId) =>
+
+          Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(referenceId = Some(invalidReferenceId))).fold(
+            error => error.error("referenceId") must haveMessage("ReferenceId should be less than or equal to 35 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "amount has a precision greater than 16" in {
+
+        forAll(arbitrary[ObligationGuarantee], decimal(17, 30, 0)) {
+          (arbitraryObligationGuarantee, invalidAmount) =>
+
+            val data = arbitraryObligationGuarantee.copy(amount = Some(invalidAmount))
+            Form(obligationGauranteeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount cannot be greater than 99999999999999.99"),
+              _ => fail("Should not succeed")
+            )
+        }
+      }
+
+      "amount has a scale greater than 2" in {
+
+        val badData = choose(3, 10).flatMap(posDecimal(16, _))
+
+        forAll(arbitrary[ObligationGuarantee], badData) {
+          (arbitraryObligationGuarantee, invalidAmount) =>
+
+            val data = arbitraryObligationGuarantee.copy(amount = Some(invalidAmount))
+            Form(obligationGauranteeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount cannot have more than 2 decimal places"),
+              _ => fail("Should not succeed")
+            )
+        }
+      }
+
+      "amount is less than 0" in {
+
+        forAll(arbitrary[ObligationGuarantee], intLessThan(0)) {
+          (arbitraryObligationGuarantee, invalidAmount) =>
+
+            val data = arbitraryObligationGuarantee.copy(amount = Some(BigDecimal(invalidAmount)))
+            Form(obligationGauranteeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount must not be negative"),
+              _ => fail("Should not succeed")
+            )
+        }
+      }
+
+      "access code length is greater than 4" in {
+        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(4)){(arbitraryObligationGuarantee, invalidAccessCode) =>
+
+          Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(accessCode = Some(invalidAccessCode))).fold(
+            error => error.error("accessCode") must haveMessage("AccessCode should be less than or equal to 4 characters"),
+            _     => fail("Should not succeed")
+          )
+        }
+      }
+
+      "guarantee office identifier length is greater than 8" in {
+        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(8)){(arbitraryObligationGuarantee, invalidOfficeId) =>
+
+          Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(guaranteeOffice = Some(Office(Some(invalidOfficeId))))).fold(
+            error => error.error("guaranteeOffice.id") must haveMessage("Office id should be less than or equal to 8 characters"),
+            _     => fail("Should not succeed")
+          )
+        }
       }
     }
   }
