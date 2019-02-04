@@ -37,7 +37,11 @@
    @components.input_text(form("address.cityName"), messages("declarantDetails.address.cityName"))
    @components.input_select(form("address.countryCode"), messages("declarantDetails.address.countryCode"), config.Options.countryOptions.toMap)
    @components.input_text(form("address.postcodeId"), messages("declarantDetails.address.postcode"))
-   @components.input_text(form("id"), messages("declarantDetails.id"))
+   @components.input_text(
+    form("id"),
+    messages("declarantDetails.id"),
+    hint = Some(messages("common.hints.eori"))
+   )
   </fieldset>
 
   <button id="Add" name="submit">

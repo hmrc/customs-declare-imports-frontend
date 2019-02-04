@@ -116,7 +116,7 @@ class DeclarantDetailsSpec extends ViewBehaviours
       forAll { party: ImportExportParty =>
 
         val popForm = form.fillAndValidate(party)
-        val input   = input_text(popForm("id"), messages(s"$messagePrefix.id"))
+        val input   = input_text(popForm("id"), messages(s"$messagePrefix.id"), hint = Some(messages("common.hints.eori")))
         val html    = view(popForm)
 
         html must include(input)

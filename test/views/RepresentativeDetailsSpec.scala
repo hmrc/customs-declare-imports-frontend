@@ -115,7 +115,7 @@ class RepresentativeDetailsSpec extends ViewBehaviours
       forAll { agent: Agent =>
 
         val popForm = form.fillAndValidate(agent)
-        val input   = input_text(popForm("id"), messages(s"$messagePrefix.id"))
+        val input   = input_text(popForm("id"), messages(s"$messagePrefix.id"), hint = Some(messages("common.hints.eori")))
         val html    = view(popForm)
 
         html must include(input)
@@ -127,7 +127,11 @@ class RepresentativeDetailsSpec extends ViewBehaviours
       forAll { agent: Agent =>
 
         val popForm = form.fillAndValidate(agent)
-        val input   = input_radio(popForm("functionCode"), messages(s"$messagePrefix.statusCode"), inputs = statusCodes)
+        val input   = input_radio(
+          popForm("functionCode"),
+          messages(s"$messagePrefix.statusCode"),
+          hint = Some(messages("common.hints.statusCode")),
+          inputs = statusCodes)
         val html    = view(popForm)
 
         html must include(input)

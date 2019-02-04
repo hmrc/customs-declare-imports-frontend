@@ -23,7 +23,7 @@
 
  @main_template(title = messages("representativeDetails.title")) {
 
-  @helpers.form(action = DeclarantDetailsController.onSubmit()) {
+  @helpers.form(action = RepresentativeDetailsController.onSubmit()) {
 
    @components.back_link()
 
@@ -43,11 +43,12 @@
     )
 
     @components.input_text(form("address.postcodeId"), messages("representativeDetails.address.postcode"))
-    @components.input_text(form("id"), messages("representativeDetails.id"))
+    @components.input_text(form("id"), messages("representativeDetails.id"), hint = Some(messages("common.hints.eori")))
 
     @components.input_radio(
      form("functionCode"),
      messages("representativeDetails.statusCode"),
+     hint = Some(messages("common.hints.statusCode")),
      inputs = RadioOption.fromTuples(config.Options.agentFunctionCodes)
     )
    </fieldset>
