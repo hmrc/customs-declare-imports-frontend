@@ -16,7 +16,7 @@
 
 package forms
 
-import domain.GoodsItemValueInformation
+import domain.{GoodsItemValueInformation, InvoiceAndCurrency}
 import play.api.data.Forms._
 import play.api.data.Mapping
 import uk.gov.hmrc.wco.dec._
@@ -71,6 +71,15 @@ object DeclarationFormMapping {
     "pointers" -> ignored[Seq[Pointer]](Seq.empty)
   )(AdditionalInformation.apply)(AdditionalInformation.unapply)
     .verifying("You must provide Code or Description", require1Field[AdditionalInformation](_.statementCode, _.statementDescription))
+
+/*  val invoiceAndCurrencyMapping = mapping(
+    "invoice" -> optional(amountMapping),
+    "currency" -> optional(currencyExchangeMapping))(InvoiceAndCurrency.apply)(InvoiceAndCurrency.unapply)*/
+
+  val currencyExchangeMapping = mapping(
+    "currencyTypeCode" -> optional(text.verifying("CurrencyTypeCode should be less than or equal to 3 characters", _.length <= 3)),
+    "rateNumeric" -> optional(bigDecimal.verifying("RateNumeric cannot be greater than 9999999.99999", _.precision <= 12))
+  )(CurrencyExchange.apply)(CurrencyExchange.unapply)
 
   val destinationMapping = mapping("countryCode" -> optional(text.verifying("country code is only 3 characters", _.length <= 3)),
     "regionId" -> optional(text.verifying("regionId code is only 9 characters", _.length <= 9)))(Destination.apply)(Destination.unapply)

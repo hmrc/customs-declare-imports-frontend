@@ -606,4 +606,19 @@ class DeclarationFormMappingSpec extends WordSpec
       }
     }
   }
+
+  "currencyExchangeMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { currencyExchange: CurrencyExchange =>
+
+
+
+        }
+      }
+    }
+  }
 }

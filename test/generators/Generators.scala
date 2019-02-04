@@ -105,6 +105,13 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield Office(id)
   }
 
+  implicit val arbitraryCurrencyExchange: Arbitrary[CurrencyExchange] = Arbitrary {
+    for {
+      currencyTypeCode <- currencyGen
+      rateNumeric      <- posDecimal(12, 5)
+    } yield CurrencyExchange(Some(currencyTypeCode), Some(rateNumeric))
+  }
+
   implicit val arbitraryObligationGuarantee: Arbitrary[ObligationGuarantee] = Arbitrary {
     for {
       amount <- option(arbitrary[BigDecimal].map(_.max(9999999999999999.99999)))
