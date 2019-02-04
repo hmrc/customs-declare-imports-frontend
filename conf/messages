@@ -323,6 +323,15 @@ declarantDetails.address.countryCode=Country
 declarantDetails.address.postcode=Postcode
 declarantDetails.id=Identification No.
 
+## References
+references.title=Reference Numbers
+references.heading=Reference Numbers
+references.typeCode=Declaration Type
+references.typerCode=Additional Declaration Type
+references.traderAssignedReferenceId=Reference Number/UCR
+references.functionalReferenceId=LRN
+references.transactionNatureCode=Nature of Transaction
+
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
 obligationGuarantees.amount=Amount
