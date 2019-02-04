@@ -65,7 +65,7 @@ class ReferencesSpec extends ViewBehaviours
         val popForm = form.fillAndValidate(references)
         val input   = input_text(popForm("typerCode"), messages(s"$messagePrefix.typerCode"))
         val html    = view(popForm)
-        
+
         html must include(input)
       }
     }
