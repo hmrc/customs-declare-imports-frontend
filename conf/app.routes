@@ -23,6 +23,9 @@ POST        /submit-declaration/add-previous-documents         controllers.Previ
 GET         /submit-declaration/add-deferred-payment           controllers.DeferredPaymentsController.onPageLoad()
 POST        /submit-declaration/add-deferred-payment           controllers.DeferredPaymentsController.onSubmit()
 
+GET         /submit-declaration/add-guarantee-references       controllers.AddGuaranteeReferencesController.onPageLoad()
+POST        /submit-declaration/add-guarantee-references       controllers.AddGuaranteeReferencesController.onSubmit()
+
 GET         /submit-declaration/add-additional-supply-chain-actors   controllers.AdditionalSupplyChainActorsController.onPageLoad()
 POST        /submit-declaration/add-additional-supply-chain-actors   controllers.AdditionalSupplyChainActorsController.onSubmit()
 

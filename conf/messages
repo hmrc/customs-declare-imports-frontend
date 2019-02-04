@@ -398,6 +398,18 @@ addAdditionsAndDeductions.table.heading=1 Addition and deduction added
 addAdditionsAndDeductions.table.multiple.heading={0} Additions and deductions added
 addAdditionsAndDeductions.add=Add additions and deduction
 
+## Add Guarantee References
+addGuaranteeReferences.title=Guarantee References
+addGuaranteeReferences.heading=Guarantee References
+addGuaranteeReferences.referenceId=Reference Id
+addGuaranteeReferences.id=Id
+addGuaranteeReferences.amountAmount=Amount of import duty and other charges
+addGuaranteeReferences.accessCode=Access Code
+addGuaranteeReferences.officeId=Customs office of guarantee
+addGuaranteeReferences.table.heading=1 Guarantee reference added
+addGuaranteeReferences.table.multiple.heading={0} Guarantee references added
+addGuaranteeReferences.addGuaranteeReference=Add guarantee reference
+
 ## Container Identification Number
 containerIdentificationNumber.title=Container identification number
 containerIdentificationNumber.heading=Container identification number
