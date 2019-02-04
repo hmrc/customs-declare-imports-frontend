@@ -16,6 +16,7 @@
 
 package forms
 
+import domain.References
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalacheck.Arbitrary._
@@ -749,6 +750,123 @@ class DeclarationFormMappingSpec extends WordSpec
             val data = party.copy(id = Some(id))
             Form(importExportPartyMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("ID should have 17 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+    }
+  }
+
+  "referencesMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { references: References =>
+
+          Form(referencesMapping).fillAndValidate(references).fold(
+            e => fail(s"form should not fail: $e"),
+            _ mustBe references
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "typeCode has more than 2 characters" in {
+
+        forAll(arbitrary[References], minStringLength(3)) {
+          (references, typeCode) =>
+
+            val data = references.copy(typeCode = Some(typeCode))
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Declaration type must be 2 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "typeCode has non alpha characters" in {
+
+        forAll(arbitrary[References], nonAlphaString) {
+          (references, typeCode) =>
+
+            whenever(typeCode.nonEmpty) {
+
+              val data = references.copy(typeCode = Some(typeCode.take(2)))
+              Form(referencesMapping).fillAndValidate(data).fold(
+                _ must haveErrorMessage("Declaration type must contains only A-Z characters"),
+                _ => fail("form should not succeed")
+              )
+            }
+        }
+      }
+
+      "typerCode has more than 1 character" in {
+
+        forAll(arbitrary[References], minStringLength(2)) {
+          (references, typerCode) =>
+
+            val data = references.copy(typerCode = Some(typerCode))
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Additional declaration type must be a single character"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "typerCode has non alpha characters" in {
+
+        forAll(arbitrary[References], nonAlphaString) {
+          (references, typerCode) =>
+
+            whenever(typerCode.nonEmpty) {
+
+              val data = references.copy(typerCode = Some(typerCode.take(1)))
+              Form(referencesMapping).fillAndValidate(data).fold(
+                _ must haveErrorMessage("Additional declaration type must contains only A-Z characters"),
+                _ => fail("form should not succeed")
+              )
+            }
+        }
+      }
+
+      "traderAssignedReferenceId has more than 35 characters" in {
+
+        forAll(arbitrary[References], minStringLength(36)) {
+          (references, traderId) =>
+
+            val data = references.copy(traderAssignedReferenceId = Some(traderId))
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Reference Number/UCR must be 35 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "functionalReferenceId has more than 22 characters" in {
+
+        forAll(arbitrary[References], minStringLength(23)) {
+          (references, refId) =>
+
+            val data = references.copy(functionalReferenceId = Some(refId))
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("LRN must be 22 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "transactionNatureCode contains more than 2 digits" in {
+
+        forAll(arbitrary[References], intOutsideRange(-9, 99)) {
+          (references, natureCode) =>
+
+            val data = references.copy(transactionNatureCode = Some(natureCode))
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Nature of transaction must be contain 2 digits or less"),
               _ => fail("form should not succeed")
             )
         }

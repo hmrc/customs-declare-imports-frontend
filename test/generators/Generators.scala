@@ -16,7 +16,7 @@
 
 package generators
 
-import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
+import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem, References}
 import forms.ObligationGuaranteeForm
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
@@ -358,6 +358,18 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     }
   }
 
+  implicit val arbitraryReferences: Arbitrary[References] = Arbitrary {
+    for {
+      typeCode   <- option(alphaStr.map(_.take(2)))
+      typerCode  <- option(alphaStr.map(_.take(1)))
+      traderId   <- option(arbitrary[String].map(_.take(35)))
+      funcRefId  <- option(arbitrary[String].map(_.take(22)))
+      natureCode <- option(choose[Int](-9, 99))
+    } yield {
+      References(typeCode, typerCode, traderId, funcRefId, natureCode)
+    }
+  }
+
   def intGreaterThan(min: Int): Gen[Int] =
     choose(min + 1, Int.MaxValue)
 
@@ -366,6 +378,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   def intBetweenRange(min: Int, max: Int): Gen[Int] =
     choose(min, max)
+
+  def intOutsideRange(min: Int, max: Int): Gen[Int] =
+    oneOf(intLessThan(min), intGreaterThan(max))
 
   def posDecimal(precision: Int, scale: Int): Gen[BigDecimal] =
     decimal(0, precision, scale)
@@ -392,5 +407,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     oneOf(a, b, c, d)
   }
 
+  val nonAlphaChar: Gen[Char] = {
+    val a = choose(Char.MinValue, 64.toChar)
+    val b = choose(91.toChar, 96.toChar)
+    val c = choose(123.toChar, Char.MaxValue)
+
+    oneOf(a, b, c)
+  }
+
   val nonAlphaNumString: Gen[String] = listOf(nonAlphaNumericChar).map(_.mkString)
+
+  val nonAlphaString: Gen[String] = listOf(nonAlphaChar).map(_.mkString)
 }
