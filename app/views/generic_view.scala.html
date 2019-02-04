@@ -19,7 +19,6 @@
 @(current: String, data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]] = Map.empty)
 
 @current match {
-    case "declarant-details" => { @declarant_details(data) }
     case "references" => { @references(data) }
     case "exporter-details" => { @exporter_details(data) }
     case "representative-details" => { @representative_details(data) }

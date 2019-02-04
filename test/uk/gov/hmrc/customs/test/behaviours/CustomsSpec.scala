@@ -73,6 +73,8 @@ trait CustomsSpec extends PlaySpec
       .thenReturn(Future.successful(form))
     when(mockCustomsCacheService.upsert(any(), any())(any(), any())(any(), any(), any(), any()))
       .thenReturn(Future.successful(()))
+    when(mockCustomsCacheService.insert(any(), any(), any())(any(), any(), any()))
+      .thenReturn(Future.successful(()))
 
     when(mockCustomsCacheService.put(any(), any(), any())(any(), any()))
       .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
@@ -124,6 +126,9 @@ trait CustomsSpec extends PlaySpec
       .thenReturn(Future.successful(None))
 
     when(mockCustomsCacheService.upsert(any(), any())(any(), any())(any(), any(), any(), any()))
+      .thenReturn(Future.successful(()))
+
+    when(mockCustomsCacheService.insert(any(), any(), any())(any(), any(), any()))
       .thenReturn(Future.successful(()))
   }
 }

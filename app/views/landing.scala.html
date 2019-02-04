@@ -50,6 +50,6 @@
             </table>
         } else {
             <p>@messages("landingpage.submissions.empty")</p>
-            <p><a class="button" href="@routes.DeclarationController.displaySubmitForm("declarant-details")">@messages("common.button.createNew")</a></p>
+            <p><a class="button" href="@routes.DeclarantDetailsController.onPageLoad()">@messages("common.button.createNew")</a></p>
         }
     }

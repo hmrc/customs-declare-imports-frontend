@@ -97,12 +97,12 @@ object DeclarationFormMapping {
 
 
   val addressMapping = mapping(
-    "cityName" -> optional(text.verifying("id should be less than or equal to 35 characters", _.length <= 35)), // max length 35
-    "countryCode" -> optional(text.verifying("country Code should be less 2 characters", _.length <= 2)), // 2 chars [a-zA-Z] ISO 3166-1 2-alpha
-    "countrySubDivisionCode" -> optional(text.verifying("countrySubDivisionCode should be less than or equal to 9 characters", _.length <= 9)), // max 9 chars
-    "countrySubDivisionName" -> optional(text.verifying("countrySubDivisionName should be less than or equal to 35 characters", _.length <= 35)), // max 35 chars
-    "line" -> optional(text.verifying("line should be less than or equal to 70 characters", _.length <= 70)), //:max 70 chars
-    "postcodeId" -> optional(text.verifying("postcode should be less than or equal to 9 characters", _.length <= 9)) // max 9 chars
+    "cityName" -> optional(text.verifying("City name should be 35 characters or less", _.length <= 35)),
+    "countryCode" -> optional(text.verifying("Country code is invalid", code => config.Options.countryOptions.exists(_._1 == code))),
+    "countrySubDivisionCode" -> optional(text.verifying("Country sub division code should be 9 characters or less", _.length <= 9)),
+    "countrySubDivisionName" -> optional(text.verifying("Country sub division name should be 35 characters or less", _.length <= 35)),
+    "line" -> optional(text.verifying("Line should be 70 characters or less", _.length <= 70)),
+    "postcodeId" -> optional(text.verifying("Postcode should be 9 characters or less", _.length <= 9))
   )(Address.apply)(Address.unapply)
 
   val namedEntityWithAddressMapping = mapping(
@@ -141,7 +141,8 @@ object DeclarationFormMapping {
       "heightMeasure" -> optional(longNumber), //: Option[Long] = None, // unsigned int max 999999999999999
       "volumeMeasure" -> optional(measureMapping))(Packaging.apply)(Packaging.unapply)
 
-  val contactMapping = mapping("name" -> optional(text.verifying("name should be less than or equal to 70 characters", _.length <= 70)) //: Option[String] = None, // max 70 chars
+  val contactMapping = mapping(
+    "name" -> optional(text.verifying("name should be less than or equal to 70 characters", _.length <= 70)) //: Option[String] = None, // max 70 chars
   )(Contact.apply)(Contact.unapply)
 
   val communicationMapping = mapping(
@@ -150,11 +151,12 @@ object DeclarationFormMapping {
   )(Communication.apply)(Communication.unapply)
 
   val importExportPartyMapping = mapping(
-    "name" -> optional(text.verifying(" Import Export name should be less than or equal to 70 characters", _.length <= 70)), //: Option[String] = None, // max 70 chars
-    "id" -> optional(text.verifying(" Import Export party Id should be less than or equal to 70 characters", _.length <= 17)), //: Option[String] = None, // max 17 chars
+    "name" -> optional(text.verifying("Name should have 70 characters or less", _.length <= 70)),
+    "id" -> optional(text.verifying("ID should have 17 characters or less", _.length <= 17)),
     "address" -> optional(addressMapping),
     "contacts" -> seq(contactMapping),
-    "communications" -> seq(communicationMapping))(ImportExportParty.apply)(ImportExportParty.unapply)
+    "communications" -> seq(communicationMapping)
+  )(ImportExportParty.apply)(ImportExportParty.unapply)
 
   val chargeDeductionMapping = mapping(
     "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 2 characters", _.length <= 2)),

@@ -313,6 +313,16 @@ alpha.optional=When specified, this field must consist of exactly {0} A-Z charac
 contains.required=This is a mandatory field. Please select from one of the available options
 contains.optional=When specified, the value of this field must be one of the available options
 
+## Declarant details
+declarantDetails.title=Declarant
+declarantDetails.heading=Declarant
+declarantDetails.name=Name
+declarantDetails.address.line=Street and Number
+declarantDetails.address.cityName=City
+declarantDetails.address.countryCode=Country
+declarantDetails.address.postcode=Postcode
+declarantDetails.id=Identification No.
+
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
 obligationGuarantees.amount=Amount

@@ -98,6 +98,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     nonEmptyString suchThat (!excluded.contains(_))
 
   def currencyGen: Gen[String] = oneOf(config.Options.currencyTypes.map(_._2))
+  def countryGen: Gen[String] = oneOf(config.Options.countryOptions.map(_._1))
 
   implicit val arbitraryOffice: Arbitrary[Office] = Arbitrary {
     for {
@@ -223,15 +224,14 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield GovernmentAgencyGoodsItemAdditionalDocument(categoryCode, effectiveDateTime, id, name, typeCode, lpcoExemptionCode, submitter, writeOff)
   }
 
-
   implicit val arbitraryAddress: Arbitrary[Address] = Arbitrary {
     for {
-      cityName <- option(arbitrary[String].map(_.take(35))) // max length 35
-      countryCode <- option(arbitrary[String].map(_.take(2))) // 2 chars [a-zA-Z] ISO 3166-1 2-alpha
-      countrySubDivisionCode <- option(arbitrary[String].map(_.take(9))) // max 9 chars
-      countrySubDivisionName <- option(arbitrary[String].map(_.take(35))) // max 35 chars
-      line <- option(arbitrary[String].map(_.take(70))) // max 70 chars
-      postcodeId <- option(arbitrary[String].map(_.take(9))) // max 9 chars
+      cityName <- option(nonEmptyString.map(_.take(35))) // max length 35
+      countryCode <- option(countryGen) // 2 chars [a-zA-Z] ISO 3166-1 2-alpha
+      countrySubDivisionCode <- option(nonEmptyString.map(_.take(9))) // max 9 chars
+      countrySubDivisionName <- option(nonEmptyString.map(_.take(35))) // max 35 chars
+      line <- option(nonEmptyString.map(_.take(70))) // max 70 chars
+      postcodeId <- option(nonEmptyString.map(_.take(9))) // max 9 chars
     } yield Address(cityName, countryCode, countrySubDivisionCode, countrySubDivisionName, line, postcodeId)
   }
 
@@ -346,6 +346,16 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitrarySecurityDetailsCode: Arbitrary[GuaranteeType] = Arbitrary {
     arbitrary[Char]
       .map(c => GuaranteeType(ObligationGuarantee(securityDetailsCode = Some(c.toString))))
+  }
+
+  implicit val arbitraryImportExportParty: Arbitrary[ImportExportParty] = Arbitrary {
+    for {
+      name    <- option(nonEmptyString.map(_.take(70)))
+      id      <- option(nonEmptyString.map(_.take(17)))
+      address <- option(arbitrary[Address])
+    } yield {
+      ImportExportParty(name, id, address)
+    }
   }
 
   def intGreaterThan(min: Int): Gen[Int] =
