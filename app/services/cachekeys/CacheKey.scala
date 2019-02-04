@@ -31,6 +31,8 @@ object CacheKey {
 
   val exporter = CacheKey("Exporter", new Identifier[ImportExportParty] {})
 
+  val representative = CacheKey("Representative", new Identifier[Agent] {})
+
   val authorisationHolders = CacheKey("AuthorisationHolders", new Identifier[Seq[AuthorisationHolder]] {})
 
   val previousDocuments = CacheKey("PreviousDocuments", new Identifier[Seq[PreviousDocument]] {})
