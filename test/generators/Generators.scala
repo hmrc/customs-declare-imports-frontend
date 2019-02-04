@@ -102,18 +102,18 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryOffice: Arbitrary[Office] = Arbitrary {
     for {
-      id <- option(arbitrary[String].map(_.take(17)))
+      id <- option(arbitrary[String].map(_.take(8)))
     } yield Office(id)
   }
 
   implicit val arbitraryObligationGuarantee: Arbitrary[ObligationGuarantee] = Arbitrary {
     for {
-      amount <- option(arbitrary[BigDecimal].map(_.max(9999999999999999.99999)))
-      id <- option(arbitrary[String].map(_.take(70)))
-      referenceId <- option(arbitrary[String].map(_.take(35)))
+      amount              <- option(posDecimal(16, 2))
+      id                  <- option(arbitrary[String].map(_.take(35)))
+      referenceId         <- option(arbitrary[String].map(_.take(35)))
       securityDetailsCode <- option(arbitrary[String].map(_.take(3)))
-      accessCode <- option(arbitrary[String].map(_.take(4)))
-      office <- option(arbitraryOffice.arbitrary)
+      accessCode          <- option(arbitrary[String].map(_.take(4)))
+      office              <- option(arbitraryOffice.arbitrary)
     } yield ObligationGuarantee(amount, id, referenceId, securityDetailsCode, accessCode, office)
   }
 

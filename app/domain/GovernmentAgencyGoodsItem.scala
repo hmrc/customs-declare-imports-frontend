@@ -119,6 +119,7 @@ object DeclarationFormats extends ObligationGuaranteeFormats {
   implicit val authorisationHolderFormats = Json.format[AuthorisationHolder]
 
   implicit val additionalDocumentFormats = Json.format[AdditionalDocument]
+
 }
 
 trait ObligationGuaranteeFormats {
