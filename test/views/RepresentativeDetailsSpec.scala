@@ -16,6 +16,7 @@
 
 package views
 
+import config.RadioOption
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalatest.OptionValues
@@ -23,36 +24,37 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.customs.test.ViewMatchers
-import uk.gov.hmrc.wco.dec.ImportExportParty
+import uk.gov.hmrc.wco.dec.Agent
 import views.behaviours.ViewBehaviours
-import views.html.components.{input_select, input_text}
-import views.html.declarant_details
+import views.html.components.{input_radio, input_select, input_text}
+import views.html.representative_details
 
-class DeclarantDetailsSpec extends ViewBehaviours
+class RepresentativeDetailsSpec extends ViewBehaviours
   with PropertyChecks
   with Generators
   with OptionValues
   with ViewMatchers {
 
-  val form = Form(importExportPartyMapping)
+  val form = Form(agentMapping)
 
   def view(form: Form[_] = form): Html =
-    declarant_details(form)(fakeRequest, messages, appConfig)
+    representative_details(form)(fakeRequest, messages, appConfig)
 
   val simpleView: () => Html = () => view()
+  val messagePrefix = "representativeDetails"
 
-  val messagePrefix = "declarantDetails"
+  val statusCodes: Seq[RadioOption] = RadioOption.fromTuples(config.Options.agentFunctionCodes)
 
-  "declarant details" should {
+  "representative_details view" should {
 
     behave like normalPage(simpleView, messagePrefix)
     behave like pageWithBackLink(simpleView)
 
-    "display name field" in {
+    "display name input" in {
 
-      forAll { party: ImportExportParty =>
+      forAll { agent: Agent =>
 
-        val popForm = form.fillAndValidate(party)
+        val popForm = form.fillAndValidate(agent)
         val input   = input_text(popForm("name"), messages(s"$messagePrefix.name"))
         val html    = view(popForm)
 
@@ -60,11 +62,11 @@ class DeclarantDetailsSpec extends ViewBehaviours
       }
     }
 
-    "display address line" in {
+    "display address line input" in {
 
-      forAll { party: ImportExportParty =>
+      forAll { agent: Agent =>
 
-        val popForm = form.fillAndValidate(party)
+        val popForm = form.fillAndValidate(agent)
         val input   = input_text(popForm("address.line"), messages(s"$messagePrefix.address.line"))
         val html    = view(popForm)
 
@@ -72,11 +74,11 @@ class DeclarantDetailsSpec extends ViewBehaviours
       }
     }
 
-    "display address city name" in {
+    "display address city input" in {
 
-      forAll { party: ImportExportParty =>
+      forAll { agent: Agent =>
 
-        val popForm = form.fillAndValidate(party)
+        val popForm = form.fillAndValidate(agent)
         val input   = input_text(popForm("address.cityName"), messages(s"$messagePrefix.address.cityName"))
         val html    = view(popForm)
 
@@ -84,26 +86,23 @@ class DeclarantDetailsSpec extends ViewBehaviours
       }
     }
 
-    "display address country code" in {
+    "display address country input" in {
 
-      forAll { party: ImportExportParty =>
+      forAll { agent: Agent =>
 
-        val popForm = form.fillAndValidate(party)
-        val input   = input_select(
-          popForm("address.countryCode"),
-          messages(s"$messagePrefix.address.countryCode"),
-          config.Options.countryOptions.toMap)
+        val popForm = form.fillAndValidate(agent)
+        val input   = input_select(popForm("address.countryCode"), messages(s"$messagePrefix.address.country"), config.Options.countryOptions.toMap)
         val html    = view(popForm)
 
         html must include(input)
       }
     }
 
-    "display address postcode" in {
+    "display address postcode input" in {
 
-      forAll { party: ImportExportParty =>
+      forAll { agent: Agent =>
 
-        val popForm = form.fillAndValidate(party)
+        val popForm = form.fillAndValidate(agent)
         val input   = input_text(popForm("address.postcodeId"), messages(s"$messagePrefix.address.postcode"))
         val html    = view(popForm)
 
@@ -111,12 +110,24 @@ class DeclarantDetailsSpec extends ViewBehaviours
       }
     }
 
-    "display id" in {
+    "display id input" in {
 
-      forAll { party: ImportExportParty =>
+      forAll { agent: Agent =>
 
-        val popForm = form.fillAndValidate(party)
+        val popForm = form.fillAndValidate(agent)
         val input   = input_text(popForm("id"), messages(s"$messagePrefix.id"))
+        val html    = view(popForm)
+
+        html must include(input)
+      }
+    }
+
+    "display status code input" in {
+
+      forAll { agent: Agent =>
+
+        val popForm = form.fillAndValidate(agent)
+        val input   = input_radio(popForm("functionCode"), messages(s"$messagePrefix.statusCode"), inputs = statusCodes)
         val html    = view(popForm)
 
         html must include(input)
