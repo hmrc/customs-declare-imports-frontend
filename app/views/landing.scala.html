@@ -15,11 +15,11 @@
  *@
 
 @import config.AppConfig
-@import repositories.declaration.Submission
+@import models.Declaration
 @import uk.gov.hmrc.play.views.formatting.Dates._
 @import org.joda.time.LocalDate
 
-@(submissions: Seq[Submission])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(submissions: Seq[Declaration])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
     @main_template(title = messages("common.importDeclarations"), bodyClasses = None, mainClass = Some("full-width")) {
         <div class="form-group">
@@ -41,9 +41,9 @@
                 <tbody>
                 @for(submission <- submissions) {
                     <tr>
-                        <td scope="row">@submission.lrn.getOrElse(messages("lrn.missing"))</td>
+                        <td scope="row">@submission.localReferenceNumber.getOrElse(messages("lrn.missing"))</td>
                         <td>@submission.mrn.getOrElse(messages("landingpage.MRN.unknown"))</td>
-                        <td>@formatDate(new LocalDate(submission.submittedTimestamp))</td>
+                        <td>@formatDate(new LocalDate(submission.submittedDateTime))</td>
                     </tr>
                 }
                 </tbody>

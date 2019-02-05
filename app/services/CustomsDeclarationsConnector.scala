@@ -20,6 +20,7 @@ import com.google.inject.Inject
 import config.AppConfig
 import domain.auth.SignedInUser
 import javax.inject.Singleton
+import models.Declaration
 import play.api.http.{ContentTypes, HeaderNames, Status}
 import play.api.mvc.Codec
 import repositories.declaration.{Submission, SubmissionRepository}
@@ -48,6 +49,9 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
     postMetaData(appConfig.submitImportDeclarationUri, metaData, localReferenceNumber, onSuccessfulSubmission)
   }
 
+  def getDeclarations(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[Declaration]] = {
+    httpClient.GET[Seq[Declaration]](s"${appConfig.customsDeclareImportsEndpoint}/declarations")
+  }
 
   private def postMetaData(uri: String,
                            metaData: MetaData,
