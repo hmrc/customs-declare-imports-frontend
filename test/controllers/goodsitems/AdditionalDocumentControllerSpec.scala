@@ -110,16 +110,12 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
 
     "return OK" when {
       "user submits valid data" in {
-        forAll (arbitrary[SignedInUser],arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], goodsItemGen)
-        { case (user: SignedInUser, additionalDocument , goodsItem) =>
-          when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any(), any()))
-            .thenReturn(Future.successful(goodsItem))
-            when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
-              .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
+        forAll (arbitrary[SignedInUser],arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], goodsItemGen) { case (user: SignedInUser, additionalDocument, goodsItem) =>
+          withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, goodsItem) {
             val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument.copy(effectiveDateTime = None)): _*)
             val result = controller(Some(user)).onSubmit(request)
             status(result) mustBe OK
-
+          }
         }
       }
     }
@@ -167,16 +163,14 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
 
       "valid data is provided" in {
 
-        forAll { (user: SignedInUser, additionalDocument: GovernmentAgencyGoodsItemAdditionalDocument, governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
-          when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any(), any()))
-            .thenReturn(Future.successful(Some(governmentAgencyGoodsItem)))
-          when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
-            .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument.copy(effectiveDateTime = None)): _*)
-          await(controller(Some(user)).onSubmit(request))
+        forAll { (user: SignedInUser, additionalDoc: GovernmentAgencyGoodsItemAdditionalDocument, goodsItem: GovernmentAgencyGoodsItem) =>
+          withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(goodsItem)) {
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDoc.copy(effectiveDateTime = None)): _*)
+            await(controller(Some(user)).onSubmit(request))
 
-          verify(mockCustomsCacheService, atLeastOnce())
-            .cache[GovernmentAgencyGoodsItem](eqTo(user.eori.value), eqTo(CacheKey.goodsItem.key), any())(any(), any(), any())
+            verify(mockCustomsCacheService, atLeastOnce())
+              .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem), any())(any(), any(), any())
+          }
         }
       }
     }

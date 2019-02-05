@@ -55,8 +55,7 @@ class AdditionalDocumentController @Inject()(actions: Actions, cacheService: Cus
               case Some(goodsItem) => goodsItem.copy(additionalDocuments = goodsItem.additionalDocuments :+ form)
               case None => GovernmentAgencyGoodsItem(additionalDocuments = Seq(form))
             }
-
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
+            cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
               Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentsForm, updatedGoodsItem.additionalDocuments))
             }
           })

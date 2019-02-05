@@ -108,7 +108,7 @@ object DeclarationFormMapping {
     "writeOff" -> optional(writeOffMapping)
   )(GovernmentAgencyGoodsItemAdditionalDocument.apply)(GovernmentAgencyGoodsItemAdditionalDocument.unapply)
     .verifying("You must provide input for Category or Identifier or status or Status Reason or Issuing Authority and Date of Validity or Quantity and Measurement Unit & Qualifier",
-      require1Field[GovernmentAgencyGoodsItemAdditionalDocument](_.categoryCode, _.effectiveDateTime, _.id,
+      require1Field[GovernmentAgencyGoodsItemAdditionalDocument](_.categoryCode, _.effectiveDateTime, _.id, _.name,
         _.lpcoExemptionCode, _.submitter, _.typeCode, _.writeOff))
 
   lazy val additionalInformationMapping = mapping(
