@@ -16,7 +16,7 @@
 
 package controllers.goodsitems
 
-import controllers.FakeActions
+import controllers.{FakeActions, routes}
 import domain.GovernmentAgencyGoodsItem
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
@@ -32,11 +32,8 @@ import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItemAdditionalDocument
 import views.html.gov_agency_goods_items_add_docs
-
-import scala.concurrent.Future
 
 class AdditionalDocumentControllerSpec extends CustomsSpec
   with PropertyChecks
@@ -110,12 +107,16 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
 
     "return OK" when {
       "user submits valid data" in {
-        forAll (arbitrary[SignedInUser],arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], goodsItemGen) { case (user: SignedInUser, additionalDocument, goodsItem) =>
-          withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, goodsItem) {
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument.copy(effectiveDateTime = None)): _*)
-            val result = controller(Some(user)).onSubmit(request)
-            status(result) mustBe OK
-          }
+        forAll {
+          (user: SignedInUser, additionalDocument: GovernmentAgencyGoodsItemAdditionalDocument, goodsItem: GovernmentAgencyGoodsItem) =>
+            val docs = additionalDocument.copy(effectiveDateTime = None)
+            withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(goodsItem)) {
+              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument.copy(effectiveDateTime = None)): _*)
+              val result = controller(Some(user)).onSubmit(request)
+              status(result) mustBe SEE_OTHER
+              redirectLocation(result) mustBe Some(routes.AdditionalDocumentController.onPageLoad().url)
+
+            }
         }
       }
     }
@@ -141,9 +142,7 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
           for {
             gp <- arbitrary[GovernmentAgencyGoodsItemAdditionalDocument]
             categoryCode <- stringsLongerThan(6)
-            id <- minStringLength(36)
-            typeCode <- minStringLength(4)
-          } yield gp.copy(categoryCode = Some(categoryCode), effectiveDateTime = None, id = Some(id), typeCode = Some(typeCode))
+          } yield gp.copy(categoryCode = Some(categoryCode), effectiveDateTime = None)
 
         forAll(arbitrary[SignedInUser], badData, goodsItemGen) {
           case (user, formData, data) =>
@@ -165,9 +164,9 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
 
         forAll { (user: SignedInUser, additionalDoc: GovernmentAgencyGoodsItemAdditionalDocument, goodsItem: GovernmentAgencyGoodsItem) =>
           withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(goodsItem)) {
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDoc.copy(effectiveDateTime = None)): _*)
+            val updatedDoc = additionalDoc.copy(effectiveDateTime = None)
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(updatedDoc): _*)
             await(controller(Some(user)).onSubmit(request))
-
             verify(mockCustomsCacheService, atLeastOnce())
               .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem), any())(any(), any(), any())
           }

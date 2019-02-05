@@ -76,5 +76,3 @@ POST       /submit-declaration-goods/add-packagings      controllers.GovernmentA
 
 GET       /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.display()
 POST      /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()
-
-GET       /test-only/feature/all/:status                                    test.controllers.FeatureSwitchController.setAll(status: domain.features.FeatureStatus.FeatureStatus)

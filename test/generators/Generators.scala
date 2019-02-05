@@ -201,7 +201,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryGovernmentAgencyGoodsItemAdditionalDocumentSubmitter
   : Arbitrary[GovernmentAgencyGoodsItemAdditionalDocumentSubmitter] = Arbitrary {
     for {
-      name <- option(arbitrary[String].map(_.take(20)))
+      name <- option(nonEmptyString.map(_.take(20)))
     } yield GovernmentAgencyGoodsItemAdditionalDocumentSubmitter(name)
   }
 
@@ -217,13 +217,13 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       categoryCode <- option(numStr.map(_.take(1)))
       effectiveDateTime <- option(arbitrary[DateTimeElement])
-      id <- option(arbitrary[String].map(_.take(20)))
-      name <- option(arbitrary[String].map(_.take(20)))
+      id <- option(nonEmptyString.map(_.take(20)))
+      name <- option(nonEmptyString.map(_.take(20)))
       typeCode <- option(numStr.map(_.take(3)))
-      lpcoExemptionCode <- option(numStr.map(_.take(2)))
-      submitter <- option(arbitrary[GovernmentAgencyGoodsItemAdditionalDocumentSubmitter])
+      lpcoExemptionCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
+      submitter <- option(arbitraryGovernmentAgencyGoodsItemAdditionalDocumentSubmitter.arbitrary)
       writeOff <- option(arbitrary[WriteOff])
-      if categoryCode.exists(_.size ==1) && typeCode.exists(_.size == 3) && lpcoExemptionCode.exists(_.size == 2)
+      if categoryCode.exists(_.size ==1) && typeCode.exists(_.size == 3) && lpcoExemptionCode.exists(_.size == 2 && submitter.isDefined && writeOff.isDefined)
     } yield {
       GovernmentAgencyGoodsItemAdditionalDocument(categoryCode, effectiveDateTime, id, name, typeCode, lpcoExemptionCode, submitter, writeOff)
     }
@@ -336,6 +336,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       origins <- Gen.listOfN(1, arbitraryOrigin.arbitrary)
       packagings <- Gen.listOfN(1, arbitraryPackaging.arbitrary)
       previousDocuments <- Gen.listOfN(1, arbitraryPreviousDocument.arbitrary)
+      if(additionalDocuments.size > 0 )
     } yield GovernmentAgencyGoodsItem(goodsItemValue, additionalDocuments, additionalInformations, aeoMutualRecognitionParties,
       domesticParties, governmentProcedures, manufacturers, origins, packagings, previousDocuments)
   }

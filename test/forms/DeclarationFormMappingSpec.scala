@@ -1046,7 +1046,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "Invalid day is entered" in {
 
-        forAll(arbitrary[Date], intBetweenRange(35, 60)) { (date, day) =>
+        forAll(arbitrary[Date], intGreaterThan(31)) { (date, day) =>
 
           Form(dateMapping).fillAndValidate(date.copy(day = day)).fold(
             _.error("day") must haveMessage("Day is invalid"),
@@ -1057,7 +1057,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "Invalid month is entered" in {
 
-        forAll(arbitrary[Date], intBetweenRange(13, 30)) { (date, month) =>
+        forAll(arbitrary[Date], intGreaterThan(12)) { (date, month) =>
 
           val invalidDate = date.copy(month = month)
           Form(dateMapping).fillAndValidate(invalidDate).fold(
@@ -1069,7 +1069,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "Invalid year is entered" in {
 
-        forAll(arbitrary[Date], intBetweenRange(1890, 1899)) { (date, year) =>
+        forAll(arbitrary[Date], intLessThan(1900)) { (date, year) =>
 
           val invalidDate = date.copy(year = year)
           Form(dateMapping).fillAndValidate(invalidDate).fold(
@@ -1101,7 +1101,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "unitCode is greater than 5" in {
 
-        val badData = stringsLongerThan(5)
+        val badData = minStringLength(6)
         forAll(arbitrary[Measure], badData) {
           (measure, unitCode) =>
 
@@ -1259,6 +1259,17 @@ class DeclarationFormMappingSpec extends WordSpec
             _.error("lpcoExemptionCode") must haveMessage("Status must be 2 characters"),
             _ => fail("Should not succeed")
           )
+        }
+      }
+      "lpcoExemptionCode length is 2 but not alpha characters" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], nonAlphaString) { (additionalDocument, invalidId) =>
+          whenever(invalidId.nonEmpty) {
+            Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(lpcoExemptionCode = Some(invalidId.take(2)))).fold(
+              _.error("lpcoExemptionCode") must haveMessage("Status must be 2 characters"),
+              _ => fail("Should not succeed")
+            )
+          }
         }
       }
 

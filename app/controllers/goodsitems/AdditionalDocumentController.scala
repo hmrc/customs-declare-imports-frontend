@@ -56,7 +56,7 @@ class AdditionalDocumentController @Inject()(actions: Actions, cacheService: Cus
               case None => GovernmentAgencyGoodsItem(additionalDocuments = Seq(form))
             }
             cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
-              Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentsForm, updatedGoodsItem.additionalDocuments))
+              Redirect(routes.AdditionalDocumentController.onPageLoad())
             }
           })
   }

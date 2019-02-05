@@ -40,6 +40,7 @@ object DeclarationFormMapping {
 
   def isAlpha: String => Boolean = _.matches("^[A-Za-z]*$")
 
+
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text.verifying("Issuing Authority must be less than 70 characters", _.length <= 70)),
     "roleCode" -> optional(text.verifying("roleCode is only 3 characters", _.length <= 3))
@@ -103,7 +104,7 @@ object DeclarationFormMapping {
     "id" -> optional(text.verifying("Identifier must be less than 35 characters", _.length <= 35)),
     "name" -> optional(text.verifying("Status Reason must be less than 35 characters", _.length <= 35)),
     "typeCode" -> optional(text.verifying("Type is only 3 characters", _.length == 3)),
-    "lpcoExemptionCode" -> optional(text.verifying("Status must be 2 characters", _.length == 2)),
+    "lpcoExemptionCode" -> optional(text.verifying("Status must be 2 characters", (str => str.length == 2 && isAlpha(str)))),
     "submitter" -> optional(govAgencyGoodsItemAddDocumentSubmitterMapping),
     "writeOff" -> optional(writeOffMapping)
   )(GovernmentAgencyGoodsItemAdditionalDocument.apply)(GovernmentAgencyGoodsItemAdditionalDocument.unapply)
