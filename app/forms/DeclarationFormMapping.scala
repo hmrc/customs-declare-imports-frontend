@@ -16,14 +16,16 @@
 
 package forms
 
+import java.text.DecimalFormat
+
 import domain.GoodsItemValueInformation
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.data.Forms.{number, _}
 import play.api.data.Mapping
 import uk.gov.hmrc.wco.dec._
-import java.text.DecimalFormat
 
+import scala.util.Try
 import scala.util.control.Exception.allCatch
 
 object DeclarationFormMapping {
@@ -70,21 +72,29 @@ object DeclarationFormMapping {
 
   def isDateValid(): Date => Boolean = date => {
     val df = new DecimalFormat("00")
-      (allCatch[DateTime] opt (DateTime.parse(s"${date.year}${df.format(date.month)}${df.format(date.day)}",
-        DateTimeFormat.forPattern("yyyyMMdd")))).isDefined
+    (allCatch[DateTime] opt (DateTime.parse(s"${date.year}${df.format(date.month)}${df.format(date.day)}",
+      DateTimeFormat.forPattern("yyyyMMdd")))).isDefined
   }
 
   val dateTimeElementMapping = mapping(
     "date" -> dateMapping
-  )(date => DateTimeElement(
-    DateTimeString("102",
-    s"${date.year}/${date.month}/${date.day}")))((d: DateTimeElement) =>
-    Some(Date(d.dateTimeString.value.split("/").last.toInt,
-    d.dateTimeString.value.split("/")(1).toInt,
-    d.dateTimeString.value.split("/").head.toInt)))
+  )(date => DateTimeElement(DateTimeString("102", s"${date.year}/${date.month}/${date.day}")))((
+  d: DateTimeElement) => toDate(d.dateTimeString.value))
+
+  def toDate(dateString: String): Option[Date] = {
+    def toInt(s: String): Option[Int] = Try(s.toInt).toOption
+
+    for {
+      day <- dateString.split("/").lastOption.flatMap(toInt)
+      month <- dateString.split("/").lift(1).flatMap(toInt)
+      year <- dateString.split("/").headOption.flatMap(toInt)
+    } yield {
+      Date(day, month, year)
+    }
+  }
 
   val govtAgencyGoodsItemAddDocMapping = mapping(
-    "categoryCode" -> optional(text.verifying("Category must be 1 character", _.length == 1)),// 3 in schema
+    "categoryCode" -> optional(text.verifying("Category must be 1 character", _.length == 1)), // 3 in schema
     "effectiveDateTime" -> optional(dateTimeElementMapping),
     "id" -> optional(text.verifying("Identifier must be less than 35 characters", _.length <= 35)),
     "name" -> optional(text.verifying("Status Reason must be less than 35 characters", _.length <= 35)),
@@ -94,11 +104,11 @@ object DeclarationFormMapping {
     "writeOff" -> optional(writeOffMapping)
   )(GovernmentAgencyGoodsItemAdditionalDocument.apply)(GovernmentAgencyGoodsItemAdditionalDocument.unapply)
     .verifying("You must provide input for Category or Identifier or status or Status Reason or Issuing Authority and Date of Validity or Quantity and Measurement Unit & Qualifier",
-      require1Field[GovernmentAgencyGoodsItemAdditionalDocument](_.categoryCode, _.effectiveDateTime,_.id,
-        _.lpcoExemptionCode, _.submitter,_.typeCode, _.writeOff))
+      require1Field[GovernmentAgencyGoodsItemAdditionalDocument](_.categoryCode, _.effectiveDateTime, _.id,
+        _.lpcoExemptionCode, _.submitter, _.typeCode, _.writeOff))
 
   lazy val additionalInformationMapping = mapping(
-    "statementCode" -> optional(text.verifying("Code should be less than or equal to 5 characters", _.length <= 5)),// max 17 in schema
+    "statementCode" -> optional(text.verifying("Code should be less than or equal to 5 characters", _.length <= 5)), // max 17 in schema
     "statementDescription" -> optional(text.verifying("Description should be less than or equal to 512 characters", _.length <= 512)),
     "limitDateTime" -> ignored[Option[String]](None),
     "statementTypeCode" -> optional(text.verifying("statement type code should be less than or equal to 3 characters", _.length <= 3)),
@@ -243,6 +253,6 @@ object DeclarationFormMapping {
 
 }
 
-case class ObligationGuaranteeForm (guarantees: Seq[ObligationGuarantee] = Seq.empty)
+case class ObligationGuaranteeForm(guarantees: Seq[ObligationGuarantee] = Seq.empty)
 
 

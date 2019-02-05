@@ -71,11 +71,9 @@
             @components.input_text(field = form("typeCode"),label = messages("governmentAgencyGoodsItemAdd.typeCodeOfDocument"))
             @components.input_text(field = form("lpcoExemptionCode"),label = messages("governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument"))
             @components.input_text(field = form("submitter.name"),label = messages("governmentAgencyGoodsItemAdd.submitterName"))
-            <fieldset>
                 @components.input_text(field = form("effectiveDateTime.date.day"),label = "Day")
                 @components.input_text(field = form("effectiveDateTime.date.month"),label = "Month")
                 @components.input_text(field = form("effectiveDateTime.date.year"),label = "Year")
-            </fieldset>
             @components.input_text(field = form("writeOff.quantity.unitCode"),label = messages("governmentAgencyGoodsItemAdd.writeOffMeasurement"))
             @components.input_text(field = form("writeOff.quantity.value"),label = messages("governmentAgencyGoodsItemAdd.writeOffQuantity"))
         </fieldset>

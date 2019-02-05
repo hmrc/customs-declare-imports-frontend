@@ -109,21 +109,18 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
     behave like authenticatedEndpoint(additionalDocsPageUri, POST)
 
     "return OK" when {
-
       "user submits valid data" in {
-
-        forAll { (user: SignedInUser, additionalDocument: GovernmentAgencyGoodsItemAdditionalDocument,
-        goodsItem: GovernmentAgencyGoodsItem) =>
+        forAll (arbitrary[SignedInUser],arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], goodsItemGen)
+        { case (user: SignedInUser, additionalDocument , goodsItem) =>
           when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any(), any()))
-            .thenReturn(Future.successful(Some(goodsItem)))
+            .thenReturn(Future.successful(goodsItem))
             when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
               .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
-            println("Form data is " + additionalDocument)
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument): _*)
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument.copy(effectiveDateTime = None)): _*)
             val result = controller(Some(user)).onSubmit(request)
             status(result) mustBe OK
-          }
 
+        }
       }
     }
 
@@ -150,7 +147,7 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
             categoryCode <- stringsLongerThan(6)
             id <- minStringLength(36)
             typeCode <- minStringLength(4)
-          } yield gp.copy(categoryCode = Some(categoryCode), id = Some(id), typeCode = Some(typeCode))
+          } yield gp.copy(categoryCode = Some(categoryCode), effectiveDateTime = None, id = Some(id), typeCode = Some(typeCode))
 
         forAll(arbitrary[SignedInUser], badData, goodsItemGen) {
           case (user, formData, data) =>
@@ -175,7 +172,7 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
             .thenReturn(Future.successful(Some(governmentAgencyGoodsItem)))
           when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
             .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument.copy(effectiveDateTime = None)): _*)
           await(controller(Some(user)).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
