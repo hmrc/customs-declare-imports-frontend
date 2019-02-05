@@ -113,14 +113,14 @@ class AdditionalInformationControllerSpec extends CustomsSpec
       "user submits valid data" in {
 
         forAll { (user: SignedInUser, additionalInformation: AdditionalInformation, governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
-          when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any(), any()))
-            .thenReturn(Future.successful(Some(governmentAgencyGoodsItem)))
-          when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
-            .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalInformation): _*)
-          val result = controller(Some(user)).onSubmit(request)
 
-          status(result) mustBe OK
+          withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(governmentAgencyGoodsItem)) {
+
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalInformation): _*)
+            val result = controller(Some(user)).onSubmit(request)
+
+            status(result) mustBe OK
+          }
         }
       }
     }
