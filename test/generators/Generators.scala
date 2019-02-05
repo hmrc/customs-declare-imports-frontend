@@ -125,8 +125,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryAdditionalInfo: Arbitrary[AdditionalInformation] = Arbitrary {
     for {
-      statementCode <- option(arbitrary[String].map(_.take(5)))
-      statementDescription <- option(arbitrary[String].map(_.take(512)))
+      statementCode <- option(nonEmptyString.map(_.take(5)))
+      statementDescription <- option(nonEmptyString.map(_.take(512)))
     } yield AdditionalInformation(statementCode, statementDescription)
   }
 

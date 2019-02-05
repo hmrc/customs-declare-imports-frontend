@@ -167,16 +167,20 @@ class AdditionalInformationControllerSpec extends CustomsSpec
 
       "valid data is provided" in {
 
-        forAll { (user: SignedInUser, additionalInformation: AdditionalInformation, governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
-          when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any(), any()))
-            .thenReturn(Future.successful(Some(governmentAgencyGoodsItem)))
-          when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
-            .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalInformation): _*)
-          await(controller(Some(user)).onSubmit(request))
+        forAll {
+          (user: SignedInUser, additionalInformation: AdditionalInformation, governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
 
-          verify(mockCustomsCacheService, atLeastOnce())
-            .cache[GovernmentAgencyGoodsItem](eqTo(user.eori.value), eqTo(CacheKey.goodsItem.key), any())(any(), any(), any())
+            withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(governmentAgencyGoodsItem)) {
+
+              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalInformation): _*)
+              await(controller(Some(user)).onSubmit(request))
+
+              val addInf = additionalInformation +: governmentAgencyGoodsItem.additionalInformations
+              val expected = governmentAgencyGoodsItem.copy(additionalInformations = addInf)
+
+              verify(mockCustomsCacheService, atLeastOnce())
+                .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem), eqTo(expected))(any(), any(), any())
+            }
         }
       }
     }
