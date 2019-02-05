@@ -17,9 +17,14 @@
 package forms
 
 import domain.GoodsItemValueInformation
-import play.api.data.Forms._
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import play.api.data.Forms.{number, _}
 import play.api.data.Mapping
 import uk.gov.hmrc.wco.dec._
+import java.text.DecimalFormat
+
+import scala.util.control.Exception.allCatch
 
 object DeclarationFormMapping {
 
@@ -30,7 +35,7 @@ object DeclarationFormMapping {
     t => primary(t).fold(true)(_ => fs.forall(f => f(t).nonEmpty))
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
-    "name" -> optional(text),
+    "name" -> optional(text.verifying("Issuing Authority must be less than 70 characters", _.length <= 70)),
     "roleCode" -> optional(text.verifying("roleCode is only 3 characters", _.length <= 3))
   )(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.apply)(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.unapply)
 
@@ -47,21 +52,49 @@ object DeclarationFormMapping {
     .verifying("Amount is required when currency is provided", requireAllDependantFields[Amount](_.currencyId)(_.value))
     .verifying("Currency is required when amount is provided", requireAllDependantFields[Amount](_.value)(_.currencyId))
 
-  val measureMapping = mapping("unitCode" -> optional(text.verifying("unitCode is only 5 characters", _.length <= 5)),
-    "value" -> optional(bigDecimal.verifying("value must not be negative", a => a > 0)))(Measure.apply)(Measure.unapply)
+  val measureMapping = mapping("unitCode" -> optional(text.verifying("Measurement Unit & Qualifier cannot be more than 5 characters", _.length <= 5)),
+    "value" -> optional(bigDecimal.verifying("Quantity cannot be greater than 99999999999999.999999", _.precision <= 16)
+      .verifying("Quantity cannot have more than 6 decimal places", _.scale <= 6)
+      .verifying("Quantity must not be negative", _ >= 0)))(Measure.apply)(Measure.unapply)
 
   val writeOffMapping = mapping("quantity" -> optional(measureMapping), "amount" -> optional(amountMapping))(WriteOff.apply)(WriteOff.unapply)
 
+  case class Date(day:Option[Int],month:Option[Int], year:Option[Int])
+
+  val dateMapping = mapping(
+    "day" -> optional(number.verifying("Day is invalid", (day => day >= 1 && day <= 31))),
+    "month" -> optional(number.verifying("Month is invalid", (month => month >= 1 && month <= 12))),
+    "year" -> optional(number.verifying("Year is invalid", (_ >= 1900)))
+  )(Date.apply)(Date.unapply)
+    .verifying("Date entered is invalid", isDateValid)
+
+  def isDateValid(): Date => Boolean = date => {
+    val df = new DecimalFormat("00")
+      (allCatch[DateTime] opt (DateTime.parse(s"${date.year.get}${df.format(date.month.get)}${df.format(date.day.get)}",
+        DateTimeFormat.forPattern("yyyyMMdd")))).isDefined
+  }
+
+
+  val dateTimeElementMapping = mapping(
+    "date" -> dateMapping
+  )(date => DateTimeElement(DateTimeString("102",
+    s"${date.year.get}/${date.month.get}/${date.day.get}")))((d:DateTimeElement) => Some(Date(Some(d.dateTimeString.value.split("/").head.toInt),
+    Some(d.dateTimeString.value.split("/")(1).toInt),
+    Some(d.dateTimeString.value.split("/").last.toInt))))
+
   val govtAgencyGoodsItemAddDocMapping = mapping(
-    "categoryCode" -> optional(text.verifying("category code is only 3 characters", _.length <= 3)),
-    "effectiveDateTime" -> ignored[Option[DateTimeElement]](None),
-    "id" -> optional(text),
-    "name" -> optional(text),
-    "typeCode" -> optional(text.verifying("typeCode is only 3 characters", _.length <= 3)),
-    "lpcoExemptionCode" -> optional(text.verifying("lpcoExemptionCode is only 3 characters", _.length <= 3)),
+    "categoryCode" -> optional(text.verifying("Category must be 1 character", _.length == 1)),// 3 in schema
+    "effectiveDateTime" -> optional(dateTimeElementMapping),
+    "id" -> optional(text.verifying("Identifier must be less than 35 characters", _.length <= 35)),
+    "name" -> optional(text.verifying("Status Reason must be less than 35 characters", _.length <= 35)),
+    "typeCode" -> optional(text.verifying("Type is only 3 characters", _.length == 3)),
+    "lpcoExemptionCode" -> optional(text.verifying("Status must be 2 characters", _.length == 2)),
     "submitter" -> optional(govAgencyGoodsItemAddDocumentSubmitterMapping),
     "writeOff" -> optional(writeOffMapping)
   )(GovernmentAgencyGoodsItemAdditionalDocument.apply)(GovernmentAgencyGoodsItemAdditionalDocument.unapply)
+    .verifying("You must provide input for Category or Identifier or status or Status Reason or Issuing Authority and Date of Validity or Quantity and Measurement Unit & Qualifier",
+      require1Field[GovernmentAgencyGoodsItemAdditionalDocument](_.categoryCode, _.effectiveDateTime,_.id,
+        _.lpcoExemptionCode, _.submitter,_.typeCode, _.writeOff))
 
   lazy val additionalInformationMapping = mapping(
     "statementCode" -> optional(text.verifying("Code should be less than or equal to 5 characters", _.length <= 5)),// max 17 in schema

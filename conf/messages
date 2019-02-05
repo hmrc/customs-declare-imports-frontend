@@ -417,7 +417,7 @@ governmentAgencyGoodsItem.refundRecipientParties=Refund recipient parties
 governmentAgencyGoodsItem.saveGoodsItem=Save goods item
 
 governmentAgencyGoodsItemAdd.title=Additional documents
-governmentAgencyGoodsItemAdd.countryCode=Country code
+governmentAgencyGoodsItemAdd.categoryCode=Category
 governmentAgencyGoodsItemAdd.documentName=Document name
 governmentAgencyGoodsItemAdd.id=ID
 governmentAgencyGoodsItemAdd.typeCodeOfDocument=Type code of document
@@ -426,8 +426,9 @@ governmentAgencyGoodsItemAdd.submitterName=Submitter name
 governmentAgencyGoodsItemAdd.submitterRoleCode=Submitter role code
 governmentAgencyGoodsItemAdd.addDocuments=Add additional document
 governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs=No of goods item additional docs added:
-governmentAgencyGoodsItemAdd.writeOffQuantity=Write off quantity
-governmentAgencyGoodsItemAdd.writeOffAmount=Write off amount
+governmentAgencyGoodsItemAdd.writeOffQuantity=Quantity
+governmentAgencyGoodsItemAdd.writeOffMeasurement=Measurement Unit & Qualifier
+governmentAgencyGoodsItemAdd.effectiveDateTime=Date of validity
 
 governmentAgencyGoodsItemAdditionalInfo.title=Additional information
 governmentAgencyGoodsItemAdditionalInfo.p.additionalInformationAdded=additional information added

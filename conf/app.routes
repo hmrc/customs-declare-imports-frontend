@@ -37,9 +37,6 @@ POST       /submit-declaration-goods/goods-item-value        controllers.Governm
 
 POST       /submit-declaration-goods/add-gov-agency-goods-item        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
 
-GET       /submit-declaration-goods/add-gov-agency-goods-items-additional-docs       controllers.GovernmentAgencyGoodsItemsController.showGovAgencyGoodsItemsAdditionalDocuments()
-POST       /submit-declaration-goods/add-gov-agency-goods-items-additional-docs       controllers.GovernmentAgencyGoodsItemsController.handleGovAgencyGoodsItemsAdditionalDocumentsSubmit()
-
 GET       /submit-declaration-goods/add-role-based-parties       controllers.GovernmentAgencyGoodsItemsController.showRoleBasedParties()
 POST       /submit-declaration-goods/add-role-based-parties      controllers.GovernmentAgencyGoodsItemsController.handleRoleBasedPartiesSubmit()
 
@@ -54,3 +51,5 @@ POST       /submit-declaration-goods/add-packagings      controllers.GovernmentA
 
 GET       /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.display()
 POST      /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()
+
+GET       /test-only/feature/all/:status                                    test.controllers.FeatureSwitchController.setAll(status: domain.features.FeatureStatus.FeatureStatus)
