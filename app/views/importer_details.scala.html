@@ -14,21 +14,36 @@
  * limitations under the License.
  *@
 
-@import config.{AppConfig, ValidationError}
-@import config.Fields._
+@import config.AppConfig
+@import controllers.routes._
+@import uk.gov.hmrc.play.views.html._
 
-@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
+@(form: Form[_])(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
-@main_template(messages("pages.importer.details.title")) {
+@main_template(title = messages("importerDetails.title")) {
 
-    @helpers.form("importer-details", "pages.importer.details.form.legend", data) {
-        @helpers.textInput(importerName, data)
-        @helpers.textInput(importerAddressLine, data)
-        @helpers.textInput(importerAddressCityName, data)
-        @helpers.selectInput(importerAddressCountryCode, data)
-        @helpers.textInput(importerAddressPostcode, data)
-        @helpers.textInput(importerEori, data)
-        @helpers.nextButton()
-    }
+ @helpers.form(action = ImporterDetailsController.onSubmit()) {
 
+  @components.back_link()
+
+  @components.error_summary(form.errors)
+
+
+  <fieldset>
+   <legend>
+    <h1 class="heading-large">@messages("importerDetails.heading")</h1>
+   </legend>
+
+   @components.input_text(form("name"), messages("importerDetails.name"))
+   @components.input_text(form("address.line"), messages("importerDetails.address.line"))
+   @components.input_text(form("address.cityName"), messages("importerDetails.address.city"))
+   @components.input_select(form("address.countryCode"), messages("importerDetails.address.country"), config.Options.countryOptions.toMap)
+   @components.input_text(form("address.postcodeId"), messages("importerDetails.address.postcode"))
+   @components.input_text(form("id"), messages("importerDetails.id"))
+  </fieldset>
+
+  <button id="Add" name="submit">
+   @messages("common.button.continue")
+  </button>
+ }
 }

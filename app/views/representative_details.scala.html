@@ -29,9 +29,11 @@
 
    @components.error_summary(form.errors)
 
-   <h1 class="heading-large">@messages("representativeDetails.heading")</h1>
-
    <fieldset>
+    <legend>
+     <h1 class="heading-large">@messages("representativeDetails.heading")</h1>
+    </legend>
+
     @components.input_text(form("name"), messages("representativeDetails.name"))
     @components.input_text(form("address.line"), messages("representativeDetails.address.line"))
     @components.input_text(form("address.cityName"), messages("representativeDetails.address.cityName"))

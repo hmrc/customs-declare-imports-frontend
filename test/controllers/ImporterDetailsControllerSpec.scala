@@ -25,32 +25,30 @@ import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import org.scalatest.OptionValues
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.Agent
-import views.html.representative_details
+import uk.gov.hmrc.wco.dec.ImportExportParty
+import views.html.importer_details
 
-class RepresentativeDetailsControllerSpec extends CustomsSpec
+class ImporterDetailsControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
   with OptionValues
-  with MockitoSugar
   with EndpointBehaviours {
 
-  val form = Form(agentMapping)
+  val form = Form(importExportPartyMapping)
 
   def view(form: Form[_] = form): String =
-    representative_details(form)(fakeRequest, messages, appConfig).body
+    importer_details(form)(fakeRequest, messages, appConfig).body
 
   def controller(user: SignedInUser) =
-    new RepresentativeDetailsController(new FakeActions(Some(user)), mockCustomsCacheService)
+    new ImporterDetailsController(new FakeActions(Some(user)), mockCustomsCacheService)
 
-  val agentGen: Gen[Option[Agent]] = option(arbitrary[Agent])
-  val uri = "/submit-declaration/representative-details"
+  val partyGen: Gen[Option[ImportExportParty]] = option(arbitrary[ImportExportParty])
+  val uri = "/submit-declaration/importer-details"
 
   "onPageLoad" should {
 
@@ -81,17 +79,18 @@ class RepresentativeDetailsControllerSpec extends CustomsSpec
 
           status(result) mustBe UNAUTHORIZED
         }
+
       }
     }
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], agentGen) {
-        (user, agent) =>
+      forAll(arbitrary[SignedInUser], partyGen) {
+        (user, cacheData) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.representative, agent) {
+          withCleanCache(EORI(user.eori.value), CacheKey.importer, cacheData) {
 
-            val popForm = agent.fold(form)(form.fill)
+            val popForm = cacheData.fold(form)(form.fill)
             val result  = controller(user).onPageLoad(fakeRequest)
 
             status(result) mustBe OK
@@ -103,26 +102,26 @@ class RepresentativeDetailsControllerSpec extends CustomsSpec
 
   "onSubmit" should {
 
-    behave like redirectedEndpoint(uri, "/submit-declaration/importer-details", POST)
+    behave like redirectedEndpoint(uri, "/submit-declaration/seller-details", POST)
     behave like authenticatedEndpoint(uri, POST)
 
-    "return OK" when {
+    "return SEE_OTHER" when {
 
-      "user is signed in" in {
+      "valid data is submitted" in {
 
         forAll { user: SignedInUser =>
 
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.ImporterDetailsController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(routes.DeclarationController.displaySubmitForm("seller-details").url)
         }
       }
     }
 
     "return UNAUTHORIZED" when {
 
-      "user doesn't have eori" in {
+      "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
 
@@ -135,21 +134,21 @@ class RepresentativeDetailsControllerSpec extends CustomsSpec
 
     "return BAD_REQUEST" when {
 
-      "bad data is posted" in {
+      "bad data is submitted" in {
 
         val badData =
           for {
-            agent <- arbitrary[Agent]
+            party <- arbitrary[ImportExportParty]
             id    <- minStringLength(18)
           } yield {
-            agent.copy(id = Some(id))
+            party.copy(id = Some(id))
           }
 
         forAll(arbitrary[SignedInUser], badData) {
           (user, formData) =>
 
-            val popForm = form.fillAndValidate(formData)
             val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+            val popForm = form.fillAndValidate(formData)
             val result  = controller(user).onSubmit(request)
 
             status(result) mustBe BAD_REQUEST
@@ -160,15 +159,15 @@ class RepresentativeDetailsControllerSpec extends CustomsSpec
 
     "save data in cache" when {
 
-      "valid data is posted" in {
+      "valid data is submitted" in {
 
-        forAll { (user: SignedInUser, agent: Agent) =>
+        forAll { (user: SignedInUser, formData: ImportExportParty) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(agent): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
           await(controller(user).onSubmit(request))
 
-          verify(mockCustomsCacheService, atLeastOnce())
-            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.representative), eqTo(agent))(any(), any(), any())
+          verify(mockCustomsCacheService, atLeastOnce)
+            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.importer), eqTo(formData))(any(), any(), any())
         }
       }
     }
