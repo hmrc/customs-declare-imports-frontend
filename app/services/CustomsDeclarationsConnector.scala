@@ -23,7 +23,6 @@ import javax.inject.Singleton
 import models.Declaration
 import play.api.http.{ContentTypes, HeaderNames, Status}
 import play.api.mvc.Codec
-import repositories.declaration.{Submission, SubmissionRepository}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
@@ -41,12 +40,11 @@ object BackEndHeaderNames {
 
 @Singleton
 class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
-                                                 httpClient: HttpClient,
-                                                 submissionRepository: SubmissionRepository) {
+                                                 httpClient: HttpClient) {
 
   def submitImportDeclaration(metaData: MetaData, localReferenceNumber: String)
                                       (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] = {
-    postMetaData(appConfig.submitImportDeclarationUri, metaData, localReferenceNumber, onSuccessfulSubmission)
+    postMetaData(appConfig.submitImportDeclarationUri, metaData, localReferenceNumber)
   }
 
   def getDeclarations(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[Declaration]] = {
@@ -55,10 +53,9 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
 
   private def postMetaData(uri: String,
                            metaData: MetaData,
-                           localReferenceNumber: String,
-                           onSuccess: (MetaData, CustomsDeclarationsResponse) => Future[CustomsDeclarationsResponse] = onSuccess)
+                           localReferenceNumber: String)
                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
-    doPost(uri, metaData.toXml, localReferenceNumber).flatMap(onSuccess(metaData, _))
+    doPost(uri, metaData.toXml, localReferenceNumber)
 
   //noinspection ConvertExpressionToSAM
   private implicit val responseReader: HttpReads[CustomsDeclarationsResponse] = new HttpReads[CustomsDeclarationsResponse] {
@@ -85,18 +82,6 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
       )
     }
   }
-
-  private def onSuccess(meta: MetaData, resp: CustomsDeclarationsResponse): Future[CustomsDeclarationsResponse] = Future.successful(resp)
-
-  private def onSuccessfulSubmission(meta: MetaData, resp: CustomsDeclarationsResponse)
-                                    (implicit ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
-    submissionRepository.insert(
-      Submission(
-        eori = user.requiredEori,
-        conversationId = resp.conversationId,
-        meta.declaration.flatMap(_.functionalReferenceId)
-      )
-    ).map(_ => resp)
 
   private def doPost(uri: String, body: String, localReferenceNumber: String )
                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {

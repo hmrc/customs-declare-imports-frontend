@@ -23,7 +23,6 @@ import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import repositories.declaration.SubmissionRepository
 import services.{CustomsCacheService, CustomsDeclarationsConnector}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -31,12 +30,12 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, MetaData}
 import forms.ObligationGuaranteeForm
 import domain.DeclarationFormats._
+import models.Declaration
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: CustomsCacheService,
-  submissionRepository: SubmissionRepository)(implicit val messagesApi: MessagesApi, val appConfig: AppConfig,
+class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: CustomsCacheService)(implicit val messagesApi: MessagesApi, val appConfig: AppConfig,
   ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   val GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY = "GovAgencyGoodsItemsList"
@@ -57,10 +56,9 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     }
   }
 
-  def displaySubmitConfirmation(conversationId: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
-    submissionRepository.getByConversationId(conversationId).map {
-      case Some(submission) => Ok(views.html.submit_confirmation(submission))
-      case None => NotFound(views.html.error_template("Submission Not Found", "Submission Not Found", "We're sorry but we couldn't find that submission.")) // TODO throw specific ApplicationException type to be handled via ErrorHandler
+  def displaySubmitConfirmation(conversationId: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
+    implicit req => {
+      Future.successful(Ok(views.html.submit_confirmation(new Declaration(System.currentTimeMillis(), Some("Local Reference Number"), Some("MRN")))))
     }
   }
 

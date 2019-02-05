@@ -19,10 +19,9 @@ package controllers
 import config.AppConfig
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsDeclarationsConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 @Singleton
 class LandingController @Inject()(customsDeclarationsConnector: CustomsDeclarationsConnector, actions: Actions)

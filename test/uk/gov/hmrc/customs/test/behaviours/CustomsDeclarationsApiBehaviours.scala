@@ -24,7 +24,6 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import repositories.declaration.SubmissionRepository
 import services.{CustomsDeclarationsConnector, CustomsDeclarationsResponse}
 import uk.gov.hmrc.customs.test.assertions.XmlAssertions
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
@@ -38,8 +37,7 @@ trait CustomsDeclarationsApiBehaviours extends CustomsSpec with MockitoSugar{
 
   val mockAppConfig: AppConfig = mock[AppConfig]
   val mockHttpClient: HttpClient = mock[HttpClient]
-  val mockSubmissionRepository: SubmissionRepository = mock[SubmissionRepository]
-  private lazy val connector = new MockCustomsDeclarationsConnector(mockAppConfig, mockHttpClient, mockSubmissionRepository)
+  private lazy val connector = new MockCustomsDeclarationsConnector(mockAppConfig, mockHttpClient)
 
   def withCustomsDeclarationsApiSubmission(request: MetaData)
                                           (test: Future[CustomsDeclarationsResponse] => Unit): Unit = {
@@ -53,9 +51,8 @@ trait CustomsDeclarationsApiBehaviours extends CustomsSpec with MockitoSugar{
 
 
 
-class MockCustomsDeclarationsConnector(mockConfig : AppConfig, mockhttpClient: HttpClient, repo: SubmissionRepository) extends CustomsDeclarationsConnector(appConfig = mockConfig,
-                                                                              httpClient = mockhttpClient,
-                                                                              repo)
+class MockCustomsDeclarationsConnector(mockConfig : AppConfig, mockhttpClient: HttpClient) extends CustomsDeclarationsConnector(appConfig = mockConfig,
+                                                                              httpClient = mockhttpClient)
   with XmlAssertions {
 
   val expectedSubmissions: mutable.Map[MetaData, Future[CustomsDeclarationsResponse]] = mutable.Map.empty
