@@ -482,7 +482,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
     "currentCode is longer than 2 characters" in {
 
-      forAll(arbitrary[GovernmentProcedure], minStringLength(2)) {
+      forAll(arbitrary[GovernmentProcedure], minStringLength(3)) {
         (governmentProcedure, code) =>
 
           val data = governmentProcedure.copy(currentCode = Some(code))
@@ -495,7 +495,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
     "previousCode is longer than 2 characters" in {
 
-      forAll(arbitrary[GovernmentProcedure], minStringLength(2)) {
+      forAll(arbitrary[GovernmentProcedure], minStringLength(3)) {
         (governmentProcedure, code) =>
 
           val data = governmentProcedure.copy(previousCode = Some(code))
@@ -508,9 +508,13 @@ class DeclarationFormMappingSpec extends WordSpec
   }
 
   "Date" should {
+
     "bind" when {
+
       "valid values are bound" in {
+
         forAll { date: Date =>
+
           Form(dateMapping).fillAndValidate(date).fold(
             error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
             result => result mustBe date
@@ -518,30 +522,39 @@ class DeclarationFormMappingSpec extends WordSpec
         }
       }
     }
+
     "fail" when {
+
       "Invalid day is entered" in {
+
         forAll(arbitrary[Date], intBetweenRange(35, 60)) { (date, day) =>
 
-          Form(dateMapping).fillAndValidate(date.copy(day = Some(day))).fold(
-            _.error("date.day") must haveMessage("Day is invalid"),
+          Form(dateMapping).fillAndValidate(date.copy(day = day)).fold(
+            _.error("day") must haveMessage("Day is invalid"),
             _ => fail("Should not succeed")
           )
         }
       }
+
       "Invalid month is entered" in {
-        forAll(arbitrary[Date], intBetweenRange(12, 30)) { (date, month) =>
-          val invalidDate = date.copy(month = Some(month))
+
+        forAll(arbitrary[Date], intBetweenRange(13, 30)) { (date, month) =>
+
+          val invalidDate = date.copy(month = month)
           Form(dateMapping).fillAndValidate(invalidDate).fold(
-            _.error("date.month") must haveMessage("Month is invalid"),
+            _.error("month") must haveMessage("Month is invalid"),
             _ => fail("Should not succeed")
           )
         }
       }
+
       "Invalid year is entered" in {
+
         forAll(arbitrary[Date], intBetweenRange(1890, 1899)) { (date, year) =>
-          val invalidDate = date.copy(year = Some(year))
+
+          val invalidDate = date.copy(year = year)
           Form(dateMapping).fillAndValidate(invalidDate).fold(
-            _.error("date.year") must haveMessage("Year is invalid"),
+            _.error("year") must haveMessage("Year is invalid"),
             _ => fail("Should not succeed")
           )
         }
@@ -668,85 +681,87 @@ class DeclarationFormMappingSpec extends WordSpec
         }
       }
     }
-  }
 
+    "fail when all fields are missing" when {
+      "Category, Identifier, status, Status Reason, Issuing Authority, Date of Validity , Quantity, Measurement Unit & Qualifier" in {
 
-  "fail when all fields are missing" when {
-    "Category, Identifier, status, Status Reason, Issuing Authority, Date of Validity , Quantity, Measurement Unit & Qualifier" in {
-
-      Form(govtAgencyGoodsItemAddDocMapping).bind(Map[String, String]()).fold(
-        _ must haveErrorMessage("You must provide input for Category or Identifier or status or Status Reason or Issuing Authority and Date of Validity or Quantity and Measurement Unit & Qualifier"),
-        _ => fail("Should not succeed")
-      )
-    }
-  }
-  "fail for invalid data conditions for all fields " when {
-    "categoryCode length is greater than 1" in {
-
-      forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], stringsLongerThan(2)) { (additionalDocument, invalidCode) =>
-        Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(categoryCode = Some(invalidCode))).fold(
-          _.error("categoryCode") must haveMessage("Category must be 1 character"),
+        Form(govtAgencyGoodsItemAddDocMapping).bind(Map[String, String]()).fold(
+          _ must haveErrorMessage("You must provide input for Category or Identifier or status or Status Reason or Issuing Authority and Date of Validity or Quantity and Measurement Unit & Qualifier"),
           _ => fail("Should not succeed")
         )
       }
     }
 
-    "Identifer length is greater than 35" in {
+    "fail for invalid data conditions for all fields " when {
+      "categoryCode length is greater than 1" in {
 
-      forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], stringsLongerThan(35)) { (additionalDocument, invalidId) =>
-        Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(id = Some(invalidId))).fold(
-          _.error("id") must haveMessage("Identifier must be less than 35 characters"),
-          _ => fail("Should not succeed")
-        )
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(3)) { (additionalDocument, invalidCode) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(categoryCode = Some(invalidCode))).fold(
+            _.error("categoryCode") must haveMessage("Category must be 1 character"),
+            _ => fail("Should not succeed")
+          )
+        }
       }
-    }
-    "name length is greater than 35" in {
 
-      forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], stringsLongerThan(35)) { (additionalDocument, invalidName) =>
-        Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(name = Some(invalidName))).fold(
-          _.error("name") must haveMessage("Status Reason must be less than 35 characters"),
-          _ => fail("Should not succeed")
-        )
+      "identifier length is greater than 35" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(36)) { (additionalDocument, invalidId) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(id = Some(invalidId))).fold(
+            _.error("id") must haveMessage("Identifier must be less than 35 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
       }
-    }
 
-    "Typecode length is greater than 3" in {
+      "name length is greater than 35" in {
 
-      forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], stringsLongerThan(3)) { (additionalDocument, invalidCode) =>
-        Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(typeCode = Some(invalidCode))).fold(
-          _.error("typeCode") must haveMessage("Type is only 3 characters"),
-          _ => fail("Should not succeed")
-        )
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(36)) { (additionalDocument, invalidName) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(name = Some(invalidName))).fold(
+            _.error("name") must haveMessage("Status Reason must be less than 35 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
       }
-    }
 
-    "lpcoExemptionCode length is greater than 2" in {
+      "typecode length is greater than 3" in {
 
-      forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], stringsLongerThan(2)) { (additionalDocument, invalidId) =>
-        Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(lpcoExemptionCode = Some(invalidId))).fold(
-          _.error("lpcoExemptionCode") must haveMessage("Status must be 2 characters"),
-          _ => fail("Should not succeed")
-        )
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(4)) { (additionalDocument, invalidCode) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(typeCode = Some(invalidCode))).fold(
+            _.error("typeCode") must haveMessage("Type is only 3 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
       }
-    }
 
-    "submitter.name length is greater than 70" in {
+      "lpcoExemptionCode length is greater than 2" in {
 
-      forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], stringsLongerThan(70)) { (additionalDocument, submitterName) =>
-        Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(submitter = Some(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter(
-          Some(submitterName))))).fold(
-          _.error("submitter.name") must haveMessage("Issuing Authority must be less than 70 characters"),
-          _ => fail("Should not succeed")
-        )
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(3)) { (additionalDocument, invalidId) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(lpcoExemptionCode = Some(invalidId))).fold(
+            _.error("lpcoExemptionCode") must haveMessage("Status must be 2 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
       }
-    }
-    "writeOff.quantity.unitCode length is greater than 5" in {
 
-      forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], stringsLongerThan(5)) { (additionalDocument, unitCode) =>
-        Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(writeOff = Some(WriteOff(Some(Measure(Some(unitCode))))))).fold(
-          _.error("writeOff.quantity.unitCode") must haveMessage("Measurement Unit & Qualifier cannot be more than 5 characters"),
-          _ => fail("Should not succeed")
-        )
+      "submitter.name length is greater than 70" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(71)) { (additionalDocument, submitterName) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(submitter = Some(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter(
+            Some(submitterName))))).fold(
+            _.error("submitter.name") must haveMessage("Issuing Authority must be less than 70 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "writeOff.quantity.unitCode length is greater than 5" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(6)) { (additionalDocument, unitCode) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(writeOff = Some(WriteOff(Some(Measure(Some(unitCode))))))).fold(
+            _.error("writeOff.quantity.unitCode") must haveMessage("Measurement Unit & Qualifier cannot be more than 5 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
       }
     }
   }

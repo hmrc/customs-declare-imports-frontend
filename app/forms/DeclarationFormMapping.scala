@@ -59,28 +59,29 @@ object DeclarationFormMapping {
 
   val writeOffMapping = mapping("quantity" -> optional(measureMapping), "amount" -> optional(amountMapping))(WriteOff.apply)(WriteOff.unapply)
 
-  case class Date(day:Option[Int],month:Option[Int], year:Option[Int])
+  case class Date(day: Int, month: Int, year: Int)
 
   val dateMapping = mapping(
-    "day" -> optional(number.verifying("Day is invalid", (day => day >= 1 && day <= 31))),
-    "month" -> optional(number.verifying("Month is invalid", (month => month >= 1 && month <= 12))),
-    "year" -> optional(number.verifying("Year is invalid", (_ >= 1900)))
+    "day" -> number.verifying("Day is invalid", day => day >= 1 && day <= 31),
+    "month" -> number.verifying("Month is invalid", month => month >= 1 && month <= 12),
+    "year" -> number.verifying("Year is invalid", _ >= 1900)
   )(Date.apply)(Date.unapply)
     .verifying("Date entered is invalid", isDateValid)
 
   def isDateValid(): Date => Boolean = date => {
     val df = new DecimalFormat("00")
-      (allCatch[DateTime] opt (DateTime.parse(s"${date.year.get}${df.format(date.month.get)}${df.format(date.day.get)}",
+      (allCatch[DateTime] opt (DateTime.parse(s"${date.year}${df.format(date.month)}${df.format(date.day)}",
         DateTimeFormat.forPattern("yyyyMMdd")))).isDefined
   }
 
-
   val dateTimeElementMapping = mapping(
     "date" -> dateMapping
-  )(date => DateTimeElement(DateTimeString("102",
-    s"${date.year.get}/${date.month.get}/${date.day.get}")))((d:DateTimeElement) => Some(Date(Some(d.dateTimeString.value.split("/").head.toInt),
-    Some(d.dateTimeString.value.split("/")(1).toInt),
-    Some(d.dateTimeString.value.split("/").last.toInt))))
+  )(date => DateTimeElement(
+    DateTimeString("102",
+    s"${date.year}/${date.month}/${date.day}")))((d: DateTimeElement) =>
+    Some(Date(d.dateTimeString.value.split("/").last.toInt,
+    d.dateTimeString.value.split("/")(1).toInt,
+    d.dateTimeString.value.split("/").head.toInt)))
 
   val govtAgencyGoodsItemAddDocMapping = mapping(
     "categoryCode" -> optional(text.verifying("Category must be 1 character", _.length == 1)),// 3 in schema

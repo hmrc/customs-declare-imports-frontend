@@ -28,6 +28,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val dontShrinkStrings: Shrink[String] = Shrink.shrinkAny
   implicit val dontShrinkDecimals: Shrink[BigDecimal] = Shrink.shrinkAny
+  implicit val dontShrinkInts: Shrink[Int] = Shrink.shrinkAny
 
   def genIntersperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
 
@@ -185,8 +186,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield RoleBasedParty(id, roleCode)
   }
 
-  implicit val arbitraryGovernmentAgencyGoodsItemAdditionalDocumentSubmitter:
-    Arbitrary[GovernmentAgencyGoodsItemAdditionalDocumentSubmitter] = Arbitrary {
+  implicit val arbitraryGovernmentAgencyGoodsItemAdditionalDocumentSubmitter
+  : Arbitrary[GovernmentAgencyGoodsItemAdditionalDocumentSubmitter] = Arbitrary {
     for {
       name <- option(arbitrary[String].map(_.take(20)))
     } yield GovernmentAgencyGoodsItemAdditionalDocumentSubmitter(name)
@@ -203,15 +204,17 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryGovernmentAgencyGoodsItemAdditionalDocument: Arbitrary[GovernmentAgencyGoodsItemAdditionalDocument] = Arbitrary {
     for {
       categoryCode <- option(numStr.map(_.take(1)))
-      effectiveDateTime <- option(arbitraryDateTimeElement.arbitrary)
+      effectiveDateTime <- option(arbitrary[DateTimeElement])
       id <- option(arbitrary[String].map(_.take(20)))
       name <- option(arbitrary[String].map(_.take(20)))
       typeCode <- option(arbitrary[String].map(_.take(3)))
       lpcoExemptionCode <- option(arbitrary[String].map(_.take(2)))
-      submitter <- option(arbitraryGovernmentAgencyGoodsItemAdditionalDocumentSubmitter.arbitrary)
-      writeOff <- option(arbitraryWriteOff.arbitrary)
+      submitter <- option(arbitrary[GovernmentAgencyGoodsItemAdditionalDocumentSubmitter])
+      writeOff <- option(arbitrary[WriteOff])
       if categoryCode.exists(_.size ==1) && typeCode.exists(_.size == 3) && lpcoExemptionCode.exists(_.size == 2)
-    } yield GovernmentAgencyGoodsItemAdditionalDocument(categoryCode, effectiveDateTime, id, name, typeCode, lpcoExemptionCode, submitter, writeOff)
+    } yield {
+      GovernmentAgencyGoodsItemAdditionalDocument(categoryCode, effectiveDateTime, id, name, typeCode, lpcoExemptionCode, submitter, writeOff)
+    }
   }
 
 
@@ -271,23 +274,22 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryDate: Arbitrary[Date] = Arbitrary {
     for {
-      day <- Gen.chooseNum(5,31)
-      month <- Gen.chooseNum(2,10)
-      year <- Gen.chooseNum(1900,2020)
-      if(day >= 1 && day <= 31 && month >= 1 && month <= 12 && year > 1900)
-    } yield Date(Some(day), Some(month), Some(year))
+      day <- chooseNum(1,28)
+      month <- chooseNum(1,12)
+      year <- chooseNum(1900,2020)
+    } yield Date(day, month, year)
   }
 
   implicit val arbitraryDateTimeString: Arbitrary[DateTimeString] = Arbitrary {
     for {
       formatCode <- Gen.const("102")
-      value <- arbitraryDate.arbitrary.map(date => s"${date.year.get}/${date.month.get}/${date.day.get}")
+      value <- arbitrary[Date].map(date => s"${date.year}/${date.month}/${date.day}")
     } yield DateTimeString(formatCode, value)
   }
 
   implicit val arbitraryDateTimeElement: Arbitrary[DateTimeElement] = Arbitrary {
     for {
-      dateTimeString <- arbitraryDateTimeString.arbitrary
+      dateTimeString <- arbitrary[DateTimeString]
     } yield DateTimeElement(dateTimeString)
   }
 
