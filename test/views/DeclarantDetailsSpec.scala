@@ -53,7 +53,7 @@ class DeclarantDetailsSpec extends ViewBehaviours
       forAll { party: ImportExportParty =>
 
         val popForm = form.fillAndValidate(party)
-        val input   = input_text(popForm("name"), "Name")
+        val input   = input_text(popForm("name"), messages(s"$messagePrefix.name"))
         val html    = view(popForm)
 
         html must include(input)
@@ -65,7 +65,7 @@ class DeclarantDetailsSpec extends ViewBehaviours
       forAll { party: ImportExportParty =>
 
         val popForm = form.fillAndValidate(party)
-        val input   = input_text(popForm("address.line"), "Street and Number")
+        val input   = input_text(popForm("address.line"), messages(s"$messagePrefix.address.line"))
         val html    = view(popForm)
 
         html must include(input)
@@ -77,7 +77,7 @@ class DeclarantDetailsSpec extends ViewBehaviours
       forAll { party: ImportExportParty =>
 
         val popForm = form.fillAndValidate(party)
-        val input   = input_text(popForm("address.cityName"), "City")
+        val input   = input_text(popForm("address.cityName"), messages(s"$messagePrefix.address.cityName"))
         val html    = view(popForm)
 
         html must include(input)
@@ -89,7 +89,10 @@ class DeclarantDetailsSpec extends ViewBehaviours
       forAll { party: ImportExportParty =>
 
         val popForm = form.fillAndValidate(party)
-        val input   = input_select(popForm("address.countryCode"), "Country", config.Options.countryOptions.toMap)
+        val input   = input_select(
+          popForm("address.countryCode"),
+          messages(s"$messagePrefix.address.countryCode"),
+          config.Options.countryOptions.toMap)
         val html    = view(popForm)
 
         html must include(input)
@@ -101,7 +104,7 @@ class DeclarantDetailsSpec extends ViewBehaviours
       forAll { party: ImportExportParty =>
 
         val popForm = form.fillAndValidate(party)
-        val input   = input_text(popForm("address.postcodeId"), "Postcode")
+        val input   = input_text(popForm("address.postcodeId"), messages(s"$messagePrefix.address.postcode"))
         val html    = view(popForm)
 
         html must include(input)
@@ -113,7 +116,7 @@ class DeclarantDetailsSpec extends ViewBehaviours
       forAll { party: ImportExportParty =>
 
         val popForm = form.fillAndValidate(party)
-        val input   = input_text(popForm("id"), "Identification No.")
+        val input   = input_text(popForm("id"), messages(s"$messagePrefix.id"), hint = Some(messages("common.hints.eori")))
         val html    = view(popForm)
 
         html must include(input)

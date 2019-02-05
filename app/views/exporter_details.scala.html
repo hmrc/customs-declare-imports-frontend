@@ -28,15 +28,21 @@
 
   @components.error_summary(form.errors)
 
-  <h1 class="heading-large">@messages("exporterDetails.heading")</h1>
-
   <fieldset>
+   <legend>
+    <h1 class="heading-large">@messages("exporterDetails.heading")</h1>
+   </legend>
+
    @components.input_text(form("name"), messages("exporterDetails.name"))
    @components.input_text(form("address.line"), messages("exporterDetails.address.line"))
    @components.input_text(form("address.cityName"), messages("exporterDetails.address.cityName"))
    @components.input_select(form("address.countryCode"), messages("exporterDetails.address.country"), config.Options.countryOptions.toMap)
    @components.input_text(form("address.postcodeId"), messages("exporterDetails.address.postcode"))
-   @components.input_text(form("id"), messages("exporterDetails.id"))
+   @components.input_text(
+    form("id"),
+    messages("exporterDetails.id"),
+    hint = Some(messages("common.hints.eori"))
+   )
   </fieldset>
 
   <button id="Add" name="submit">

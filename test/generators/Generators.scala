@@ -127,6 +127,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       statementCode <- option(nonEmptyString.map(_.take(5)))
       statementDescription <- option(nonEmptyString.map(_.take(512)))
+      if statementCode.nonEmpty || statementDescription.nonEmpty
     } yield AdditionalInformation(statementCode, statementDescription)
   }
 
@@ -367,6 +368,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       natureCode <- option(choose[Int](-9, 99))
     } yield {
       References(typeCode, typerCode, traderId, funcRefId, natureCode)
+    }
+  }
+
+  implicit val arbitraryAgent: Arbitrary[Agent] = Arbitrary {
+    for {
+      party <- arbitrary[ImportExportParty]
+      code  <- option(oneOf(config.Options.agentFunctionCodes.map(_._1)))
+    } yield {
+      Agent(party.name, party.id, code, party.address)
     }
   }
 
