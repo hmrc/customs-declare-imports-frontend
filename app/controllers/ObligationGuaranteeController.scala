@@ -17,7 +17,7 @@
 package controllers
 
 import config.AppConfig
-import domain.ObligationGuarantee._
+import domain.DeclarationFormats._
 import domain.features.Feature
 import forms.DeclarationFormMapping._
 import forms.ObligationGuaranteeForm

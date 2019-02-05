@@ -199,8 +199,8 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   "pre-populate AddMutualRecognitionParties that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
 
-      val goodsItemGen = listOfN(1, arbitrary[RoleBasedParty]).map { r =>
-        GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = r)
+      val goodsItemGen = arbitrary[RoleBasedParty].map { r =>
+        GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = List(r))
       }
 
       withCaching(goodsItemGen.sample)
@@ -229,8 +229,8 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   "pre-populate addOriginsPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
 
-      val goodsItemGen = listOfN(1, arbitrary[Origin]).map { o =>
-        GovernmentAgencyGoodsItem(origins = o)
+      val goodsItemGen = arbitrary[Origin].map { o =>
+        GovernmentAgencyGoodsItem(origins = List(o))
       }
 
       withCaching(goodsItemGen.sample)
@@ -265,8 +265,8 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   "pre-populate addManufacturersPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
 
-      val goodsItemGen = listOfN(1, arbitrary[NamedEntityWithAddress]).map { e =>
-        GovernmentAgencyGoodsItem(manufacturers = e)
+      val goodsItemGen = arbitrary[NamedEntityWithAddress].map { e =>
+        GovernmentAgencyGoodsItem(manufacturers = List(e))
       }
 
       withCaching(goodsItemGen.sample)
@@ -308,8 +308,8 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   "pre-populate addPackagings that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
 
-      val goodsItemGen = listOfN(1, arbitrary[Packaging]).map { p =>
-        GovernmentAgencyGoodsItem(packagings = p)
+      val goodsItemGen = arbitrary[Packaging].map { p =>
+        GovernmentAgencyGoodsItem(packagings = List(p))
       }
 
       withCaching(goodsItemGen.sample)

@@ -52,11 +52,11 @@ class AdditionalInformationController @Inject()(actions: Actions, cacheService: 
         form =>
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {
-              case Some(goodsItem) => goodsItem.copy(additionalInformations = goodsItem.additionalInformations :+ form)
+              case Some(goodsItem) => goodsItem.copy(additionalInformations = form +: goodsItem.additionalInformations)
               case None => GovernmentAgencyGoodsItem(additionalInformations = Seq(form))
             }
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
+            cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
               Ok(views.html.goods_items_add_additional_informations(additionalInformationForm, updatedGoodsItem.additionalInformations))
             }
           })

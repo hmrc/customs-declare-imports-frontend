@@ -16,12 +16,10 @@
 
 package forms
 
+import domain.References
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
@@ -215,6 +213,67 @@ class DeclarationFormMappingSpec extends WordSpec
 
         Form(previousDocumentMapping).bind(Map[String, String]()).fold(
           error => error must haveErrorMessage("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier"),
+          _ => fail("Should not succeed")
+        )
+      }
+    }
+  }
+
+  "addAdditionalDocumentMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll(arbitrary[AdditionalDocument]) { arbitraryAddAdditionalDocument =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAddAdditionalDocument).fold(
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe arbitraryAddAdditionalDocument
+          )
+        }
+      }
+    }
+
+    "fail to bind" when {
+
+      "id length is greater than 7" in {
+
+        forAll(arbitrary[AdditionalDocument], intBetweenRange(9999999, Int.MaxValue)) { (arbitraryAdditionalDocument, invalidId) =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(id = Some(invalidId.toString))).fold(
+            error => error.error("id") must haveMessage("Deferred Payment ID should be less than or equal to 7 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "categoryCode length is greater than 1" in {
+
+        forAll(arbitrary[AdditionalDocument], minStringLength(2)) { (arbitraryAdditionalDocument, invalidCategoryCode) =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
+            error => error.error("categoryCode") must haveMessage("Deferred Payment Category should be less than or equal to 1 character"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "typeCode length is greater than 3" in {
+
+        forAll(arbitrary[AdditionalDocument], minStringLength(4)) { (arbitraryAdditionalDocument, invalidTypeCode) =>
+
+          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(typeCode = Some(invalidTypeCode))).fold(
+            error => error.error("typeCode") must haveMessage("Deferred Payment Type should be less than or equal to 3 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "Deferred Payment ID, Deferred Payment Category, Deferred Payment Type are missing" in {
+
+        Form(additionalDocumentMapping).bind(Map[String, String]()).fold(
+          error => error must haveErrorMessage("You must provide a Deferred Payment ID or Deferred Payment Category or Deferred Payment Type"),
           _ => fail("Should not succeed")
         )
       }
@@ -472,6 +531,7 @@ class DeclarationFormMappingSpec extends WordSpec
         }
       }
     }
+
     "Current Code and Previous Code are missing" in {
 
       Form(governmentProcedureMapping).bind(Map[String, String]()).fold(
@@ -507,6 +567,465 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
+  "obligationGauranteeMapping" should {
+
+    "bind" when {
+      "valid values are bound" in {
+        forAll { guarantee: GuaranteeType =>
+
+          Form(guaranteeTypeMapping).fillAndValidate(guarantee.value).fold(
+            _ => fail("form should not fail"),
+            _ mustBe guarantee.value)
+        }
+      }
+    }
+
+    "fail" when {
+
+      "security code is longer than 1 character" in {
+
+        forAll { s: String =>
+
+          whenever(s.length > 1) {
+
+            Form(guaranteeTypeMapping).bind(Map("securityDetailsCode" -> s)).fold(
+              _ must haveErrorMessage("Security details code must be 1 character"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
+
+      "security code has not been provided" in {
+
+        Form(guaranteeTypeMapping).bind(Map[String, String]()).fold(
+          _ must haveErrorMessage("Security details code is required"),
+          _ => fail("form should not succeed")
+        )
+      }
+    }
+  }
+
+  "guaranteeTypeMapping" should {
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll(arbitrary[ObligationGuarantee]) { arbitraryObligationGuarantee =>
+
+          Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee).fold(
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe arbitraryObligationGuarantee
+          )
+        }
+      }
+    }
+
+    "fail to bind" when {
+
+      "reference id length is greater than 35" in {
+        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(35)) { (arbitraryObligationGuarantee, invalidReferenceId) =>
+
+          Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(referenceId = Some(invalidReferenceId))).fold(
+            error => error.error("referenceId") must haveMessage("ReferenceId should be less than or equal to 35 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "amount has a precision greater than 16" in {
+
+        forAll(arbitrary[ObligationGuarantee], decimal(17, 30, 0)) {
+          (arbitraryObligationGuarantee, invalidAmount) =>
+
+            val data = arbitraryObligationGuarantee.copy(amount = Some(invalidAmount))
+            Form(obligationGauranteeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount cannot be greater than 99999999999999.99"),
+              _ => fail("Should not succeed")
+            )
+        }
+      }
+
+      "amount has a scale greater than 2" in {
+
+        val badData = choose(3, 10).flatMap(posDecimal(16, _))
+
+        forAll(arbitrary[ObligationGuarantee], badData) {
+          (arbitraryObligationGuarantee, invalidAmount) =>
+
+            val data = arbitraryObligationGuarantee.copy(amount = Some(invalidAmount))
+            Form(obligationGauranteeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount cannot have more than 2 decimal places"),
+              _ => fail("Should not succeed")
+            )
+        }
+      }
+
+      "amount is less than 0" in {
+
+        forAll(arbitrary[ObligationGuarantee], intLessThan(0)) {
+          (arbitraryObligationGuarantee, invalidAmount) =>
+
+            val data = arbitraryObligationGuarantee.copy(amount = Some(BigDecimal(invalidAmount)))
+            Form(obligationGauranteeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount must not be negative"),
+              _ => fail("Should not succeed")
+            )
+        }
+      }
+
+      "access code length is greater than 4" in {
+
+        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(4)) {
+          (arbitraryObligationGuarantee, invalidAccessCode) =>
+
+            Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(accessCode = Some(invalidAccessCode))).fold(
+              error => error.error("accessCode") must haveMessage("AccessCode should be less than or equal to 4 characters"),
+              _     => fail("Should not succeed")
+            )
+        }
+      }
+
+      "guarantee office identifier length is greater than 8" in {
+
+        forAll(arbitrary[ObligationGuarantee], stringsLongerThan(8)) {
+          (arbitraryObligationGuarantee, invalidOfficeId) =>
+
+            Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(guaranteeOffice = Some(Office(Some(invalidOfficeId))))).fold(
+              error => error.error("guaranteeOffice.id") must haveMessage("Office id should be less than or equal to 8 characters"),
+              _ => fail("Should not succeed")
+            )
+        }
+      }
+    }
+  }
+
+  "addressMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { address: Address =>
+
+          Form(addressMapping).fillAndValidate(address).fold(
+            _ => fail("form should not fail"),
+            _ mustBe address
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "cityName has more than 35 characters" in {
+
+        forAll(arbitrary[Address], minStringLength(36)) {
+          (address, cityName) =>
+
+            val data = address.copy(cityName = Some(cityName))
+            Form(addressMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("City name should be 35 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+
+      }
+
+      "country code is not valid" in {
+
+        forAll(arbitrary[Address], arbitrary[String]) {
+          (address, countryCode) =>
+
+            whenever(!config.Options.countryOptions.exists(_._1 == countryCode)) {
+
+              val data = address.copy(countryCode = Some(countryCode))
+              Form(addressMapping).fillAndValidate(data).fold(
+                _ must haveErrorMessage("Country code is invalid"),
+                _ => fail("form should not succeed")
+              )
+            }
+        }
+      }
+
+      "country sub division code has more than 9 characters" in {
+
+        forAll(arbitrary[Address], minStringLength(10)) {
+          (address, code) =>
+
+            val data = address.copy(countrySubDivisionCode = Some(code))
+            Form(addressMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Country sub division code should be 9 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "country sub division name has more than 70 characters" in {
+
+        forAll(arbitrary[Address], minStringLength(36)) {
+          (address, name) =>
+
+            val data = address.copy(countrySubDivisionName = Some(name))
+            Form(addressMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Country sub division name should be 35 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "line has more than 70 characters" in {
+
+        forAll(arbitrary[Address], minStringLength(71)) {
+          (address, line) =>
+
+            val data = address.copy(line = Some(line))
+            Form(addressMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Line should be 70 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "postcode has more than 9 characters" in {
+
+        forAll(arbitrary[Address], minStringLength(10)) {
+          (address, postcode) =>
+
+            val data = address.copy(postcodeId = Some(postcode))
+            Form(addressMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Postcode should be 9 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+    }
+  }
+
+  "importExportPartyMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { party: ImportExportParty =>
+
+          Form(importExportPartyMapping).fillAndValidate(party).fold(
+            _ => fail("form should not fail"),
+            _ mustBe party
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "name has more than 70 characters" in {
+
+        forAll(arbitrary[ImportExportParty], minStringLength(71)) {
+          (party, name) =>
+
+            val data = party.copy(name = Some(name))
+            Form(importExportPartyMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Name should have 70 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "id has more than 17 characters" in {
+
+        forAll(arbitrary[ImportExportParty], minStringLength(71)) {
+          (party, id) =>
+
+            val data = party.copy(id = Some(id))
+            Form(importExportPartyMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("EORI number should have 17 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+    }
+  }
+
+  "agentMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { agent: Agent =>
+
+          Form(agentMapping).fillAndValidate(agent).fold(
+            e => fail(s"form should not fail: $e"),
+            _ mustBe agent
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "name has more than 70 characters" in {
+
+        forAll(arbitrary[Agent], minStringLength(71)) {
+          (agent, name) =>
+
+            val data = agent.copy(name = Some(name))
+            Form(agentMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Name should have 70 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "id has more than 17 characters" in {
+
+        forAll(arbitrary[Agent], minStringLength(71)) {
+          (agent, id) =>
+
+            val data = agent.copy(id = Some(id))
+            Form(agentMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("EORI number should have 17 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "functionCode is not in list" in {
+
+        forAll(arbitrary[Agent], nonEmptyString.map(_.take(1))) {
+          (agent, code) =>
+
+            whenever(!config.Options.agentFunctionCodes.contains(code)) {
+
+              val data = agent.copy(functionCode = Some(code))
+              Form(agentMapping).fillAndValidate(data).fold(
+                _ must haveErrorMessage("Status code is not valid"),
+                _ => fail("form should not succeed")
+              )
+            }
+        }
+      }
+    }
+  }
+
+  "referencesMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { references: References =>
+
+          Form(referencesMapping).fillAndValidate(references).fold(
+            e => fail(s"form should not fail: $e"),
+            _ mustBe references
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "typeCode has more than 2 characters" in {
+
+        forAll(arbitrary[References], minStringLength(3)) {
+          (references, typeCode) =>
+
+            val data = references.copy(typeCode = Some(typeCode))
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Declaration type must be 2 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "typeCode has non alpha characters" in {
+
+        forAll(arbitrary[References], nonAlphaString) {
+          (references, typeCode) =>
+
+            whenever(typeCode.nonEmpty) {
+
+              val data = references.copy(typeCode = Some(typeCode.take(2)))
+              Form(referencesMapping).fillAndValidate(data).fold(
+                _ must haveErrorMessage("Declaration type must contains only A-Z characters"),
+                _ => fail("form should not succeed")
+              )
+            }
+        }
+      }
+
+      "typerCode has more than 1 character" in {
+
+        forAll(arbitrary[References], minStringLength(2)) {
+          (references, typerCode) =>
+
+            val data = references.copy(typerCode = Some(typerCode))
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Additional declaration type must be a single character"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "typerCode has non alpha characters" in {
+
+        forAll(arbitrary[References], nonAlphaString) {
+          (references, typerCode) =>
+
+            whenever(typerCode.nonEmpty) {
+
+              val data = references.copy(typerCode = Some(typerCode.take(1)))
+              Form(referencesMapping).fillAndValidate(data).fold(
+                _ must haveErrorMessage("Additional declaration type must contains only A-Z characters"),
+                _ => fail("form should not succeed")
+              )
+            }
+        }
+      }
+
+      "traderAssignedReferenceId has more than 35 characters" in {
+
+        forAll(arbitrary[References], minStringLength(36)) {
+          (references, traderId) =>
+
+            val data = references.copy(traderAssignedReferenceId = Some(traderId))
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Reference Number/UCR must be 35 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "functionalReferenceId has more than 22 characters" in {
+
+        forAll(arbitrary[References], minStringLength(23)) {
+          (references, refId) =>
+
+            val data = references.copy(functionalReferenceId = Some(refId))
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("LRN must be 22 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "transactionNatureCode contains more than 2 digits" in {
+
+        forAll(arbitrary[References], intOutsideRange(-9, 99)) {
+          (references, natureCode) =>
+
+            val data = references.copy(transactionNatureCode = Some(natureCode))
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Nature of transaction must be contain 2 digits or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+    }
+  }
   "Date" should {
 
     "bind" when {

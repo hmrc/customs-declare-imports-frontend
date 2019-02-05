@@ -22,6 +22,8 @@ import domain.GoodsItemValueInformation
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.data.Forms.{number, _}
+import domain.{GoodsItemValueInformation, References}
+import play.api.data.Forms._
 import play.api.data.Mapping
 import uk.gov.hmrc.wco.dec._
 
@@ -35,6 +37,8 @@ object DeclarationFormMapping {
 
   def requireAllDependantFields[T](primary: T => Option[_])(fs: (T => Option[_])*): T => Boolean =
     t => primary(t).fold(true)(_ => fs.forall(f => f(t).nonEmpty))
+
+  def isAlpha: String => Boolean = _.matches("^[A-Za-z]*$")
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text.verifying("Issuing Authority must be less than 70 characters", _.length <= 70)),
@@ -141,12 +145,12 @@ object DeclarationFormMapping {
 
 
   val addressMapping = mapping(
-    "cityName" -> optional(text.verifying("id should be less than or equal to 35 characters", _.length <= 35)), // max length 35
-    "countryCode" -> optional(text.verifying("country Code should be less 2 characters", _.length <= 2)), // 2 chars [a-zA-Z] ISO 3166-1 2-alpha
-    "countrySubDivisionCode" -> optional(text.verifying("countrySubDivisionCode should be less than or equal to 9 characters", _.length <= 9)), // max 9 chars
-    "countrySubDivisionName" -> optional(text.verifying("countrySubDivisionName should be less than or equal to 35 characters", _.length <= 35)), // max 35 chars
-    "line" -> optional(text.verifying("line should be less than or equal to 70 characters", _.length <= 70)), //:max 70 chars
-    "postcodeId" -> optional(text.verifying("postcode should be less than or equal to 9 characters", _.length <= 9)) // max 9 chars
+    "cityName" -> optional(text.verifying("City name should be 35 characters or less", _.length <= 35)),
+    "countryCode" -> optional(text.verifying("Country code is invalid", code => config.Options.countryOptions.exists(_._1 == code))),
+    "countrySubDivisionCode" -> optional(text.verifying("Country sub division code should be 9 characters or less", _.length <= 9)),
+    "countrySubDivisionName" -> optional(text.verifying("Country sub division name should be 35 characters or less", _.length <= 35)),
+    "line" -> optional(text.verifying("Line should be 70 characters or less", _.length <= 70)),
+    "postcodeId" -> optional(text.verifying("Postcode should be 9 characters or less", _.length <= 9))
   )(Address.apply)(Address.unapply)
 
   val namedEntityWithAddressMapping = mapping(
@@ -185,7 +189,8 @@ object DeclarationFormMapping {
       "heightMeasure" -> optional(longNumber), //: Option[Long] = None, // unsigned int max 999999999999999
       "volumeMeasure" -> optional(measureMapping))(Packaging.apply)(Packaging.unapply)
 
-  val contactMapping = mapping("name" -> optional(text.verifying("name should be less than or equal to 70 characters", _.length <= 70)) //: Option[String] = None, // max 70 chars
+  val contactMapping = mapping(
+    "name" -> optional(text.verifying("name should be less than or equal to 70 characters", _.length <= 70)) //: Option[String] = None, // max 70 chars
   )(Contact.apply)(Contact.unapply)
 
   val communicationMapping = mapping(
@@ -194,11 +199,12 @@ object DeclarationFormMapping {
   )(Communication.apply)(Communication.unapply)
 
   val importExportPartyMapping = mapping(
-    "name" -> optional(text.verifying(" Import Export name should be less than or equal to 70 characters", _.length <= 70)), //: Option[String] = None, // max 70 chars
-    "id" -> optional(text.verifying(" Import Export party Id should be less than or equal to 70 characters", _.length <= 17)), //: Option[String] = None, // max 17 chars
+    "name" -> optional(text.verifying("Name should have 70 characters or less", _.length <= 70)),
+    "id" -> optional(text.verifying("EORI number should have 17 characters or less", _.length <= 17)),
     "address" -> optional(addressMapping),
     "contacts" -> seq(contactMapping),
-    "communications" -> seq(communicationMapping))(ImportExportParty.apply)(ImportExportParty.unapply)
+    "communications" -> seq(communicationMapping)
+  )(ImportExportParty.apply)(ImportExportParty.unapply)
 
   val chargeDeductionMapping = mapping(
     "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 2 characters", _.length <= 2)),
@@ -212,19 +218,32 @@ object DeclarationFormMapping {
     "chargeDeductions" -> seq(chargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
 
 
-  val officeMapping = mapping("id" -> optional(text.verifying("Office id should be less than or equal to 35 characters",
-    _.length <= 35)))(Office.apply)(Office.unapply)
+  val officeMapping = mapping("id" -> optional(text
+    .verifying("Office id should be less than or equal to 8 characters", _.length <= 8))
+  )(Office.apply)(Office.unapply)
 
 
   val obligationGauranteeMapping =
-    mapping("amount" -> optional(bigDecimal.verifying("Amount must not be negative", a => a > 0)),
-      "id" -> optional(text.verifying("Id should be less than or equal to 35 characters", _.length <= 70)),
+    mapping("amount" -> optional(bigDecimal
+        .verifying("Amount cannot be greater than 99999999999999.99", _.precision <= 16)
+        .verifying("Amount cannot have more than 2 decimal places", _.scale <= 2)
+        .verifying("Amount must not be negative", _ >= 0)),
+      "id" -> optional(text.verifying("Id should be less than or equal to 35 characters", _.length <= 35)), //max schema length is 70
       "referenceId" -> optional(text.verifying("ReferenceId should be less than or equal to 35 characters", _.length <= 35)),
       "securityDetailsCode" -> optional(text.verifying("SecurityDetailsCode should be less than or equal to 3 characters", _.length <= 3)),
       "accessCode" -> optional(text.verifying("AccessCode should be less than or equal to 4 characters", _.length <= 4)),
       "guaranteeOffice" -> optional(officeMapping))(ObligationGuarantee.apply)(ObligationGuarantee.unapply)
+      .verifying("You must provide a Deferred Reference ID or ID or Amount of import duty and other charges or Access Code or Customs office of guarantee",
+        require1Field[ObligationGuarantee](_.referenceId, _.id, _.amount, _.accessCode, _.guaranteeOffice))
 
   val guaranteesFormMapping = mapping("guarantees" -> seq(obligationGauranteeMapping))(ObligationGuaranteeForm.apply)(ObligationGuaranteeForm.unapply)
+
+  val guaranteeTypeMapping =
+    mapping(
+      "securityDetailsCode" ->
+        optional(text.verifying("Security details code must be 1 character", _.length == 1))
+          .verifying("Security details code is required", _.nonEmpty)
+    )(ObligationGuarantee.apply(None, None, None, _, None, None))(ObligationGuarantee.unapply(_).map(_._4))
 
   val authorisationHolderMapping =
     mapping(
@@ -244,6 +263,13 @@ object DeclarationFormMapping {
   )(PreviousDocument.apply)(PreviousDocument.unapply)
     .verifying("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier", require1Field[PreviousDocument](_.categoryCode, _.id, _.typeCode, _.lineNumeric))
 
+  val additionalDocumentMapping = mapping(
+    "id" -> optional(text.verifying("Deferred Payment ID should be less than or equal to 7 characters", _.length <= 7)),
+    "categoryCode" -> optional(text.verifying("Deferred Payment Category should be less than or equal to 1 character", _.length <= 1)),
+    "typeCode" -> optional(text.verifying("Deferred Payment Type should be less than or equal to 3 characters", _.length <= 3))
+  )(AdditionalDocument.apply)(AdditionalDocument.unapply)
+    .verifying("You must provide a Deferred Payment ID or Deferred Payment Category or Deferred Payment Type", require1Field[AdditionalDocument](_.id, _.categoryCode, _.typeCode))
+
   val transportEquipmentMapping = mapping(
     "sequenceNumeric" -> ignored[Int](1),
     "id" -> optional(text.verifying("Container Identification number must be 17 characters or less", _.size <= 17))
@@ -251,8 +277,32 @@ object DeclarationFormMapping {
     "seals" -> ignored[Seq[Seal]](Seq.empty)
   )(TransportEquipment.apply)(TransportEquipment.unapply)
 
+  val referencesMapping = mapping(
+    "typeCode" -> optional(
+      text
+        .verifying("Declaration type must be 2 characters or less", _.length <= 2)
+        .verifying("Declaration type must contains only A-Z characters", isAlpha)),
+    "typerCode" -> optional(
+      text
+        .verifying("Additional declaration type must be a single character", _.length <= 1)
+        .verifying("Additional declaration type must contains only A-Z characters", isAlpha)),
+    "traderAssignedReferenceId" -> optional(
+      text.verifying("Reference Number/UCR must be 35 characters or less", _.length <= 35)),
+    "functionalReferenceId" -> optional(
+      text.verifying("LRN must be 22 characters or less", _.length <= 22)),
+    "transactionNatureCode" -> optional(
+      number.verifying("Nature of transaction must be contain 2 digits or less", _.toString.length <= 2))
+  )(References.apply)(References.unapply)
+
+  val agentMapping = mapping(
+    "name" -> optional(text.verifying("Name should have 70 characters or less", _.length <= 70)),
+    "id" -> optional(text.verifying("EORI number should have 17 characters or less", _.length <= 17)),
+    "functionCode" -> optional(
+      text.verifying("Status code is not valid", s => config.Options.agentFunctionCodes.exists(_._1 == s))),
+    "address" -> optional(addressMapping)
+  )(Agent.apply)(Agent.unapply)
 }
 
-case class ObligationGuaranteeForm(guarantees: Seq[ObligationGuarantee] = Seq.empty)
+case class ObligationGuaranteeForm (guarantees: Seq[ObligationGuarantee] = Seq.empty)
 
 

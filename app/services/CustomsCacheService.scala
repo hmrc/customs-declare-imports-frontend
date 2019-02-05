@@ -63,6 +63,11 @@ class CustomsCacheService @Inject()(caching: CustomsHttpCaching, applicationCryp
                (implicit hc: HeaderCarrier, rds: Reads[T], wts: Writes[T], executionContext: ExecutionContext): Future[Unit] =
     getByKey(cacheId, key).flatMap { optT =>
       val t = optT.fold(insert())(update)
-      cache(cacheId.value, key.key, t).map(_ => ())
+      this.insert(cacheId, key, t)
     }
+
+  def insert[T](cacheId: EORI, key: CacheKey[T], data: T)
+               (implicit hc: HeaderCarrier, wts: Writes[T], executionContext: ExecutionContext): Future[Unit] = {
+    cache(cacheId.value, key.key, data).map(_ => ())
+  }
 }

@@ -14,19 +14,38 @@
  * limitations under the License.
  *@
 
-@import config.{AppConfig, ValidationError}
-@import config.Fields._
+@import config.AppConfig
+@import controllers.routes._
+@import uk.gov.hmrc.play.views.html._
 
-@(data: Map[String, String])(implicit request: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
+@(form: Form[_])(implicit request: Request[_], messages: Messages, cfg: AppConfig)
 
-@main_template(messages("pages.declarant.details.title")) {
-    @helpers.form("declarant-details", "pages.declarant.details.form.legend", data) {
-        @helpers.textInput(declarantName, data)
-        @helpers.textInput(declarantAddressLine, data)
-        @helpers.textInput(declarantAddressCityName, data)
-        @helpers.selectInput(declarantAddressCountryCode, data)
-        @helpers.textInput(declarantAddressPostcode, data)
-        @helpers.textInput(declarantEori, data)
-        @helpers.nextButton()
-    }
+
+@main_template(title = messages("declarantDetails.title")) {
+
+ @helpers.form(action = DeclarantDetailsController.onSubmit()) {
+
+  @components.back_link()
+
+  @components.error_summary(form.errors)
+
+  <h1 class="heading-large">@messages("declarantDetails.heading")</h1>
+
+  <fieldset>
+   @components.input_text(form("name"), messages("declarantDetails.name"))
+   @components.input_text(form("address.line"), messages("declarantDetails.address.line"))
+   @components.input_text(form("address.cityName"), messages("declarantDetails.address.cityName"))
+   @components.input_select(form("address.countryCode"), messages("declarantDetails.address.countryCode"), config.Options.countryOptions.toMap)
+   @components.input_text(form("address.postcodeId"), messages("declarantDetails.address.postcode"))
+   @components.input_text(
+    form("id"),
+    messages("declarantDetails.id"),
+    hint = Some(messages("common.hints.eori"))
+   )
+  </fieldset>
+
+  <button id="Add" name="submit">
+   @messages("common.button.continue")
+  </button>
+ }
 }

@@ -14,21 +14,47 @@
  * limitations under the License.
  *@
 
-@import config.{AppConfig, ValidationError}
-@import config.Fields._
+@import config.AppConfig
+@import controllers.routes._
+@import uk.gov.hmrc.play.views.html._
 
-@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
+@import config.RadioOption
+@(form: Form[_])(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
-@main_template("Representative's details") {
+ @main_template(title = messages("representativeDetails.title")) {
 
-    @helpers.form("representative-details", "pages.representative.details.form.legend", data) {
-        @helpers.textInput(representativeName, data)
-        @helpers.textInput(representativeAddressLine, data)
-        @helpers.textInput(representativeAddressCityName, data)
-        @helpers.selectInput(representativeAddressCountryCode, data)
-        @helpers.textInput(representativeAddressPostcode, data)
-        @helpers.textInput(representativeEori, data)
-        @helpers.radioInput(representativeFunctionCode, data)
-        @helpers.nextButton()
-    }
-}
+  @helpers.form(action = RepresentativeDetailsController.onSubmit()) {
+
+   @components.back_link()
+
+   @components.error_summary(form.errors)
+
+   <h1 class="heading-large">@messages("representativeDetails.heading")</h1>
+
+   <fieldset>
+    @components.input_text(form("name"), messages("representativeDetails.name"))
+    @components.input_text(form("address.line"), messages("representativeDetails.address.line"))
+    @components.input_text(form("address.cityName"), messages("representativeDetails.address.cityName"))
+
+    @components.input_select(
+     form("address.countryCode"),
+     messages("representativeDetails.address.country"),
+     config.Options.countryOptions.toMap
+    )
+
+    @components.input_text(form("address.postcodeId"), messages("representativeDetails.address.postcode"))
+    @components.input_text(form("id"), messages("representativeDetails.id"), hint = Some(messages("common.hints.eori")))
+
+    @components.input_radio(
+     form("functionCode"),
+     messages("representativeDetails.statusCode"),
+     hint = Some(messages("common.hints.statusCode")),
+     inputs = RadioOption.fromTuples(config.Options.agentFunctionCodes)
+    )
+   </fieldset>
+
+   <button id="Add" name="submit">
+    @messages("common.button.continue")
+   </button>
+  }
+ }

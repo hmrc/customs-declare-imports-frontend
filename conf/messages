@@ -38,6 +38,7 @@ common.fields.communications.id=Phone number (optional)
 
 ## common field hints
 common.hints.eori=Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).
+common.hints.statusCode=This code declares the way in which the declarant is representing the Importer.
 
 ## specific pages
 # (I noted most use title case for title but not for form heading so have made it consistently that way, for right or wrong - please correct if it is the latter)
@@ -313,6 +314,46 @@ alpha.optional=When specified, this field must consist of exactly {0} A-Z charac
 contains.required=This is a mandatory field. Please select from one of the available options
 contains.optional=When specified, the value of this field must be one of the available options
 
+## Declarant details
+declarantDetails.title=Declarant
+declarantDetails.heading=Declarant
+declarantDetails.name=Name
+declarantDetails.address.line=Street and Number
+declarantDetails.address.cityName=City
+declarantDetails.address.countryCode=Country
+declarantDetails.address.postcode=Postcode
+declarantDetails.id=EORI number
+
+## References
+references.title=Reference Numbers
+references.heading=Reference Numbers
+references.typeCode=Declaration Type
+references.typerCode=Additional Declaration Type
+references.traderAssignedReferenceId=Reference Number/UCR
+references.functionalReferenceId=LRN
+references.transactionNatureCode=Nature of Transaction
+
+## Exporter details
+exporterDetails.title=Exporter
+exporterDetails.heading=Exporter
+exporterDetails.name=Name
+exporterDetails.address.line=Street and Number
+exporterDetails.address.cityName=City
+exporterDetails.address.country=Country
+exporterDetails.address.postcode=Postcode
+exporterDetails.id=EORI number
+
+## Representative details
+representativeDetails.title=Representative
+representativeDetails.heading=Representative
+representativeDetails.name=Name
+representativeDetails.address.line=Street and Number
+representativeDetails.address.cityName=City
+representativeDetails.address.country=Country
+representativeDetails.address.postcode=Postcode
+representativeDetails.id=EORI number
+representativeDetails.statusCode=Status Code
+
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
 obligationGuarantees.amount=Amount
@@ -379,6 +420,18 @@ addAdditionsAndDeductions.table.heading=1 Addition and deduction added
 addAdditionsAndDeductions.table.multiple.heading={0} Additions and deductions added
 addAdditionsAndDeductions.add=Add additions and deduction
 
+## Add Guarantee References
+addGuaranteeReferences.title=Guarantee References
+addGuaranteeReferences.heading=Guarantee References
+addGuaranteeReferences.referenceId=Reference Id
+addGuaranteeReferences.id=Id
+addGuaranteeReferences.amountAmount=Amount of import duty and other charges
+addGuaranteeReferences.accessCode=Access Code
+addGuaranteeReferences.officeId=Customs office of guarantee
+addGuaranteeReferences.table.heading=1 Guarantee reference added
+addGuaranteeReferences.table.multiple.heading={0} Guarantee references added
+addGuaranteeReferences.addGuaranteeReference=Add guarantee reference
+
 ## Container Identification Number
 containerIdentificationNumber.title=Container identification number
 containerIdentificationNumber.heading=Container identification number
@@ -386,6 +439,25 @@ containerIdentificationNumber.id=Container identification number
 containerIdentificationNumber.table.heading=1 container identification number added
 containerIdentificationNumber.table.multiple.heading={0} container identification numbers added
 containerIdentificationNumber.add=Add container identification number
+
+## Guarantee Type
+guaranteeType.title=Guarantee Type
+guaranteeType.heading=Guarantee Type
+guaranteeType.code=Security details code
+guaranteeType.table.heading=1 guarantee type added
+guaranteeType.table.multiple.heading={0} guarantee types added
+guaranteeType.add=Add guarantee type
+
+## Add Deferred Payments
+addDeferredPayment.title=Deferred Payments
+addDeferredPayment.heading=Deferred Payments
+addDeferredPayment.id=Deferred Payment ID
+addDeferredPayment.categoryCode=Deferred Payment Category
+addDeferredPayment.typeCode=Deferred Payment Type
+addDeferredPayment.table.heading=Deferred Payment added
+addDeferredPayment.table.multiple.heading=Deferred Payments added
+addDeferredPayment.table.empty.heading=No Deferred Payments available
+addDeferredPayment.addDeferredPaymentButton=Add Deferred Payment
 
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Government agency goods item

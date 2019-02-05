@@ -16,7 +16,8 @@
 
 package generators
 
-import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
+
+import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem, References}
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
 import org.scalacheck.Arbitrary._
@@ -29,6 +30,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val dontShrinkStrings: Shrink[String] = Shrink.shrinkAny
   implicit val dontShrinkDecimals: Shrink[BigDecimal] = Shrink.shrinkAny
   implicit val dontShrinkInts: Shrink[Int] = Shrink.shrinkAny
+
+  case class GuaranteeType(value: ObligationGuarantee)
 
   def genIntersperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
 
@@ -98,22 +101,22 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     nonEmptyString suchThat (!excluded.contains(_))
 
   def currencyGen: Gen[String] = oneOf(config.Options.currencyTypes.map(_._2))
-
+  def countryGen: Gen[String] = oneOf(config.Options.countryOptions.map(_._1))
 
   implicit val arbitraryOffice: Arbitrary[Office] = Arbitrary {
     for {
-      id <- option(arbitrary[String].map(_.take(17)))
+      id <- option(arbitrary[String].map(_.take(8)))
     } yield Office(id)
   }
 
   implicit val arbitraryObligationGuarantee: Arbitrary[ObligationGuarantee] = Arbitrary {
     for {
-      amount <- option(arbitrary[BigDecimal].map(_.max(9999999999999999.99999)))
-      id <- option(arbitrary[String].map(_.take(70)))
-      referenceId <- option(arbitrary[String].map(_.take(35)))
+      amount              <- option(posDecimal(16, 2))
+      id                  <- option(arbitrary[String].map(_.take(35)))
+      referenceId         <- option(arbitrary[String].map(_.take(35)))
       securityDetailsCode <- option(arbitrary[String].map(_.take(3)))
-      accessCode <- option(arbitrary[String].map(_.take(4)))
-      office <- option(arbitraryOffice.arbitrary)
+      accessCode          <- option(arbitrary[String].map(_.take(4)))
+      office              <- option(arbitraryOffice.arbitrary)
     } yield ObligationGuarantee(amount, id, referenceId, securityDetailsCode, accessCode, office)
   }
 
@@ -125,8 +128,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryAdditionalInfo: Arbitrary[AdditionalInformation] = Arbitrary {
     for {
-      statementCode <- option(arbitrary[String].map(_.take(5)))
-      statementDescription <- option(arbitrary[String].map(_.take(512)))
+      statementCode <- option(nonEmptyString.map(_.take(5)))
+      statementDescription <- option(nonEmptyString.map(_.take(512)))
+      if statementCode.nonEmpty || statementDescription.nonEmpty
     } yield AdditionalInformation(statementCode, statementDescription)
   }
 
@@ -168,6 +172,14 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       lineNumeric <- option(intBetweenRange(1, 999))
       if categoryCode.nonEmpty || id.nonEmpty || typeCode.nonEmpty || lineNumeric.nonEmpty
     } yield PreviousDocument(categoryCode, id, typeCode, lineNumeric)
+  }
+
+  implicit val arbitraryAdditionalDocument: Arbitrary[AdditionalDocument] = Arbitrary {
+    for {
+      id           <- option(intBetweenRange(0, 9999999).map(_.toString))
+      categoryCode <- option(arbitrary[String].map(_.take(1)))
+      typeCode     <- option(arbitrary[String].map(_.take(3)))
+    } yield AdditionalDocument(id, categoryCode, typeCode)
   }
 
   implicit val arbitraryOrigin: Arbitrary[Origin] = Arbitrary {
@@ -217,15 +229,14 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     }
   }
 
-
   implicit val arbitraryAddress: Arbitrary[Address] = Arbitrary {
     for {
-      cityName <- option(arbitrary[String].map(_.take(35))) // max length 35
-      countryCode <- option(arbitrary[String].map(_.take(2))) // 2 chars [a-zA-Z] ISO 3166-1 2-alpha
-      countrySubDivisionCode <- option(arbitrary[String].map(_.take(9))) // max 9 chars
-      countrySubDivisionName <- option(arbitrary[String].map(_.take(35))) // max 35 chars
-      line <- option(arbitrary[String].map(_.take(70))) // max 70 chars
-      postcodeId <- option(arbitrary[String].map(_.take(9))) // max 9 chars
+      cityName <- option(nonEmptyString.map(_.take(35))) // max length 35
+      countryCode <- option(countryGen) // 2 chars [a-zA-Z] ISO 3166-1 2-alpha
+      countrySubDivisionCode <- option(nonEmptyString.map(_.take(9))) // max 9 chars
+      countrySubDivisionName <- option(nonEmptyString.map(_.take(35))) // max 35 chars
+      line <- option(nonEmptyString.map(_.take(70))) // max 70 chars
+      postcodeId <- option(nonEmptyString.map(_.take(9))) // max 9 chars
     } yield Address(cityName, countryCode, countrySubDivisionCode, countrySubDivisionName, line, postcodeId)
   }
 
@@ -338,10 +349,46 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryChargeDeduction: Arbitrary[ChargeDeduction] = Arbitrary {
     for {
       typeCode <- option(arbitrary[String].map(_.take(2)))
-      amount   <- option(arbitrary[Amount])
-      if typeCode.exists(_.nonEmpty) || amount.exists(a => a.value.nonEmpty || a.currencyId.nonEmpty)
+      amount   <- arbitrary[Amount]
+      if typeCode.exists(_.nonEmpty) || amount.currencyId.nonEmpty
     } yield {
-      ChargeDeduction(typeCode, amount)
+      ChargeDeduction(typeCode, amount.currencyId.map(_ => amount))
+    }
+  }
+
+  implicit val arbitrarySecurityDetailsCode: Arbitrary[GuaranteeType] = Arbitrary {
+    arbitrary[Char]
+      .map(c => GuaranteeType(ObligationGuarantee(securityDetailsCode = Some(c.toString))))
+  }
+
+  implicit val arbitraryImportExportParty: Arbitrary[ImportExportParty] = Arbitrary {
+    for {
+      name    <- option(nonEmptyString.map(_.take(70)))
+      id      <- option(nonEmptyString.map(_.take(17)))
+      address <- option(arbitrary[Address])
+    } yield {
+      ImportExportParty(name, id, address)
+    }
+  }
+
+  implicit val arbitraryReferences: Arbitrary[References] = Arbitrary {
+    for {
+      typeCode   <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
+      typerCode  <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(1)))
+      traderId   <- option(nonEmptyString.map(_.take(35)))
+      funcRefId  <- option(nonEmptyString.map(_.take(22)))
+      natureCode <- option(choose[Int](-9, 99))
+    } yield {
+      References(typeCode, typerCode, traderId, funcRefId, natureCode)
+    }
+  }
+
+  implicit val arbitraryAgent: Arbitrary[Agent] = Arbitrary {
+    for {
+      party <- arbitrary[ImportExportParty]
+      code  <- option(oneOf(config.Options.agentFunctionCodes.map(_._1)))
+    } yield {
+      Agent(party.name, party.id, code, party.address)
     }
   }
 
@@ -353,6 +400,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   def intBetweenRange(min: Int, max: Int): Gen[Int] =
     choose(min, max)
+
+  def intOutsideRange(min: Int, max: Int): Gen[Int] =
+    oneOf(intLessThan(min), intGreaterThan(max))
 
   def posDecimal(precision: Int, scale: Int): Gen[BigDecimal] =
     decimal(0, precision, scale)
@@ -379,5 +429,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     oneOf(a, b, c, d)
   }
 
+  val nonAlphaChar: Gen[Char] = {
+    val a = choose(Char.MinValue, 64.toChar)
+    val b = choose(91.toChar, 96.toChar)
+    val c = choose(123.toChar, Char.MaxValue)
+
+    oneOf(a, b, c)
+  }
+
   val nonAlphaNumString: Gen[String] = listOf(nonAlphaNumericChar).map(_.mkString)
+
+  val nonAlphaString: Gen[String] = listOf(nonAlphaChar).map(_.mkString)
 }
