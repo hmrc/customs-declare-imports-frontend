@@ -16,6 +16,7 @@
 
 package controllers
 
+import domain.References
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
 import generators.Generators
@@ -31,26 +32,25 @@ import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.ImportExportParty
-import views.html.declarant_details
+import views.html.references
 
-class DeclarantDetailsControllerSpec extends CustomsSpec
+class ReferencesControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
   with OptionValues
-  with MockitoSugar
-  with EndpointBehaviours {
+  with EndpointBehaviours
+  with MockitoSugar {
 
-  def form = Form(importExportPartyMapping)
+  val form = Form(referencesMapping)
 
   def view(form: Form[_] = form): String =
-    declarant_details(form)(fakeRequest, messages, appConfig).body
+    references(form)(fakeRequest, messages, appConfig).body
 
   def controller(user: SignedInUser) =
-    new DeclarantDetailsController(new FakeActions(Some(user)), mockCustomsCacheService)
+    new ReferencesController(new FakeActions(Some(user)), mockCustomsCacheService)
 
-  val declarantGen: Gen[Option[ImportExportParty]] = option(arbitrary[ImportExportParty])
-  val uri = "/submit-declaration/declarant-details"
+  val referencesGen: Gen[Option[References]] = option(arbitrary[References])
+  val uri = "/submit-declaration/references"
 
   "onPageLoad" should {
 
@@ -84,15 +84,15 @@ class DeclarantDetailsControllerSpec extends CustomsSpec
       }
     }
 
-    "display data stored cache" in {
+    "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], declarantGen) {
-        (user, declarant) =>
+      forAll(arbitrary[SignedInUser], referencesGen) {
+        (user, references) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.declarantDetails, declarant) {
+          withCleanCache(EORI(user.eori.value), CacheKey.references, references) {
 
-            val popForm = declarant.fold(form)(form.fillAndValidate(_))
-            val result  = controller(user).onPageLoad(fakeRequest)
+            val popForm = references.fold(form)(form.fill)
+            val result = controller(user).onPageLoad(fakeRequest)
 
             status(result) mustBe OK
             contentAsString(result) mustBe view(popForm)
@@ -103,20 +103,19 @@ class DeclarantDetailsControllerSpec extends CustomsSpec
 
   "onSubmit" should {
 
-    behave like redirectedEndpoint(uri, "/submit-declaration/references", POST)
+    behave like redirectedEndpoint(uri, "/submit-declaration/exporter-details", POST)
     behave like authenticatedEndpoint(uri, POST)
 
     "return SEE_OTHER" when {
 
-      "user posts valid data" in {
+      "user is signed in" in {
 
-        forAll { (user: SignedInUser, declarant: ImportExportParty) =>
+        forAll { user: SignedInUser =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(declarant): _*)
-          val result = controller(user).onSubmit(request)
+          val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.ReferencesController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(routes.DeclarationController.displaySubmitForm("exporter-details").url)
         }
       }
     }
@@ -136,14 +135,15 @@ class DeclarantDetailsControllerSpec extends CustomsSpec
 
     "return BAD_REQUEST" when {
 
-      "user posts invalid data" in {
+      "bad data is posted" in {
 
-        val badData = for {
-          declarant <- arbitrary[ImportExportParty]
-          id        <- minStringLength(18)
-        } yield {
-          declarant.copy(id = Some(id))
-        }
+        val badData =
+          for {
+            r <- arbitrary[References]
+            s <- minStringLength(3)
+          } yield {
+            r.copy(typeCode = Some(s))
+          }
 
         forAll(arbitrary[SignedInUser], badData) {
           (user, formData) =>
@@ -158,17 +158,17 @@ class DeclarantDetailsControllerSpec extends CustomsSpec
       }
     }
 
-    "store data in cache" when {
+    "save data in cache" when {
 
-      "user posts valid data" in {
+      "valid data is posted" in {
 
-        forAll { (user: SignedInUser, declarant: ImportExportParty) =>
+        forAll { (user: SignedInUser, references: References) =>
 
-          val request  = fakeRequest.withFormUrlEncodedBody(asFormParams(declarant): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(references): _*)
           await(controller(user).onSubmit(request))
 
-          verify(mockCustomsCacheService, atLeastOnce)
-            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.declarantDetails), eqTo(declarant))(any(), any(), any())
+          verify(mockCustomsCacheService, atLeastOnce())
+            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.references), eqTo(references))(any(), any(), any())
         }
       }
     }

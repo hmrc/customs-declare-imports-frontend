@@ -17,7 +17,7 @@
 package services.cachekeys
 
 import uk.gov.hmrc.wco.dec._
-import domain.GovernmentAgencyGoodsItem
+import domain.{GovernmentAgencyGoodsItem, References}
 
 trait Identifier[A]
 
@@ -26,6 +26,8 @@ case class CacheKey[A](key: String, identifier: Identifier[A])
 object CacheKey {
 
   val declarantDetails = CacheKey("DeclarantDetails", new Identifier[ImportExportParty] {})
+
+  val references = CacheKey("References", new Identifier[References] {})
 
   val authorisationHolders = CacheKey("AuthorisationHolders", new Identifier[Seq[AuthorisationHolder]] {})
 

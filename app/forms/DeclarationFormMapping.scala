@@ -16,7 +16,7 @@
 
 package forms
 
-import domain.GoodsItemValueInformation
+import domain.{GoodsItemValueInformation, References}
 import play.api.data.Forms._
 import play.api.data.Mapping
 import uk.gov.hmrc.wco.dec._
@@ -28,6 +28,8 @@ object DeclarationFormMapping {
 
   def requireAllDependantFields[T](primary: T => Option[_])(fs: (T => Option[_])*): T => Boolean =
     t => primary(t).fold(true)(_ => fs.forall(f => f(t).nonEmpty))
+
+  def isAlpha: String => Boolean = _.matches("^[A-Za-z]*$")
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text),
@@ -229,6 +231,22 @@ object DeclarationFormMapping {
     "seals" -> ignored[Seq[Seal]](Seq.empty)
   )(TransportEquipment.apply)(TransportEquipment.unapply)
 
+  val referencesMapping = mapping(
+    "typeCode" -> optional(
+      text
+        .verifying("Declaration type must be 2 characters or less", _.length <= 2)
+        .verifying("Declaration type must contains only A-Z characters", isAlpha)),
+    "typerCode" -> optional(
+      text
+        .verifying("Additional declaration type must be a single character", _.length <= 1)
+        .verifying("Additional declaration type must contains only A-Z characters", isAlpha)),
+    "traderAssignedReferenceId" -> optional(
+      text.verifying("Reference Number/UCR must be 35 characters or less", _.length <= 35)),
+    "functionalReferenceId" -> optional(
+      text.verifying("LRN must be 22 characters or less", _.length <= 22)),
+    "transactionNatureCode" -> optional(
+      number.verifying("Nature of transaction must be contain 2 digits or less", _.toString.length <= 2))
+  )(References.apply)(References.unapply)
 }
 
 case class ObligationGuaranteeForm (guarantees: Seq[ObligationGuarantee] = Seq.empty)

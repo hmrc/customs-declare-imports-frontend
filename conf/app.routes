@@ -11,6 +11,9 @@ GET         /enrol                                             controllers.Unaut
 GET         /submit-declaration/declarant-details              controllers.DeclarantDetailsController.onPageLoad()
 POST        /submit-declaration/declarant-details              controllers.DeclarantDetailsController.onSubmit()
 
+GET         /submit-declaration/references                     controllers.ReferencesController.onPageLoad()
+POST        /submit-declaration/references                     controllers.ReferencesController.onSubmit()
+
 GET         /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onPageLoad()
 POST        /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onSubmit()
 
