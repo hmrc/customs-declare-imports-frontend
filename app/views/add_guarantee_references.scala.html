@@ -1,0 +1,72 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import uk.gov.hmrc.play.views.html._
+@import controllers.routes._
+@import viewmodels.HtmlTable
+@import uk.gov.hmrc.wco.dec.ObligationGuarantee
+
+@(form:Form[_], guaranteeReferences: Seq[ObligationGuarantee])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@tableHeader = @{
+    if(guaranteeReferences.size == 1){
+        messages("addGuaranteeReferences.table.heading")
+    } else {
+        messages("addGuaranteeReferences.table.multiple.heading", guaranteeReferences.size)
+    }
+}
+
+@main_template(title = messages("addGuaranteeReferences.title")) {
+
+@helpers.form(action = AddGuaranteeReferencesController.onSubmit()) {
+
+    @components.back_link()
+
+    @components.error_summary(form.errors)
+
+    <h1 class="heading-large">@messages("addGuaranteeReferences.heading")</h1>
+
+               @components.table.table(
+                  HtmlTable(
+                          messages("addGuaranteeReferences.referenceId"),
+                          messages("addGuaranteeReferences.id"),
+                          messages("addGuaranteeReferences.amountAmount"),
+                          messages("addGuaranteeReferences.accessCode"),
+                          messages("addGuaranteeReferences.officeId")
+                  )(guaranteeReferences.map(a => (a.referenceId.getOrElse(""),
+                                                a.id.getOrElse(""),
+                                                a.amount.getOrElse(""),
+                                                a.accessCode.getOrElse(""),
+                                                a.guaranteeOffice.flatMap(_.id).getOrElse("")))), Some(tableHeader))
+
+           <fieldset>
+               @components.input_text(form("referenceId"), messages("addGuaranteeReferences.referenceId"))
+               @components.input_text(form("id"), messages("addGuaranteeReferences.id"))
+               @components.input_text(form("amount"), messages("addGuaranteeReferences.amountAmount"))
+               @components.input_text(form("accessCode"), messages("addGuaranteeReferences.accessCode"))
+               @components.input_text(form("guaranteeOffice.id"), messages("addGuaranteeReferences.officeId"))
+           </fieldset>
+
+          <button id="Add" name="submit">
+           @messages("addGuaranteeReferences.addGuaranteeReference")
+          </button>
+
+          <a href="@goodsitems.routes.GoodsItemsListController.onPageLoad().url" class="button" id="Next">
+           @messages("common.button.continue")
+          </a>
+    }
+}

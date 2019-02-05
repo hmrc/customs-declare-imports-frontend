@@ -172,17 +172,23 @@ object DeclarationFormMapping {
     "chargeDeductions" -> seq(chargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
 
 
-  val officeMapping = mapping("id" -> optional(text.verifying("Office id should be less than or equal to 35 characters",
-    _.length <= 35)))(Office.apply)(Office.unapply)
+  val officeMapping = mapping("id" -> optional(text
+    .verifying("Office id should be less than or equal to 8 characters", _.length <= 8))
+  )(Office.apply)(Office.unapply)
 
 
   val obligationGauranteeMapping =
-    mapping("amount" -> optional(bigDecimal.verifying("Amount must not be negative", a => a > 0)),
-      "id" -> optional(text.verifying("Id should be less than or equal to 35 characters", _.length <= 70)),
+    mapping("amount" -> optional(bigDecimal
+        .verifying("Amount cannot be greater than 99999999999999.99", _.precision <= 16)
+        .verifying("Amount cannot have more than 2 decimal places", _.scale <= 2)
+        .verifying("Amount must not be negative", _ >= 0)),
+      "id" -> optional(text.verifying("Id should be less than or equal to 35 characters", _.length <= 35)), //max schema length is 70
       "referenceId" -> optional(text.verifying("ReferenceId should be less than or equal to 35 characters", _.length <= 35)),
       "securityDetailsCode" -> optional(text.verifying("SecurityDetailsCode should be less than or equal to 3 characters", _.length <= 3)),
       "accessCode" -> optional(text.verifying("AccessCode should be less than or equal to 4 characters", _.length <= 4)),
       "guaranteeOffice" -> optional(officeMapping))(ObligationGuarantee.apply)(ObligationGuarantee.unapply)
+      .verifying("You must provide a Deferred Reference ID or ID or Amount of import duty and other charges or Access Code or Customs office of guarantee",
+        require1Field[ObligationGuarantee](_.referenceId, _.id, _.amount, _.accessCode, _.guaranteeOffice))
 
   val guaranteesFormMapping = mapping("guarantees" -> seq(obligationGauranteeMapping))(ObligationGuaranteeForm.apply)(ObligationGuaranteeForm.unapply)
 
