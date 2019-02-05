@@ -47,6 +47,20 @@ object DeclarationFormMapping {
     .verifying("Amount is required when currency is provided", requireAllDependantFields[Amount](_.currencyId)(_.value))
     .verifying("Currency is required when amount is provided", requireAllDependantFields[Amount](_.value)(_.currencyId))
 
+  /*  val invoiceAndCurrencyMapping = mapping(
+    "invoice" -> optional(amountMapping),
+    "currency" -> optional(currencyExchangeMapping))(InvoiceAndCurrency.apply)(InvoiceAndCurrency.unapply)*/
+
+  val currencyExchangeMapping = mapping(
+    "currencyTypeCode" -> optional(
+      text.verifying("CurrencyTypeCode is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
+    "rateNumeric" -> optional(
+      bigDecimal
+        .verifying("RateNumeric cannot be greater than 9999999.99999", _.precision <= 12)
+        .verifying("RateNumeric cannot have more than 5 decimal places", _.scale <= 5)
+        .verifying("RateNumeric must not be negative", _ >= 0))
+  )(CurrencyExchange.apply)(CurrencyExchange.unapply)
+
   val measureMapping = mapping("unitCode" -> optional(text.verifying("unitCode is only 5 characters", _.length <= 5)),
     "value" -> optional(bigDecimal.verifying("value must not be negative", a => a > 0)))(Measure.apply)(Measure.unapply)
 
@@ -71,15 +85,6 @@ object DeclarationFormMapping {
     "pointers" -> ignored[Seq[Pointer]](Seq.empty)
   )(AdditionalInformation.apply)(AdditionalInformation.unapply)
     .verifying("You must provide Code or Description", require1Field[AdditionalInformation](_.statementCode, _.statementDescription))
-
-/*  val invoiceAndCurrencyMapping = mapping(
-    "invoice" -> optional(amountMapping),
-    "currency" -> optional(currencyExchangeMapping))(InvoiceAndCurrency.apply)(InvoiceAndCurrency.unapply)*/
-
-  val currencyExchangeMapping = mapping(
-    "currencyTypeCode" -> optional(text.verifying("CurrencyTypeCode should be less than or equal to 3 characters", _.length <= 3)),
-    "rateNumeric" -> optional(bigDecimal.verifying("RateNumeric cannot be greater than 9999999.99999", _.precision <= 12))
-  )(CurrencyExchange.apply)(CurrencyExchange.unapply)
 
   val destinationMapping = mapping("countryCode" -> optional(text.verifying("country code is only 3 characters", _.length <= 3)),
     "regionId" -> optional(text.verifying("regionId code is only 9 characters", _.length <= 9)))(Destination.apply)(Destination.unapply)

@@ -242,7 +242,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(id = Some(invalidId.toString))).fold(
             error => error.error("id") must haveMessage("Deferred Payment ID should be less than or equal to 7 characters"),
-            _     => fail("Should not succeed")
+            _ => fail("Should not succeed")
           )
         }
       }
@@ -253,7 +253,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
             error => error.error("categoryCode") must haveMessage("Deferred Payment Category should be less than or equal to 1 character"),
-            _     => fail("Should not succeed")
+            _ => fail("Should not succeed")
           )
         }
       }
@@ -264,7 +264,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(typeCode = Some(invalidTypeCode))).fold(
             error => error.error("typeCode") must haveMessage("Deferred Payment Type should be less than or equal to 3 characters"),
-            _     => fail("Should not succeed")
+            _ => fail("Should not succeed")
           )
         }
       }
@@ -615,8 +615,67 @@ class DeclarationFormMappingSpec extends WordSpec
 
         forAll { currencyExchange: CurrencyExchange =>
 
+          Form(currencyExchangeMapping).fillAndValidate(currencyExchange).fold(
+            _ => fail("Should not fail"),
+            success => success mustBe currencyExchange
+          )
+        }
+      }
+    }
 
+    "fail" when {
 
+      "currencyTypeCode is not a currency" in {
+
+        val badData = stringsExceptSpecificValues(config.Options.currencyTypes.map(_._2).toSet)
+
+        forAll(arbitrary[CurrencyExchange], badData) { (currencyExchange, badData) =>
+
+          val data = currencyExchange.copy(currencyTypeCode = Some(badData))
+          Form(currencyExchangeMapping).fillAndValidate(data).fold(
+            _ must haveErrorMessage("CurrencyTypeCode is not a valid currency"),
+            _ => fail("Form should not succeed")
+          )
+        }
+      }
+
+      "rateNumeric has a precision greater than 12" in {
+
+        forAll(arbitrary[CurrencyExchange], decimal(13, 30, 0)) {
+          (currencyEnchange, invalidRateNumeric) =>
+
+            val data = currencyEnchange.copy(rateNumeric = Some(invalidRateNumeric))
+
+            Form(currencyExchangeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("RateNumeric cannot be greater than 9999999.99999"),
+              _ => fail("Form should not succeed")
+            )
+        }
+      }
+
+      "rateNumeric has a scale greater than 5" in {
+        val badData = choose(6, 16).flatMap(posDecimal(12, _))
+        forAll(arbitrary[CurrencyExchange], badData) {
+          (currencyExchange, invalidRateNumeric) =>
+            val data = currencyExchange.copy(rateNumeric = Some(invalidRateNumeric))
+
+            Form(currencyExchangeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("RateNumeric cannot have more than 5 decimal places"),
+              _ => fail("Form should not fail")
+            )
+        }
+      }
+
+      "rateNumeric has a negative value" in {
+
+        forAll(arbitrary[CurrencyExchange], intLessThan(0)) {
+          (currencyExchange, invalidRateNumeric) =>
+            val data = currencyExchange.copy(rateNumeric = Some(BigDecimal(invalidRateNumeric)))
+
+            Form(currencyExchangeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("RateNumeric must not be negative"),
+              _ => fail("Form should not fail")
+            )
         }
       }
     }
