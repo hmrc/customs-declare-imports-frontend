@@ -75,9 +75,13 @@ trait MaxLength {
 case class RadioOption(id: String, value: String, messageKey: String)
 
 object RadioOption {
+
   def apply(keyPrefix: String, option: String): RadioOption = RadioOption(
     s"$keyPrefix.$option",
     option,
     s"$keyPrefix.$option"
   )
+
+  def fromTuples(xs: Seq[(String, String)]): Seq[RadioOption] =
+    xs.map { case (x, y) => RadioOption(x, y, y) }
 }

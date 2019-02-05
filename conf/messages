@@ -38,6 +38,7 @@ common.fields.communications.id=Phone number (optional)
 
 ## common field hints
 common.hints.eori=Economic Operator Registration and Identification (EORI) number is required by a person or dealer who is carrying out custom activities in the European Union (EU).
+common.hints.statusCode=This code declares the way in which the declarant is representing the Importer.
 
 ## specific pages
 # (I noted most use title case for title but not for form heading so have made it consistently that way, for right or wrong - please correct if it is the latter)
@@ -321,7 +322,7 @@ declarantDetails.address.line=Street and Number
 declarantDetails.address.cityName=City
 declarantDetails.address.countryCode=Country
 declarantDetails.address.postcode=Postcode
-declarantDetails.id=Identification No.
+declarantDetails.id=EORI number
 
 ## References
 references.title=Reference Numbers
@@ -340,7 +341,18 @@ exporterDetails.address.line=Street and Number
 exporterDetails.address.cityName=City
 exporterDetails.address.country=Country
 exporterDetails.address.postcode=Postcode
-exporterDetails.id=Exporter Identification No.
+exporterDetails.id=EORI number
+
+## Representative details
+representativeDetails.title=Representative
+representativeDetails.heading=Representative
+representativeDetails.name=Name
+representativeDetails.address.line=Street and Number
+representativeDetails.address.cityName=City
+representativeDetails.address.country=Country
+representativeDetails.address.postcode=Postcode
+representativeDetails.id=EORI number
+representativeDetails.statusCode=Status Code
 
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees

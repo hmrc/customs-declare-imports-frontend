@@ -370,6 +370,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     }
   }
 
+  implicit val arbitraryAgent: Arbitrary[Agent] = Arbitrary {
+    for {
+      party <- arbitrary[ImportExportParty]
+      code  <- option(oneOf(config.Options.agentFunctionCodes.map(_._1)))
+    } yield {
+      Agent(party.name, party.id, code, party.address)
+    }
+  }
+
   def intGreaterThan(min: Int): Gen[Int] =
     choose(min + 1, Int.MaxValue)
 

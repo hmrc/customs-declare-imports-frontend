@@ -154,7 +154,7 @@ object DeclarationFormMapping {
 
   val importExportPartyMapping = mapping(
     "name" -> optional(text.verifying("Name should have 70 characters or less", _.length <= 70)),
-    "id" -> optional(text.verifying("ID should have 17 characters or less", _.length <= 17)),
+    "id" -> optional(text.verifying("EORI number should have 17 characters or less", _.length <= 17)),
     "address" -> optional(addressMapping),
     "contacts" -> seq(contactMapping),
     "communications" -> seq(communicationMapping)
@@ -247,6 +247,14 @@ object DeclarationFormMapping {
     "transactionNatureCode" -> optional(
       number.verifying("Nature of transaction must be contain 2 digits or less", _.toString.length <= 2))
   )(References.apply)(References.unapply)
+
+  val agentMapping = mapping(
+    "name" -> optional(text.verifying("Name should have 70 characters or less", _.length <= 70)),
+    "id" -> optional(text.verifying("EORI number should have 17 characters or less", _.length <= 17)),
+    "functionCode" -> optional(
+      text.verifying("Status code is not valid", s => config.Options.agentFunctionCodes.exists(_._1 == s))),
+    "address" -> optional(addressMapping)
+  )(Agent.apply)(Agent.unapply)
 }
 
 case class ObligationGuaranteeForm (guarantees: Seq[ObligationGuarantee] = Seq.empty)
