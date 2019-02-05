@@ -17,6 +17,9 @@ POST        /submit-declaration/references                     controllers.Refer
 GET         /submit-declaration/exporter-details               controllers.ExporterDetailsController.onPageLoad()
 POST        /submit-declaration/exporter-details               controllers.ExporterDetailsController.onSubmit()
 
+GET         /submit-declaration/importer-details               controllers.ImporterDetailsController.onPageLoad()
+POST        /submit-declaration/importer-details               controllers.ImporterDetailsController.onSubmit()
+
 GET         /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onPageLoad()
 POST        /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onSubmit()
 
