@@ -127,6 +127,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       statementCode <- option(nonEmptyString.map(_.take(5)))
       statementDescription <- option(nonEmptyString.map(_.take(512)))
+      if statementCode.nonEmpty || statementDescription.nonEmpty
     } yield AdditionalInformation(statementCode, statementDescription)
   }
 
