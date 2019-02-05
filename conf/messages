@@ -332,6 +332,16 @@ references.traderAssignedReferenceId=Reference Number/UCR
 references.functionalReferenceId=LRN
 references.transactionNatureCode=Nature of Transaction
 
+## Exporter details
+exporterDetails.title=Exporter
+exporterDetails.heading=Exporter
+exporterDetails.name=Name
+exporterDetails.address.line=Street and Number
+exporterDetails.address.cityName=City
+exporterDetails.address.country=Country
+exporterDetails.address.postcode=Postcode
+exporterDetails.id=Exporter Identification No.
+
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
 obligationGuarantees.amount=Amount

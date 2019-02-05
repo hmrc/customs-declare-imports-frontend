@@ -18,27 +18,29 @@ package controllers
 
 import com.google.inject.Inject
 import config.AppConfig
+import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import views.html.references
+import views.html.exporter_details
 
 import scala.concurrent.Future
 
-class ReferencesController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                    (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
+class ExporterDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)
+                                         (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
   extends CustomsController {
 
-  val form = Form(referencesMapping)
+  val form = Form(importExportPartyMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
-    cache.getByKey(req.eori, CacheKey.references).map { refs =>
-      val popForm = refs.fold(form)(form.fill)
-      Ok(references(popForm))
+    cache.getByKey(req.eori, CacheKey.exporter).map { exporter =>
+
+      val popForm = exporter.fold(form)(form.fill)
+      Ok(exporter_details(popForm))
     }
   }
 
@@ -46,10 +48,10 @@ class ReferencesController @Inject()(actions: Actions, cache: CustomsCacheServic
 
     form.bindFromRequest().fold(
       errors =>
-        Future.successful(BadRequest(references(errors))),
-      references =>
-        cache.insert(req.eori, CacheKey.references, references).map { _ =>
-          Redirect(routes.ExporterDetailsController.onPageLoad())
+        Future.successful(BadRequest(exporter_details(errors))),
+      exporter =>
+        cache.insert(req.eori, CacheKey.exporter, exporter).map { _ =>
+          Redirect(routes.DeclarationController.displaySubmitForm("representative-details"))
         }
     )
   }

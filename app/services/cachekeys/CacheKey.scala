@@ -29,6 +29,8 @@ object CacheKey {
 
   val references = CacheKey("References", new Identifier[References] {})
 
+  val exporter = CacheKey("Exporter", new Identifier[ImportExportParty] {})
+
   val authorisationHolders = CacheKey("AuthorisationHolders", new Identifier[Seq[AuthorisationHolder]] {})
 
   val guaranteeReference = CacheKey("GuaranteeReferences", new Identifier[Seq[ObligationGuarantee]] {})
