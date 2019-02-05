@@ -354,6 +354,16 @@ representativeDetails.address.postcode=Postcode
 representativeDetails.id=EORI number
 representativeDetails.statusCode=Status Code
 
+## Importer details
+importerDetails.title=Importer
+importerDetails.heading=Importer
+importerDetails.name=Importer’s Name
+importerDetails.address.line=First Line of Address
+importerDetails.address.cityName=City
+importerDetails.address.country=Country
+importerDetails.address.postcode=Postcode
+importerDetails.id=EORI number
+
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
 obligationGuarantees.amount=Amount
