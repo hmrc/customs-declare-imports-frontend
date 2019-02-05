@@ -22,7 +22,7 @@
 
 @(form:Form[_], additionalDocuments: Seq[AdditionalDocument])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@main_template(title = messages("addDeferredPayment.title"), bodyClasses = None) {
+@main_template(title = messages("addDeferredPayment.title")) {
 
 @helpers.form(action = DeferredPaymentsController.onSubmit()) {
 

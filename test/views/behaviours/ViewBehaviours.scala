@@ -20,7 +20,8 @@ import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.Gen.listOf
 import org.scalatest.prop.PropertyChecks
-import play.twirl.api.HtmlFormat
+import play.api.data.Form
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.wco.dec.AuthorisationHolder
 import viewmodels.HtmlTable
 import views.ViewSpecBase

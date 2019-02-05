@@ -23,14 +23,14 @@
     charLimit: Option[Int] = None
 )(implicit messages: Messages)
 
-<div class="form-field @if(field.hasErrors){form-field--error}">
+<div class="form-field @if(field.hasErrors){form-group-error}">
     <label class="form-label" for="@{field.id}">
         <span class="bold">@label</span>
         @hint.map { hint =>
         <span class="form-hint">@hint</span>
         }
         @field.errors.map { error =>
-        <span class="error-notification"
+        <span class="error-message"
               id="error-message-@{field.id}-input">@messages(error.message, error.args: _*)</span>
         }
     </label>

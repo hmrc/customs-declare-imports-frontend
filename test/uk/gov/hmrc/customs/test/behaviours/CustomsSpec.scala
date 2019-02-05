@@ -19,8 +19,8 @@ package uk.gov.hmrc.customs.test.behaviours
 import akka.stream.Materializer
 import config.AppConfig
 import domain.auth.EORI
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
+import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
@@ -40,7 +40,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.reflect.ClassTag
+import scala.reflect._
 
 trait CustomsSpec extends PlaySpec
   with OneAppPerSuite
@@ -73,6 +73,8 @@ trait CustomsSpec extends PlaySpec
       .thenReturn(Future.successful(form))
     when(mockCustomsCacheService.upsert(any(), any())(any(), any())(any(), any(), any(), any()))
       .thenReturn(Future.successful(()))
+    when(mockCustomsCacheService.insert(any(), any(), any())(any(), any(), any()))
+      .thenReturn(Future.successful(()))
 
     when(mockCustomsCacheService.put(any(), any(), any())(any(), any()))
       .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
@@ -95,6 +97,10 @@ trait CustomsSpec extends PlaySpec
 
     when(mockCustomsCacheService.getByKey(eqTo(eori), eqTo(key))(any(), any(), any()))
       .thenReturn(Future.successful(data))
+
+    when(mockCustomsCacheService.insert(eqTo(eori), eqTo(key), any())(any(), any(), any()))
+      .thenReturn(Future.successful(()))
+
     test
   }
 
@@ -124,6 +130,9 @@ trait CustomsSpec extends PlaySpec
       .thenReturn(Future.successful(None))
 
     when(mockCustomsCacheService.upsert(any(), any())(any(), any())(any(), any(), any(), any()))
+      .thenReturn(Future.successful(()))
+
+    when(mockCustomsCacheService.insert(any(), any(), any())(any(), any(), any()))
       .thenReturn(Future.successful(()))
   }
 }

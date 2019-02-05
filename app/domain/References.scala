@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,21 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@(errors: Seq[FormError])(implicit messages: Messages)
-@if(errors.nonEmpty) {
-    <div class="error-summary" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+package domain
 
-        <h2 class="heading-medium error-summary-heading" id="error-summary-heading">
-            @messages("common.error.summary.title")
-        </h2>
+import play.api.libs.json.Json
 
-        <ul role="list" class="error-summary-list">
-            @for(error <- errors) {
-                <li><a href="#@{error.key.replace(".", "_")}">@messages(error.message, error.args:_*)</a></li>
-            }
-        </ul>
+case class References(
+  typeCode: Option[String],
+  typerCode: Option[String],
+  traderAssignedReferenceId: Option[String],
+  functionalReferenceId: Option[String],
+  transactionNatureCode: Option[Int])
 
-    </div>
+object References {
+
+  implicit val format = Json.format[References]
 }
