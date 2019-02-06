@@ -240,7 +240,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       name <- option(arbitrary[String].map(_.take(70)))
       id <- option(arbitrary[String].map(_.take(17)))
-      address <- option(arbitraryAddress.arbitrary)
+      address <- option(arbitrary[Address])
     } yield NamedEntityWithAddress(name, id, address)
   }
 

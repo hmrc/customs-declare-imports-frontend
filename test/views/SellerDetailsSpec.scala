@@ -110,7 +110,7 @@ class SellerDetailsSpec extends ViewBehaviours
       forAll { seller: ImportExportParty =>
 
         val popForm = form.fillAndValidate(seller)
-        val input   = input_text(popForm("communication[0].id"), getMessage("communication.id"))
+        val input   = input_text(popForm("communications[0].id"), getMessage("communication.id"))
 
         view(popForm) must include(input)
       }
