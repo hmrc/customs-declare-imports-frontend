@@ -57,7 +57,7 @@ class AdditionalInformationController @Inject()(actions: Actions, cacheService: 
             }
 
             cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
-              Ok(views.html.goods_items_add_additional_informations(additionalInformationForm, updatedGoodsItem.additionalInformations))
+              Redirect(routes.AdditionalInformationController.onPageLoad())
             }
           })
   }
