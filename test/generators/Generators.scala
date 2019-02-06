@@ -380,6 +380,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     }
   }
 
+  implicit val arbitraryCommunication: Arbitrary[Communication] = Arbitrary {
+    for {
+      id   <- option(nonEmptyString.map(_.take(50)))
+      code <- option(nonEmptyString.map(_.take(3)))
+    } yield {
+      Communication(id, code)
+    }
+  }
+
   def intGreaterThan(min: Int): Gen[Int] =
     choose(min + 1, Int.MaxValue)
 

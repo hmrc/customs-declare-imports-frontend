@@ -1026,4 +1026,52 @@ class DeclarationFormMappingSpec extends WordSpec
       }
     }
   }
+
+  "communicationMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { comms: Communication =>
+
+          Form(communicationMapping).fillAndValidate(comms).fold(
+            _ => fail("form should not fail"),
+            _ mustBe comms
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "id has more than 70 characters" in {
+
+        forAll(arbitrary[Communication], minStringLength(51)) {
+          (comms, id) =>
+
+            val data = comms.copy(id = Some(id))
+            Form(communicationMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Communication id should be 50 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "typeCode has more than 3 characters" in {
+
+        forAll(arbitrary[Communication], minStringLength(4)) {
+          (comms, typeCode) =>
+
+            val data = comms.copy(typeCode = Some(typeCode))
+            Form(communicationMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Type code should be 3 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+    }
+  }
+
+
 }
