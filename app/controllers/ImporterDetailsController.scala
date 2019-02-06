@@ -53,7 +53,7 @@ class ImporterDetailsController @Inject()(actions: Actions, cache: CustomsCacheS
       importer =>
         cache
           .insert(req.eori, CacheKey.importer, importer)
-          .map(_ => Redirect(routes.DeclarationController.displaySubmitForm("seller-details")))
+          .map(_ => Redirect(routes.SellerDetailsController.onPageLoad()))
     )
   }
 }

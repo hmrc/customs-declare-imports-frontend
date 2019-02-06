@@ -52,7 +52,7 @@ class SellerDetailsController @Inject()(actions: Actions, cache: CustomsCacheSer
       seller =>
         cache
           .insert(req.eori, CacheKey.seller, seller)
-          .map(_ => Redirect(routes.DeclarationController.displaySubmitForm("buyer-details")))
+          .map(_ => Redirect(routes.BuyerDetailsController.onPageLoad()))
     )
   }
 }

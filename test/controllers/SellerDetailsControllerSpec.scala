@@ -113,7 +113,7 @@ class SellerDetailsControllerSpec extends CustomsSpec
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.DeclarationController.displaySubmitForm("buyer-details").url)
+          redirectLocation(result) mustBe Some(routes.BuyerDetailsController.onPageLoad().url)
         }
       }
     }
