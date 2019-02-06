@@ -120,8 +120,8 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(previousDocument): _*)
           val result = controller(Some(user)).onSubmit(request)
 
-          status(result) mustBe OK
-        }
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.PreviousDocumentsController.onPageLoad().url)        }
       }
     }
 

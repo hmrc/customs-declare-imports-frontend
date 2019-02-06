@@ -25,7 +25,9 @@
     title = messages("governmentAgencyGoodsItemAdd.title"),
     bodyClasses = None) {
 
-    @helpers.form(action = GovernmentAgencyGoodsItemsController.handleGovAgencyGoodsItemsAdditionalDocumentsSubmit()) {
+    @helpers.form(action = controllers.goodsitems.routes.AdditionalDocumentController.onSubmit()) {
+        @components.error_summary(form.errors)
+
         <fieldset>
             <legend>
                 <h1>@messages("governmentAgencyGoodsItemAdd.title")</h1>
@@ -37,44 +39,70 @@
                 <table>
                     <thead>
                     <tr>
-                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.countryCode")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.documentName")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.categoryCode")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.effectiveDateTime")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItemAdd.id")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItemAdd.typeCodeOfDocument")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.documentName")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItemAdd.submitterName")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.submitterRoleCode")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.writeOffMeasurement")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItemAdd.writeOffQuantity")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItemAdd.writeOffAmount")</th>
                     </tr>
                     </thead>
                     <tbody>
                         @for(item <- additionalDocuments) {
                             <tr>
                                 <td scope="row">@item.categoryCode</td>
-                                <td scope="row">@item.name</td>
+                                <td scope="row">@item.effectiveDateTime.map(_.dateTimeString.value)</td>
                                 <td scope="row">@item.id</td>
+                                <td scope="row">@item.name</td>
                                 <td scope="row">@item.typeCode</td>
                                 <td scope="row">@item.lpcoExemptionCode</td>
                                 <td scope="row">@item.submitter.map(_.name)</td>
-                                <td scope="row">@item.submitter.map(_.roleCode)</td>
-                                <td scope="row">@item.writeOff.map(_.quantity)</td>
-                                <td scope="row">@item.writeOff.map(_.amount)</td>
+                                <td scope="row">@item.writeOff.map(_.quantity.map(_.unitCode))</td>
+                                <td scope="row">@item.writeOff.map(_.quantity.map(_.value))</td>
                            </tr>
                         }
                     </tbody>
                 </table>
             }
 
-            @components.input_text(field = form("categoryCode"),label = messages("governmentAgencyGoodsItemAdd.countryCode"))
-            @components.input_text(field = form("name"),label = messages("governmentAgencyGoodsItemAdd.documentName"))
+            @components.input_text(field = form("categoryCode"),label = messages("governmentAgencyGoodsItemAdd.categoryCode"))
+            <div class="form-group">
+                <fieldset>
+                  <legend>
+                    <span class="visually-hidden">Date on your additional document</span>
+                  </legend>
+                  <div class="form-date">
+                    <div class="form-group form-group-day">
+                        @components.input_date(
+                            field = form("effectiveDateTime.date.day"),
+                            label = "Day"
+                        )
+                    </div>
+                    <div class="form-group form-group-month">
+                        @components.input_date(
+                            field = form("effectiveDateTime.date.month"),
+                            label = "Month"
+                        )
+                    </div>
+                    <div class="form-group form-group-year">
+                        @components.input_date(
+                            field = form("effectiveDateTime.date.year"),
+                            label = "Year"
+                        )
+                    </div>
+                  </div>
+                </fieldset>
+            </div>
             @components.input_text(field = form("id"),label = messages("governmentAgencyGoodsItemAdd.id"))
             @components.input_text(field = form("typeCode"),label = messages("governmentAgencyGoodsItemAdd.typeCodeOfDocument"))
             @components.input_text(field = form("lpcoExemptionCode"),label = messages("governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument"))
+            @components.input_text(field = form("name"),label = messages("governmentAgencyGoodsItemAdd.documentName"))
             @components.input_text(field = form("submitter.name"),label = messages("governmentAgencyGoodsItemAdd.submitterName"))
-            @components.input_text(field = form("submitter.roleCode"),label = messages("governmentAgencyGoodsItemAdd.submitterRoleCode"))
-            @components.input_text(field = form("writeOff.quantity"),label = messages("governmentAgencyGoodsItemAdd.writeOffQuantity"))
-            @components.input_text(field = form("writeOff.amount"),label = messages("governmentAgencyGoodsItemAdd.writeOffAmount"))
+            @components.input_text(field = form("writeOff.quantity.unitCode"),label = messages("governmentAgencyGoodsItemAdd.writeOffMeasurement"))
+            @components.input_text(field = form("writeOff.quantity.value"),label = messages("governmentAgencyGoodsItemAdd.writeOffQuantity"))
         </fieldset>
 
         <div class="section">
