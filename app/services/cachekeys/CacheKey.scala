@@ -37,6 +37,8 @@ object CacheKey {
 
   val seller = CacheKey("Seller", new Identifier[ImportExportParty] {})
 
+  val buyer = CacheKey("Buyer", new Identifier[ImportExportParty] {})
+
   val authorisationHolders = CacheKey("AuthorisationHolders", new Identifier[Seq[AuthorisationHolder]] {})
 
   val guaranteeReference = CacheKey("GuaranteeReferences", new Identifier[Seq[ObligationGuarantee]] {})
