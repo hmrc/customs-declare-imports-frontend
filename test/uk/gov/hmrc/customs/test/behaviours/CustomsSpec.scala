@@ -117,10 +117,13 @@ trait CustomsSpec extends PlaySpec
         (f.getName, f.get(cc))
       }
       .flatMap {
+        case (n, l: List[Product]) => l.zipWithIndex.flatMap {
+          case (x, i) => asFormParams(x).map { case (k, v) => (s"$n[$i].$k", v) }
+        }
         case (n, Some(p: Product)) => asFormParams(p).map { case (k, v) => (s"$n.$k", v) }
-        case (n, Some(a))    => List((n, a.toString))
-        case (n, None)       => List((n, ""))
-        case (n, a)          => List((n, a.toString))
+        case (n, Some(a))          => List((n, a.toString))
+        case (n, None)             => List((n, ""))
+        case (n, a)                => List((n, a.toString))
       }
 
   override def beforeEach = {

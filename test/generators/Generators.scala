@@ -354,8 +354,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       name    <- option(nonEmptyString.map(_.take(70)))
       id      <- option(nonEmptyString.map(_.take(17)))
       address <- option(arbitrary[Address])
+      comms   <- option(arbitrary[Communication]).map(_.toList)
     } yield {
-      ImportExportParty(name, id, address)
+      ImportExportParty(name, id, address, communications = comms)
     }
   }
 
