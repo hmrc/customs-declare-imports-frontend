@@ -14,22 +14,40 @@
  * limitations under the License.
  *@
 
-@import config.Fields._
-@import config.{AppConfig, ValidationError}
+@import config.AppConfig
+@import controllers.routes._
+@import uk.gov.hmrc.play.views.html._
 
-@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
+@(form: Form[_])(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
-@main_template(messages("pages.buyer.details.title")) {
+@main_template(title = messages("buyerDetails.title")) {
 
-    @helpers.form("buyer-details", "pages.buyer.details.form.legend", data) {
-        @helpers.textInput(buyerName, data)
-        @helpers.textInput(buyerAddressLine, data)
-        @helpers.textInput(buyerAddressCityName, data)
-        @helpers.selectInput(buyerAddressCountryCode, data)
-        @helpers.textInput(buyerAddressPostcode, data)
-        @helpers.textInput(buyerCommunicationsId, data)
-        @helpers.textInput(buyerEori, data)
-        @helpers.nextButton()
-    }
+ @helpers.form(action = SellerDetailsController.onSubmit()) {
 
+  @components.back_link()
+
+  @components.error_summary(form.errors)
+
+  <fieldset>
+   <legend>
+    <h1 class="heading-large">@messages("buyerDetails.heading")</h1>
+   </legend>
+
+   @components.input_text(form("name"), messages("buyerDetails.name"))
+   @components.input_text(form("address.line"), messages("buyerDetails.address.line"))
+   @components.input_text(form("address.cityName"), messages("buyerDetails.address.city"))
+   @components.input_select(form("address.countryCode"), messages("buyerDetails.address.country"), config.Options.countryOptions.toMap)
+   @components.input_text(form("address.postcodeId"), messages("buyerDetails.address.postcode"))
+   @components.input_text(form("communication[0].id"), messages("buyerDetails.communication.id"))
+   @components.input_text(
+    form("id"),
+    messages("buyerDetails.id"),
+    hint = Some(messages("common.hints.eori"))
+   )
+  </fieldset>
+
+  <button id="Add" name="submit">
+  @messages("common.button.continue")
+  </button>
+ }
 }

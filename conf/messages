@@ -367,13 +367,24 @@ importerDetails.id=EORI number
 ## Seller details
 sellerDetails.title=Seller
 sellerDetails.heading=Seller
-sellerDetails.name=Name
-sellerDetails.address.line=Street and Number
+sellerDetails.name=Seller’s Name
+sellerDetails.address.line=First Line of Address
 sellerDetails.address.city=City
 sellerDetails.address.country=Country
 sellerDetails.address.postcode=Postcode
 sellerDetails.communication.id=Phone number
 sellerDetails.id=EORI number
+
+## Buyer details
+buyerDetails.title=Buyer
+buyerDetails.heading=Buyer
+buyerDetails.name=Buyer’s Name
+buyerDetails.address.line=First Line of Address
+buyerDetails.address.city=City
+buyerDetails.address.country=Country
+buyerDetails.address.postcode=Postcode
+buyerDetails.communication.id=Phone number
+buyerDetails.id=EORI number
 
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
