@@ -1143,6 +1143,272 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
+  "Date" should {
 
+    "bind" when {
 
+      "valid values are bound" in {
+
+        forAll { date: Date =>
+
+          Form(dateMapping).fillAndValidate(date).fold(
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe date
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "Invalid day is entered" in {
+
+        forAll(arbitrary[Date], intGreaterThan(31)) { (date, day) =>
+
+          Form(dateMapping).fillAndValidate(date.copy(day = day)).fold(
+            _.error("day") must haveMessage("Day is invalid"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "Invalid month is entered" in {
+
+        forAll(arbitrary[Date], intGreaterThan(12)) { (date, month) =>
+
+          val invalidDate = date.copy(month = month)
+          Form(dateMapping).fillAndValidate(invalidDate).fold(
+            _.error("month") must haveMessage("Month is invalid"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "Invalid year is entered" in {
+
+        forAll(arbitrary[Date], intLessThan(1900)) { (date, year) =>
+
+          val invalidDate = date.copy(year = year)
+          Form(dateMapping).fillAndValidate(invalidDate).fold(
+            _.error("year") must haveMessage("Year is invalid"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+    }
+  }
+
+  "MeasureMapping" should {
+
+    "bind" when {
+
+      "valid values are passed" in {
+
+        forAll { measure: Measure =>
+
+          Form(measureMapping).fillAndValidate(measure).fold(
+            e => fail(s"form should not fail: ${e.errors}"),
+            success => success mustBe measure
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "unitCode is greater than 5" in {
+
+        val badData = minStringLength(6)
+        forAll(arbitrary[Measure], badData) {
+          (measure, unitCode) =>
+
+            val data = measure.copy(unitCode = Some(unitCode))
+            Form(measureMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Measurement Unit & Qualifier cannot be more than 5 characters"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "value has a precision greater than 16" in {
+
+        forAll(arbitrary[Measure], decimal(16, 30, 0)) {
+          (measure, deduction) =>
+
+            val data = measure.copy(value = Some(deduction))
+            Form(measureMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Quantity cannot be greater than 9999999999.999999"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "value has a scale greater than 6" in {
+
+        val badData = choose(7, 10).flatMap(posDecimal(10, _))
+
+        forAll(arbitrary[Measure], badData) {
+          (measure, deduction) =>
+
+            val data = measure.copy(value = Some(deduction))
+            Form(measureMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Quantity cannot have more than 6 decimal places"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "value is less than 0" in {
+
+        forAll(arbitrary[Measure], intLessThan(0)) {
+          (measure, deduction) =>
+
+            val data = measure.copy(value = Some(BigDecimal(deduction)))
+            Form(measureMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Quantity must not be negative"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "has a currency with no value" in {
+
+        forAll { amount: Amount =>
+
+          whenever(amount.currencyId.nonEmpty) {
+
+            Form(amountMapping).bind(Map("currencyId" -> amount.currencyId.getOrElse(""))).fold(
+              _ must haveErrorMessage("Amount is required when currency is provided"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
+
+      "has a value with no currency" in {
+
+        forAll { amount: Amount =>
+
+          whenever(amount.value.nonEmpty) {
+
+            Form(amountMapping).bind(Map("value" -> amount.value.fold("")(_.toString))).fold(
+              _ must haveErrorMessage("Currency is required when amount is provided"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
+    }
+  }
+
+  "GoodsItemsAdditionalDocumentsForm" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { additionalDocument: GovernmentAgencyGoodsItemAdditionalDocument =>
+
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument).fold(
+            error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
+            result => result mustBe additionalDocument
+          )
+        }
+      }
+    }
+
+    "fail when all fields are missing" when {
+      "Category, Identifier, status, Status Reason, Issuing Authority, Date of Validity , Quantity, Measurement Unit & Qualifier" in {
+
+        Form(govtAgencyGoodsItemAddDocMapping).bind(Map[String, String]()).fold(
+          _ must haveErrorMessage("You must provide input for Category or Identifier or status or Status Reason or Issuing Authority and Date of Validity or Quantity and Measurement Unit & Qualifier"),
+          _ => fail("Should not succeed")
+        )
+      }
+    }
+
+    "fail for invalid data conditions for all fields " when {
+      "categoryCode length is greater than 1" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(3)) { (additionalDocument, invalidCode) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(categoryCode = Some(invalidCode))).fold(
+            _.error("categoryCode") must haveMessage("Category must be 1 character"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "identifier length is greater than 35" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(36)) { (additionalDocument, invalidId) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(id = Some(invalidId))).fold(
+            _.error("id") must haveMessage("Identifier must be less than 35 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "name length is greater than 35" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(36)) { (additionalDocument, invalidName) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(name = Some(invalidName))).fold(
+            _.error("name") must haveMessage("Status Reason must be less than 35 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "typecode length is greater than 3" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(4)) { (additionalDocument, invalidCode) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(typeCode = Some(invalidCode))).fold(
+            _.error("typeCode") must haveMessage("Type is only 3 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "lpcoExemptionCode length is greater than 2" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(3)) { (additionalDocument, invalidId) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(lpcoExemptionCode = Some(invalidId))).fold(
+            _.error("lpcoExemptionCode") must haveMessage("Status must be 2 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+      "lpcoExemptionCode length is 2 but not alpha characters" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], nonAlphaString) { (additionalDocument, invalidId) =>
+          whenever(invalidId.nonEmpty) {
+            Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(lpcoExemptionCode = Some(invalidId.take(2)))).fold(
+              _.error("lpcoExemptionCode") must haveMessage("Status must be 2 characters"),
+              _ => fail("Should not succeed")
+            )
+          }
+        }
+      }
+
+      "submitter.name length is greater than 70" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(71)) { (additionalDocument, submitterName) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(submitter = Some(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter(
+            Some(submitterName))))).fold(
+            _.error("submitter.name") must haveMessage("Issuing Authority must be less than 70 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+
+      "writeOff.quantity.unitCode length is greater than 5" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItemAdditionalDocument], minStringLength(6)) { (additionalDocument, unitCode) =>
+          Form(govtAgencyGoodsItemAddDocMapping).fillAndValidate(additionalDocument.copy(writeOff = Some(WriteOff(Some(Measure(Some(unitCode))))))).fold(
+            _.error("writeOff.quantity.unitCode") must haveMessage("Measurement Unit & Qualifier cannot be more than 5 characters"),
+            _ => fail("Should not succeed")
+          )
+        }
+      }
+    }
+  }
 }

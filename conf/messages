@@ -362,6 +362,16 @@ invoiceAndCurrency.invoiceAmount=Invoice Amount
 invoiceAndCurrency.exchangeCurrencyId=Currency ID
 invoiceAndCurrency.exchangeCurrencyAmount=Exchange Rate
 
+## Importer details
+importerDetails.title=Importer
+importerDetails.heading=Importer
+importerDetails.name=Importer’s Name
+importerDetails.address.line=First Line of Address
+importerDetails.address.city=City
+importerDetails.address.country=Country
+importerDetails.address.postcode=Postcode
+importerDetails.id=EORI number
+
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
 obligationGuarantees.amount=Amount
@@ -497,17 +507,20 @@ governmentAgencyGoodsItem.refundRecipientParties=Refund recipient parties
 governmentAgencyGoodsItem.saveGoodsItem=Save goods item
 
 governmentAgencyGoodsItemAdd.title=Additional documents
-governmentAgencyGoodsItemAdd.countryCode=Country code
-governmentAgencyGoodsItemAdd.documentName=Document name
-governmentAgencyGoodsItemAdd.id=ID
-governmentAgencyGoodsItemAdd.typeCodeOfDocument=Type code of document
-governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument=LPCO exemption code of document
-governmentAgencyGoodsItemAdd.submitterName=Submitter name
-governmentAgencyGoodsItemAdd.submitterRoleCode=Submitter role code
+governmentAgencyGoodsItemAdd.categoryCode=Category
+governmentAgencyGoodsItemAdd.documentName=Status reason
+governmentAgencyGoodsItemAdd.id=Identifier
+governmentAgencyGoodsItemAdd.typeCodeOfDocument=Type
+governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument=Status
+governmentAgencyGoodsItemAdd.submitterName=Issuing Authority
 governmentAgencyGoodsItemAdd.addDocuments=Add additional document
-governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs=No of goods item additional docs added:
-governmentAgencyGoodsItemAdd.writeOffQuantity=Write off quantity
-governmentAgencyGoodsItemAdd.writeOffAmount=Write off amount
+governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs=No of goods item additional documents added:
+governmentAgencyGoodsItemAdd.writeOffQuantity=Quantity
+governmentAgencyGoodsItemAdd.writeOffMeasurement=Measurement Unit & Qualifier
+governmentAgencyGoodsItemAdd.effectiveDateTime=Date of validity
+governmentAgencyGoodsItemAdd.day=Day
+governmentAgencyGoodsItemAdd.month=Month
+governmentAgencyGoodsItemAdd.year=Year
 
 governmentAgencyGoodsItemAdditionalInfo.title=Additional information
 governmentAgencyGoodsItemAdditionalInfo.p.additionalInformationAdded=additional information added

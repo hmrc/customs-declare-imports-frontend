@@ -33,7 +33,7 @@
                     <th scope="row">@messages("governmentAgencyGoodsItem.additionalDocuments")</th>
                     <td>@goodsItem.map(_.additionalDocuments.size)</td>
                     <td>
-                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGovAgencyGoodsItemsAdditionalDocuments().url" name="add" class="button" id="AddGAGIAddDoc">@messages("governmentAgencyGoodsItem.add")
+                        <a href="@controllers.goodsitems.routes.AdditionalDocumentController.onPageLoad().url" name="add" class="button" id="AddGAGIAddDoc">@messages("governmentAgencyGoodsItem.add")
                             <span class="visually-hidden">@messages("governmentAgencyGoodsItem.additionalDocuments")</span></a>
                     </td>
                 </tr>

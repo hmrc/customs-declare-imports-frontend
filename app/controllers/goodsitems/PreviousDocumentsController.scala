@@ -57,7 +57,7 @@ class PreviousDocumentsController @Inject()(actions: Actions, cacheService: Cust
             }
 
             cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
-              Ok(views.html.goods_items_previousdocs(previousDocumentForm, updatedGoodsItem.previousDocuments))
+             Redirect(routes.PreviousDocumentsController.onPageLoad())
             }
           })
   }

@@ -33,6 +33,8 @@ object CacheKey {
 
   val representative = CacheKey("Representative", new Identifier[Agent] {})
 
+  val importer = CacheKey("Importer", new Identifier[ImportExportParty] {})
+
   val invoiceAndCurrency = CacheKey("InvoiceAndCurrency", new Identifier[InvoiceAndCurrency] {})
 
   val authorisationHolders = CacheKey("AuthorisationHolders", new Identifier[Seq[AuthorisationHolder]] {})

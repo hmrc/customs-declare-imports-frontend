@@ -58,7 +58,7 @@ class GovernmentProceduresController @Inject()(actions: Actions, cacheService: C
               case None => GovernmentAgencyGoodsItem(governmentProcedures = Seq(form))
             }
             cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map {
-              _ => Ok((views.html.goods_items_government_procedures(governmentProcedureForm, updatedGoodsItem.governmentProcedures)))
+              _ => Redirect(routes.GovernmentProceduresController.onPageLoad())
             }
           })
   }
