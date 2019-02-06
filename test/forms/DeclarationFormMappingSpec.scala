@@ -16,7 +16,7 @@
 
 package forms
 
-import domain.References
+import domain.{InvoiceAndCurrency, References}
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalacheck.Arbitrary._
@@ -1098,4 +1098,23 @@ class DeclarationFormMappingSpec extends WordSpec
       }
     }
   }
+
+  "invoiceAndCurrencyMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+        forAll { invoiceAndCurrency: InvoiceAndCurrency =>
+
+          Form(invoiceAndCurrencyMapping).fillAndValidate(invoiceAndCurrency).fold(
+            e => fail("Form should not fail"),
+            _ mustBe invoiceAndCurrency
+          )
+        }
+      }
+    }
+  }
+
+
+
 }

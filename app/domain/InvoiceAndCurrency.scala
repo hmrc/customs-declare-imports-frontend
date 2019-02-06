@@ -18,14 +18,13 @@ package domain
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.wco.dec.{Amount, CurrencyExchange}
+import domain.DeclarationFormats._
 
-case class InvoiceAndCurrency(invoice: Amount,
-                              currency: CurrencyExchange) {
+case class InvoiceAndCurrency(invoice: Option[Amount],
+                              currency: Option[CurrencyExchange]){}
 
-  object InvoiceAndCurrency {
+object InvoiceAndCurrency {
 
-    implicit val innoiceAndCurrencyFormats = Json.format[CurrencyExchange]
-
-  }
+  implicit val format = Json.format[InvoiceAndCurrency]
 
 }

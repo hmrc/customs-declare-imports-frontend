@@ -16,7 +16,7 @@
 
 package forms
 
-import domain.{GoodsItemValueInformation, References}
+import domain.{GoodsItemValueInformation, InvoiceAndCurrency, References}
 import play.api.data.Forms._
 import play.api.data.Mapping
 import uk.gov.hmrc.wco.dec._
@@ -49,11 +49,7 @@ object DeclarationFormMapping {
     .verifying("Amount is required when currency is provided", requireAllDependantFields[Amount](_.currencyId)(_.value))
     .verifying("Currency is required when amount is provided", requireAllDependantFields[Amount](_.value)(_.currencyId))
 
-  /*  val invoiceAndCurrencyMapping = mapping(
-    "invoice" -> optional(amountMapping),
-    "currency" -> optional(currencyExchangeMapping))(InvoiceAndCurrency.apply)(InvoiceAndCurrency.unapply)*/
-
-  val currencyExchangeMapping = mapping(
+  val currencyExchangeMapping: Mapping[CurrencyExchange] = mapping(
     "currencyTypeCode" -> optional(
       text.verifying("CurrencyTypeCode is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
     "rateNumeric" -> optional(
@@ -62,6 +58,11 @@ object DeclarationFormMapping {
         .verifying("RateNumeric cannot have more than 5 decimal places", _.scale <= 5)
         .verifying("RateNumeric must not be negative", _ >= 0))
   )(CurrencyExchange.apply)(CurrencyExchange.unapply)
+
+  val invoiceAndCurrencyMapping = mapping(
+    "invoice" -> optional(amountMapping),
+    "currency" -> optional(currencyExchangeMapping)
+  )(InvoiceAndCurrency.apply)(InvoiceAndCurrency.unapply)
 
   val measureMapping = mapping("unitCode" -> optional(text.verifying("unitCode is only 5 characters", _.length <= 5)),
     "value" -> optional(bigDecimal.verifying("value must not be negative", a => a > 0)))(Measure.apply)(Measure.unapply)

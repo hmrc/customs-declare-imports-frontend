@@ -16,7 +16,7 @@
 
 package generators
 
-import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem, References}
+import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem, InvoiceAndCurrency, References}
 import forms.ObligationGuaranteeForm
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
@@ -384,6 +384,13 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield {
       Agent(party.name, party.id, code, party.address)
     }
+  }
+
+  implicit val arbitraryInvoiceAndCurrency: Arbitrary[InvoiceAndCurrency] = Arbitrary {
+    for {
+      amount   <- arbitrary[Amount]
+      currency <- arbitrary[CurrencyExchange]
+    } yield InvoiceAndCurrency(Some(amount), Some(currency))
   }
 
   def intGreaterThan(min: Int): Gen[Int] =

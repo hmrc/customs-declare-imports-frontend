@@ -17,7 +17,7 @@
 package services.cachekeys
 
 import uk.gov.hmrc.wco.dec._
-import domain.{GovernmentAgencyGoodsItem, References}
+import domain.{GovernmentAgencyGoodsItem, InvoiceAndCurrency, References}
 
 trait Identifier[A]
 
@@ -32,6 +32,8 @@ object CacheKey {
   val exporter = CacheKey("Exporter", new Identifier[ImportExportParty] {})
 
   val representative = CacheKey("Representative", new Identifier[Agent] {})
+
+  val invoiceAndCurrency = CacheKey("InvoiceAndCurrency", new Identifier[InvoiceAndCurrency] {})
 
   val authorisationHolders = CacheKey("AuthorisationHolders", new Identifier[Seq[AuthorisationHolder]] {})
 
