@@ -69,9 +69,33 @@
             }
 
             @components.input_text(field = form("categoryCode"),label = messages("governmentAgencyGoodsItemAdd.categoryCode"))
-            @components.input_text(field = form("effectiveDateTime.date.day"),label = messages("governmentAgencyGoodsItemAdd.day"))
-            @components.input_text(field = form("effectiveDateTime.date.month"),label = messages("governmentAgencyGoodsItemAdd.month"))
-            @components.input_text(field = form("effectiveDateTime.date.year"),label = messages("governmentAgencyGoodsItemAdd.year"))
+            <div class="form-group">
+                <fieldset>
+                  <legend>
+                    <span class="visually-hidden">Date on your additional document</span>
+                  </legend>
+                  <div class="form-date">
+                    <div class="form-group form-group-day">
+                        @components.input_date(
+                            field = form("effectiveDateTime.date.day"),
+                            label = "Day"
+                        )
+                    </div>
+                    <div class="form-group form-group-month">
+                        @components.input_date(
+                            field = form("effectiveDateTime.date.month"),
+                            label = "Month"
+                        )
+                    </div>
+                    <div class="form-group form-group-year">
+                        @components.input_date(
+                            field = form("effectiveDateTime.date.year"),
+                            label = "Year"
+                        )
+                    </div>
+                  </div>
+                </fieldset>
+            </div>
             @components.input_text(field = form("id"),label = messages("governmentAgencyGoodsItemAdd.id"))
             @components.input_text(field = form("typeCode"),label = messages("governmentAgencyGoodsItemAdd.typeCodeOfDocument"))
             @components.input_text(field = form("lpcoExemptionCode"),label = messages("governmentAgencyGoodsItemAdd.lpcoExemptionCodeOfDocument"))
