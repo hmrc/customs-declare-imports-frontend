@@ -388,7 +388,7 @@ authorisationHolder.categoryCode=Category Code
 authorisationHolder.addAuthorisationHolderButton=Add Authorisation Holder
 
 ## Role based party
-roleBasedParty.id=ID
+roleBasedParty.id=Identifier
 roleBasedParty.roleCode=Role Code
 
 ## Additional supply chain actors

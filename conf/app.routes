@@ -65,9 +65,6 @@ POST       /submit-declaration-goods/goods-item-value        controllers.Governm
 
 POST       /submit-declaration-goods/add-gov-agency-goods-item        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
 
-GET       /submit-declaration-goods/add-role-based-parties       controllers.GovernmentAgencyGoodsItemsController.showRoleBasedParties()
-POST       /submit-declaration-goods/add-role-based-parties      controllers.GovernmentAgencyGoodsItemsController.handleRoleBasedPartiesSubmit()
-
 GET       /submit-declaration-goods/add-origins       controllers.GovernmentAgencyGoodsItemsController.showOrigins()
 POST       /submit-declaration-goods/add-origins      controllers.GovernmentAgencyGoodsItemsController.handleOriginsSubmit()
 

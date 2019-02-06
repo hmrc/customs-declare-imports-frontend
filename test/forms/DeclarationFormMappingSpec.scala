@@ -298,14 +298,14 @@ class DeclarationFormMappingSpec extends WordSpec
 
     "fail" when {
 
-      "id is longer than 17 characters" in {
+      "Identifer is longer than 17 characters" in {
 
         forAll(arbitrary[RoleBasedParty], minStringLength(18)) {
           (roleParty, id) =>
 
             val data = roleParty.copy(id = Some(id))
             Form(roleBasedPartyMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Role based party id should be less than or equal to 17 characters"),
+              _ must haveErrorMessage("Identifier should be less than or equal to 17 characters"),
               _ => fail("should not succeed")
             )
         }
@@ -325,9 +325,8 @@ class DeclarationFormMappingSpec extends WordSpec
       }
 
       "neither id or roleCode is supplied" in {
-
         Form(roleBasedPartyMapping).bind(Map.empty[String, String]).fold(
-          _ must haveErrorMessage("You must provide an ID or role code"),
+          _ must haveErrorMessage("You must provide an Identifier or Role Code"),
           _ => fail("should not succeed")
         )
       }
@@ -681,7 +680,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(accessCode = Some(invalidAccessCode))).fold(
               error => error.error("accessCode") must haveMessage("AccessCode should be less than or equal to 4 characters"),
-              _     => fail("Should not succeed")
+              _ => fail("Should not succeed")
             )
         }
       }
