@@ -1115,7 +1115,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "value has a precision greater than 16" in {
 
-        forAll(arbitrary[Measure], decimal(11, 30, 0)) {
+        forAll(arbitrary[Measure], decimal(16, 30, 0)) {
           (measure, deduction) =>
 
             val data = measure.copy(value = Some(deduction))

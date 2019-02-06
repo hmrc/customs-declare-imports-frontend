@@ -60,7 +60,8 @@ object DeclarationFormMapping {
     .verifying("Currency is required when amount is provided", requireAllDependantFields[Amount](_.value)(_.currencyId))
 
   val measureMapping = mapping("unitCode" -> optional(text.verifying("Measurement Unit & Qualifier cannot be more than 5 characters", _.length <= 5)),
-    "value" -> optional(bigDecimal.verifying("Quantity cannot be greater than 9999999999.999999", _.precision <= 10)
+    "value" ->
+      optional(bigDecimal.verifying("Quantity cannot be greater than 9999999999.999999", _.precision <= 16)
       .verifying("Quantity cannot have more than 6 decimal places", _.scale <= 6)
       .verifying("Quantity must not be negative", _ >= 0)))(Measure.apply)(Measure.unapply)
 
