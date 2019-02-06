@@ -58,6 +58,8 @@ object DeclarationFormMapping {
         .verifying("RateNumeric cannot have more than 5 decimal places", _.scale <= 5)
         .verifying("RateNumeric must not be negative", _ >= 0))
   )(CurrencyExchange.apply)(CurrencyExchange.unapply)
+    .verifying("Exchange rate is required when currency is provided", requireAllDependantFields[CurrencyExchange](_.currencyTypeCode)(_.rateNumeric))
+    .verifying("Currency ID is required when amount is provided", requireAllDependantFields[CurrencyExchange](_.rateNumeric)(_.currencyTypeCode))
 
   val invoiceAndCurrencyMapping = mapping(
     "invoice" -> optional(amountMapping),

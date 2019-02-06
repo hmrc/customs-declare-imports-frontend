@@ -675,6 +675,34 @@ class DeclarationFormMappingSpec extends WordSpec
             )
         }
       }
+
+      "has a currencyTypeCode with no rateNumeric" in {
+
+        forAll { currencyExchange: CurrencyExchange =>
+
+          whenever(currencyExchange.currencyTypeCode.nonEmpty) {
+
+            Form(currencyExchangeMapping).bind(Map("currencyTypeCode" -> currencyExchange.currencyTypeCode.getOrElse(""))).fold(
+              _ must haveErrorMessage("Exchange rate is required when currency is provided"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
+
+      "has a rateNumeric with no currencyTypeCode" in {
+
+        forAll { currencyExchange: CurrencyExchange =>
+
+          whenever(currencyExchange.rateNumeric.nonEmpty) {
+
+            Form(currencyExchangeMapping).bind(Map("rateNumeric" -> currencyExchange.rateNumeric.fold("")(_.toString))).fold(
+              _ must haveErrorMessage("Currency ID is required when amount is provided"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
     }
   }
 

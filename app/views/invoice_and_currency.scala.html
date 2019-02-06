@@ -33,8 +33,8 @@
         <fieldset>
             @components.input_select(form("invoice.currencyId"), messages("invoiceAndCurrency.invoiceCurrencyId"), config.Options.currencyTypes.toMap)
             @components.input_text(form("invoice.value"), messages("invoiceAndCurrency.invoiceAmount"))
-            @components.input_select(form("invoice.currencyTypeCode"), messages("invoiceAndCurrency.exchangeCurrencyId"), config.Options.currencyTypes.toMap)
-            @components.input_text(form("invoice.rateNumeric"), messages("invoiceAndCurrency.exchangeCurrencyAmount"))
+            @components.input_select(form("currency.currencyTypeCode"), messages("invoiceAndCurrency.exchangeCurrencyId"), config.Options.currencyTypes.toMap)
+            @components.input_text(form("currency.rateNumeric"), messages("invoiceAndCurrency.exchangeCurrencyAmount"))
         </fieldset>
 
         <button id="Add" name="submit">

@@ -75,7 +75,7 @@ class InvoiceAndCurrencySpec extends ViewBehaviours
       forAll { invoiceAndCurrency: InvoiceAndCurrency =>
         val popForm = form.fillAndValidate(invoiceAndCurrency)
         val input   = input_select(
-          popForm("invoice.currencyTypeCode"),
+          popForm("currency.currencyTypeCode"),
           messages(s"$messagePreFix.exchangeCurrencyId"),
           config.Options.currencyTypes.toMap)
 
@@ -87,7 +87,7 @@ class InvoiceAndCurrencySpec extends ViewBehaviours
 
       forAll { invoiceAndCurrency: InvoiceAndCurrency =>
         val popForm = form.fillAndValidate(invoiceAndCurrency)
-        val input   = input_text(popForm("invoice.rateNumeric"), messages(s"$messagePreFix.exchangeCurrencyAmount"))
+        val input   = input_text(popForm("currency.rateNumeric"), messages(s"$messagePreFix.exchangeCurrencyAmount"))
 
         view(popForm) must include(input)
       }
