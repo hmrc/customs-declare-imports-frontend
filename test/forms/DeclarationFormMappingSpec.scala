@@ -1115,12 +1115,12 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "value has a precision greater than 16" in {
 
-        forAll(arbitrary[Measure], decimal(17, 30, 0)) {
+        forAll(arbitrary[Measure], decimal(11, 30, 0)) {
           (measure, deduction) =>
 
             val data = measure.copy(value = Some(deduction))
             Form(measureMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Quantity cannot be greater than 99999999999999.999999"),
+              _ must haveErrorMessage("Quantity cannot be greater than 9999999999.999999"),
               _ => fail("form should not succeed")
             )
         }
