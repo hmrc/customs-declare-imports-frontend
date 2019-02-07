@@ -20,9 +20,9 @@ import domain.DeclarationFormats._
 import play.api.libs.json.Json
 import uk.gov.hmrc.wco.dec.Measure
 
-case class AboutGoods(totalPackageQuantity: Option[Int], totalGrossMassMeasure: Option[Measure])
+case class SummaryOfGoods(totalPackageQuantity: Option[Int], totalGrossMassMeasure: Option[Measure])
 
-object AboutGoods {
+object SummaryOfGoods {
 
-  implicit val format = Json.format[AboutGoods]
+  implicit val format = Json.format[SummaryOfGoods]
 }

@@ -18,7 +18,7 @@ package forms
 
 import java.text.DecimalFormat
 
-import domain.{AboutGoods, GoodsItemValueInformation, References}
+import domain.{SummaryOfGoods, GoodsItemValueInformation, References}
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.data.Forms.{number, _}
@@ -303,13 +303,13 @@ object DeclarationFormMapping {
     "address" -> optional(addressMapping)
   )(Agent.apply)(Agent.unapply)
 
-  val aboutGoodsMapping = mapping(
+  val summaryOfGoodsMapping = mapping(
     "totalPackageQuantity" -> optional(
       number
         .verifying("Total packages cannot be greater than 99,999,999", _ <= 99999999)
         .verifying("Total packages cannot be less than 0", _ >= 0)),
     "totalGrossMassMeasure" -> optional(measureMapping)
-  )(AboutGoods.apply)(AboutGoods.unapply)
+  )(SummaryOfGoods.apply)(SummaryOfGoods.unapply)
 }
 
 case class ObligationGuaranteeForm (guarantees: Seq[ObligationGuarantee] = Seq.empty)

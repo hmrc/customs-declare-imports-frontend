@@ -14,18 +14,31 @@
  * limitations under the License.
  *@
 
-@import config.{AppConfig, ValidationError}
-@import config.Fields._
+@import config.AppConfig
+@import controllers.routes._
+@import uk.gov.hmrc.play.views.html._
 
-@(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
+@(form: Form[_])(implicit req:  Request[_], messages: Messages, cfg: AppConfig)
 
-@main_template(messages("pages.summaryOfGoods.title")) {
-    @helpers.form("summary-of-goods", "pages.summaryOfGoods.form.legend", data) {
-        @helpers.textInput(declarationTotalPackageQuantity, data)
-        @helpers.textInput(goodsMeasureGrossMassMeasure, data)
-        @helpers.nextButton()
+@main_template(title = messages("summaryOfGoods.title")) {
+
+    @helpers.form(action = SellerDetailsController.onSubmit()) {
+
+        @components.back_link()
+
+        @components.error_summary(form.errors)
+
+        <fieldset>
+            <legend>
+                <h1 class="heading-large">@messages("summaryOfGoods.heading")</h1>
+            </legend>
+
+            @components.input_text(form("totalPackageQuantity"), messages("summaryOfGoods.totalPackage"))
+            @components.input_text(form("totalGrossMassMeasure.value"), messages("summaryOfGoods.grossMass.value"))
+        </fieldset>
+
+        <button id="Add" name="submit">
+        @messages("common.button.continue")
+        </button>
     }
 }
-
-
-

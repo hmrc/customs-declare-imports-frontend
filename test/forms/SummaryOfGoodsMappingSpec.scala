@@ -16,7 +16,7 @@
 
 package forms
 
-import domain.AboutGoods
+import domain.SummaryOfGoods
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalacheck.Arbitrary._
@@ -25,21 +25,21 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
 
-class AboutGoodsMappingSpec extends WordSpec
+class SummaryOfGoodsMappingSpec extends WordSpec
   with MustMatchers
   with PropertyChecks
   with Generators
   with FormMatchers {
 
-  val form = Form(aboutGoodsMapping)
+  val form = Form(summaryOfGoodsMapping)
 
-  "aboutGoodsMapping" should {
+  "summaryOfGoodsMapping" should {
 
     "bind" when {
 
       "valid values are bound" in {
 
-        forAll { goods: AboutGoods =>
+        forAll { goods: SummaryOfGoods =>
 
           form.fillAndValidate(goods).fold(
             _ => fail("form should not fail"),
@@ -53,7 +53,7 @@ class AboutGoodsMappingSpec extends WordSpec
 
       "totalPackageQuantity is more than 99999999" in {
 
-        forAll(arbitrary[AboutGoods], intGreaterThan(99999999)) {
+        forAll(arbitrary[SummaryOfGoods], intGreaterThan(99999999)) {
           (goods, quantity) =>
 
             val data = goods.copy(totalPackageQuantity = Some(quantity))
@@ -66,7 +66,7 @@ class AboutGoodsMappingSpec extends WordSpec
 
       "totalPackageQuantity is less than 0" in {
 
-        forAll(arbitrary[AboutGoods], intLessThan(0)) {
+        forAll(arbitrary[SummaryOfGoods], intLessThan(0)) {
           (goods, quantity) =>
 
             val data = goods.copy(totalPackageQuantity = Some(quantity))
