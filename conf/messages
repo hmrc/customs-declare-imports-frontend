@@ -354,6 +354,14 @@ representativeDetails.address.postcode=Postcode
 representativeDetails.id=EORI number
 representativeDetails.statusCode=Status Code
 
+## Invoice and currency
+invoiceAndCurrency.title=Invoice and Currency
+invoiceAndCurrency.heading=Invoice and Currency
+invoiceAndCurrency.invoiceCurrencyId=Invoice Currency
+invoiceAndCurrency.invoiceAmount=Invoice Amount
+invoiceAndCurrency.exchangeCurrencyId=Currency ID
+invoiceAndCurrency.exchangeCurrencyAmount=Exchange Rate
+
 ## Importer details
 importerDetails.title=Importer
 importerDetails.heading=Importer

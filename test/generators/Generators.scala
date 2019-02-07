@@ -16,8 +16,7 @@
 
 package generators
 
-
-import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem, References}
+import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem, InvoiceAndCurrency, References}
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
 import org.scalacheck.Arbitrary._
@@ -107,6 +106,13 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       id <- option(arbitrary[String].map(_.take(8)))
     } yield Office(id)
+  }
+
+  implicit val arbitraryCurrencyExchange: Arbitrary[CurrencyExchange] = Arbitrary {
+    for {
+      currencyTypeCode <- currencyGen
+      rateNumeric      <- posDecimal(12, 5)
+    } yield CurrencyExchange(Some(currencyTypeCode), Some(rateNumeric))
   }
 
   implicit val arbitraryObligationGuarantee: Arbitrary[ObligationGuarantee] = Arbitrary {
@@ -392,6 +398,13 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield {
       Agent(party.name, party.id, code, party.address)
     }
+  }
+
+  implicit val arbitraryInvoiceAndCurrency: Arbitrary[InvoiceAndCurrency] = Arbitrary {
+    for {
+      amount   <- arbitrary[Amount]
+      currency <- arbitrary[CurrencyExchange]
+    } yield InvoiceAndCurrency(Some(amount), Some(currency))
   }
 
   implicit val arbitraryCommunication: Arbitrary[Communication] = Arbitrary {
