@@ -39,7 +39,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   val goodsItemsPageUri = uriWithContextPath("/submit-declaration-goods/goods-item-value")
   val goodsItemsUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-item")
   val navigateToSelectedGoodsItemPageUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-items")
-  val goodsItemsAdditionalDocsPageUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-items-additional-docs")
   val addMutualRecognitionPartiesPageUri = uriWithContextPath("/submit-declaration-goods/add-role-based-parties")
   val addOriginsPageUri = uriWithContextPath("/submit-declaration-goods/add-origins")
   val addManufacturersPageUri = uriWithContextPath("/submit-declaration-goods/add-manufacturers")
@@ -185,26 +184,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       }
     }
   }
-
-
-  "show gov-agency-goods-items-additional-docs fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(None)
-      withRequest(get, goodsItemsAdditionalDocsPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        content should include element withAttrValue("name", "categoryCode")
-        content should include element withAttrValue("name", "name")
-        content should include element withAttrValue("name", "id")
-        content should include element withAttrValue("name", "typeCode")
-        content should include element withAttrValue("name", "lpcoExemptionCode")
-        content should include element withAttrValue("name", "submitter.name")
-        content should include element withAttrValue("name", "submitter.roleCode")
-        content should include element withAttrValue("name", "writeOff.quantity")
-        content should include element withAttrValue("name", "writeOff.amount")
-      }
-    }
-  }
-
 
   "show AddMutualRecognitionParties fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>

@@ -27,37 +27,36 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.wco.dec.AdditionalInformation
+import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItemAdditionalDocument
 
 @Singleton
-class AdditionalInformationController @Inject()(actions: Actions, cacheService: CustomsCacheService)
+class AdditionalDocumentController @Inject()(actions: Actions, cacheService: CustomsCacheService)
   (implicit appConfig: AppConfig, override val messagesApi: MessagesApi)
   extends CustomsController {
 
-  def additionalInformationForm: Form[AdditionalInformation] = Form(additionalInformationMapping)
+  def additionalDocumentsForm: Form[GovernmentAgencyGoodsItemAdditionalDocument] = Form(govtAgencyGoodsItemAddDocMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit req =>
       cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
-        Ok(views.html.goods_items_add_additional_informations(additionalInformationForm, goodsItem.map(_.additionalInformations).getOrElse(Seq.empty)))
+        Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentsForm, goodsItem.map(_.additionalDocuments).getOrElse(Seq.empty)))
       }
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>
-      additionalInformationForm.bindFromRequest().fold(
-        (formWithErrors: Form[AdditionalInformation]) =>
+      additionalDocumentsForm.bindFromRequest().fold(
+        (formWithErrors: Form[GovernmentAgencyGoodsItemAdditionalDocument]) =>
           cacheService.getByKey(request.eori, CacheKey.goodsItem).map(goodsItem =>
-          BadRequest(views.html.goods_items_add_additional_informations(formWithErrors, goodsItem.map(_.additionalInformations).getOrElse(Seq.empty)))),
+          BadRequest(views.html.gov_agency_goods_items_add_docs(formWithErrors, goodsItem.map(_.additionalDocuments).getOrElse(Seq.empty)))),
         form =>
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {
-              case Some(goodsItem) => goodsItem.copy(additionalInformations = form +: goodsItem.additionalInformations)
-              case None => GovernmentAgencyGoodsItem(additionalInformations = Seq(form))
+              case Some(goodsItem) => goodsItem.copy(additionalDocuments = goodsItem.additionalDocuments :+ form)
+              case None => GovernmentAgencyGoodsItem(additionalDocuments = Seq(form))
             }
-
             cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
-              Redirect(routes.AdditionalInformationController.onPageLoad())
+              Redirect(routes.AdditionalDocumentController.onPageLoad())
             }
           })
   }

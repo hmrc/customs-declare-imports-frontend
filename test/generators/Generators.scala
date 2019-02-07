@@ -16,7 +16,9 @@
 
 package generators
 
+
 import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem, References}
+import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
@@ -27,6 +29,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val dontShrinkStrings: Shrink[String] = Shrink.shrinkAny
   implicit val dontShrinkDecimals: Shrink[BigDecimal] = Shrink.shrinkAny
+  implicit val dontShrinkInts: Shrink[Int] = Shrink.shrinkAny
 
   case class GuaranteeType(value: ObligationGuarantee)
 
@@ -141,8 +144,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryMeasure: Arbitrary[Measure] = Arbitrary {
     for {
-      unitCode <- option(arbitrary[String].map(_.take(5)))
-      value <- option(arbitrary[BigDecimal].map(_.max(9999999999999999.99999)))
+      unitCode <- option(arbitrary[String].map(_.take(3)))
+      value <- option(posDecimal(10, 2))
     } yield Measure(unitCode, value)
   }
 
@@ -158,8 +161,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryWriteOff: Arbitrary[WriteOff] = Arbitrary {
     for {
       quantity <- option(arbitraryMeasure.arbitrary)
-      amount <- option(arbitraryAmount.arbitrary)
-    } yield WriteOff(quantity, amount)
+    } yield WriteOff(quantity)
   }
 
   implicit val arbitraryPreviousDocument: Arbitrary[PreviousDocument] = Arbitrary {
@@ -196,12 +198,11 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield RoleBasedParty(id, roleCode)
   }
 
-  implicit val arbitraryGovernmentAgencyGoodsItemAdditionalDocumentSubmitter:
-    Arbitrary[GovernmentAgencyGoodsItemAdditionalDocumentSubmitter] = Arbitrary {
+  implicit val arbitraryGovernmentAgencyGoodsItemAdditionalDocumentSubmitter
+  : Arbitrary[GovernmentAgencyGoodsItemAdditionalDocumentSubmitter] = Arbitrary {
     for {
-      name <- option(arbitrary[String].map(_.take(70)))
-      roleCode <- option(arbitrary[String].map(_.take(3)))
-    } yield GovernmentAgencyGoodsItemAdditionalDocumentSubmitter(name, roleCode)
+      name <- option(nonEmptyString.map(_.take(20)))
+    } yield GovernmentAgencyGoodsItemAdditionalDocumentSubmitter(name)
   }
 
   implicit val arbitraryGovernmentProcedure: Arbitrary[GovernmentProcedure] = Arbitrary {
@@ -214,15 +215,18 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryGovernmentAgencyGoodsItemAdditionalDocument: Arbitrary[GovernmentAgencyGoodsItemAdditionalDocument] = Arbitrary {
     for {
-      categoryCode <- option(arbitrary[String].map(_.take(3)))
-      effectiveDateTime <- option(arbitraryDateTimeElement.arbitrary)
-      id <- option(arbitrary[String].map(_.take(70)))
-      name <- option(arbitrary[String].map(_.take(35)))
-      typeCode <- option(arbitrary[String].map(_.take(3)))
-      lpcoExemptionCode <- option(arbitrary[String].map(_.take(3)))
+      categoryCode <- option(numStr.map(_.take(1)))
+      effectiveDateTime <- option(arbitrary[DateTimeElement])
+      id <- option(nonEmptyString.map(_.take(20)))
+      name <- option(nonEmptyString.map(_.take(20)))
+      typeCode <- option(numStr.map(_.take(3)))
+      lpcoExemptionCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
       submitter <- option(arbitraryGovernmentAgencyGoodsItemAdditionalDocumentSubmitter.arbitrary)
-      writeOff <- option(arbitraryWriteOff.arbitrary)
-    } yield GovernmentAgencyGoodsItemAdditionalDocument(categoryCode, effectiveDateTime, id, name, typeCode, lpcoExemptionCode, submitter, writeOff)
+      writeOff <- option(arbitrary[WriteOff])
+      if categoryCode.exists(_.size ==1) && typeCode.exists(_.size == 3) && lpcoExemptionCode.exists(_.size == 2 && submitter.isDefined && writeOff.isDefined)
+    } yield {
+      GovernmentAgencyGoodsItemAdditionalDocument(categoryCode, effectiveDateTime, id, name, typeCode, lpcoExemptionCode, submitter, writeOff)
+    }
   }
 
   implicit val arbitraryAddress: Arbitrary[Address] = Arbitrary {
@@ -279,16 +283,24 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield ExportCountry(id)
   }
 
+  implicit val arbitraryDate: Arbitrary[Date] = Arbitrary {
+    for {
+      day <- chooseNum(1,28)
+      month <- chooseNum(1,12)
+      year <- chooseNum(1900,2020)
+    } yield Date(day, month, year)
+  }
+
   implicit val arbitraryDateTimeString: Arbitrary[DateTimeString] = Arbitrary {
     for {
-      formatCode <- arbitrary[String].map(_.take(2))
-      value <- arbitrary[String].map(_.take(35))
+      formatCode <- Gen.const("102")
+      value <- arbitrary[Date].map(date => s"${date.year}/${date.month}/${date.day}")
     } yield DateTimeString(formatCode, value)
   }
 
   implicit val arbitraryDateTimeElement: Arbitrary[DateTimeElement] = Arbitrary {
     for {
-      dateTimeString <- arbitraryDateTimeString.arbitrary
+      dateTimeString <- arbitrary[DateTimeString]
     } yield DateTimeElement(dateTimeString)
   }
 
@@ -315,7 +327,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryGovernmentAgencyGoodsItem: Arbitrary[GovernmentAgencyGoodsItem] = Arbitrary {
     for {
       goodsItemValue <- option(arbitraryGoodsItemValueInformation.arbitrary)
-      additionalDocuments <- Gen.listOf(arbitraryGovernmentAgencyGoodsItemAdditionalDocument.arbitrary)
+      additionalDocuments <- Gen.listOfN(1,arbitraryGovernmentAgencyGoodsItemAdditionalDocument.arbitrary)
       additionalInformations <- Gen.listOfN(1, arbitraryAdditionalInfo.arbitrary)
       aeoMutualRecognitionParties <- Gen.listOfN(1, arbitraryRoleBasedParty.arbitrary)
       domesticParties <- Gen.listOfN(1, arbitraryRoleBasedParty.arbitrary)
@@ -324,6 +336,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       origins <- Gen.listOfN(1, arbitraryOrigin.arbitrary)
       packagings <- Gen.listOfN(1, arbitraryPackaging.arbitrary)
       previousDocuments <- Gen.listOfN(1, arbitraryPreviousDocument.arbitrary)
+      if(additionalDocuments.size > 0 )
     } yield GovernmentAgencyGoodsItem(goodsItemValue, additionalDocuments, additionalInformations, aeoMutualRecognitionParties,
       domesticParties, governmentProcedures, manufacturers, origins, packagings, previousDocuments)
   }
