@@ -30,7 +30,7 @@ import uk.gov.hmrc.wco.dec.{GovernmentProcedure, _}
 class DeclarationFormMappingSpec extends WordSpec
   with MustMatchers
   with PropertyChecks
-  with Generatorsgit 
+  with Generators
   with FormMatchers {
 
   "additionalInformationForm" should {
