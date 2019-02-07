@@ -25,32 +25,30 @@ import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import org.scalatest.OptionValues
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
 import uk.gov.hmrc.wco.dec.ImportExportParty
-import views.html.exporter_details
+import views.html.seller_details
 
-class ExporterDetailsControllerSpec extends CustomsSpec
+class SellerDetailsControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
   with OptionValues
-  with MockitoSugar
   with EndpointBehaviours {
 
   val form = Form(importExportPartyMapping)
 
   def view(form: Form[_] = form): String =
-    exporter_details(form)(fakeRequest, messages, appConfig).body
+    seller_details(form)(fakeRequest, messages, appConfig).body
 
   def controller(user: SignedInUser) =
-    new ExporterDetailsController(new FakeActions(Some(user)), mockCustomsCacheService)
+    new SellerDetailsController(new FakeActions(Some(user)), mockCustomsCacheService)
 
-  val exporterGen: Gen[Option[ImportExportParty]] = option(arbitrary[ImportExportParty])
-  val uri = "/submit-declaration/exporter-details"
+  val sellerGen: Gen[Option[ImportExportParty]] = option(arbitrary[ImportExportParty])
+  val uri = "/submit-declaration/seller-details"
 
   "onPageLoad" should {
 
@@ -86,10 +84,10 @@ class ExporterDetailsControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], exporterGen) {
+      forAll(arbitrary[SignedInUser], sellerGen) {
         (user, cacheData) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.exporter, cacheData) {
+          withCleanCache(EORI(user.eori.value), CacheKey.seller, cacheData) {
 
             val popForm = cacheData.fold(form)(form.fill)
             val result  = controller(user).onPageLoad(fakeRequest)
@@ -103,19 +101,19 @@ class ExporterDetailsControllerSpec extends CustomsSpec
 
   "onSubmit" should {
 
-    behave like redirectedEndpoint(uri, "/submit-declaration/representative-details", POST)
+    behave like redirectedEndpoint(uri, "/submit-declaration/buyer-details", POST)
     behave like authenticatedEndpoint(uri, POST)
 
     "return SEE_OTHER" when {
 
-      "user is signed in" in {
+      "valid data is posted" in {
 
         forAll { user: SignedInUser =>
 
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.RepresentativeDetailsController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(routes.BuyerDetailsController.onPageLoad().url)
         }
       }
     }
@@ -139,10 +137,10 @@ class ExporterDetailsControllerSpec extends CustomsSpec
 
         val badData =
           for {
-            p  <- arbitrary[ImportExportParty]
-            id <- minStringLength(18)
+            seller <- arbitrary[ImportExportParty]
+            id     <- minStringLength(18)
           } yield {
-            p.copy(id = Some(id))
+            seller.copy(id = Some(id))
           }
 
         forAll(arbitrary[SignedInUser], badData) {
@@ -155,21 +153,20 @@ class ExporterDetailsControllerSpec extends CustomsSpec
             status(result) mustBe BAD_REQUEST
             contentAsString(result) mustBe view(popForm)
         }
-
       }
     }
 
     "save data in cache" when {
 
-      "valid data is posted" in {
+      "valid data is submitted" in {
 
-        forAll { (user: SignedInUser, exporter: ImportExportParty) =>
+        forAll { (user: SignedInUser, formData: ImportExportParty) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(exporter): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
           await(controller(user).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
-            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.exporter), eqTo(exporter))(any(), any(), any())
+            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.seller), eqTo(formData))(any(), any(), any())
         }
       }
     }

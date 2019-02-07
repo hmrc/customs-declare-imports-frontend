@@ -26,6 +26,12 @@ POST        /submit-declaration/importer-details               controllers.Impor
 GET         /submit-declaration/invoice-and-currency           controllers.InvoiceAndCurrencyController.onPageLoad()
 POST        /submit-declaration/invoice-and-currency           controllers.InvoiceAndCurrencyController.onSubmit()
 
+GET         /submit-declaration/seller-details                 controllers.SellerDetailsController.onPageLoad()
+POST        /submit-declaration/seller-details                 controllers.SellerDetailsController.onSubmit()
+
+GET         /submit-declaration/buyer-details                  controllers.BuyerDetailsController.onPageLoad()
+POST        /submit-declaration/buyer-details                  controllers.BuyerDetailsController.onSubmit()
+
 GET         /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onPageLoad()
 POST        /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onSubmit()
 

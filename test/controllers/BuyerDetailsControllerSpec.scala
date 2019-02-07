@@ -25,32 +25,29 @@ import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import org.scalatest.OptionValues
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
 import uk.gov.hmrc.wco.dec.ImportExportParty
-import views.html.exporter_details
+import views.html.buyer_details
 
-class ExporterDetailsControllerSpec extends CustomsSpec
+class BuyerDetailsControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
   with OptionValues
-  with MockitoSugar
   with EndpointBehaviours {
 
   val form = Form(importExportPartyMapping)
 
-  def view(form: Form[_] = form): String =
-    exporter_details(form)(fakeRequest, messages, appConfig).body
+  def view(form: Form[_] = form): String = buyer_details(form)(fakeRequest, messages, appConfig).body
 
   def controller(user: SignedInUser) =
-    new ExporterDetailsController(new FakeActions(Some(user)), mockCustomsCacheService)
+    new BuyerDetailsController(new FakeActions(Some(user)), mockCustomsCacheService)
 
-  val exporterGen: Gen[Option[ImportExportParty]] = option(arbitrary[ImportExportParty])
-  val uri = "/submit-declaration/exporter-details"
+  val buyerGen: Gen[Option[ImportExportParty]] = option(arbitrary[ImportExportParty])
+  val uri = "/submit-declaration/buyer-details"
 
   "onPageLoad" should {
 
@@ -71,7 +68,7 @@ class ExporterDetailsControllerSpec extends CustomsSpec
       }
     }
 
-    "return UNAUTHORIZED" when {
+    "return UNAUTHORIED" when {
 
       "user doesn't have an eori" in {
 
@@ -86,36 +83,36 @@ class ExporterDetailsControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], exporterGen) {
-        (user, cacheData) =>
+      forAll(arbitrary[SignedInUser], buyerGen) {
+        (user, buyer) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.exporter, cacheData) {
+        withCleanCache(EORI(user.eori.value), CacheKey.buyer, buyer) {
 
-            val popForm = cacheData.fold(form)(form.fill)
-            val result  = controller(user).onPageLoad(fakeRequest)
+          val popForm = buyer.fold(form)(form.fill)
+          val result  = controller(user).onPageLoad(fakeRequest)
 
-            status(result) mustBe OK
-            contentAsString(result) mustBe view(popForm)
-          }
+          status(result) mustBe OK
+          contentAsString(result) mustBe view(popForm)
+        }
       }
     }
   }
 
   "onSubmit" should {
 
-    behave like redirectedEndpoint(uri, "/submit-declaration/representative-details", POST)
+    behave like redirectedEndpoint(uri, "/submit-declaration/summary-of-goods", POST)
     behave like authenticatedEndpoint(uri, POST)
 
-    "return SEE_OTHER" when {
+    "return OK" when {
 
-      "user is signed in" in {
+      "valid data is posted" in {
 
         forAll { user: SignedInUser =>
 
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.RepresentativeDetailsController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(routes.DeclarationController.displaySubmitForm("summary-of-goods").url)
         }
       }
     }
@@ -139,23 +136,22 @@ class ExporterDetailsControllerSpec extends CustomsSpec
 
         val badData =
           for {
-            p  <- arbitrary[ImportExportParty]
-            id <- minStringLength(18)
+            buyer <- arbitrary[ImportExportParty]
+            id    <- minStringLength(18)
           } yield {
-            p.copy(id = Some(id))
+            buyer.copy(id = Some(id))
           }
 
         forAll(arbitrary[SignedInUser], badData) {
           (user, formData) =>
 
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
             val popForm = form.fillAndValidate(formData)
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
             val result  = controller(user).onSubmit(request)
 
             status(result) mustBe BAD_REQUEST
             contentAsString(result) mustBe view(popForm)
         }
-
       }
     }
 
@@ -163,13 +159,13 @@ class ExporterDetailsControllerSpec extends CustomsSpec
 
       "valid data is posted" in {
 
-        forAll { (user: SignedInUser, exporter: ImportExportParty) =>
+        forAll { (user: SignedInUser, formData: ImportExportParty) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(exporter): _*)
-          await(controller(user).onSubmit(request))
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+            await(controller(user).onSubmit(request))
 
-          verify(mockCustomsCacheService, atLeastOnce())
-            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.exporter), eqTo(exporter))(any(), any(), any())
+            verify(mockCustomsCacheService, atLeastOnce())
+              .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.buyer), eqTo(formData))(any(), any(), any())
         }
       }
     }

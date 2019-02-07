@@ -250,7 +250,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       name <- option(arbitrary[String].map(_.take(70)))
       id <- option(arbitrary[String].map(_.take(17)))
-      address <- option(arbitraryAddress.arbitrary)
+      address <- option(arbitrary[Address])
     } yield NamedEntityWithAddress(name, id, address)
   }
 
@@ -373,8 +373,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       name    <- option(nonEmptyString.map(_.take(70)))
       id      <- option(nonEmptyString.map(_.take(17)))
       address <- option(arbitrary[Address])
+      comms   <- option(arbitrary[Communication]).map(_.toList)
     } yield {
-      ImportExportParty(name, id, address)
+      ImportExportParty(name, id, address, communications = comms)
     }
   }
 
@@ -404,6 +405,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       amount   <- arbitrary[Amount]
       currency <- arbitrary[CurrencyExchange]
     } yield InvoiceAndCurrency(Some(amount), Some(currency))
+  }
+
+  implicit val arbitraryCommunication: Arbitrary[Communication] = Arbitrary {
+    for {
+      id   <- option(nonEmptyString.map(_.take(50)))
+      code <- option(nonEmptyString.map(_.take(3)))
+    } yield {
+      Communication(id, code)
+    }
   }
 
   def intGreaterThan(min: Int): Gen[Int] =

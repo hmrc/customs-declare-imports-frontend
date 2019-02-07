@@ -117,10 +117,13 @@ class ImporterDetailsSpec extends ViewBehaviours
       forAll { party: ImportExportParty =>
 
         val popForm = form.fillAndValidate(party)
-        val input   = input_text(popForm("id"), messages(s"$messagePrefix.id"))
-        val html    = view(popForm)
+        val input   = input_text(
+          popForm("id"),
+          messages(s"$messagePrefix.id"),
+          hint = Some(messages("common.hints.eori"))
+        )
 
-        html must include(input)
+        view(popForm) must include(input)
       }
     }
   }

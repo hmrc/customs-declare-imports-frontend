@@ -373,109 +373,6 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
-  "amountMapping" should {
-
-    "bind" when {
-
-      "valid values are passed" in {
-
-        forAll { amount: Amount =>
-
-          Form(amountMapping).fillAndValidate(amount).fold(
-            e => fail(s"form should not fail: ${e.errors}"),
-            success => success mustBe amount
-          )
-        }
-      }
-    }
-
-    "fail" when {
-
-      "currencyId is not a currency" in {
-
-        val badData = stringsExceptSpecificValues(config.Options.currencyTypes.map(_._2).toSet)
-        forAll(arbitrary[Amount], badData) {
-          (amount, currency) =>
-
-            val data = amount.copy(currencyId = Some(currency))
-            Form(amountMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Currency ID is not a valid currency"),
-              _ => fail("form should not succeed")
-            )
-        }
-      }
-
-      "value has a precision greater than 16" in {
-
-        forAll(arbitrary[Amount], decimal(17, 30, 0)) {
-          (amount, deduction) =>
-
-            val data = amount.copy(value = Some(deduction))
-            Form(amountMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Amount cannot be greater than 99999999999999.99"),
-              _ => fail("form should not succeed")
-            )
-        }
-      }
-
-      "value has a scale greater than 2" in {
-
-        val badData = choose(3, 10).flatMap(posDecimal(16, _))
-
-        forAll(arbitrary[Amount], badData) {
-          (amount, deduction) =>
-
-            val data = amount.copy(value = Some(deduction))
-            Form(amountMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Amount cannot have more than 2 decimal places"),
-              _ => fail("form should not succeed")
-            )
-        }
-      }
-
-      "value is less than 0" in {
-
-        forAll(arbitrary[Amount], intLessThan(0)) {
-          (amount, deduction) =>
-
-            val data = amount.copy(value = Some(BigDecimal(deduction)))
-            Form(amountMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Amount must not be negative"),
-              _ => fail("form should not succeed")
-            )
-        }
-      }
-
-      "has a currency with no value" in {
-
-        forAll { amount: Amount =>
-
-          whenever(amount.currencyId.nonEmpty) {
-
-            Form(amountMapping).bind(Map("currencyId" -> amount.currencyId.getOrElse(""))).fold(
-              _ must haveErrorMessage("Amount is required when currency is provided"),
-              _ => fail("form should not succeed")
-            )
-          }
-        }
-      }
-
-      "has a value with no currency" in {
-
-        forAll { amount: Amount =>
-
-          whenever(amount.value.nonEmpty) {
-
-            Form(amountMapping).bind(Map("value" -> amount.value.fold("")(_.toString))).fold(
-              _ must haveErrorMessage("Currency is required when amount is provided"),
-              _ => fail("form should not succeed")
-            )
-          }
-        }
-      }
-    }
-  }
-
   "chargeDeductionMapping" should {
 
     "bind" when {
@@ -1142,6 +1039,51 @@ class DeclarationFormMappingSpec extends WordSpec
       }
     }
   }
+  "communicationMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+
+        forAll { comms: Communication =>
+
+          Form(communicationMapping).fillAndValidate(comms).fold(
+            _ => fail("form should not fail"),
+            _ mustBe comms
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "id has more than 50 characters" in {
+
+        forAll(arbitrary[Communication], minStringLength(51)) {
+          (comms, id) =>
+
+            val data = comms.copy(id = Some(id))
+            Form(communicationMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Phone number should be 50 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "typeCode has more than 3 characters" in {
+
+        forAll(arbitrary[Communication], minStringLength(4)) {
+          (comms, typeCode) =>
+
+            val data = comms.copy(typeCode = Some(typeCode))
+            Form(communicationMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Type code should be 3 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+    }
+  }
 
   "Date" should {
 
@@ -1266,6 +1208,81 @@ class DeclarationFormMappingSpec extends WordSpec
             val data = measure.copy(value = Some(BigDecimal(deduction)))
             Form(measureMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("Quantity must not be negative"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+    }
+  }
+
+  "amountMapping" should {
+
+    "bind" when {
+
+      "valid values are passed" in {
+
+        forAll { amount: Amount =>
+
+          Form(amountMapping).fillAndValidate(amount).fold(
+            e => fail(s"form should not fail: ${e.errors}"),
+            success => success mustBe amount
+          )
+        }
+      }
+    }
+
+    "fail" when {
+
+      "currencyId is not a currency" in {
+
+        val badData = stringsExceptSpecificValues(config.Options.currencyTypes.map(_._2).toSet)
+        forAll(arbitrary[Amount], badData) {
+          (amount, currency) =>
+
+            val data = amount.copy(currencyId = Some(currency))
+            Form(amountMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Currency ID is not a valid currency"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "value has a precision greater than 16" in {
+
+        forAll(arbitrary[Amount], decimal(17, 30, 0)) {
+          (amount, deduction) =>
+
+            val data = amount.copy(value = Some(deduction))
+            Form(amountMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount cannot be greater than 99999999999999.99"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "value has a scale greater than 2" in {
+
+        val badData = choose(3, 10).flatMap(posDecimal(16, _))
+
+        forAll(arbitrary[Amount], badData) {
+          (amount, deduction) =>
+
+            val data = amount.copy(value = Some(deduction))
+            Form(amountMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount cannot have more than 2 decimal places"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "value is less than 0" in {
+
+        forAll(arbitrary[Amount], intLessThan(0)) {
+          (amount, deduction) =>
+
+            val data = amount.copy(value = Some(BigDecimal(deduction)))
+            Form(amountMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Amount must not be negative"),
               _ => fail("form should not succeed")
             )
         }
