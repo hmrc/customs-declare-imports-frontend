@@ -318,15 +318,29 @@ class DeclarationFormMappingSpec extends WordSpec
 
             val data = roleParty.copy(roleCode = Some(roleCode))
             Form(roleBasedPartyMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Role code should be less than or equal to 3 characters"),
+              _ must haveErrorMessage("Role code should be 3 characters and must contain only A-Z characters"),
               _ => fail("should not succeed")
             )
         }
       }
 
+      "roleCode has non Alpha characters" in {
+
+        forAll(arbitrary[RoleBasedParty], nonAlphaString) {
+          (roleParty, roleCode) =>
+            whenever(roleCode.nonEmpty) {
+              val data = roleParty.copy(roleCode = Some(roleCode))
+              Form(roleBasedPartyMapping).fillAndValidate(data).fold(
+                _ must haveErrorMessage("Role code should be 3 characters and must contain only A-Z characters"),
+                _ => fail("should not succeed")
+              )
+            }
+        }
+      }
+
       "neither id or roleCode is supplied" in {
         Form(roleBasedPartyMapping).bind(Map.empty[String, String]).fold(
-          _ must haveErrorMessage("You must provide an Identifier or Role Code"),
+          _ must haveErrorMessage("You must provide an Identifier or Role code"),
           _ => fail("should not succeed")
         )
       }
