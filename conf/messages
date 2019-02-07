@@ -364,6 +364,17 @@ importerDetails.address.country=Country
 importerDetails.address.postcode=Postcode
 importerDetails.id=EORI number
 
+## Seller details
+sellerDetails.title=Seller
+sellerDetails.heading=Seller
+sellerDetails.name=Name
+sellerDetails.address.line=Street and Number
+sellerDetails.address.city=City
+sellerDetails.address.country=Country
+sellerDetails.address.postcode=Postcode
+sellerDetails.communication.id=Phone number
+sellerDetails.id=EORI number
+
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
 obligationGuarantees.amount=Amount

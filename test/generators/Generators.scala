@@ -367,8 +367,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       name    <- option(nonEmptyString.map(_.take(70)))
       id      <- option(nonEmptyString.map(_.take(17)))
       address <- option(arbitrary[Address])
+      comms   <- option(arbitrary[Communication]).map(_.toList)
     } yield {
-      ImportExportParty(name, id, address)
+      ImportExportParty(name, id, address, communications = comms)
     }
   }
 
@@ -390,6 +391,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       code  <- option(oneOf(config.Options.agentFunctionCodes.map(_._1)))
     } yield {
       Agent(party.name, party.id, code, party.address)
+    }
+  }
+
+  implicit val arbitraryCommunication: Arbitrary[Communication] = Arbitrary {
+    for {
+      id   <- option(nonEmptyString.map(_.take(50)))
+      code <- option(nonEmptyString.map(_.take(3)))
+    } yield {
+      Communication(id, code)
     }
   }
 

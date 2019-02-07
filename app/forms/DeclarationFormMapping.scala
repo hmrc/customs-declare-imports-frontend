@@ -196,8 +196,8 @@ object DeclarationFormMapping {
   )(Contact.apply)(Contact.unapply)
 
   val communicationMapping = mapping(
-    "id" -> optional(text.verifying("communication Id should be less than or equal to 70 characters", _.length <= 50)), //: Option[String] = None, // max 50 chars
-    "typeCode" -> optional(text.verifying("type Code  should be 3 characters", _.length <= 3)) //: Option[String] = None, // max 3 chars
+    "id" -> optional(text.verifying("Phone number should be 50 characters or less", _.length <= 50)), //: Option[String] = None, // max 50 chars
+    "typeCode" -> optional(text.verifying("Type code should be 3 characters or less", _.length <= 3)) //: Option[String] = None, // max 3 chars
   )(Communication.apply)(Communication.unapply)
 
   val importExportPartyMapping = mapping(
