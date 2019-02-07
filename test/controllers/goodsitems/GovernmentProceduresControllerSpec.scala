@@ -119,8 +119,8 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(governmentProcedure): _*)
           val result = controller(Some(user)).onSubmit(request)
 
-          status(result) mustBe OK
-        }
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.GovernmentProceduresController.onPageLoad().url)        }
       }
     }
 

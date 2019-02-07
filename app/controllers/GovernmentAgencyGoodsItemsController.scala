@@ -36,8 +36,6 @@ import scala.concurrent.Future
 class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
   (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
 
-  val additionalDocumentform: Form[GovernmentAgencyGoodsItemAdditionalDocument] = Form(govtAgencyGoodsItemAddDocMapping)
-  val additionalInformationform: Form[AdditionalInformation] = Form(additionalInformationMapping)
   val goodsItemValueInformationForm: Form[GoodsItemValueInformation] = Form(goodsItemValueInformationMapping)
   val roleBasedPartiesForm: Form[RoleBasedParty] = Form(roleBasedPartyMapping)
   val originsForm: Form[Origin] = Form(originMapping)
@@ -108,35 +106,6 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
       }
   }
 
-
-  def showGovAgencyGoodsItemsAdditionalDocuments(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map {
-        case Some(goodsItem) => Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentform, goodsItem.additionalDocuments))
-        case _ => Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentform, Seq.empty))
-      }
-  }
-
-  def handleGovAgencyGoodsItemsAdditionalDocumentsSubmit(): Action[AnyContent] =
-    (actions.auth andThen actions.eori).async {
-      implicit request =>
-        additionalDocumentform.bindFromRequest().fold(
-          (formWithErrors: Form[GovernmentAgencyGoodsItemAdditionalDocument]) =>
-            Future.successful(BadRequest(views.html.gov_agency_goods_items_add_docs(formWithErrors, List.empty))),
-          form =>
-            cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
-              val updatedGoodsItem = res match {
-                case Some(goodsItem) => goodsItem.copy(additionalDocuments = goodsItem.additionalDocuments :+ form)
-                case None => GovernmentAgencyGoodsItem(additionalDocuments = Seq(form))
-              }
-
-              cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map {
-                _ =>
-                  Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentform, updatedGoodsItem.additionalDocuments))
-              }
-            })
-
-    }
 
   def handleRoleBasedPartiesSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>

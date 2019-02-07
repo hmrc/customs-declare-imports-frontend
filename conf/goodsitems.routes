@@ -11,3 +11,6 @@ POST  /add-previous-documents      controllers.goodsitems.PreviousDocumentsContr
 
 GET   /add-goods-items-additional-informations       controllers.goodsitems.AdditionalInformationController.onPageLoad()
 POST  /add-goods-items-additional-informations       controllers.goodsitems.AdditionalInformationController.onSubmit()
+
+GET   /add-gov-agency-goods-items-additional-docs       controllers.goodsitems.AdditionalDocumentController.onPageLoad()
+POST  /add-gov-agency-goods-items-additional-docs       controllers.goodsitems.AdditionalDocumentController.onSubmit()
