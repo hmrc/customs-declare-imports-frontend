@@ -21,35 +21,46 @@
 
 @(submissions: Seq[Declaration])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-    @main_template(title = messages("common.importDeclarations"), bodyClasses = None, mainClass = Some("full-width")) {
-        <div class="form-group">
-            <h1 class="heading-xlarge">@messages("common.importDeclarations")</h1>
-        </div>
-        @if(submissions.nonEmpty) {
-            <p><a class="button" href="@routes.DeclarationController.displaySubmitForm("declarant-details")">@messages("common.button.createNew")</a></p>
+@main_template(title = messages("common.importDeclarations"), bodyClasses = None, mainClass = Some("full-width")) {
+    <div class="form-group">
+        <h1 class="heading-xlarge">@messages("common.importDeclarations")</h1>
+    </div>
+    <p><a class="button" href="@routes.DeclarantDetailsController.onPageLoad()">@messages("common.button.createNew")</a></p>
 
-            <h2 class="heading-medium">@messages("landingpage.submissions.heading")</h2>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th scope="col">@messages("landingpage.LRN")</th>
-                        <th scope="col">@messages("landingpage.MRN")</th>
-                        <th scope="col">@messages("landingpage.dateSubmitted")</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @for(submission <- submissions) {
-                    <tr>
-                        <td scope="row">@submission.localReferenceNumber.getOrElse(messages("lrn.missing"))</td>
-                        <td>@submission.mrn.getOrElse(messages("landingpage.MRN.unknown"))</td>
-                        <td>@formatDate(new LocalDate(submission.submittedDateTime))</td>
-                    </tr>
+    @if(submissions.nonEmpty) {
+        @for(submission <- submissions) {
+            <section class="declaration-listing">
+                <h2 class="heading-large">
+                  <span class="heading-secondary"><span class="visually-hidden">Submitted on</span>@submission.submittedDateTime.toString("dd MMMM YYYY HH:mm")</span>
+                  MRN @submission.mrn
+                </h2>
+                <h3 class="heading-medium">LRN @submission.localReferenceNumber</h3>
+                @for(action <- submission.actions) {
+                    @if(action.notifications.nonEmpty) {
+                        <table class="declaration-data">
+                            <caption class="heading-small">@action.actionType.displayName notifications</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Notification</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for(notification <- action.notifications) {
+                                    <tr>
+                                        <td scope="row">@messages(s"declaration.notification.${notification.functionCode}")</td>
+                                        <td>@notification.dateTimeIssued.toString("dd MMMM YYYY")</td>
+                                        <td>@notification.dateTimeIssued.toString("HH:mm")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
                 }
-                </tbody>
-            </table>
-        } else {
-            <p>@messages("landingpage.submissions.empty")</p>
-            <p><a class="button" href="@routes.DeclarantDetailsController.onPageLoad()">@messages("common.button.createNew")</a></p>
+            </section>
         }
+    } else {
+        <p>@messages("landingpage.submissions.empty")</p>
     }
+}

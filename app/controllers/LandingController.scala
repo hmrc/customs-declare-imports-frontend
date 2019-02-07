@@ -19,6 +19,7 @@ package controllers
 import config.AppConfig
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
+import models.Declaration._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsDeclarationsConnector

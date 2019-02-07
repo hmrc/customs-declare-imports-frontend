@@ -16,15 +16,33 @@
 
 package models
 
-import play.api.libs.json.Json
+import models.DeclarationActionType.DeclarationActionType
+import org.joda.time.DateTime
+import play.api.libs.json.{Json, Reads}
 
-case class DeclarationNotification(functionCode: Int, conversationId: String, dateTimeIssued: Long)
+object DeclarationActionType extends Enumeration {
+  type DeclarationActionType = Value
 
-case class DeclarationAction(dateTimeSent: Long, notifications: Seq[DeclarationNotification] = Seq.empty)
+  protected case class Val(displayName: String) extends super.Val
+  implicit def valueToDeclarationActionType(v: Value): Val = v.asInstanceOf[Val]
 
-case class Declaration(submittedDateTime: Long, localReferenceNumber: Option[String], mrn: Option[String] = None, actions: Seq[DeclarationAction] = Seq.empty)
+  val SUBMISSION = Val("Submission")
+  val CANCELLATIONS = Val("Cancellation")
+
+  implicit val reads = Reads.enumNameReads(DeclarationActionType)
+}
+
+
+case class DeclarationNotification(functionCode: Int, conversationId: String, dateTimeIssued: DateTime)
+
+case class DeclarationAction(dateTimeSent: DateTime, actionType: DeclarationActionType, notifications: Seq[DeclarationNotification] = Seq.empty)
+
+case class Declaration(submittedDateTime: DateTime, localReferenceNumber: Option[String], mrn: Option[String] = None, actions: Seq[DeclarationAction] = Seq.empty)
 
 object Declaration {
+  implicit def dateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
+
+  implicit val dateTimeReads = Reads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss'Z'")
   implicit val declarationNotificationFormat = Json.format[DeclarationNotification]
   implicit val declarationActionFormat = Json.format[DeclarationAction]
   implicit val declarationFormat = Json.format[Declaration]

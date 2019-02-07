@@ -20,6 +20,7 @@ import config._
 import domain.auth.{AuthenticatedRequest, SignedInUser}
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
+import org.joda.time.DateTime
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
@@ -58,7 +59,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
 
   def displaySubmitConfirmation(conversationId: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
     implicit req => {
-      Future.successful(Ok(views.html.submit_confirmation(new Declaration(System.currentTimeMillis(), Some("Local Reference Number"), Some("MRN")))))
+      Future.successful(Ok(views.html.submit_confirmation(new Declaration(DateTime.now, Some("Local Reference Number"), Some("MRN")))))
     }
   }
 
