@@ -615,7 +615,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           Form(currencyExchangeMapping).fillAndValidate(currencyExchange).fold(
             _ => fail("Should not fail"),
-            success => success mustBe currencyExchange
+            _ mustBe currencyExchange
           )
         }
       }

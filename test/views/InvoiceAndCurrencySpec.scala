@@ -40,11 +40,11 @@ class InvoiceAndCurrencySpec extends ViewBehaviours
 
   val simpleView: () => Html = () => view()
 
-  val messagePreFix = "invoiceAndCurrency"
+  val messagePrefix = "invoiceAndCurrency"
 
   "Invoice and Currency view" should {
 
-    behave like normalPage(simpleView, messagePreFix)
+    behave like normalPage(simpleView, messagePrefix)
     behave like pageWithBackLink(simpleView)
 
     "display invoice currency" in {
@@ -53,7 +53,7 @@ class InvoiceAndCurrencySpec extends ViewBehaviours
         val popForm = form.fillAndValidate(invoiceAndCurrency)
         val input   = input_select(
           popForm("invoice.currencyId"),
-          messages(s"$messagePreFix.invoiceCurrencyId"),
+          messages(s"$messagePrefix.invoiceCurrencyId"),
           config.Options.currencyTypes.toMap)
 
         view(popForm) must include(input)
@@ -64,7 +64,7 @@ class InvoiceAndCurrencySpec extends ViewBehaviours
 
       forAll { invoiceAndCurrency: InvoiceAndCurrency =>
         val popForm = form.fillAndValidate(invoiceAndCurrency)
-        val input   = input_text(popForm("invoice.value"), messages(s"$messagePreFix.invoiceAmount"))
+        val input   = input_text(popForm("invoice.value"), messages(s"$messagePrefix.invoiceAmount"))
 
         view(popForm) must include(input)
       }
@@ -76,7 +76,7 @@ class InvoiceAndCurrencySpec extends ViewBehaviours
         val popForm = form.fillAndValidate(invoiceAndCurrency)
         val input   = input_select(
           popForm("currency.currencyTypeCode"),
-          messages(s"$messagePreFix.exchangeCurrencyId"),
+          messages(s"$messagePrefix.exchangeCurrencyId"),
           config.Options.currencyTypes.toMap)
 
         view(popForm) must include(input)
@@ -87,7 +87,7 @@ class InvoiceAndCurrencySpec extends ViewBehaviours
 
       forAll { invoiceAndCurrency: InvoiceAndCurrency =>
         val popForm = form.fillAndValidate(invoiceAndCurrency)
-        val input   = input_text(popForm("currency.rateNumeric"), messages(s"$messagePreFix.exchangeCurrencyAmount"))
+        val input   = input_text(popForm("currency.rateNumeric"), messages(s"$messagePrefix.exchangeCurrencyAmount"))
 
         view(popForm) must include(input)
       }
