@@ -1045,14 +1045,14 @@ class DeclarationFormMappingSpec extends WordSpec
 
     "fail" when {
 
-      "id has more than 70 characters" in {
+      "id has more than 50 characters" in {
 
         forAll(arbitrary[Communication], minStringLength(51)) {
           (comms, id) =>
 
             val data = comms.copy(id = Some(id))
             Form(communicationMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Communication id should be 50 characters or less"),
+              _ must haveErrorMessage("Phone number should be 50 characters or less"),
               _ => fail("form should not succeed")
             )
         }
