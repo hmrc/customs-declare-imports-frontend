@@ -114,7 +114,7 @@ class ImporterDetailsControllerSpec extends CustomsSpec
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.DeclarationController.displaySubmitForm("seller-details").url)
+          redirectLocation(result) mustBe Some(routes.SellerDetailsController.onPageLoad().url)
         }
       }
     }

@@ -25,22 +25,22 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import views.html.importer_details
+import views.html.buyer_details
 
 import scala.concurrent.Future
 
-class ImporterDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                         (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
+class BuyerDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)
+                                      (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
   extends CustomsController {
 
   val form = Form(importExportPartyMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
-    cache.getByKey(req.eori, CacheKey.importer).map { importer =>
+    cache.getByKey(req.eori, CacheKey.buyer).map { buyer =>
 
-      val popForm = importer.fold(form)(form.fill)
-      Ok(importer_details(popForm))
+      val popForm = buyer.fold(form)(form.fill)
+      Ok(buyer_details(popForm))
     }
   }
 
@@ -48,12 +48,12 @@ class ImporterDetailsController @Inject()(actions: Actions, cache: CustomsCacheS
 
     form.bindFromRequest().fold(
       errors =>
-        Future.successful(BadRequest(importer_details(errors))),
+        Future.successful(BadRequest(buyer_details(errors))),
 
-      importer =>
+      buyer =>
         cache
-          .insert(req.eori, CacheKey.importer, importer)
-          .map(_ => Redirect(routes.SellerDetailsController.onPageLoad()))
+          .insert(req.eori, CacheKey.buyer, buyer)
+          .map(_ => Redirect(routes.DeclarationController.displaySubmitForm("summary-of-goods")))
     )
   }
 }

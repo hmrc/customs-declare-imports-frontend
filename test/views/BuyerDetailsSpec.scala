@@ -25,10 +25,10 @@ import play.twirl.api.Html
 import uk.gov.hmrc.customs.test.ViewMatchers
 import uk.gov.hmrc.wco.dec.ImportExportParty
 import views.behaviours.ViewBehaviours
+import views.html.buyer_details
 import views.html.components.{input_select, input_text}
-import views.html.seller_details
 
-class SellerDetailsSpec extends ViewBehaviours
+class BuyerDetailsSpec extends ViewBehaviours
   with PropertyChecks
   with Generators
   with OptionValues
@@ -37,23 +37,23 @@ class SellerDetailsSpec extends ViewBehaviours
   val form = Form(importExportPartyMapping)
 
   def view(form: Form[_] = form): Html =
-    seller_details(form)(fakeRequest, messages, appConfig)
+    buyer_details(form)(fakeRequest, messages, appConfig)
 
   val simpleView: () => Html = () => view()
-  val messagePrefix = "sellerDetails"
+  val messagePrefix = "buyerDetails"
 
   def getMessage(key: String): String = messages(s"$messagePrefix.$key")
 
-  "seller_details view" should {
+  "buyer_details view" should {
 
     behave like normalPage(simpleView, messagePrefix)
     behave like pageWithBackLink(simpleView)
 
     "display name input" in {
 
-      forAll { seller: ImportExportParty =>
+      forAll { buyer: ImportExportParty =>
 
-        val popForm = form.fillAndValidate(seller)
+        val popForm = form.fillAndValidate(buyer)
         val input   = input_text(popForm("name"), getMessage("name"))
 
         view(popForm) must include(input)
@@ -62,9 +62,9 @@ class SellerDetailsSpec extends ViewBehaviours
 
     "display address line input" in {
 
-      forAll { seller: ImportExportParty =>
+      forAll { buyer: ImportExportParty =>
 
-        val popForm = form.fillAndValidate(seller)
+        val popForm = form.fillAndValidate(buyer)
         val input   = input_text(popForm("address.line"), getMessage("address.line"))
 
         view(popForm) must include(input)
@@ -73,9 +73,9 @@ class SellerDetailsSpec extends ViewBehaviours
 
     "display address city name input" in {
 
-      forAll { seller: ImportExportParty =>
+      forAll { buyer: ImportExportParty =>
 
-        val popForm = form.fillAndValidate(seller)
+        val popForm = form.fillAndValidate(buyer)
         val input   = input_text(popForm("address.cityName"), getMessage("address.city"))
 
         view(popForm) must include(input)
@@ -84,9 +84,9 @@ class SellerDetailsSpec extends ViewBehaviours
 
     "display address country input" in {
 
-      forAll { seller: ImportExportParty =>
+      forAll { buyer: ImportExportParty =>
 
-        val popForm = form.fillAndValidate(seller)
+        val popForm = form.fillAndValidate(buyer)
         val input   =
           input_select(popForm("address.countryCode"), getMessage("address.country"), config.Options.countryOptions.toMap)
 
@@ -96,20 +96,20 @@ class SellerDetailsSpec extends ViewBehaviours
 
     "display address postcode input" in {
 
-      forAll { seller: ImportExportParty =>
+      forAll { buyer: ImportExportParty =>
 
-        val popForm = form.fillAndValidate(seller)
+        val popForm = form.fillAndValidate(buyer)
         val input   = input_text(popForm("address.postcodeId"), getMessage("address.postcode"))
 
         view(popForm) must include(input)
       }
     }
 
-    "display communication phone number input" in {
+    "display communication id input" in {
 
-      forAll { seller: ImportExportParty =>
+      forAll { buyer: ImportExportParty =>
 
-        val popForm = form.fillAndValidate(seller)
+        val popForm = form.fillAndValidate(buyer)
         val input   = input_text(popForm("communications[0].id"), getMessage("communication.id"))
 
         view(popForm) must include(input)
@@ -118,13 +118,10 @@ class SellerDetailsSpec extends ViewBehaviours
 
     "display id input" in {
 
-      forAll { seller: ImportExportParty =>
+      forAll { buyer: ImportExportParty =>
 
-        val popForm = form.fillAndValidate(seller)
-        val input   = input_text(
-          popForm("id"),
-          getMessage("id"),
-          hint = Some(messages("common.hints.eori")))
+        val popForm = form.fillAndValidate(buyer)
+        val input   = input_text(popForm("id"), getMessage("id"), hint = Some(messages("common.hints.eori")))
 
         view(popForm) must include(input)
       }
