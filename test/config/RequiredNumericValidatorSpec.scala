@@ -16,7 +16,7 @@
 
 package config
 
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.{ MustMatchers, WordSpec }
 
 class RequiredNumericValidatorSpec extends WordSpec with MustMatchers {
 
@@ -156,8 +156,9 @@ class RequiredNumericValidatorSpec extends WordSpec with MustMatchers {
 
   }
 
-  def withValidator(precision: Int, scale: Int = 0, min: Long = Long.MinValue, max: Long = Long.MaxValue)(test: RequiredNumericValidator => Unit): Unit = {
+  def withValidator(precision: Int, scale: Int = 0, min: Long = Long.MinValue, max: Long = Long.MaxValue)(
+      test: RequiredNumericValidator => Unit
+  ): Unit =
     test(RequiredNumericValidator(precision, scale, min, max))
-  }
 
 }

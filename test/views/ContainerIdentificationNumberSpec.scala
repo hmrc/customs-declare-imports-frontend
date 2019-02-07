@@ -32,18 +32,19 @@ import views.html.components.input_text
 import views.html.components.table.table
 import views.html.container_identification_number
 
-class ContainerIdentificationNumberSpec extends ViewBehaviours
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with ViewMatchers {
+class ContainerIdentificationNumberSpec
+    extends ViewBehaviours
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with ViewMatchers {
 
   val form = Form(transportEquipmentMapping)
 
   def view(form: Form[TransportEquipment] = form, transports: Seq[TransportEquipment] = Seq.empty): Html =
     container_identification_number(form, transports)(fakeRequest, messages, appConfig)
 
-  val simpleView: () => Html = () => view()
+  val simpleView: () => Html                    = () => view()
   val listView: Seq[TransportEquipment] => Html = xs => view(transports = xs)
 
   val messagePrefix = "containerIdentificationNumber"
@@ -56,9 +57,8 @@ class ContainerIdentificationNumberSpec extends ViewBehaviours
     "contain id field" in {
 
       forAll { transport: TransportEquipment =>
-
         val popForm = form.fillAndValidate(transport)
-        val input = input_text(popForm("id"), "Container identification number")
+        val input   = input_text(popForm("id"), "Container identification number")
 
         view(popForm) must include(input)
       }
@@ -67,7 +67,6 @@ class ContainerIdentificationNumberSpec extends ViewBehaviours
     "display table component" in {
 
       forAll(listOf(arbitrary[TransportEquipment])) { transports =>
-
         whenever(transports.nonEmpty) {
 
           val caption = transports.length match {

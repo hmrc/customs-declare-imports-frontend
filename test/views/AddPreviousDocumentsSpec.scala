@@ -31,12 +31,7 @@ import views.html.add_previous_documents
 import views.html.components.input_text
 import views.html.components.table.table
 
-
-class AddPreviousDocumentsSpec
-  extends ViewBehaviours
-    with ViewMatchers
-    with PropertyChecks
-    with Generators {
+class AddPreviousDocumentsSpec extends ViewBehaviours with ViewMatchers with PropertyChecks with Generators {
 
   val emptyPreviousDocuments: Seq[PreviousDocument] = Seq.empty
 
@@ -86,10 +81,9 @@ class AddPreviousDocumentsSpec
 
     "display previous documents table heading for single item if previous document is available" in {
 
-      forAll{ previousDocument: PreviousDocument =>
-
+      forAll { previousDocument: PreviousDocument =>
         val previousDocumentsSeq = Seq(previousDocument)
-        val doc = asDocument(view(form, previousDocumentsSeq))
+        val doc                  = asDocument(view(form, previousDocumentsSeq))
 
         assertContainsText(doc, s"${previousDocumentsSeq.size} " + messages("addPreviousDocument.table.heading"))
       }
@@ -98,12 +92,12 @@ class AddPreviousDocumentsSpec
     "display previous documents table heading for multiple items if previous documents are available" in {
 
       forAll(listOf(arbitrary[PreviousDocument])) { previousDocuments =>
-
         whenever(previousDocuments.size > 1) {
 
           val doc = asDocument(view(form, previousDocuments))
 
-          assertContainsText(doc, s"${previousDocuments.size} " + messages("addPreviousDocument.table.multiple.heading"))
+          assertContainsText(doc,
+                             s"${previousDocuments.size} " + messages("addPreviousDocument.table.multiple.heading"))
         }
       }
     }
@@ -111,7 +105,6 @@ class AddPreviousDocumentsSpec
     "display table for previous documents" in {
 
       forAll(listOf(arbitrary[PreviousDocument])) { previousDocuments =>
-
         whenever(previousDocuments.nonEmpty) {
 
           val htmlTable =
@@ -121,14 +114,11 @@ class AddPreviousDocumentsSpec
               messages("addPreviousDocument.typeCode"),
               messages("addPreviousDocument.lineNumeric")
             )(previousDocuments.map { a =>
-              (a.categoryCode.getOrElse(""),
-                a.id.getOrElse(""),
-                a.typeCode.getOrElse(""),
-                a.lineNumeric.getOrElse(""))
+              (a.categoryCode.getOrElse(""), a.id.getOrElse(""), a.typeCode.getOrElse(""), a.lineNumeric.getOrElse(""))
             })
 
           val tableComponent = table(htmlTable)
-          val rendered = view(form, previousDocuments)
+          val rendered       = view(form, previousDocuments)
 
           rendered must include(tableComponent)
         }

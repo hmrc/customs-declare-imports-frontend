@@ -18,8 +18,8 @@ package uk.gov.hmrc.customs.test.assertions
 
 import com.gu.scalatest.JsoupShouldMatchers
 import org.jsoup.nodes.Element
-import play.api.http.{ContentTypes, HttpVerbs}
-import play.api.mvc.{Call, Result}
+import play.api.http.{ ContentTypes, HttpVerbs }
+import play.api.mvc.{ Call, Result }
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
@@ -32,19 +32,18 @@ trait HtmlAssertions extends CustomsAssertions with JsoupShouldMatchers {
   def contentAsHtml(of: Future[Result]): Element = contentAsString(of).asBodyFragment
 
   def includesHtmlInput(in: Future[Result], name: String, `type`: String = "text", value: String = ""): Unit =
-    contentAsHtml(in) should include element withName("input").
-      withAttrValue("type", `type`).
-      withAttrValue("name", name).
-      withAttrValueMatching("value", Regex.quote(value))
+    contentAsHtml(in) should include element withName("input")
+      .withAttrValue("type", `type`)
+      .withAttrValue("name", name)
+      .withAttrValueMatching("value", Regex.quote(value))
 
   def includesHtmlLink(in: Future[Result], href: String): Unit =
-    contentAsHtml(in) should include element withName("a").
-      withAttrValue("href", href)
+    contentAsHtml(in) should include element withName("a").withAttrValue("href", href)
 
   def includeForm(in: Future[Result], action: Call, method: String = HttpVerbs.GET): Unit =
-    contentAsHtml(in) should include element withName("form").
-      withAttrValue("action", action.url).
-      withAttrValue("method", method)
+    contentAsHtml(in) should include element withName("form")
+      .withAttrValue("action", action.url)
+      .withAttrValue("method", method)
 
   def includeHtmlTag(in: Future[Result], name: String, value: String): Unit =
     contentAsHtml(in) should include element withName(name).withValue(value)

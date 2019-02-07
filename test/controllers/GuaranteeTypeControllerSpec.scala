@@ -16,10 +16,10 @@
 
 package controllers
 
-import domain.auth.{EORI, SignedInUser}
+import domain.auth.{ EORI, SignedInUser }
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
+import org.mockito.ArgumentMatchers.{ eq => eqTo, _ }
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
@@ -30,16 +30,17 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, EndpointBehaviours }
 import uk.gov.hmrc.wco.dec.ObligationGuarantee
 import views.html.guarantee_type
 
-class GuaranteeTypeControllerSpec extends CustomsSpec
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with MockitoSugar
-  with EndpointBehaviours {
+class GuaranteeTypeControllerSpec
+    extends CustomsSpec
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with MockitoSugar
+    with EndpointBehaviours {
 
   val form = Form(guaranteeTypeMapping)
 
@@ -50,7 +51,7 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
     new GuaranteeTypeController(new FakeActions(Some(user)), mockCustomsCacheService)
 
   val listGen: Gen[Option[Seq[ObligationGuarantee]]] = option(listOf(arbitrary[ObligationGuarantee]))
-  val uri = "/submit-declaration/add-guarantee-type"
+  val uri                                            = "/submit-declaration/add-guarantee-type"
 
   ".onPageLoad" should {
 
@@ -62,7 +63,6 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(user).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
@@ -76,7 +76,6 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(user.user).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -86,16 +85,14 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], listGen) {
-        (user, data) =>
+      forAll(arbitrary[SignedInUser], listGen) { (user, data) =>
+        withCleanCache(EORI(user.eori.value), CacheKey.guaranteeType, data) {
 
-          withCleanCache(EORI(user.eori.value), CacheKey.guaranteeType, data) {
+          val result = controller(user).onPageLoad(fakeRequest)
 
-            val result = controller(user).onPageLoad(fakeRequest)
-
-            status(result) mustBe OK
-            contentAsString(result) mustBe view(details = data.getOrElse(Seq.empty))
-          }
+          status(result) mustBe OK
+          contentAsString(result) mustBe view(details = data.getOrElse(Seq.empty))
+        }
       }
     }
   }
@@ -110,7 +107,6 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
       "valid data is posted" in {
 
         forAll { (user: SignedInUser, guarantee: GuaranteeType) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(guarantee.value): _*)
           val result  = controller(user).onSubmit(request)
 
@@ -125,7 +121,6 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(user.user).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -142,18 +137,16 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
             .suchThat(_.length > 1)
             .map(s => ObligationGuarantee(securityDetailsCode = Some(s)))
 
-        forAll(arbitrary[SignedInUser], badData, listGen) {
-          (user, formData, cacheData) =>
+        forAll(arbitrary[SignedInUser], badData, listGen) { (user, formData, cacheData) =>
+          withCleanCache(EORI(user.eori.value), CacheKey.guaranteeType, cacheData) {
 
-            withCleanCache(EORI(user.eori.value), CacheKey.guaranteeType, cacheData) {
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+            val popForm = form.fillAndValidate(formData)
+            val result  = controller(user).onSubmit(request)
 
-              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
-              val popForm = form.fillAndValidate(formData)
-              val result  = controller(user).onSubmit(request)
-
-              status(result) mustBe BAD_REQUEST
-              contentAsString(result) mustBe view(popForm, cacheData.getOrElse(Seq.empty))
-            }
+            status(result) mustBe BAD_REQUEST
+            contentAsString(result) mustBe view(popForm, cacheData.getOrElse(Seq.empty))
+          }
 
         }
       }
@@ -164,7 +157,6 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
       "valid data is posted" in {
 
         forAll { (user: SignedInUser, guarantee: GuaranteeType) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(guarantee.value): _*)
           await(controller(user).onSubmit(request))
 

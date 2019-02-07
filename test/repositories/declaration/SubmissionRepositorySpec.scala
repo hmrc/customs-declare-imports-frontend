@@ -16,7 +16,7 @@
 
 package repositories.declaration
 
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, MongoBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, MongoBehaviours }
 import uk.gov.hmrc.mongo.ReactiveRepository
 
 class SubmissionRepositorySpec extends CustomsSpec with MongoBehaviours {
@@ -33,17 +33,22 @@ class SubmissionRepositorySpec extends CustomsSpec with MongoBehaviours {
       and the conversation ID we received from the customs-declarations API response, generating a timestamp to record
       when this occurred.
        */
-      val eori = randomString(8)
-      val lrn = Some(randomString(70))
-      val mrn = randomString(16)
+      val eori           = randomString(8)
+      val lrn            = Some(randomString(70))
+      val mrn            = randomString(16)
       val conversationId = randomString(80)
-      val before = System.currentTimeMillis()
-      repo.insert(Submission(
-        eori,
-        conversationId,
-        lrn,
-        Some(mrn)
-      )).futureValue.ok must be(true)
+      val before         = System.currentTimeMillis()
+      repo
+        .insert(
+          Submission(
+            eori,
+            conversationId,
+            lrn,
+            Some(mrn)
+          )
+        )
+        .futureValue
+        .ok must be(true)
 
       // we can now display a list of all the declarations belonging to the current user, searching by EORI
       val found = repo.findByEori(eori).futureValue

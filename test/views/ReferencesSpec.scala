@@ -28,18 +28,14 @@ import views.behaviours.ViewBehaviours
 import views.html.components.input_text
 import views.html.references
 
-class ReferencesSpec extends ViewBehaviours
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with ViewMatchers {
+class ReferencesSpec extends ViewBehaviours with PropertyChecks with Generators with OptionValues with ViewMatchers {
 
   val form = Form(referencesMapping)
 
   def view(form: Form[_] = form): Html = references(form)(fakeRequest, messages, appConfig)
 
   val simpleView: () => Html = () => view()
-  val messagePrefix = "references"
+  val messagePrefix          = "references"
 
   "references view" should {
 
@@ -49,7 +45,6 @@ class ReferencesSpec extends ViewBehaviours
     "display typeCode input" in {
 
       forAll { references: References =>
-
         val popForm = form.fillAndValidate(references)
         val input   = input_text(popForm("typeCode"), messages(s"$messagePrefix.typeCode"))
         val html    = view(popForm)
@@ -61,7 +56,6 @@ class ReferencesSpec extends ViewBehaviours
     "display typerCode input" in {
 
       forAll { references: References =>
-
         val popForm = form.fillAndValidate(references)
         val input   = input_text(popForm("typerCode"), messages(s"$messagePrefix.typerCode"))
         val html    = view(popForm)
@@ -73,10 +67,10 @@ class ReferencesSpec extends ViewBehaviours
     "display traderAssignedReferenceId input" in {
 
       forAll { references: References =>
-
         val popForm = form.fillAndValidate(references)
-        val input   = input_text(popForm("traderAssignedReferenceId"), messages(s"$messagePrefix.traderAssignedReferenceId"))
-        val html    = view(popForm)
+        val input =
+          input_text(popForm("traderAssignedReferenceId"), messages(s"$messagePrefix.traderAssignedReferenceId"))
+        val html = view(popForm)
 
         html must include(input)
       }
@@ -85,7 +79,6 @@ class ReferencesSpec extends ViewBehaviours
     "display functionalReferenceId input" in {
 
       forAll { references: References =>
-
         val popForm = form.fillAndValidate(references)
         val input   = input_text(popForm("functionalReferenceId"), messages(s"$messagePrefix.functionalReferenceId"))
         val html    = view(popForm)
@@ -97,7 +90,6 @@ class ReferencesSpec extends ViewBehaviours
     "display transactionNatureCode input" in {
 
       forAll { references: References =>
-
         val popForm = form.fillAndValidate(references)
         val input   = input_text(popForm("transactionNatureCode"), messages(s"$messagePrefix.transactionNatureCode"))
         val html    = view(popForm)

@@ -21,7 +21,7 @@ import java.io.StringReader
 import javax.xml.XMLConstants
 import javax.xml.transform.Source
 import javax.xml.transform.stream.StreamSource
-import javax.xml.validation.{Schema, SchemaFactory}
+import javax.xml.validation.{ Schema, SchemaFactory }
 
 import scala.xml.SAXException
 
@@ -29,28 +29,29 @@ trait XmlAssertions extends CustomsAssertions {
 
   val submitDeclarationSchemas = Seq("/DocumentMetaData_2_DMS.xsd", "/WCO_DEC_2_DMS.xsd")
 
-  val cancelDeclarationSchemas = Seq("/CANCEL_METADATA.xsd","/CANCEL.xsd")
+  val cancelDeclarationSchemas = Seq("/CANCEL_METADATA.xsd", "/CANCEL.xsd")
 
-  def beValidXml(xml: String, schemas: Seq[String]): Unit = {
-     try {
+  def beValidXml(xml: String, schemas: Seq[String]): Unit =
+    try {
       validateAgainstSchemaResources(xml, schemas)
     } catch {
       case e: SAXException => fail(e.getMessage)
     }
-  }
 
-  def isValidXml(xml: String, schemas: Seq[String]): Boolean = {
+  def isValidXml(xml: String, schemas: Seq[String]): Boolean =
     try {
       validateAgainstSchemaResources(xml, schemas)
       true
     } catch {
       case e: SAXException => false
     }
-  }
 
   private def validateAgainstSchemaResources(xml: String, schemas: Seq[String]): Unit = {
     val schema: Schema = {
-      val sources = schemas.map(res => getClass.getResource(res).toString).map(systemId => new StreamSource(systemId)).toArray[Source]
+      val sources = schemas
+        .map(res => getClass.getResource(res).toString)
+        .map(systemId => new StreamSource(systemId))
+        .toArray[Source]
       SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(sources)
     }
     val validator = schema.newValidator()

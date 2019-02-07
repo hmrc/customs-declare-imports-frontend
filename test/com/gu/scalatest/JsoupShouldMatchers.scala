@@ -16,11 +16,11 @@
 
 package com.gu.scalatest
 
-import com.gu.jsoup.{ElementSelector, ElementSelectorBuilders, Select}
+import com.gu.jsoup.{ ElementSelector, ElementSelectorBuilders, Select }
 import org.jsoup.nodes.Element
 import org.scalatest.MustMatchers
 import org.scalatest.exceptions.TestFailedException
-import org.scalatest.words.{IncludeWord, NotWord}
+import org.scalatest.words.{ IncludeWord, NotWord }
 
 trait JsoupShouldMatchers extends MustMatchers with ElementSelectorBuilders with ElementWords {
 
@@ -74,7 +74,7 @@ trait JsoupShouldMatchers extends MustMatchers with ElementSelectorBuilders with
   private[scalatest] final class ResultOfNotWord(left: Element) {
 
     def include(selector: ElementSelector) {
-      if (! selector(left).isEmpty) {
+      if (!selector(left).isEmpty) {
         throw testFailedException(failureMessage('includedElementMatchingSelector, left, selector))
       }
     }
@@ -82,21 +82,27 @@ trait JsoupShouldMatchers extends MustMatchers with ElementSelectorBuilders with
 
   private[scalatest] def testFailedException(message: String): Throwable = {
     val fileNames = List("RicherHtmlTest.scala")
-    val temp = new RuntimeException
-    val stackDepth = temp.getStackTrace.takeWhile(sTraceElem =>
-      fileNames.exists(_ == sTraceElem.getFileName) || sTraceElem.getMethodName == "testFailedException").length
+    val temp      = new RuntimeException
+    val stackDepth = temp.getStackTrace
+      .takeWhile(
+        sTraceElem => fileNames.exists(_ == sTraceElem.getFileName) || sTraceElem.getMethodName == "testFailedException"
+      )
+      .length
     // as far as my current understanding goes, stackDepth + 1 is just voodoo which appears to work
     new TestFailedException(message, stackDepth + 1)
   }
 
   private[scalatest] def failureMessage(key: Symbol, left: Element, expected: ElementSelector) =
-    "%s %s %s".format(left, key match {
-      case 'includedElementMatchingSelector => "included an element"
-      case 'didNotIncludeElementMatchingSelector => "did not include an element"
-    }, expected)
+    "%s %s %s".format(
+      left,
+      key match {
+        case 'includedElementMatchingSelector      => "included an element"
+        case 'didNotIncludeElementMatchingSelector => "did not include an element"
+      },
+      expected
+    )
 
 }
-
 
 /*
  * Words for use after 'not' words

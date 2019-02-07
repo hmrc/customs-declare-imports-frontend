@@ -19,14 +19,15 @@ package test.controllers
 import config.AppConfig
 import domain.features.Feature.Feature
 import domain.features.FeatureStatus.FeatureStatus
-import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.{ Inject, Singleton }
+import play.api.mvc.{ Action, AnyContent }
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
-class FeatureSwitchController @Inject()(implicit val appConfig: AppConfig, ec: ExecutionContext) extends BaseController {
+class FeatureSwitchController @Inject()(implicit val appConfig: AppConfig, ec: ExecutionContext)
+    extends BaseController {
 
   def set(feature: Feature, status: FeatureStatus): Action[AnyContent] = Action.async { implicit req =>
     appConfig.setFeatureStatus(feature, status)

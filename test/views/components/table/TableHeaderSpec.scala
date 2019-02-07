@@ -27,10 +27,7 @@ import viewmodels.HtmlTableRow
 import views.ViewSpecBase
 import views.html.components.table._
 
-class TableHeaderSpec extends ViewSpecBase
-  with PropertyChecks
-  with Generators
-  with OptionValues {
+class TableHeaderSpec extends ViewSpecBase with PropertyChecks with Generators with OptionValues {
 
   def view[A](row: HtmlTableRow[A]) =
     Html(s"<table>${table_header(row)}</table>")
@@ -40,7 +37,6 @@ class TableHeaderSpec extends ViewSpecBase
     "display only a single tr" in {
 
       forAll { row: HtmlTableRow[String] =>
-
         val doc = asDocument(view(row))
         doc.getElementsByTag("tr").size() mustBe 1
       }
@@ -49,7 +45,6 @@ class TableHeaderSpec extends ViewSpecBase
     "display th's equal to number of values" in {
 
       forAll { row: HtmlTableRow[String] =>
-
         val doc = asDocument(view(row))
         doc.getElementsByTag("th").size() mustBe row.values.length + 1
       }
@@ -58,7 +53,6 @@ class TableHeaderSpec extends ViewSpecBase
     "display content of each value" in {
 
       forAll { row: HtmlTableRow[String] =>
-
         val doc = asDocument(view(row))
         row.map(value => assertContainsText(doc, value))
       }

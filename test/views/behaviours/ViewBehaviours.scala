@@ -21,7 +21,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Gen.listOf
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
-import play.twirl.api.{Html, HtmlFormat}
+import play.twirl.api.{ Html, HtmlFormat }
 import uk.gov.hmrc.wco.dec.AuthorisationHolder
 import viewmodels.HtmlTable
 import views.ViewSpecBase
@@ -29,9 +29,7 @@ import views.html.components.table.table
 
 trait ViewBehaviours extends ViewSpecBase with PropertyChecks {
 
-  def normalPage(view: () => HtmlFormat.Appendable,
-                 messageKeyPrefix: String,
-                 expectedGuidanceKeys: String*) = {
+  def normalPage(view: () => HtmlFormat.Appendable, messageKeyPrefix: String, expectedGuidanceKeys: String*) = {
 
     "behave like a page with a heading" when {
       "rendered" must {
@@ -53,18 +51,15 @@ trait ViewBehaviours extends ViewSpecBase with PropertyChecks {
       }
     }
 
-    behave like pageWithoutHeading(view, messageKeyPrefix, expectedGuidanceKeys:_*)
+    behave like pageWithoutHeading(view, messageKeyPrefix, expectedGuidanceKeys: _*)
   }
 
-  def pageWithoutHeading(view: () => HtmlFormat.Appendable,
-                         messageKeyPrefix: String,
-                         expectedGuidanceKeys: String*) = {
-
+  def pageWithoutHeading(view: () => HtmlFormat.Appendable, messageKeyPrefix: String, expectedGuidanceKeys: String*) =
     "behave like a normal page" when {
       "rendered" must {
         "have the correct banner title" in {
-          val doc = asDocument(view())
-          val nav = doc.getElementById("proposition-menu")
+          val doc  = asDocument(view())
+          val nav  = doc.getElementById("proposition-menu")
           val span = nav.children.first
           span.text mustBe messagesApi("common.service.name")
         }
@@ -75,23 +70,16 @@ trait ViewBehaviours extends ViewSpecBase with PropertyChecks {
         }
       }
     }
-  }
 
-  def pageWithBackLink(view: () => HtmlFormat.Appendable) = {
-
+  def pageWithBackLink(view: () => HtmlFormat.Appendable) =
     "behave like a page with a back link" must {
       "have a back link" in {
         val doc = asDocument(view())
         assertRenderedById(doc, "link-back")
       }
     }
-  }
 
-  def pageWithTableHeadings[A](
-    view: Seq[A] => HtmlFormat.Appendable,
-    data: Gen[A],
-    messageKeyPrefix: String): Unit = {
-
+  def pageWithTableHeadings[A](view: Seq[A] => HtmlFormat.Appendable, data: Gen[A], messageKeyPrefix: String): Unit =
     "behave like a page with a table" must {
 
       "display empty table heading" in {
@@ -104,18 +92,15 @@ trait ViewBehaviours extends ViewSpecBase with PropertyChecks {
       "display a table heading for single item" in {
 
         forAll(data) { singleItem =>
-
           val doc = asDocument(view(Seq(singleItem)))
 
           assertContainsText(doc, messages(s"$messageKeyPrefix.table.heading"))
         }
       }
 
-
       "display a table with multiple items in" in {
 
         forAll(listOf(data)) { multipleItems =>
-
           whenever(multipleItems.size > 1) {
 
             val doc = asDocument(view(multipleItems))
@@ -125,5 +110,4 @@ trait ViewBehaviours extends ViewSpecBase with PropertyChecks {
         }
       }
     }
-  }
 }

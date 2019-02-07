@@ -17,17 +17,18 @@
 package controllers
 
 import domain.features.Feature
-import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, FeatureBehaviours, RequestHandlerBehaviours}
+import uk.gov.hmrc.customs.test.assertions.{ HtmlAssertions, HttpAssertions }
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, FeatureBehaviours, RequestHandlerBehaviours }
 
-class StartControllerSpec extends CustomsSpec
-  with RequestHandlerBehaviours
-  with FeatureBehaviours
-  with HttpAssertions
-  with HtmlAssertions {
+class StartControllerSpec
+    extends CustomsSpec
+    with RequestHandlerBehaviours
+    with FeatureBehaviours
+    with HttpAssertions
+    with HtmlAssertions {
 
   val method = "GET"
-  val uri = uriWithContextPath("/start")
+  val uri    = uriWithContextPath("/start")
 
   s"$method $uri" should {
 
@@ -47,7 +48,9 @@ class StartControllerSpec extends CustomsSpec
 
     "include link to begin page" in withFeatures(enabled(Feature.start, Feature.landing)) {
       withRequest(method, uri) { resp =>
-        contentAsHtml(resp) should include element withName("a").withClass("button-start").withAttrValue("href", routes.LandingController.displayLandingPage().url)
+        contentAsHtml(resp) should include element withName("a")
+          .withClass("button-start")
+          .withAttrValue("href", routes.LandingController.displayLandingPage().url)
       }
     }
 
@@ -57,7 +60,9 @@ class StartControllerSpec extends CustomsSpec
 
     "include a message when begin page is not on" in withFeatures(enabled(Feature.start) ++ disabled(Feature.landing)) {
       withRequest(method, uri) { resp =>
-        contentAsHtml(resp) should include element withClass("message").withValue(messagesApi("landingpage.unavailable"))
+        contentAsHtml(resp) should include element withClass("message").withValue(
+          messagesApi("landingpage.unavailable")
+        )
       }
     }
 

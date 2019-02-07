@@ -17,7 +17,7 @@
 package services.cachekeys
 
 import uk.gov.hmrc.wco.dec._
-import domain.{GovernmentAgencyGoodsItem, References}
+import domain.{ GovernmentAgencyGoodsItem, References }
 
 trait Identifier[A]
 
@@ -46,7 +46,7 @@ object CacheKey {
   val additionalDocuments = CacheKey("AdditionalDocuments", new Identifier[Seq[AdditionalDocument]] {})
 
   val additionalSupplyChainActors = CacheKey("AdditionalSupplyChainActors", new Identifier[Seq[RoleBasedParty]] {})
-  val domesticDutyTaxParty = CacheKey("DomesticDutyTaxParty", new Identifier[Seq[RoleBasedParty]] {})
+  val domesticDutyTaxParty        = CacheKey("DomesticDutyTaxParty", new Identifier[Seq[RoleBasedParty]]        {})
 
   val additionsAndDeductions = CacheKey("AdditionsAndDeductions", new Identifier[Seq[ChargeDeduction]] {})
 
@@ -55,6 +55,7 @@ object CacheKey {
   val guaranteeType = CacheKey("GuaranteeType", new Identifier[Seq[ObligationGuarantee]] {})
 
   val govAgencyGoodsItemsList = CacheKey("GovAgencyGoodsItemsList", new Identifier[Seq[GovernmentAgencyGoodsItem]] {})
-  val goodsItem = CacheKey("GovAgencyGoodsItem", new Identifier[GovernmentAgencyGoodsItem] {})
-  val govAgencyGoodsItemReference = CacheKey("GovAgencyGoodsItemReference", new Identifier[GovernmentAgencyGoodsItem] {})
+  val goodsItem               = CacheKey("GovAgencyGoodsItem", new Identifier[GovernmentAgencyGoodsItem]           {})
+  val govAgencyGoodsItemReference =
+    CacheKey("GovAgencyGoodsItemReference", new Identifier[GovernmentAgencyGoodsItem] {})
 }

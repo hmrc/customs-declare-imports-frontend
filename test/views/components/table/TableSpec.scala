@@ -22,14 +22,10 @@ import org.scalatest.prop.PropertyChecks
 import play.twirl.api.Html
 import uk.gov.hmrc.customs.test.ViewMatchers
 import viewmodels.HtmlTable
-import views.html.components.table.{table, table_header, table_row}
+import views.html.components.table.{ table, table_header, table_row }
 import views.ViewSpecBase
 
-class TableSpec extends ViewSpecBase
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with ViewMatchers {
+class TableSpec extends ViewSpecBase with PropertyChecks with Generators with OptionValues with ViewMatchers {
 
   def view(testTable: HtmlTable[String, String], caption: Option[String] = None): Html =
     table(testTable, caption)
@@ -41,7 +37,6 @@ class TableSpec extends ViewSpecBase
       "there are no rows" in {
 
         forAll { table: HtmlTable[String, String] =>
-
           val doc = asDocument(view(HtmlTable[String, String](table.header, List()).value))
           assert(doc.getElementsByTag("table").isEmpty)
         }
@@ -51,7 +46,6 @@ class TableSpec extends ViewSpecBase
     "display only 1 table" in {
 
       forAll { table: HtmlTable[String, String] =>
-
         whenever(table.rows.nonEmpty) {
 
           val doc = asDocument(view(table))
@@ -63,21 +57,18 @@ class TableSpec extends ViewSpecBase
     "display table header" in {
 
       forAll { table: HtmlTable[String, String] =>
-
         whenever(table.rows.nonEmpty) {
-          
+
           val header = table_header(table.header)
           view(table) must include(header)
         }
       }
     }
-    
+
     "display every table row" in {
 
       forAll { table: HtmlTable[String, String] =>
-
         table.rows.foreach { row =>
-
           val tableRow = table_row(row)
           view(table) must include(tableRow)
         }
@@ -87,7 +78,6 @@ class TableSpec extends ViewSpecBase
     "don't display caption" in {
 
       forAll { table: HtmlTable[String, String] =>
-
         val doc = asDocument(view(table))
         doc.getElementsByTag("caption").size() mustBe 0
       }
@@ -95,13 +85,11 @@ class TableSpec extends ViewSpecBase
 
     "display caption" in {
 
-      forAll {
-        (table: HtmlTable[String, String], caption: String) =>
+      forAll { (table: HtmlTable[String, String], caption: String) =>
+        whenever(table.rows.nonEmpty) {
 
-          whenever(table.rows.nonEmpty) {
-
-            view(table, Some(caption)) must include(Html(s"<caption>$caption</caption>"))
-          }
+          view(table, Some(caption)) must include(Html(s"<caption>$caption</caption>"))
+        }
       }
     }
   }

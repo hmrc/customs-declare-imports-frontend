@@ -22,42 +22,42 @@ import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.container_identification_number
 
-class ContainerIdentificationNumberController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                                       (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+class ContainerIdentificationNumberController @Inject()(actions: Actions, cache: CustomsCacheService)(
+    implicit override val messagesApi: MessagesApi,
+    appConfig: AppConfig
+) extends CustomsController {
 
   val form = Form(transportEquipmentMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-
     cache.getByKey(req.eori, CacheKey.containerIdNos).map { transports =>
-
       Ok(container_identification_number(form, transports.getOrElse(Seq.empty)))
     }
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-
-    form.bindFromRequest().fold(
-      errors =>
-        cache.getByKey(req.eori, CacheKey.containerIdNos).map { transports =>
-          BadRequest(container_identification_number(errors, transports.getOrElse(Seq.empty)))
+    form
+      .bindFromRequest()
+      .fold(
+        errors =>
+          cache.getByKey(req.eori, CacheKey.containerIdNos).map { transports =>
+            BadRequest(container_identification_number(errors, transports.getOrElse(Seq.empty)))
         },
-
-      transport =>
-        cache
-          .upsert(req.eori, CacheKey.containerIdNos)(
-            () => Seq(transport),
-            transports => {
-              val prevSeqNum = transports.maxBy(_.sequenceNumeric).sequenceNumeric
-              transport.copy(sequenceNumeric = prevSeqNum + 1) +: transports
-            })
-          .map(_ => Redirect(routes.ContainerIdentificationNumberController.onPageLoad()))
-    )
+        transport =>
+          cache
+            .upsert(req.eori, CacheKey.containerIdNos)(
+              () => Seq(transport),
+              transports => {
+                val prevSeqNum = transports.maxBy(_.sequenceNumeric).sequenceNumeric
+                transport.copy(sequenceNumeric = prevSeqNum + 1) +: transports
+              }
+            )
+            .map(_ => Redirect(routes.ContainerIdentificationNumberController.onPageLoad()))
+      )
   }
 }

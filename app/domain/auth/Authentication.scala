@@ -16,10 +16,10 @@
 
 package domain.auth
 
-import play.api.mvc.{Request, WrappedRequest}
+import play.api.mvc.{ Request, WrappedRequest }
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments}
+import uk.gov.hmrc.auth.core.retrieve.{ Credentials, Name }
+import uk.gov.hmrc.auth.core.{ AffinityGroup, Enrolment, Enrolments }
 
 case class SignedInUser(credentials: Credentials,
                         name: Name,
@@ -28,7 +28,10 @@ case class SignedInUser(credentials: Credentials,
                         internalId: Option[String],
                         enrolments: Enrolments) {
 
-  lazy val eori: Option[String] = enrolments.getEnrolment(SignedInUser.cdsEnrolmentName).flatMap(_.getIdentifier(SignedInUser.eoriIdentifierKey)).map(_.value)
+  lazy val eori: Option[String] = enrolments
+    .getEnrolment(SignedInUser.cdsEnrolmentName)
+    .flatMap(_.getIdentifier(SignedInUser.eoriIdentifierKey))
+    .map(_.value)
 
   // TODO throw custom exception here and handle in ErrorHandler by redirecting to "enrol" page?
   lazy val requiredEori: String = eori.getOrElse(throw new IllegalStateException("EORI missing"))
@@ -53,4 +56,3 @@ case class EORIRequest[A](request: AuthenticatedRequest[A], eori: EORI) extends 
 
   val user: SignedInUser = request.user
 }
-

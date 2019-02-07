@@ -31,15 +31,11 @@ import views.html.add_guarantee_references
 import views.html.components.input_text
 import views.html.components.table.table
 
-class AddGuaranteeReferencesSpec extends ViewBehaviours
-  with ViewMatchers
-  with PropertyChecks
-  with Generators {
+class AddGuaranteeReferencesSpec extends ViewBehaviours with ViewMatchers with PropertyChecks with Generators {
 
   lazy val form = Form(obligationGauranteeMapping)
 
-  def view(form: Form[ObligationGuarantee] = form,
-           guaranteeReferences: Seq[ObligationGuarantee] = Seq.empty): Html =
+  def view(form: Form[ObligationGuarantee] = form, guaranteeReferences: Seq[ObligationGuarantee] = Seq.empty): Html =
     add_guarantee_references(form, guaranteeReferences)(fakeRequest, messages, appConfig)
 
   val view: () => Html = () => view(form, Seq.empty)
@@ -83,9 +79,8 @@ class AddGuaranteeReferencesSpec extends ViewBehaviours
     "display guarantee reference table heading for single item if guarantee reference is available" in {
 
       forAll { obligationGuarantee: ObligationGuarantee =>
-
         val obligationGuaranteeSeq = Seq(obligationGuarantee)
-        val doc = asDocument(view(form, obligationGuaranteeSeq))
+        val doc                    = asDocument(view(form, obligationGuaranteeSeq))
 
         assertContainsText(doc, messages("addGuaranteeReferences.table.heading"))
       }
@@ -94,12 +89,13 @@ class AddGuaranteeReferencesSpec extends ViewBehaviours
     "display guarantee reference table heading for multiple items if guarantee references are available" in {
 
       forAll(listOf(arbitrary[ObligationGuarantee])) { obligationGuarantees =>
-
         whenever(obligationGuarantees.size > 1) {
 
           val doc = asDocument(view(form, obligationGuarantees))
 
-          assertContainsText(doc, messages("addGuaranteeReferences.table.multiple.heading", {obligationGuarantees.size}))
+          assertContainsText(doc, messages("addGuaranteeReferences.table.multiple.heading", {
+            obligationGuarantees.size
+          }))
         }
       }
     }
@@ -107,7 +103,6 @@ class AddGuaranteeReferencesSpec extends ViewBehaviours
     "display table for guarantee references" in {
 
       forAll(listOf(arbitrary[ObligationGuarantee])) { obligationGuarantees =>
-
         whenever(obligationGuarantees.nonEmpty) {
 
           val tableTitle = obligationGuarantees.size match {
@@ -124,14 +119,14 @@ class AddGuaranteeReferencesSpec extends ViewBehaviours
               messages("addGuaranteeReferences.officeId")
             )(obligationGuarantees.map { a =>
               (a.referenceId.getOrElse(""),
-                a.id.getOrElse(""),
-                a.amount.getOrElse(""),
-                a.accessCode.getOrElse(""),
-                a.guaranteeOffice.flatMap(_.id).getOrElse(""))
+               a.id.getOrElse(""),
+               a.amount.getOrElse(""),
+               a.accessCode.getOrElse(""),
+               a.guaranteeOffice.flatMap(_.id).getOrElse(""))
             })
 
           val tableComponent = table(htmlTable, Some(tableTitle))
-          val rendered = view(form, obligationGuarantees)
+          val rendered       = view(form, obligationGuarantees)
 
           rendered must include(tableComponent)
         }

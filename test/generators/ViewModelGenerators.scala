@@ -16,11 +16,11 @@
 
 package generators
 
-import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.{ Arbitrary, Gen }
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen._
 import org.scalatest.OptionValues
-import viewmodels.{HtmlTable, HtmlTableRow}
+import viewmodels.{ HtmlTable, HtmlTableRow }
 
 trait ViewModelGenerators extends OptionValues {
 

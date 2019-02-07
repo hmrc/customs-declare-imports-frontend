@@ -1,4 +1,3 @@
-
 import TestPhases.oneForkedJvmPerTest
 import org.scalastyle.sbt.ScalastylePlugin._
 import uk.gov.hmrc.DefaultBuildSettings.addTestReportOption
@@ -21,25 +20,26 @@ lazy val microservice = Project(appName, file("."))
   .configs(IntegrationTest)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
   .settings(
-    Keys.fork in IntegrationTest                  := false,
-    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (base => Seq(base / "it")).value,
-    testGrouping in IntegrationTest               := oneForkedJvmPerTest((definedTests in IntegrationTest).value),
-    parallelExecution in IntegrationTest          := false,
+    Keys.fork in IntegrationTest := false,
+    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(base => Seq(base / "it")).value,
+    testGrouping in IntegrationTest := oneForkedJvmPerTest((definedTests in IntegrationTest).value),
+    parallelExecution in IntegrationTest := false,
     addTestReportOption(IntegrationTest, "int-test-reports")
   )
   .settings(
     resolvers ++= Seq(Resolver.jcenterRepo, Resolver.bintrayRepo("hmrc", "releases"))
   )
   .settings(scoverageSettings)
+  .settings(scalafmtOnCompile := true)
 
 lazy val scoverageSettings: Seq[Setting[_]] = Seq(
   coverageExcludedPackages := List(
-    "<empty>"
-    ,"Reverse.*"
-    ,"domain\\..*"
-    ,"forms\\..*"
-    ,"views\\..*"
-    ,".*(BuildInfo|Routes|Options|FeatureSwitchController|TestingUtilitiesController).*"
+    "<empty>",
+    "Reverse.*",
+    "domain\\..*",
+    "forms\\..*",
+    "views\\..*",
+    ".*(BuildInfo|Routes|Options|FeatureSwitchController|TestingUtilitiesController).*"
   ).mkString(";"),
   coverageMinimum := 70,
   coverageFailOnMinimum := true,

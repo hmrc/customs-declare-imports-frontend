@@ -20,93 +20,103 @@ import com.google.inject.Inject
 import config.AppConfig
 import domain.auth.SignedInUser
 import javax.inject.Singleton
-import play.api.http.{ContentTypes, HeaderNames, Status}
+import play.api.http.{ ContentTypes, HeaderNames, Status }
 import play.api.mvc.Codec
-import repositories.declaration.{Submission, SubmissionRepository}
+import repositories.declaration.{ Submission, SubmissionRepository }
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
 
-import scala.concurrent.{ExecutionContext, Future}
-
-
+import scala.concurrent.{ ExecutionContext, Future }
 
 object BackEndHeaderNames {
-  val Authorization = "Authorization"
-  val XLrnHeaderName = "X-Local-Reference-Number"
-  val XClientIdName = "X-Client-ID"
+  val Authorization       = "Authorization"
+  val XLrnHeaderName      = "X-Local-Reference-Number"
+  val XClientIdName       = "X-Client-ID"
   val XConversationIdName = "X-Conversation-ID"
 }
 
 @Singleton
 class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
-                                                 httpClient: HttpClient,
-                                                 submissionRepository: SubmissionRepository) {
+                                             httpClient: HttpClient,
+                                             submissionRepository: SubmissionRepository) {
 
-  def submitImportDeclaration(metaData: MetaData, localReferenceNumber: String)
-                                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] = {
+  def submitImportDeclaration(
+      metaData: MetaData,
+      localReferenceNumber: String
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
     postMetaData(appConfig.submitImportDeclarationUri, metaData, localReferenceNumber, onSuccessfulSubmission)
-  }
 
-
-  private def postMetaData(uri: String,
-                           metaData: MetaData,
-                           localReferenceNumber: String,
-                           onSuccess: (MetaData, CustomsDeclarationsResponse) => Future[CustomsDeclarationsResponse] = onSuccess)
-                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
+  private def postMetaData(
+      uri: String,
+      metaData: MetaData,
+      localReferenceNumber: String,
+      onSuccess: (MetaData, CustomsDeclarationsResponse) => Future[CustomsDeclarationsResponse] = onSuccess
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
     doPost(uri, metaData.toXml, localReferenceNumber).flatMap(onSuccess(metaData, _))
 
   //noinspection ConvertExpressionToSAM
-  private implicit val responseReader: HttpReads[CustomsDeclarationsResponse] = new HttpReads[CustomsDeclarationsResponse] {
-    override def read(method: String, url: String, response: HttpResponse): CustomsDeclarationsResponse = response.status / 100 match {
-      case 4 => throw new Upstream4xxResponse(
-        message = "Invalid request made to Customs Declarations API",
-        upstreamResponseCode = response.status,
-        reportAs = Status.INTERNAL_SERVER_ERROR,
-        headers = response.allHeaders
-      )
-      case 5 => throw new Upstream5xxResponse(
-        message = "Customs Declarations API unable to service request",
-        upstreamResponseCode = response.status,
-        reportAs = Status.INTERNAL_SERVER_ERROR
-      )
-      case _ => CustomsDeclarationsResponse(
-        response.header("X-Conversation-ID").getOrElse(
-          throw new Upstream5xxResponse(
-            message = "Conversation ID missing from Customs Declaration API response",
-            upstreamResponseCode = response.status,
-            reportAs = Status.INTERNAL_SERVER_ERROR
-          )
+  private implicit val responseReader: HttpReads[CustomsDeclarationsResponse] =
+    new HttpReads[CustomsDeclarationsResponse] {
+      override def read(method: String, url: String, response: HttpResponse): CustomsDeclarationsResponse =
+        response.status / 100 match {
+          case 4 =>
+            throw new Upstream4xxResponse(
+              message = "Invalid request made to Customs Declarations API",
+              upstreamResponseCode = response.status,
+              reportAs = Status.INTERNAL_SERVER_ERROR,
+              headers = response.allHeaders
+            )
+          case 5 =>
+            throw new Upstream5xxResponse(
+              message = "Customs Declarations API unable to service request",
+              upstreamResponseCode = response.status,
+              reportAs = Status.INTERNAL_SERVER_ERROR
+            )
+          case _ =>
+            CustomsDeclarationsResponse(
+              response
+                .header("X-Conversation-ID")
+                .getOrElse(
+                  throw new Upstream5xxResponse(
+                    message = "Conversation ID missing from Customs Declaration API response",
+                    upstreamResponseCode = response.status,
+                    reportAs = Status.INTERNAL_SERVER_ERROR
+                  )
+                )
+            )
+        }
+    }
+
+  private def onSuccess(meta: MetaData, resp: CustomsDeclarationsResponse): Future[CustomsDeclarationsResponse] =
+    Future.successful(resp)
+
+  private def onSuccessfulSubmission(
+      meta: MetaData,
+      resp: CustomsDeclarationsResponse
+  )(implicit ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
+    submissionRepository
+      .insert(
+        Submission(
+          eori = user.requiredEori,
+          conversationId = resp.conversationId,
+          meta.declaration.flatMap(_.functionalReferenceId)
         )
       )
-    }
-  }
+      .map(_ => resp)
 
-  private def onSuccess(meta: MetaData, resp: CustomsDeclarationsResponse): Future[CustomsDeclarationsResponse] = Future.successful(resp)
-
-  private def onSuccessfulSubmission(meta: MetaData, resp: CustomsDeclarationsResponse)
-                                    (implicit ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
-    submissionRepository.insert(
-      Submission(
-        eori = user.requiredEori,
-        conversationId = resp.conversationId,
-        meta.declaration.flatMap(_.functionalReferenceId)
-      )
-    ).map(_ => resp)
-
-  private def doPost(uri: String, body: String, localReferenceNumber: String )
-                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
-
+  private def doPost(uri: String, body: String, localReferenceNumber: String)(
+      implicit hc: HeaderCarrier,
+      ec: ExecutionContext
+  ): Future[CustomsDeclarationsResponse] =
     httpClient.POSTString[CustomsDeclarationsResponse](
       url = s"${appConfig.customsDeclareImportsEndpoint}$uri",
       body = body,
       headers = headers(localReferenceNumber)
     )(responseReader, hc, ec)
-  }
-
 
   private def headers(localReferenceNumber: String): Seq[(String, String)] = Seq(
-    HeaderNames.CONTENT_TYPE -> ContentTypes.XML(Codec.utf_8),
+    HeaderNames.CONTENT_TYPE          -> ContentTypes.XML(Codec.utf_8),
     BackEndHeaderNames.XLrnHeaderName -> localReferenceNumber
   )
 

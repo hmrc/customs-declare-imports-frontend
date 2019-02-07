@@ -17,18 +17,24 @@
 package controllers
 
 import domain.features.Feature
-import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
-import uk.gov.hmrc.customs.test.behaviours.{AuthenticationBehaviours, CustomsSpec, FeatureBehaviours, RequestHandlerBehaviours}
+import uk.gov.hmrc.customs.test.assertions.{ HtmlAssertions, HttpAssertions }
+import uk.gov.hmrc.customs.test.behaviours.{
+  AuthenticationBehaviours,
+  CustomsSpec,
+  FeatureBehaviours,
+  RequestHandlerBehaviours
+}
 
-class LandingControllerSpec extends CustomsSpec
-  with RequestHandlerBehaviours
-  with AuthenticationBehaviours
-  with FeatureBehaviours
-  with HttpAssertions
-  with HtmlAssertions {
+class LandingControllerSpec
+    extends CustomsSpec
+    with RequestHandlerBehaviours
+    with AuthenticationBehaviours
+    with FeatureBehaviours
+    with HttpAssertions
+    with HtmlAssertions {
 
   val method = "GET"
-  val uri = uriWithContextPath("/")
+  val uri    = uriWithContextPath("/")
 
   s"$method $uri" should {
 

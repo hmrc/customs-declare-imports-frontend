@@ -16,32 +16,37 @@
 
 package repositories.declaration
 
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{JsString, Json}
+import javax.inject.{ Inject, Singleton }
+import play.api.libs.json.{ JsString, Json }
 import play.modules.reactivemongo.ReactiveMongoComponent
-import reactivemongo.api.indexes.{Index, IndexType}
+import reactivemongo.api.indexes.{ Index, IndexType }
 import reactivemongo.bson.BSONObjectID
-import uk.gov.hmrc.mongo.json.ReactiveMongoFormats.{mongoEntity, objectIdFormats}
-import uk.gov.hmrc.mongo.{AtomicUpdate, ReactiveRepository}
+import uk.gov.hmrc.mongo.json.ReactiveMongoFormats.{ mongoEntity, objectIdFormats }
+import uk.gov.hmrc.mongo.{ AtomicUpdate, ReactiveRepository }
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
 class SubmissionRepository @Inject()(implicit mc: ReactiveMongoComponent, ec: ExecutionContext)
-  extends ReactiveRepository[Submission, BSONObjectID]("submissions", mc.mongoConnector.db, Submission.formats, objectIdFormats)
+    extends ReactiveRepository[Submission, BSONObjectID]("submissions",
+                                                         mc.mongoConnector.db,
+                                                         Submission.formats,
+                                                         objectIdFormats)
     with AtomicUpdate[Submission] {
 
   override def indexes: Seq[Index] = Seq(
-    Index(Seq("eori" -> IndexType.Ascending), name = Some("eoriIdx")),
+    Index(Seq("eori"           -> IndexType.Ascending), name = Some("eoriIdx")),
     Index(Seq("conversationId" -> IndexType.Ascending), unique = true, name = Some("conversationIdIdx")),
-    Index(Seq("mrn" -> IndexType.Ascending), name = Some("mrnIdx"))
+    Index(Seq("mrn"            -> IndexType.Ascending), name = Some("mrnIdx"))
   )
 
   def findByEori(eori: String): Future[Seq[Submission]] = find("eori" -> JsString(eori))
 
-  def getByConversationId(conversationId: String): Future[Option[Submission]] = find("conversationId" -> JsString(conversationId)).map(_.headOption)
+  def getByConversationId(conversationId: String): Future[Option[Submission]] =
+    find("conversationId" -> JsString(conversationId)).map(_.headOption)
 
-  def getByEoriAndMrn(eori: String, mrn: String): Future[Option[Submission]] = find("eori" -> JsString(eori), "mrn" -> JsString(mrn)).map(_.headOption)
+  def getByEoriAndMrn(eori: String, mrn: String): Future[Option[Submission]] =
+    find("eori" -> JsString(eori), "mrn" -> JsString(mrn)).map(_.headOption)
 
   override def isInsertion(newRecordId: BSONObjectID, oldRecord: Submission): Boolean = newRecordId.equals(oldRecord.id)
 

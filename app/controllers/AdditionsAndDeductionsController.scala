@@ -22,39 +22,36 @@ import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.add_additions_and_deductions
 
-class AdditionsAndDeductionsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                                (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+class AdditionsAndDeductionsController @Inject()(actions: Actions, cache: CustomsCacheService)(
+    implicit override val messagesApi: MessagesApi,
+    appConfig: AppConfig
+) extends CustomsController {
 
   val form = Form(chargeDeductionMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-
     cache.getByKey(req.eori, CacheKey.additionsAndDeductions).map { charges =>
-
       Ok(add_additions_and_deductions(form, charges.getOrElse(Seq.empty)))
     }
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-
-    form.bindFromRequest().fold(
-      errors =>
-        cache.getByKey(req.eori, CacheKey.additionsAndDeductions).map { charges =>
-
-          BadRequest(add_additions_and_deductions(errors, charges.getOrElse(Seq.empty)))
+    form
+      .bindFromRequest()
+      .fold(
+        errors =>
+          cache.getByKey(req.eori, CacheKey.additionsAndDeductions).map { charges =>
+            BadRequest(add_additions_and_deductions(errors, charges.getOrElse(Seq.empty)))
         },
-
-      charge =>
-        cache
-          .upsert(req.eori, CacheKey.additionsAndDeductions)
-                 (() => Seq(charge), charge +: _)
-          .map(_ => Redirect(routes.AdditionsAndDeductionsController.onPageLoad()))
-    )
+        charge =>
+          cache
+            .upsert(req.eori, CacheKey.additionsAndDeductions)(() => Seq(charge), charge +: _)
+            .map(_ => Redirect(routes.AdditionsAndDeductionsController.onPageLoad()))
+      )
   }
 }

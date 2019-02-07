@@ -16,7 +16,7 @@
 
 package config
 
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.{ MustMatchers, WordSpec }
 
 class SubmissionJourneySpec extends WordSpec with MustMatchers {
 
@@ -28,7 +28,7 @@ class SubmissionJourneySpec extends WordSpec with MustMatchers {
     }
 
     "return preceding item" in {
-      val str = journey.screens(1)
+      val str   = journey.screens(1)
       val value = journey.prev(str)
       value.right.get must be(journey.screens.head)
     }

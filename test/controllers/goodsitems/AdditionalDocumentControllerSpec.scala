@@ -16,12 +16,12 @@
 
 package controllers.goodsitems
 
-import controllers.{FakeActions, routes}
+import controllers.{ routes, FakeActions }
 import domain.GovernmentAgencyGoodsItem
-import domain.auth.{EORI, SignedInUser}
+import domain.auth.{ EORI, SignedInUser }
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq => eqTo, _}
+import org.mockito.ArgumentMatchers.{ eq => eqTo, _ }
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
@@ -31,16 +31,17 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, EndpointBehaviours }
 import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItemAdditionalDocument
 import views.html.gov_agency_goods_items_add_docs
 
-class AdditionalDocumentControllerSpec extends CustomsSpec
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with MockitoSugar
-  with EndpointBehaviours {
+class AdditionalDocumentControllerSpec
+    extends CustomsSpec
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with MockitoSugar
+    with EndpointBehaviours {
 
   private def form = Form(govtAgencyGoodsItemAddDocMapping)
 
@@ -51,7 +52,8 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
 
   val goodsItemGen = option(arbitrary[GovernmentAgencyGoodsItem])
 
-  def view(form: Form[GovernmentAgencyGoodsItemAdditionalDocument] = form, additionalDocs: Seq[GovernmentAgencyGoodsItemAdditionalDocument] = Seq()): String =
+  def view(form: Form[GovernmentAgencyGoodsItemAdditionalDocument] = form,
+           additionalDocs: Seq[GovernmentAgencyGoodsItemAdditionalDocument] = Seq()): String =
     gov_agency_goods_items_add_docs(form, additionalDocs)(fakeRequest, messages, appConfig).body
 
   ".onPageLoad" should {
@@ -64,7 +66,6 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(Some(user)).onPageLoad()(fakeRequest)
 
           status(result) mustBe OK
@@ -78,7 +79,6 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(Some(user.user)).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -108,10 +108,13 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
     "return OK" when {
       "user submits valid data" in {
         forAll {
-          (user: SignedInUser, additionalDocument: GovernmentAgencyGoodsItemAdditionalDocument, goodsItem: GovernmentAgencyGoodsItem) =>
+          (user: SignedInUser,
+           additionalDocument: GovernmentAgencyGoodsItemAdditionalDocument,
+           goodsItem: GovernmentAgencyGoodsItem) =>
             val docs = additionalDocument.copy(effectiveDateTime = None)
             withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(goodsItem)) {
-              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument.copy(effectiveDateTime = None)): _*)
+              val request =
+                fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument.copy(effectiveDateTime = None)): _*)
               val result = controller(Some(user)).onSubmit(request)
               status(result) mustBe SEE_OTHER
               redirectLocation(result) mustBe Some(routes.AdditionalDocumentController.onPageLoad().url)
@@ -126,7 +129,6 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
       "user does not have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(Some(user.user)).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -140,7 +142,7 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
 
         val badData =
           for {
-            gp <- arbitrary[GovernmentAgencyGoodsItemAdditionalDocument]
+            gp           <- arbitrary[GovernmentAgencyGoodsItemAdditionalDocument]
             categoryCode <- stringsLongerThan(6)
           } yield gp.copy(categoryCode = Some(categoryCode), effectiveDateTime = None)
 
@@ -149,7 +151,7 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
             withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, data) {
               val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
               val badForm = form.fillAndValidate(formData)
-              val result = controller(Some(user)).onSubmit(request)
+              val result  = controller(Some(user)).onSubmit(request)
 
               status(result) mustBe BAD_REQUEST
               contentAsString(result) mustBe view(badForm, data.map(_.additionalDocuments).getOrElse(Seq.empty))
@@ -162,14 +164,17 @@ class AdditionalDocumentControllerSpec extends CustomsSpec
 
       "valid data is provided" in {
 
-        forAll { (user: SignedInUser, additionalDoc: GovernmentAgencyGoodsItemAdditionalDocument, goodsItem: GovernmentAgencyGoodsItem) =>
-          withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(goodsItem)) {
-            val updatedDoc = additionalDoc.copy(effectiveDateTime = None)
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(updatedDoc): _*)
-            await(controller(Some(user)).onSubmit(request))
-            verify(mockCustomsCacheService, atLeastOnce())
-              .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem), any())(any(), any(), any())
-          }
+        forAll {
+          (user: SignedInUser,
+           additionalDoc: GovernmentAgencyGoodsItemAdditionalDocument,
+           goodsItem: GovernmentAgencyGoodsItem) =>
+            withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(goodsItem)) {
+              val updatedDoc = additionalDoc.copy(effectiveDateTime = None)
+              val request    = fakeRequest.withFormUrlEncodedBody(asFormParams(updatedDoc): _*)
+              await(controller(Some(user)).onSubmit(request))
+              verify(mockCustomsCacheService, atLeastOnce())
+                .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem), any())(any(), any(), any())
+            }
         }
       }
     }

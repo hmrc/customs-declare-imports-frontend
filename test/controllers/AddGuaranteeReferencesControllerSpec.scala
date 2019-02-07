@@ -16,29 +16,30 @@
 
 package controllers
 
-import domain.auth.{EORI, SignedInUser}
+import domain.auth.{ EORI, SignedInUser }
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{atLeastOnce, verify}
+import org.mockito.ArgumentMatchers.{ any, eq => eqTo }
+import org.mockito.Mockito.{ atLeastOnce, verify }
 import org.scalacheck.Arbitrary.arbitrary
-import org.scalacheck.Gen.{listOf, option}
+import org.scalacheck.Gen.{ listOf, option }
 import org.scalatest.OptionValues
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, EndpointBehaviours }
 import uk.gov.hmrc.wco.dec.ObligationGuarantee
 import views.html.add_guarantee_references
 
-class AddGuaranteeReferencesControllerSpec extends CustomsSpec
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with MockitoSugar
-  with EndpointBehaviours {
+class AddGuaranteeReferencesControllerSpec
+    extends CustomsSpec
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with MockitoSugar
+    with EndpointBehaviours {
 
   def form = Form(obligationGauranteeMapping)
 
@@ -60,7 +61,6 @@ class AddGuaranteeReferencesControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { signedInUser: SignedInUser =>
-
           val result = controller(Some(signedInUser)).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
@@ -74,7 +74,6 @@ class AddGuaranteeReferencesControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(Some(user.user)).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -86,7 +85,6 @@ class AddGuaranteeReferencesControllerSpec extends CustomsSpec
 
       forAll(arbitrary[SignedInUser], guaranteeReferencesGen) {
         case (user, data) =>
-
           withCleanCache(EORI(user.eori.value), CacheKey.guaranteeReference, data) {
 
             val result = controller(Some(user)).onPageLoad(fakeRequest)
@@ -108,9 +106,8 @@ class AddGuaranteeReferencesControllerSpec extends CustomsSpec
       "user submits valid data" in {
 
         forAll { (user: SignedInUser, obligationGuarantee: ObligationGuarantee) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(obligationGuarantee): _*)
-          val result = controller(Some(user)).onSubmit(request)
+          val result  = controller(Some(user)).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(routes.AddGuaranteeReferencesController.onPageLoad().url)
@@ -123,7 +120,6 @@ class AddGuaranteeReferencesControllerSpec extends CustomsSpec
       "user does not have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(Some(user.user)).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -137,18 +133,17 @@ class AddGuaranteeReferencesControllerSpec extends CustomsSpec
 
         val badData =
           for {
-            og <- arbitrary[ObligationGuarantee]
+            og         <- arbitrary[ObligationGuarantee]
             accessCode <- stringsLongerThan(4)
           } yield og.copy(accessCode = Some(accessCode))
 
         forAll(arbitrary[SignedInUser], badData, guaranteeReferencesGen) {
           case (user, data, existingData) =>
-
-            withCleanCache(EORI(user.eori.value), CacheKey.guaranteeReference, existingData){
+            withCleanCache(EORI(user.eori.value), CacheKey.guaranteeReference, existingData) {
 
               val request = fakeRequest.withFormUrlEncodedBody(asFormParams(data): _*)
               val badForm = form.fillAndValidate(data)
-              val result = controller(Some(user)).onSubmit(request)
+              val result  = controller(Some(user)).onSubmit(request)
 
               status(result) mustBe BAD_REQUEST
               contentAsString(result) mustBe view(badForm, existingData.getOrElse(Seq()))
@@ -162,12 +157,14 @@ class AddGuaranteeReferencesControllerSpec extends CustomsSpec
       "valid data is submitted" in {
 
         forAll { (user: SignedInUser, obligationGuarantee: ObligationGuarantee) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(obligationGuarantee): _*)
           await(controller(Some(user)).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce)
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.guaranteeReference))(any(), any())(any(), any(), any(), any())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.guaranteeReference))(any(), any())(any(),
+                                                                                                  any(),
+                                                                                                  any(),
+                                                                                                  any())
         }
       }
     }

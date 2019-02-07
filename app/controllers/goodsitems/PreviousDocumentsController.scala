@@ -17,49 +17,63 @@
 package controllers.goodsitems
 
 import config.AppConfig
-import controllers.{Actions, CustomsController}
+import controllers.{ Actions, CustomsController }
 import domain.DeclarationFormats._
 import domain.GovernmentAgencyGoodsItem
 import forms.DeclarationFormMapping._
-import javax.inject.{Inject, Singleton}
+import javax.inject.{ Inject, Singleton }
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.PreviousDocument
 
 @Singleton
-class PreviousDocumentsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi)
-  extends CustomsController {
+class PreviousDocumentsController @Inject()(actions: Actions, cacheService: CustomsCacheService)(
+    implicit appConfig: AppConfig,
+    override val messagesApi: MessagesApi
+) extends CustomsController {
 
   def previousDocumentForm: Form[PreviousDocument] = Form(previousDocumentMapping)
 
-  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
-        Ok(views.html.goods_items_previousdocs(previousDocumentForm, goodsItem.map(_.previousDocuments).getOrElse(Seq.empty)))
-      }
+  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+    cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
+      Ok(
+        views.html.goods_items_previousdocs(previousDocumentForm,
+                                            goodsItem.map(_.previousDocuments).getOrElse(Seq.empty))
+      )
+    }
   }
 
-  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit request =>
-      previousDocumentForm.bindFromRequest().fold(
+  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit request =>
+    previousDocumentForm
+      .bindFromRequest()
+      .fold(
         (formWithErrors: Form[PreviousDocument]) =>
-          cacheService.getByKey(request.eori, CacheKey.goodsItem).map(goodsItem =>
-          BadRequest(views.html.goods_items_previousdocs(formWithErrors, goodsItem.map(_.previousDocuments).getOrElse(Seq.empty)))),
+          cacheService
+            .getByKey(request.eori, CacheKey.goodsItem)
+            .map(
+              goodsItem =>
+                BadRequest(
+                  views.html.goods_items_previousdocs(formWithErrors,
+                                                      goodsItem.map(_.previousDocuments).getOrElse(Seq.empty))
+              )
+          ),
         form =>
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(previousDocuments = goodsItem.previousDocuments :+ form)
-              case None => GovernmentAgencyGoodsItem(previousDocuments = Seq(form))
+              case None            => GovernmentAgencyGoodsItem(previousDocuments = Seq(form))
             }
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
-             Redirect(routes.PreviousDocumentsController.onPageLoad())
-            }
-          })
+            cacheService
+              .cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem)
+              .map { _ =>
+                Redirect(routes.PreviousDocumentsController.onPageLoad())
+              }
+        }
+      )
   }
 
 }

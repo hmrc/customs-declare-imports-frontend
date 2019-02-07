@@ -17,35 +17,35 @@
 package controllers.goodsitems
 
 import config.AppConfig
-import controllers.{Actions, CustomsController}
+import controllers.{ Actions, CustomsController }
 import domain.DeclarationFormats._
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import javax.inject.{Inject, Singleton}
+import javax.inject.{ Inject, Singleton }
 
 import scala.concurrent.Future
 
 @Singleton
-class GoodsItemsListController @Inject()
-(actions: Actions, cacheService: CustomsCacheService)
-  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+class GoodsItemsListController @Inject()(actions: Actions, cacheService: CustomsCacheService)(
+    implicit val appConfig: AppConfig,
+    val messagesApi: MessagesApi
+) extends CustomsController {
 
-  def onPageLoad(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.govAgencyGoodsItemsList).map(listItems =>
-        Ok(views.html.gov_agency_goods_items_list(listItems.getOrElse(Seq.empty))))
+  def onPageLoad(): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+    cacheService
+      .getByKey(req.eori, CacheKey.govAgencyGoodsItemsList)
+      .map(listItems => Ok(views.html.gov_agency_goods_items_list(listItems.getOrElse(Seq.empty))))
   }
 
-  def saveGoodsItem(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit request =>
-      cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap {
-        case Some(goodsItem) =>
-          cacheService.upsert(request.eori, CacheKey.govAgencyGoodsItemsList)(() => Seq(goodsItem),
-            goodsItem +: _).map(res =>
-              Redirect(routes.GoodsItemsListController.onPageLoad()))
-        case _ => Future.successful(Redirect(routes.GoodsItemsListController.onPageLoad()))
-      }
+  def saveGoodsItem(): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit request =>
+    cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap {
+      case Some(goodsItem) =>
+        cacheService
+          .upsert(request.eori, CacheKey.govAgencyGoodsItemsList)(() => Seq(goodsItem), goodsItem +: _)
+          .map(res => Redirect(routes.GoodsItemsListController.onPageLoad()))
+      case _ => Future.successful(Redirect(routes.GoodsItemsListController.onPageLoad()))
+    }
   }
 }

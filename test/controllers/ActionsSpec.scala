@@ -17,29 +17,30 @@
 package controllers
 
 import config.ErrorHandler
-import domain.auth.{AuthenticatedRequest, SignedInUser}
+import domain.auth.{ AuthenticatedRequest, SignedInUser }
 import domain.features.Feature
 import domain.features.Feature.Feature
 import generators.Generators
 import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import play.api.http.Status
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.behaviours.{AuthenticationBehaviours, CustomsSpec, FeatureBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ AuthenticationBehaviours, CustomsSpec, FeatureBehaviours }
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 
 import scala.concurrent.Future
 
-class ActionsSpec extends CustomsSpec
-  with AuthenticationBehaviours
-  with FeatureBehaviours
-  with PropertyChecks
-  with Generators{
+class ActionsSpec
+    extends CustomsSpec
+    with AuthenticationBehaviours
+    with FeatureBehaviours
+    with PropertyChecks
+    with Generators {
 
   val errorHandler = component[ErrorHandler]
-  val actions = new ActionsImpl(authConnector, errorHandler)
+  val actions      = new ActionsImpl(authConnector, errorHandler)
 
   val switchedController = new MySwitchedController(actions, Feature.start)
 
@@ -52,7 +53,7 @@ class ActionsSpec extends CustomsSpec
     "return as normal for enabled feature" in withFeatures(enabled(switchedController.feature)) {
       val res = call(switchedController.action, FakeRequest())
       status(res) must be(Status.OK)
-      contentAsString(res) must be (s"${switchedController.feature} is enabled")
+      contentAsString(res) must be(s"${switchedController.feature} is enabled")
     }
 
     "return not found for disabled feature" in withFeatures(disabled(switchedController.feature)) {
@@ -82,9 +83,7 @@ class ActionsSpec extends CustomsSpec
     "return an eori request when user has eori identifier" in {
 
       forAll { user: SignedInUser =>
-
         withSignedInUser(user) { (_, _, _) =>
-
           val result = call(eoriController.action, fakeRequest)
 
           status(result) mustBe OK
@@ -96,11 +95,9 @@ class ActionsSpec extends CustomsSpec
     "return Unauthorized when user does not have an eori" in {
 
       forAll { user: UnauthenticatedUser =>
-
         whenever(user.user.enrolments.getEnrolment("HMRC-CUS-ORG").nonEmpty) {
           withSignedInUser(user.user) { (_, _, _) =>
-
-            val result = call(eoriController.action, fakeRequest)
+            val result          = call(eoriController.action, fakeRequest)
             val expectedContent = errorHandler.notFoundTemplate(AuthenticatedRequest(fakeRequest, user.user)).body
 
             status(result) mustBe UNAUTHORIZED
@@ -130,8 +127,7 @@ class MyAuthedController(actions: Actions) extends BaseController {
 
 class MyEoriController(actions: Actions) extends BaseController {
 
-  def action: Action[AnyContent] = (actions.auth andThen actions.eori) {
-    implicit req =>
-      Ok(req.eori.value)
+  def action: Action[AnyContent] = (actions.auth andThen actions.eori) { implicit req =>
+    Ok(req.eori.value)
   }
 }

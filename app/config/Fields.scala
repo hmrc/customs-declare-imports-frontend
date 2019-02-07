@@ -433,11 +433,10 @@ class Fields extends Options {
     validators = Seq(OptionalContainsValidator(countryTypes.map(_._1).toSet))
   )
 
-
   val invoiceAmountValue: TextInput = TextInput(
     name = "declaration.invoiceAmount.value",
     labelKey = Some("declaration.invoiceAmount.value"),
-    validators = Seq(OptionalNumericValidator(16,2))
+    validators = Seq(OptionalNumericValidator(16, 2))
   )
 
   val invoiceAmountCurrency: SelectInput = SelectInput(
@@ -450,16 +449,17 @@ class Fields extends Options {
 
 object Fields extends Fields {
 
-  private val typeMirror = runtimeMirror(this.getClass.getClassLoader)
+  private val typeMirror     = runtimeMirror(this.getClass.getClassLoader)
   private val instanceMirror = typeMirror.reflect(this)
-  private val members = instanceMirror.symbol.typeSignature.members
+  private val members        = instanceMirror.symbol.typeSignature.members
 
   val definitions: Map[String, FieldDefinition] = fields.map { f =>
     val t = fieldMirror(f).get.asInstanceOf[FieldDefinition]
     t.name -> t
   }.toMap
 
-  private def fields: Iterable[universe.Symbol] = members.filter(_.typeSignature.baseClasses.contains(typeOf[FieldDefinition].typeSymbol))
+  private def fields: Iterable[universe.Symbol] =
+    members.filter(_.typeSignature.baseClasses.contains(typeOf[FieldDefinition].typeSymbol))
 
   private def fieldMirror(symbol: Symbol): universe.FieldMirror = instanceMirror.reflectField(symbol.asTerm)
 }

@@ -31,10 +31,7 @@ import views.behaviours.ViewBehaviours
 import views.html.components.input_text
 import views.html.components.table.table
 
-class RoleBasedPartySpec extends ViewBehaviours
-  with ViewMatchers
-  with PropertyChecks
-  with Generators {
+class RoleBasedPartySpec extends ViewBehaviours with ViewMatchers with PropertyChecks with Generators {
 
   val form = Form(roleBasedPartyMapping)
 
@@ -47,7 +44,7 @@ class RoleBasedPartySpec extends ViewBehaviours
       routes.StartController.displayStartPage()
     )(fakeRequest, messages, appConfig)
 
-  def view(messageKeyPrefix: String): () => Html = () => view(form, Seq.empty, messageKeyPrefix)
+  def view(messageKeyPrefix: String): () => Html                      = () => view(form, Seq.empty, messageKeyPrefix)
   def listView(messageKeyPrefix: String): Seq[RoleBasedParty] => Html = xs => view(form, xs, messageKeyPrefix)
 
   val messageKeyPrefixes =
@@ -64,10 +61,9 @@ class RoleBasedPartySpec extends ViewBehaviours
       "contain id field" in {
 
         forAll { roleBasedParty: RoleBasedParty =>
-
           val popForm = form.fillAndValidate(roleBasedParty)
-          val html = view(popForm, Seq.empty, messageKeyPrefix)
-          val input = input_text(popForm("id"), "ID")
+          val html    = view(popForm, Seq.empty, messageKeyPrefix)
+          val input   = input_text(popForm("id"), "ID")
 
           html must include(input)
         }
@@ -76,10 +72,9 @@ class RoleBasedPartySpec extends ViewBehaviours
       "contain roleCode field" in {
 
         forAll { roleBasedParty: RoleBasedParty =>
-
           val popForm = form.fillAndValidate(roleBasedParty)
-          val html = view(popForm, Seq.empty, messageKeyPrefix)
-          val input = input_text(popForm("roleCode"), "Role Code")
+          val html    = view(popForm, Seq.empty, messageKeyPrefix)
+          val input   = input_text(popForm("roleCode"), "Role Code")
 
           html must include(input)
         }
@@ -88,7 +83,6 @@ class RoleBasedPartySpec extends ViewBehaviours
       "contain table of data" in {
 
         forAll(listOf(arbitrary[RoleBasedParty])) { roles =>
-
           val htmlTable =
             table(HtmlTable("ID", "Role Code")(roles.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
           val html = listView(messageKeyPrefix)(roles)

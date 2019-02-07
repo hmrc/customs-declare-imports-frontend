@@ -22,40 +22,38 @@ import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.add_previous_documents
 
 import scala.concurrent.Future
 
-class PreviousDocumentsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-                                           (implicit appConfig: AppConfig, override val messagesApi: MessagesApi)
-  extends CustomsController {
+class PreviousDocumentsController @Inject()(actions: Actions, cacheService: CustomsCacheService)(
+    implicit appConfig: AppConfig,
+    override val messagesApi: MessagesApi
+) extends CustomsController {
 
   def form = Form(previousDocumentMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-
     cacheService.getByKey(req.eori, CacheKey.previousDocuments).map { documents =>
-
       Ok(add_previous_documents(form, documents.getOrElse(Seq.empty)))
     }
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-
-    form.bindFromRequest().fold(
-      formErrors =>
-        cacheService.getByKey(req.eori, CacheKey.previousDocuments).map { documents =>
-
-          BadRequest(add_previous_documents(formErrors, documents.getOrElse(Seq.empty)))
+    form
+      .bindFromRequest()
+      .fold(
+        formErrors =>
+          cacheService.getByKey(req.eori, CacheKey.previousDocuments).map { documents =>
+            BadRequest(add_previous_documents(formErrors, documents.getOrElse(Seq.empty)))
         },
-
-      document =>
-        cacheService.upsert(req.eori, CacheKey.previousDocuments)
-                           (() => Seq(document), document +: _)
-          .map(_ => Redirect(routes.PreviousDocumentsController.onPageLoad()))
-    )
+        document =>
+          cacheService
+            .upsert(req.eori, CacheKey.previousDocuments)(() => Seq(document), document +: _)
+            .map(_ => Redirect(routes.PreviousDocumentsController.onPageLoad()))
+      )
   }
 }

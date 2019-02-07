@@ -17,48 +17,61 @@
 package controllers.goodsitems
 
 import config.AppConfig
-import controllers.{Actions, CustomsController}
+import controllers.{ Actions, CustomsController }
 import domain.DeclarationFormats._
 import domain.GovernmentAgencyGoodsItem
 import forms.DeclarationFormMapping._
-import javax.inject.{Inject, Singleton}
+import javax.inject.{ Inject, Singleton }
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItemAdditionalDocument
 
 @Singleton
-class AdditionalDocumentController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi)
-  extends CustomsController {
+class AdditionalDocumentController @Inject()(actions: Actions, cacheService: CustomsCacheService)(
+    implicit appConfig: AppConfig,
+    override val messagesApi: MessagesApi
+) extends CustomsController {
 
-  def additionalDocumentsForm: Form[GovernmentAgencyGoodsItemAdditionalDocument] = Form(govtAgencyGoodsItemAddDocMapping)
+  def additionalDocumentsForm: Form[GovernmentAgencyGoodsItemAdditionalDocument] =
+    Form(govtAgencyGoodsItemAddDocMapping)
 
-  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
-        Ok(views.html.gov_agency_goods_items_add_docs(additionalDocumentsForm, goodsItem.map(_.additionalDocuments).getOrElse(Seq.empty)))
-      }
+  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+    cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
+      Ok(
+        views.html.gov_agency_goods_items_add_docs(additionalDocumentsForm,
+                                                   goodsItem.map(_.additionalDocuments).getOrElse(Seq.empty))
+      )
+    }
   }
 
-  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit request =>
-      additionalDocumentsForm.bindFromRequest().fold(
+  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit request =>
+    additionalDocumentsForm
+      .bindFromRequest()
+      .fold(
         (formWithErrors: Form[GovernmentAgencyGoodsItemAdditionalDocument]) =>
-          cacheService.getByKey(request.eori, CacheKey.goodsItem).map(goodsItem =>
-          BadRequest(views.html.gov_agency_goods_items_add_docs(formWithErrors, goodsItem.map(_.additionalDocuments).getOrElse(Seq.empty)))),
+          cacheService
+            .getByKey(request.eori, CacheKey.goodsItem)
+            .map(
+              goodsItem =>
+                BadRequest(
+                  views.html.gov_agency_goods_items_add_docs(formWithErrors,
+                                                             goodsItem.map(_.additionalDocuments).getOrElse(Seq.empty))
+              )
+          ),
         form =>
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(additionalDocuments = goodsItem.additionalDocuments :+ form)
-              case None => GovernmentAgencyGoodsItem(additionalDocuments = Seq(form))
+              case None            => GovernmentAgencyGoodsItem(additionalDocuments = Seq(form))
             }
             cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
               Redirect(routes.AdditionalDocumentController.onPageLoad())
             }
-          })
+        }
+      )
   }
 
 }

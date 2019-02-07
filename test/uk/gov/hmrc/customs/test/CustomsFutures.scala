@@ -22,6 +22,7 @@ import scala.concurrent.duration._
 
 trait CustomsFutures extends ScalaFutures {
 
-  implicit lazy val patience: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 50.milliseconds) // be more patient than the default
+  implicit lazy val patience
+    : PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 50.milliseconds) // be more patient than the default
 
 }

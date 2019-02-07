@@ -16,30 +16,30 @@
 
 package controllers
 
-import domain.auth.{EORI, SignedInUser}
+import domain.auth.{ EORI, SignedInUser }
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{atLeastOnce, verify}
+import org.mockito.ArgumentMatchers.{ any, eq => eqTo }
+import org.mockito.Mockito.{ atLeastOnce, verify }
 import org.scalacheck.Arbitrary.arbitrary
-import org.scalacheck.Gen.{listOf, option}
+import org.scalacheck.Gen.{ listOf, option }
 import org.scalatest.OptionValues
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, EndpointBehaviours }
 import uk.gov.hmrc.wco.dec.AdditionalDocument
 import views.html.deferred_payments
 
-
-class DeferredPaymentsControllerSpec extends CustomsSpec
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with MockitoSugar
-  with EndpointBehaviours {
+class DeferredPaymentsControllerSpec
+    extends CustomsSpec
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with MockitoSugar
+    with EndpointBehaviours {
 
   def form = Form(additionalDocumentMapping)
 
@@ -61,7 +61,6 @@ class DeferredPaymentsControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { signedInUser: SignedInUser =>
-
           val result = controller(Some(signedInUser)).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
@@ -75,7 +74,6 @@ class DeferredPaymentsControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(Some(user.user)).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -87,8 +85,7 @@ class DeferredPaymentsControllerSpec extends CustomsSpec
 
       forAll(arbitrary[SignedInUser], additionalDocumentGen) {
         case (user, data) =>
-
-          withCleanCache(EORI(user.eori.value), CacheKey.additionalDocuments, data){
+          withCleanCache(EORI(user.eori.value), CacheKey.additionalDocuments, data) {
 
             val result = controller(Some(user)).onPageLoad(fakeRequest)
 
@@ -110,9 +107,8 @@ class DeferredPaymentsControllerSpec extends CustomsSpec
       "user submits valid data" in {
 
         forAll { (user: SignedInUser, additionalDocument: AdditionalDocument) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument): _*)
-          val result = controller(Some(user)).onSubmit(request)
+          val result  = controller(Some(user)).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(routes.DeferredPaymentsController.onPageLoad().url)
@@ -125,7 +121,6 @@ class DeferredPaymentsControllerSpec extends CustomsSpec
       "user does not have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(Some(user.user)).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -139,18 +134,17 @@ class DeferredPaymentsControllerSpec extends CustomsSpec
 
         val badData =
           for {
-            ad <- arbitrary[AdditionalDocument]
+            ad           <- arbitrary[AdditionalDocument]
             categoryCode <- stringsLongerThan(1)
           } yield ad.copy(categoryCode = Some(categoryCode))
 
         forAll(arbitrary[SignedInUser], badData, additionalDocumentGen) {
           case (user, data, existingData) =>
-
-            withCleanCache(EORI(user.eori.value), CacheKey.additionalDocuments, existingData){
+            withCleanCache(EORI(user.eori.value), CacheKey.additionalDocuments, existingData) {
 
               val request = fakeRequest.withFormUrlEncodedBody(asFormParams(data): _*)
               val badForm = form.fillAndValidate(data)
-              val result = controller(Some(user)).onSubmit(request)
+              val result  = controller(Some(user)).onSubmit(request)
 
               status(result) mustBe BAD_REQUEST
               contentAsString(result) mustBe view(badForm, existingData.getOrElse(Seq()))
@@ -164,12 +158,14 @@ class DeferredPaymentsControllerSpec extends CustomsSpec
       "valid data is provided" in {
 
         forAll { (user: SignedInUser, additionalDocument: AdditionalDocument) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(additionalDocument): _*)
           await(controller(Some(user)).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionalDocuments))(any(), any())(any(), any(), any(), any())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionalDocuments))(any(), any())(any(),
+                                                                                                   any(),
+                                                                                                   any(),
+                                                                                                   any())
         }
       }
     }

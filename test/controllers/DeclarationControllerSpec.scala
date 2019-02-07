@@ -18,27 +18,28 @@ package controllers
 
 import config.SubmissionJourney
 import domain.features.Feature
-import repositories.declaration.{Submission, SubmissionRepository}
-import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
+import repositories.declaration.{ Submission, SubmissionRepository }
+import uk.gov.hmrc.customs.test.assertions.{ HtmlAssertions, HttpAssertions }
 import uk.gov.hmrc.customs.test.behaviours._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.ReactiveRepository
 
-class DeclarationControllerSpec extends CustomsSpec
-  with AuthenticationBehaviours
-  with FeatureBehaviours
-  with RequestHandlerBehaviours
-  with CustomsDeclarationsApiBehaviours
-  with MongoBehaviours
-  with HttpAssertions
-  with HtmlAssertions {
+class DeclarationControllerSpec
+    extends CustomsSpec
+    with AuthenticationBehaviours
+    with FeatureBehaviours
+    with RequestHandlerBehaviours
+    with CustomsDeclarationsApiBehaviours
+    with MongoBehaviours
+    with HttpAssertions
+    with HtmlAssertions {
 
-  val mrn = randomString(16)
-  val repo = component[SubmissionRepository]
+  val mrn                                                  = randomString(16)
+  val repo                                                 = component[SubmissionRepository]
   override val repositories: Seq[ReactiveRepository[_, _]] = Seq(repo)
-  val get = "GET"
-  val post = "POST"
-  val submitUri = journeyUri(SubmissionJourney.screens.head)
+  val get                                                  = "GET"
+  val post                                                 = "POST"
+  val submitUri                                            = journeyUri(SubmissionJourney.screens.head)
 
   def journeyUri(screen: String): String = uriWithContextPath(s"/submit-declaration/$screen")
 

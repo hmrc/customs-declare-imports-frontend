@@ -17,18 +17,19 @@
 package uk.gov.hmrc.customs.test
 
 import repositories.declaration.SubmissionRepository
-import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
+import uk.gov.hmrc.customs.test.assertions.{ HtmlAssertions, HttpAssertions }
 import uk.gov.hmrc.customs.test.behaviours._
 import uk.gov.hmrc.mongo.ReactiveRepository
 
-trait IntegrationTest extends AuthenticationBehaviours
-  with FeatureBehaviours
-  with RequestHandlerBehaviours
-  with CustomsDeclarationsApiBehaviours
-  with HttpAssertions
-  with HtmlAssertions
-  with MongoBehaviours {
+trait IntegrationTest
+    extends AuthenticationBehaviours
+    with FeatureBehaviours
+    with RequestHandlerBehaviours
+    with CustomsDeclarationsApiBehaviours
+    with HttpAssertions
+    with HtmlAssertions
+    with MongoBehaviours {
 
-  val repo = component[SubmissionRepository]
+  val repo                                                 = component[SubmissionRepository]
   override val repositories: Seq[ReactiveRepository[_, _]] = Seq(repo)
 }

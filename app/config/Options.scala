@@ -37,7 +37,8 @@ class Options {
 
   val agentFunctionCodes: Seq[(String, String)] = Seq("2" -> "2", "3" -> "3")
 
-  val documentType: Seq[(String, String)] = Seq("235" -> "235",
+  val documentType: Seq[(String, String)] = Seq(
+    "235" -> "235",
     "270" -> "270",
     "271" -> "271",
     "325" -> "325",
@@ -75,70 +76,74 @@ class Options {
     "T2F" -> "T2F",
     "T2G" -> "T2G",
     "T2M" -> "T2M",
-    "ZZZ" -> "ZZZ")
+    "ZZZ" -> "ZZZ"
+  )
 
   val partySubRoleTypes: Seq[(String, String)] = Seq("CS" -> "CS",
-    "FR1" -> "FR1",
-    "FR2" -> "FR2",
-    "FR3" -> "FR3",
-    "FR4" -> "FR4",
-    "FW" -> "FW",
-    "MF" -> "MF",
-    "WH" -> "WH")
+                                                     "FR1" -> "FR1",
+                                                     "FR2" -> "FR2",
+                                                     "FR3" -> "FR3",
+                                                     "FR4" -> "FR4",
+                                                     "FW"  -> "FW",
+                                                     "MF"  -> "MF",
+                                                     "WH"  -> "WH")
 
-  val partyRoleAuthorizationTypes: Seq[(String, String)] = Seq("ACE" -> "ACE",
-    "ACP" -> "ACP",
-    "ACR" -> "ACR",
-    "ACT" -> "ACT",
+  val partyRoleAuthorizationTypes: Seq[(String, String)] = Seq(
+    "ACE"  -> "ACE",
+    "ACP"  -> "ACP",
+    "ACR"  -> "ACR",
+    "ACT"  -> "ACT",
     "AEOC" -> "AEOC",
     "AEOF" -> "AEOF",
     "AEOS" -> "AEOS",
     "APEX" -> "APEX",
-    "AWB" -> "AWB",
-    "BOI" -> "BOI",
-    "BTI" -> "BTI",
-    "CCL" -> "CCL",
-    "CGU" -> "CGU",
+    "AWB"  -> "AWB",
+    "BOI"  -> "BOI",
+    "BTI"  -> "BTI",
+    "CCL"  -> "CCL",
+    "CGU"  -> "CGU",
     "CSDR" -> "CSDR",
-    "CSE" -> "CSE",
-    "CVA" -> "CVA",
-    "CW1" -> "CW1",
-    "CW2" -> "CW2",
-    "CWP" -> "CWP",
-    "DEP" -> "DEP",
-    "DPO" -> "DPO",
-    "EIR" -> "EIR",
+    "CSE"  -> "CSE",
+    "CVA"  -> "CVA",
+    "CW1"  -> "CW1",
+    "CW2"  -> "CW2",
+    "CWP"  -> "CWP",
+    "DEP"  -> "DEP",
+    "DPO"  -> "DPO",
+    "EIR"  -> "EIR",
     "EORI" -> "EORI",
     "EPSS" -> "EPSS",
-    "ETD" -> "ETD",
-    "EUS" -> "EUS",
+    "ETD"  -> "ETD",
+    "EUS"  -> "EUS",
     "EXEE" -> "EXEE",
     "EXOR" -> "EXOR",
-    "EXW" -> "EXW",
+    "EXW"  -> "EXW",
     "EXWH" -> "EXWH",
-    "FAS" -> "FAS",
-    "FZ" -> "FZ",
-    "GGA" -> "GGA",
-    "GVS" -> "GVS",
-    "IPO" -> "IPO",
+    "FAS"  -> "FAS",
+    "FZ"   -> "FZ",
+    "GGA"  -> "GGA",
+    "GVS"  -> "GVS",
+    "IPO"  -> "IPO",
     "LVBI" -> "LVBI",
-    "OPO" -> "OPO",
-    "REM" -> "REM",
-    "REP" -> "REP",
-    "REX" -> "REX",
-    "RSS" -> "RSS",
-    "SAS" -> "SAS",
+    "OPO"  -> "OPO",
+    "REM"  -> "REM",
+    "REP"  -> "REP",
+    "REX"  -> "REX",
+    "RSS"  -> "RSS",
+    "SAS"  -> "SAS",
     "SASP" -> "SASP",
-    "SDE" -> "SDE",
+    "SDE"  -> "SDE",
     "SIVA" -> "SIVA",
-    "SSE" -> "SSE",
-    "TEA" -> "TEA",
+    "SSE"  -> "SSE",
+    "TEA"  -> "TEA",
     "TEAH" -> "TEAH",
-    "TRD" -> "TRD",
-    "TST" -> "TST",
-    "UKCS" -> "UKCS")
+    "TRD"  -> "TRD",
+    "TST"  -> "TST",
+    "UKCS" -> "UKCS"
+  )
 
-  val countryOptions: Seq[(String, String)] = Seq("AF" -> "Afghanistan",
+  val countryOptions: Seq[(String, String)] = Seq(
+    "AF" -> "Afghanistan",
     "AX" -> "Aland Islands",
     "AL" -> "Albania",
     "DZ" -> "Algeria",
@@ -383,7 +388,8 @@ class Options {
     "EH" -> "Western Sahara",
     "YE" -> "Yemen",
     "ZM" -> "Zambia",
-    "ZW" -> "Zimbabwe")
+    "ZW" -> "Zimbabwe"
+  )
 
   val countryTypes: Seq[(String, String)] = Seq(
     "AD" -> "AD",
@@ -656,7 +662,7 @@ class Options {
     "ZN" -> "ZN",
     "ZU" -> "ZU",
     "ZW" -> "ZW"
-    )
+  )
 
   val governmentProcedureTypes: Seq[(String, String)] = Seq(
     "10" -> "10",
@@ -686,12 +692,10 @@ class Options {
     "46" -> "46",
     "76" -> "76",
     "95" -> "95",
-    "96" -> "96")
+    "96" -> "96"
+  )
 
-  val importPreviousProcedures: Seq[(String, String)] = Seq(
-    "23" -> "23",
-    "71" -> "71",
-    "00" -> "00")
+  val importPreviousProcedures: Seq[(String, String)] = Seq("23" -> "23", "71" -> "71", "00" -> "00")
 
   val specialProcedureTypes: Seq[(String, String)] = Seq(
     "000" -> "000",
@@ -831,7 +835,8 @@ class Options {
     "F47" -> "F47",
     "F61" -> "F61",
     "F65" -> "F65",
-    "F75" -> "F75")
+    "F75" -> "F75"
+  )
 
   val currencyTypes: Seq[(String, String)] = Seq(
     "AED" -> "AED",
@@ -1018,18 +1023,17 @@ class Options {
     "6" -> "6"
   )
 
-  val dutyTaxFeeTypes: Seq[(String, String)] = Seq(
-    "611" -> "611",
-    "A00" -> "A00",
-    "A30" -> "A30",
-    "A35" -> "A35",
-    "A40" -> "A40",
-    "A45" -> "A45",
-    "B00" -> "B00",
-    "C00" -> "C00",
-    "C10" -> "C10",
-    "E00" -> "E00",
-    "T00" -> "T00")
+  val dutyTaxFeeTypes: Seq[(String, String)] = Seq("611" -> "611",
+                                                   "A00" -> "A00",
+                                                   "A30" -> "A30",
+                                                   "A35" -> "A35",
+                                                   "A40" -> "A40",
+                                                   "A45" -> "A45",
+                                                   "B00" -> "B00",
+                                                   "C00" -> "C00",
+                                                   "C10" -> "C10",
+                                                   "E00" -> "E00",
+                                                   "T00" -> "T00")
 
   val measureUnitTypes: Seq[(String, String)] = Seq(
     "ASV" -> "ASV",
@@ -1077,7 +1081,8 @@ class Options {
     "TCE" -> "TCE",
     "TJO" -> "TJO",
     "TNE" -> "TNE",
-    "WAT" -> "WAT")
+    "WAT" -> "WAT"
+  )
 
   val paymentMethodTypes: Seq[(String, String)] = Seq("E" -> "E")
 
@@ -1110,7 +1115,7 @@ class Options {
     "BL" -> "BL",
     "BM" -> "BM",
     "BT" -> "BT"
-)
+  )
 
   val specialMentionTypes: Seq[(String, String)] = Seq(
     "10200" -> "10200",
@@ -1235,12 +1240,12 @@ class Options {
     "TAPAR" -> "TAPAR",
     "TOR01" -> "TOR01",
     "WHSRP" -> "WHSRP"
-    )
+  )
 
   val countryRegionSubRoleTypes: Seq[(String, String)] = Seq(
     "1" -> "Non-preferential origin",
     "2" -> "Preferential origin"
-    )
+  )
 
   val airportCodes: Seq[(String, String)] = Seq(
     "AAC" -> "AAC",
@@ -2067,18 +2072,18 @@ class Options {
     "ZRM" -> "ZRM",
     "ZSA" -> "ZSA",
     "ZYL" -> "ZYL"
-    )
+  )
 
   val transactionNatureTypes: Seq[(String, String)] = Seq(
-    "1" -> "1",
-    "2" -> "2",
-    "3" -> "3",
-    "4" -> "4",
-    "5" -> "5",
-    "6" -> "6",
-    "7" -> "7",
-    "8" -> "8",
-    "9" -> "9",
+    "1"  -> "1",
+    "2"  -> "2",
+    "3"  -> "3",
+    "4"  -> "4",
+    "5"  -> "5",
+    "6"  -> "6",
+    "7"  -> "7",
+    "8"  -> "8",
+    "9"  -> "9",
     "11" -> "11",
     "12" -> "12",
     "13" -> "13",
@@ -2093,7 +2098,8 @@ class Options {
     "51" -> "51",
     "52" -> "52",
     "91" -> "91",
-    "99" -> "99")
+    "99" -> "99"
+  )
 
   val transportModeTypes: Seq[(String, String)] = Seq(
     "1" -> "1",
@@ -2105,7 +2111,7 @@ class Options {
     "7" -> "7",
     "8" -> "8",
     "9" -> "9"
-    )
+  )
 
   val transportMeansIdentificationTypes: Seq[(String, String)] = Seq(
     "10" -> "10",
@@ -2116,7 +2122,7 @@ class Options {
     "41" -> "41",
     "80" -> "80",
     "81" -> "81"
-    )
+  )
 
   val goodsLocationTypeCode: Seq[(String, String)] = Seq(
     "A" -> "Designated",
@@ -2281,7 +2287,7 @@ class Options {
     "GBYRK001" -> "GBYRK001"
   )
 
-val declaredGuaranteeTypes: Seq[(String, String)] = Seq(
+  val declaredGuaranteeTypes: Seq[(String, String)] = Seq(
     "0" -> "0",
     "1" -> "1",
     "2" -> "2",
@@ -2298,7 +2304,7 @@ val declaredGuaranteeTypes: Seq[(String, String)] = Seq(
     "G" -> "G",
     "H" -> "H",
     "Y" -> "Y"
-    )
+  )
 
   val incoTermCodes: Seq[(String, String)] = Seq(
     "CFR" -> "CFR",
@@ -2318,7 +2324,7 @@ val declaredGuaranteeTypes: Seq[(String, String)] = Seq(
     "FOB" -> "FOB",
     "XXX" -> "XXX"
   )
-val thirdSpecialTerritoriesCategories: Seq[(String, String)] = Seq(
+  val thirdSpecialTerritoriesCategories: Seq[(String, String)] = Seq(
     "AD" -> "AD",
     "AE" -> "AE",
     "AF" -> "AF",
@@ -2563,9 +2569,9 @@ val thirdSpecialTerritoriesCategories: Seq[(String, String)] = Seq(
     "ZN" -> "ZN",
     "ZU" -> "ZU",
     "ZW" -> "ZW"
-    )
+  )
 
-val euCountries: Seq[(String, String)] = Seq(
+  val euCountries: Seq[(String, String)] = Seq(
     "AT" -> "AT",
     "BE" -> "BE",
     "BG" -> "BG",
@@ -2594,9 +2600,9 @@ val euCountries: Seq[(String, String)] = Seq(
     "SE" -> "SE",
     "SI" -> "SI",
     "SK" -> "SK"
-    )
+  )
 
-val nonThirdCountries: Seq[(String, String)] = Seq(
+  val nonThirdCountries: Seq[(String, String)] = Seq(
     "AT" -> "AT",
     "BE" -> "BE",
     "BG" -> "BG",
@@ -2633,15 +2639,15 @@ val nonThirdCountries: Seq[(String, String)] = Seq(
     "SI" -> "SI",
     "SK" -> "SK",
     "YT" -> "YT"
-    )
+  )
 
   val commodityClassificationType: Seq[(String, String)] = Seq(
-    "CV" ->"Customs article number ",
-    "GN" ->"National product group code",
-    "TSP" ->"Combined nomenclature code",
-    "TRC" ->"TARIC code",
-    "TRA" ->"TARIC additional code"
-    )
+    "CV"  -> "Customs article number ",
+    "GN"  -> "National product group code",
+    "TSP" -> "Combined nomenclature code",
+    "TRC" -> "TARIC code",
+    "TRA" -> "TARIC additional code"
+  )
 
 }
 
@@ -3026,9 +3032,9 @@ object MoreOptions {
     "ZX" -> "ZX",
     "ZY" -> "ZY",
     "ZZ" -> "ZZ"
-    )
+  )
 
-val preferenceTypes: Seq[(String, String)] = Seq(
+  val preferenceTypes: Seq[(String, String)] = Seq(
     "100" -> "100",
     "110" -> "110",
     "118" -> "118",
@@ -3051,5 +3057,5 @@ val preferenceTypes: Seq[(String, String)] = Seq(
     "300" -> "300",
     "400" -> "400",
     "500" -> "500"
-    )
+  )
 }

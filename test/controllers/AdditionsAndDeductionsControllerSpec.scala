@@ -16,10 +16,10 @@
 
 package controllers
 
-import domain.auth.{EORI, SignedInUser}
+import domain.auth.{ EORI, SignedInUser }
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
+import org.mockito.ArgumentMatchers.{ eq => eqTo, _ }
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
@@ -30,16 +30,17 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, EndpointBehaviours }
 import uk.gov.hmrc.wco.dec.ChargeDeduction
 import views.html.add_additions_and_deductions
 
-class AdditionsAndDeductionsControllerSpec extends CustomsSpec
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with MockitoSugar
-  with EndpointBehaviours {
+class AdditionsAndDeductionsControllerSpec
+    extends CustomsSpec
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with MockitoSugar
+    with EndpointBehaviours {
 
   val form = Form(chargeDeductionMapping)
 
@@ -63,7 +64,6 @@ class AdditionsAndDeductionsControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(user).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
@@ -77,7 +77,6 @@ class AdditionsAndDeductionsControllerSpec extends CustomsSpec
       "user has no eori number" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(user.user).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -87,16 +86,14 @@ class AdditionsAndDeductionsControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], listGen) {
-        (user, data) =>
+      forAll(arbitrary[SignedInUser], listGen) { (user, data) =>
+        withCleanCache(EORI(user.eori.value), CacheKey.additionsAndDeductions, data) {
 
-          withCleanCache(EORI(user.eori.value), CacheKey.additionsAndDeductions, data) {
+          val result = controller(user).onPageLoad(fakeRequest)
 
-            val result = controller(user).onPageLoad(fakeRequest)
-
-            status(result) mustBe OK
-            contentAsString(result) mustBe view(charges = data.getOrElse(Seq.empty))
-          }
+          status(result) mustBe OK
+          contentAsString(result) mustBe view(charges = data.getOrElse(Seq.empty))
+        }
       }
     }
   }
@@ -111,7 +108,6 @@ class AdditionsAndDeductionsControllerSpec extends CustomsSpec
       "valid data is submitted" in {
 
         forAll { (user: SignedInUser, charge: ChargeDeduction) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(charge): _*)
           val result  = controller(user).onSubmit(request)
 
@@ -126,7 +122,6 @@ class AdditionsAndDeductionsControllerSpec extends CustomsSpec
       "user has no eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(user.user).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -143,18 +138,16 @@ class AdditionsAndDeductionsControllerSpec extends CustomsSpec
           code   <- minStringLength(4)
         } yield charge.copy(chargesTypeCode = Some(code))
 
-        forAll(arbitrary[SignedInUser], badData, listGen) {
-          (user, submittedData, cachedData) =>
+        forAll(arbitrary[SignedInUser], badData, listGen) { (user, submittedData, cachedData) =>
+          withCleanCache(EORI(user.eori.value), CacheKey.additionsAndDeductions, cachedData) {
 
-            withCleanCache(EORI(user.eori.value), CacheKey.additionsAndDeductions, cachedData) {
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(submittedData): _*)
+            val popForm = form.fillAndValidate(submittedData)
+            val result  = controller(user).onSubmit(request)
 
-              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(submittedData): _*)
-              val popForm = form.fillAndValidate(submittedData)
-              val result  = controller(user).onSubmit(request)
-
-              status(result) mustBe BAD_REQUEST
-              contentAsString(result) mustBe view(popForm, cachedData.getOrElse(Seq.empty))
-            }
+            status(result) mustBe BAD_REQUEST
+            contentAsString(result) mustBe view(popForm, cachedData.getOrElse(Seq.empty))
+          }
         }
 
       }
@@ -165,12 +158,14 @@ class AdditionsAndDeductionsControllerSpec extends CustomsSpec
       "valid data is submitted" in {
 
         forAll { (user: SignedInUser, charge: ChargeDeduction) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(charge): _*)
           await(controller(user).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionsAndDeductions))(any(), any())(any(), any(), any(), any())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionsAndDeductions))(any(), any())(any(),
+                                                                                                      any(),
+                                                                                                      any(),
+                                                                                                      any())
         }
       }
     }

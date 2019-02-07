@@ -22,14 +22,15 @@ import forms.DeclarationFormMapping._
 import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.authorisation_holder
 
-class AuthorisationHoldersController @Inject()
-  (actions: Actions, cacheService: CustomsCacheService)
-  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+class AuthorisationHoldersController @Inject()(actions: Actions, cacheService: CustomsCacheService)(
+    implicit val appConfig: AppConfig,
+    val messagesApi: MessagesApi
+) extends CustomsController {
 
   def form = Form(authorisationHolderMapping)
 
@@ -40,19 +41,19 @@ class AuthorisationHoldersController @Inject()
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-    form.bindFromRequest().fold(
-      errors =>
-        cacheService.getByKey(req.eori, CacheKey.authorisationHolders).map { authHolders =>
-          BadRequest(authorisation_holder(errors, authHolders.getOrElse(Seq())))
+    form
+      .bindFromRequest()
+      .fold(
+        errors =>
+          cacheService.getByKey(req.eori, CacheKey.authorisationHolders).map { authHolders =>
+            BadRequest(authorisation_holder(errors, authHolders.getOrElse(Seq())))
         },
-
-      authHolder =>
-        cacheService
-          .upsert(req.eori, CacheKey.authorisationHolders)
-                 (() => Seq(authHolder), authHolder +: _)
-          .map { _ =>
-            Redirect(routes.AuthorisationHoldersController.onPageLoad())
+        authHolder =>
+          cacheService
+            .upsert(req.eori, CacheKey.authorisationHolders)(() => Seq(authHolder), authHolder +: _)
+            .map { _ =>
+              Redirect(routes.AuthorisationHoldersController.onPageLoad())
           }
-    )
+      )
   }
 }

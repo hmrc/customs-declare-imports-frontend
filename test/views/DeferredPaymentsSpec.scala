@@ -31,10 +31,7 @@ import views.html.components.input_text
 import views.html.components.table.table
 import views.html.deferred_payments
 
-class DeferredPaymentsSpec extends ViewBehaviours
-  with ViewMatchers
-  with PropertyChecks
-  with Generators {
+class DeferredPaymentsSpec extends ViewBehaviours with ViewMatchers with PropertyChecks with Generators {
 
   val emptyAdditonalDocuments: Seq[AdditionalDocument] = Seq.empty
 
@@ -72,9 +69,8 @@ class DeferredPaymentsSpec extends ViewBehaviours
     "display deferred payments table heading for single item if deferred payment is available" in {
 
       forAll { additionalDocument: AdditionalDocument =>
-
         val additionalDocumentsSeq = Seq(additionalDocument)
-        val doc = asDocument(view(form, additionalDocumentsSeq))
+        val doc                    = asDocument(view(form, additionalDocumentsSeq))
 
         assertContainsText(doc, s"${additionalDocumentsSeq.size} " + messages("addDeferredPayment.table.heading"))
       }
@@ -83,12 +79,12 @@ class DeferredPaymentsSpec extends ViewBehaviours
     "display deferred payments table heading for multiple items if deferred payments are available" in {
 
       forAll(listOf(arbitrary[AdditionalDocument])) { additionalDocuments =>
-
         whenever(additionalDocuments.size > 1) {
 
           val doc = asDocument(view(form, additionalDocuments))
 
-          assertContainsText(doc, s"${additionalDocuments.size} " + messages("addDeferredPayment.table.multiple.heading"))
+          assertContainsText(doc,
+                             s"${additionalDocuments.size} " + messages("addDeferredPayment.table.multiple.heading"))
         }
       }
     }
@@ -96,15 +92,16 @@ class DeferredPaymentsSpec extends ViewBehaviours
     "display table for deferred payments" in {
 
       forAll(listOf(arbitrary[AdditionalDocument])) { additionalDocuments =>
-
         whenever(additionalDocuments.nonEmpty) {
 
           val htmlTable =
             HtmlTable(messages("addDeferredPayment.id"),
-              messages("addDeferredPayment.categoryCode"),
-              messages("addDeferredPayment.typeCode"))(additionalDocuments.map(a => (a.id.getOrElse(""), a.categoryCode.getOrElse(""), a.typeCode.getOrElse(""))))
+                      messages("addDeferredPayment.categoryCode"),
+                      messages("addDeferredPayment.typeCode"))(
+              additionalDocuments.map(a => (a.id.getOrElse(""), a.categoryCode.getOrElse(""), a.typeCode.getOrElse("")))
+            )
           val tableComponent = table(htmlTable)
-          val rendered = view(form, additionalDocuments)
+          val rendered       = view(form, additionalDocuments)
 
           rendered must include(tableComponent)
         }

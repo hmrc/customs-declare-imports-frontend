@@ -25,38 +25,34 @@ import play.api.http.Status
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import repositories.declaration.SubmissionRepository
-import services.{CustomsDeclarationsConnector, CustomsDeclarationsResponse}
+import services.{ CustomsDeclarationsConnector, CustomsDeclarationsResponse }
 import uk.gov.hmrc.customs.test.assertions.XmlAssertions
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse}
+import uk.gov.hmrc.http.{ HeaderCarrier, Upstream4xxResponse }
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.collection.mutable
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-trait CustomsDeclarationsApiBehaviours extends CustomsSpec with MockitoSugar{
+trait CustomsDeclarationsApiBehaviours extends CustomsSpec with MockitoSugar {
 
-  val mockAppConfig: AppConfig = mock[AppConfig]
-  val mockHttpClient: HttpClient = mock[HttpClient]
+  val mockAppConfig: AppConfig                       = mock[AppConfig]
+  val mockHttpClient: HttpClient                     = mock[HttpClient]
   val mockSubmissionRepository: SubmissionRepository = mock[SubmissionRepository]
-  private lazy val connector = new MockCustomsDeclarationsConnector(mockAppConfig, mockHttpClient, mockSubmissionRepository)
+  private lazy val connector =
+    new MockCustomsDeclarationsConnector(mockAppConfig, mockHttpClient, mockSubmissionRepository)
 
-  def withCustomsDeclarationsApiSubmission(request: MetaData)
-                                          (test: Future[CustomsDeclarationsResponse] => Unit): Unit = {
+  def withCustomsDeclarationsApiSubmission(request: MetaData)(test: Future[CustomsDeclarationsResponse] => Unit): Unit =
     test(connector.addExpectedSubmission(request))
-  }
 
   override protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder =
     super.customise(builder).overrides(bind[CustomsDeclarationsConnector].to(connector))
 
 }
 
-
-
-class MockCustomsDeclarationsConnector(mockConfig : AppConfig, mockhttpClient: HttpClient, repo: SubmissionRepository) extends CustomsDeclarationsConnector(appConfig = mockConfig,
-                                                                              httpClient = mockhttpClient,
-                                                                              repo)
-  with XmlAssertions {
+class MockCustomsDeclarationsConnector(mockConfig: AppConfig, mockhttpClient: HttpClient, repo: SubmissionRepository)
+    extends CustomsDeclarationsConnector(appConfig = mockConfig, httpClient = mockhttpClient, repo)
+    with XmlAssertions {
 
   val expectedSubmissions: mutable.Map[MetaData, Future[CustomsDeclarationsResponse]] = mutable.Map.empty
 
@@ -64,12 +60,13 @@ class MockCustomsDeclarationsConnector(mockConfig : AppConfig, mockhttpClient: H
 
   val submissionSchemas: Seq[String] = Seq("/DocumentMetaData_2_DMS.xsd", "/WCO_DEC_2_DMS.xsd")
 
-  val cancellationSchemas: Seq[String] = Seq("/CANCEL_METADATA.xsd","/CANCEL.xsd")
+  val cancellationSchemas: Seq[String] = Seq("/CANCEL_METADATA.xsd", "/CANCEL.xsd")
 
-  override def submitImportDeclaration(metaData: MetaData, localReferenceNumber: String)
-                                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
+  override def submitImportDeclaration(
+      metaData: MetaData,
+      localReferenceNumber: String
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
     expectedSubmissions.getOrElse(metaData, throw new IllegalArgumentException("Unexpected API submission call"))
-
 
   def addExpectedSubmission(meta: MetaData): Future[CustomsDeclarationsResponse] = {
     val resp = toResponse(meta, submissionSchemas)

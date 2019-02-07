@@ -20,18 +20,20 @@ import domain.features.Feature
 import generators.Generators
 import play.api.http.Status
 import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
+import uk.gov.hmrc.customs.test.assertions.{ HtmlAssertions, HttpAssertions }
 import uk.gov.hmrc.customs.test.behaviours._
 
-class ObligationGuaranteeControllerSpec extends CustomsSpec
-  with AuthenticationBehaviours
-  with FeatureBehaviours
-  with RequestHandlerBehaviours
-  with HttpAssertions
-  with HtmlAssertions  with Generators{
+class ObligationGuaranteeControllerSpec
+    extends CustomsSpec
+    with AuthenticationBehaviours
+    with FeatureBehaviours
+    with RequestHandlerBehaviours
+    with HttpAssertions
+    with HtmlAssertions
+    with Generators {
 
   val requestUri = uriWithContextPath("/submit-declaration-guarantees/add-guarantees")
-  val get = "GET"
+  val get        = "GET"
   val postMethod = "POST"
 
   "ObligationGuranteeController" should {
@@ -76,12 +78,12 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
     }
 
     val invalidPayload = Map(
-      "amount" -> "-1",
-      "referenceId" -> "name1nasdfghlertghoy asdflgothidlglfdleasdflksdf",
-      "id" -> "Address1 Address1 Address1 Address1 Address1 Address1 Address1 Address1",
+      "amount"              -> "-1",
+      "referenceId"         -> "name1nasdfghlertghoy asdflgothidlglfdleasdflksdf",
+      "id"                  -> "Address1 Address1 Address1 Address1 Address1 Address1 Address1 Address1",
       "securityDetailsCode" -> "12345678912341234",
-      "accessCode" -> "references",
-      "submit" -> "Add"
+      "accessCode"          -> "references",
+      "submit"              -> "Add"
     )
 
     "validate user input data on click of Add" in withFeatures(enabled(Feature.submit)) {
@@ -109,12 +111,12 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
     }
 
     val validPayload = Map(
-      "amount" -> "10.00",
-      "referenceId" -> "referenceId",
-      "id" -> "id1",
+      "amount"              -> "10.00",
+      "referenceId"         -> "referenceId",
+      "id"                  -> "id1",
       "securityDetailsCode" -> "123",
-      "accessCode" -> "123",
-      "submit" -> "Add"
+      "accessCode"          -> "123",
+      "submit"              -> "Add"
     )
 
     "valid Obligation guarantee is added on click of add" in withFeatures(enabled(Feature.submit)) {
@@ -127,7 +129,9 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
       }
     }
 
-    "valid Obligation guarantee is added  to existing cached guarantees on click of add" in withFeatures(enabled(Feature.submit)) {
+    "valid Obligation guarantee is added  to existing cached guarantees on click of add" in withFeatures(
+      enabled(Feature.submit)
+    ) {
       withSignedInUser() { (headers, session, tags) =>
         withCaching(arbitraryObligationGuaranteeForm.arbitrary.sample)
         withRequestAndFormBody(postMethod, requestUri, headers, session, tags, validPayload) { resp =>
@@ -143,7 +147,9 @@ class ObligationGuaranteeControllerSpec extends CustomsSpec
         withRequestAndFormBody(postMethod, requestUri, headers, session, tags, nextPayload) { resp =>
           val header = resp.futureValue.header
           status(resp) must be(SEE_OTHER)
-          header.headers.get("Location") must be(Some("/customs-declare-imports/submit-declaration-goods/gov-agency-goods-items"))
+          header.headers.get("Location") must be(
+            Some("/customs-declare-imports/submit-declaration-goods/gov-agency-goods-items")
+          )
         }
       }
     }

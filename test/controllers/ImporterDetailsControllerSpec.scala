@@ -16,10 +16,10 @@
 
 package controllers
 
-import domain.auth.{EORI, SignedInUser}
+import domain.auth.{ EORI, SignedInUser }
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
+import org.mockito.ArgumentMatchers.{ eq => eqTo, _ }
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
@@ -29,15 +29,16 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, EndpointBehaviours }
 import uk.gov.hmrc.wco.dec.ImportExportParty
 import views.html.importer_details
 
-class ImporterDetailsControllerSpec extends CustomsSpec
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with EndpointBehaviours {
+class ImporterDetailsControllerSpec
+    extends CustomsSpec
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with EndpointBehaviours {
 
   val form = Form(importExportPartyMapping)
 
@@ -48,7 +49,7 @@ class ImporterDetailsControllerSpec extends CustomsSpec
     new ImporterDetailsController(new FakeActions(Some(user)), mockCustomsCacheService)
 
   val partyGen: Gen[Option[ImportExportParty]] = option(arbitrary[ImportExportParty])
-  val uri = "/submit-declaration/importer-details"
+  val uri                                      = "/submit-declaration/importer-details"
 
   "onPageLoad" should {
 
@@ -60,7 +61,6 @@ class ImporterDetailsControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(user).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
@@ -74,7 +74,6 @@ class ImporterDetailsControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(user.user).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -85,17 +84,15 @@ class ImporterDetailsControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], partyGen) {
-        (user, cacheData) =>
+      forAll(arbitrary[SignedInUser], partyGen) { (user, cacheData) =>
+        withCleanCache(EORI(user.eori.value), CacheKey.importer, cacheData) {
 
-          withCleanCache(EORI(user.eori.value), CacheKey.importer, cacheData) {
+          val popForm = cacheData.fold(form)(form.fill)
+          val result  = controller(user).onPageLoad(fakeRequest)
 
-            val popForm = cacheData.fold(form)(form.fill)
-            val result  = controller(user).onPageLoad(fakeRequest)
-
-            status(result) mustBe OK
-            contentAsString(result) mustBe view(popForm)
-          }
+          status(result) mustBe OK
+          contentAsString(result) mustBe view(popForm)
+        }
       }
     }
   }
@@ -110,7 +107,6 @@ class ImporterDetailsControllerSpec extends CustomsSpec
       "valid data is submitted" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
@@ -124,7 +120,6 @@ class ImporterDetailsControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(user.user).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -144,15 +139,13 @@ class ImporterDetailsControllerSpec extends CustomsSpec
             party.copy(id = Some(id))
           }
 
-        forAll(arbitrary[SignedInUser], badData) {
-          (user, formData) =>
+        forAll(arbitrary[SignedInUser], badData) { (user, formData) =>
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+          val popForm = form.fillAndValidate(formData)
+          val result  = controller(user).onSubmit(request)
 
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
-            val popForm = form.fillAndValidate(formData)
-            val result  = controller(user).onSubmit(request)
-
-            status(result) mustBe BAD_REQUEST
-            contentAsString(result) mustBe view(popForm)
+          status(result) mustBe BAD_REQUEST
+          contentAsString(result) mustBe view(popForm)
         }
       }
     }
@@ -162,7 +155,6 @@ class ImporterDetailsControllerSpec extends CustomsSpec
       "valid data is submitted" in {
 
         forAll { (user: SignedInUser, formData: ImportExportParty) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
           await(controller(user).onSubmit(request))
 

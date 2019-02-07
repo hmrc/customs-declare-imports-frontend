@@ -16,10 +16,10 @@
 
 package controllers
 
-import domain.auth.{EORI, SignedInUser}
+import domain.auth.{ EORI, SignedInUser }
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq => eqTo, _}
+import org.mockito.ArgumentMatchers.{ eq => eqTo, _ }
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
@@ -30,18 +30,19 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, EndpointBehaviours }
 import uk.gov.hmrc.wco.dec.RoleBasedParty
 import views.html.role_based_party
 
 import scala.concurrent.Future
 
-class AdditionalSupplyChainActorsControllerSpec extends CustomsSpec
-  with PropertyChecks
-  with Generators
-  with MockitoSugar
-  with OptionValues
-  with EndpointBehaviours {
+class AdditionalSupplyChainActorsControllerSpec
+    extends CustomsSpec
+    with PropertyChecks
+    with Generators
+    with MockitoSugar
+    with OptionValues
+    with EndpointBehaviours {
 
   val form = Form(roleBasedPartyMapping)
 
@@ -70,7 +71,6 @@ class AdditionalSupplyChainActorsControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(Some(user)).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
@@ -84,7 +84,6 @@ class AdditionalSupplyChainActorsControllerSpec extends CustomsSpec
       "user has no eori number" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(Some(user.user)).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -94,16 +93,14 @@ class AdditionalSupplyChainActorsControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], listGen) {
-        (user, data) =>
+      forAll(arbitrary[SignedInUser], listGen) { (user, data) =>
+        withCleanCache(EORI(user.eori.value), CacheKey.additionalSupplyChainActors, data) {
 
-          withCleanCache(EORI(user.eori.value), CacheKey.additionalSupplyChainActors, data) {
+          val result = controller(Some(user)).onPageLoad(fakeRequest)
 
-            val result = controller(Some(user)).onPageLoad(fakeRequest)
-
-            status(result) mustBe OK
-            contentAsString(result) mustBe view(form, data.getOrElse(Seq.empty))
-          }
+          status(result) mustBe OK
+          contentAsString(result) mustBe view(form, data.getOrElse(Seq.empty))
+        }
       }
     }
   }
@@ -118,9 +115,8 @@ class AdditionalSupplyChainActorsControllerSpec extends CustomsSpec
       "valid data is submitted" in {
 
         forAll { (user: SignedInUser, role: RoleBasedParty) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(role): _*)
-          val result = controller(Some(user)).onSubmit(request)
+          val result  = controller(Some(user)).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(routes.AdditionalSupplyChainActorsController.onPageLoad().url)
@@ -133,7 +129,6 @@ class AdditionalSupplyChainActorsControllerSpec extends CustomsSpec
       "user has no eori number" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(Some(user.user)).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -150,18 +145,16 @@ class AdditionalSupplyChainActorsControllerSpec extends CustomsSpec
           id <- minStringLength(18)
         } yield r.copy(id = Some(id))
 
-        forAll(arbitrary[SignedInUser], badData, listGen) {
-          (user, badData, cacheData) =>
+        forAll(arbitrary[SignedInUser], badData, listGen) { (user, badData, cacheData) =>
+          withCleanCache(EORI(user.eori.value), CacheKey.additionalSupplyChainActors, cacheData) {
 
-            withCleanCache(EORI(user.eori.value), CacheKey.additionalSupplyChainActors, cacheData) {
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(badData): _*)
+            val popForm = form.fillAndValidate(badData)
+            val result  = controller(Some(user)).onSubmit(request)
 
-              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(badData): _*)
-              val popForm = form.fillAndValidate(badData)
-              val result  = controller(Some(user)).onSubmit(request)
-
-              status(result) mustBe BAD_REQUEST
-              contentAsString(result) mustBe view(popForm, cacheData.getOrElse(Seq.empty))
-            }
+            status(result) mustBe BAD_REQUEST
+            contentAsString(result) mustBe view(popForm, cacheData.getOrElse(Seq.empty))
+          }
         }
       }
     }
@@ -171,12 +164,14 @@ class AdditionalSupplyChainActorsControllerSpec extends CustomsSpec
       "valid data is submitted" in {
 
         forAll { (user: SignedInUser, role: RoleBasedParty) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(role): _*)
           await(controller(Some(user)).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionalSupplyChainActors))(any(), any())(any(), any(), any(), any())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.additionalSupplyChainActors))(any(), any())(any(),
+                                                                                                           any(),
+                                                                                                           any(),
+                                                                                                           any())
         }
       }
     }

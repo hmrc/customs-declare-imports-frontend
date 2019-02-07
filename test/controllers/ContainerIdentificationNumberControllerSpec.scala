@@ -16,10 +16,10 @@
 
 package controllers
 
-import domain.auth.{EORI, SignedInUser}
+import domain.auth.{ EORI, SignedInUser }
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
+import org.mockito.ArgumentMatchers.{ eq => eqTo, _ }
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
@@ -29,16 +29,17 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, EndpointBehaviours }
 import uk.gov.hmrc.wco.dec.TransportEquipment
 import views.html.container_identification_number
 
-class ContainerIdentificationNumberControllerSpec extends CustomsSpec
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with MockitoSugar
-  with EndpointBehaviours {
+class ContainerIdentificationNumberControllerSpec
+    extends CustomsSpec
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with MockitoSugar
+    with EndpointBehaviours {
 
   val form = Form(transportEquipmentMapping)
 
@@ -62,7 +63,6 @@ class ContainerIdentificationNumberControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(user).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
@@ -76,7 +76,6 @@ class ContainerIdentificationNumberControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(user.user).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -86,16 +85,14 @@ class ContainerIdentificationNumberControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], listGen) {
-        (user, data) =>
+      forAll(arbitrary[SignedInUser], listGen) { (user, data) =>
+        withCleanCache(EORI(user.eori.value), CacheKey.containerIdNos, data) {
 
-          withCleanCache(EORI(user.eori.value), CacheKey.containerIdNos, data) {
+          val result = controller(user).onPageLoad(fakeRequest)
 
-            val result = controller(user).onPageLoad(fakeRequest)
-
-            status(result) mustBe OK
-            contentAsString(result) mustBe view(transports = data.getOrElse(Seq.empty))
-          }
+          status(result) mustBe OK
+          contentAsString(result) mustBe view(transports = data.getOrElse(Seq.empty))
+        }
       }
     }
   }
@@ -110,7 +107,6 @@ class ContainerIdentificationNumberControllerSpec extends CustomsSpec
       "valid data is submitted" in {
 
         forAll { (user: SignedInUser, transport: TransportEquipment) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(transport): _*)
           val result  = controller(user).onSubmit(request)
 
@@ -125,7 +121,6 @@ class ContainerIdentificationNumberControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(user.user).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -140,33 +135,33 @@ class ContainerIdentificationNumberControllerSpec extends CustomsSpec
         val badData =
           stringsLongerThan(17).map(s => TransportEquipment(0, Some(s)))
 
-        forAll(arbitrary[SignedInUser], badData, listGen) {
-          (user, submitData, cacheData) =>
+        forAll(arbitrary[SignedInUser], badData, listGen) { (user, submitData, cacheData) =>
+          withCleanCache(EORI(user.eori.value), CacheKey.containerIdNos, cacheData) {
 
-            withCleanCache(EORI(user.eori.value), CacheKey.containerIdNos, cacheData) {
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(submitData): _*)
+            val popForm = form.fillAndValidate(submitData)
+            val result  = controller(user).onSubmit(request)
 
-              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(submitData): _*)
-              val popForm = form.fillAndValidate(submitData)
-              val result  = controller(user).onSubmit(request)
-
-              status(result) mustBe BAD_REQUEST
-              contentAsString(result) mustBe view(popForm, cacheData.getOrElse(Seq.empty))
-            }
+            status(result) mustBe BAD_REQUEST
+            contentAsString(result) mustBe view(popForm, cacheData.getOrElse(Seq.empty))
+          }
         }
       }
     }
 
     "save data in cache" when {
 
-      "valid data is submitted "in {
+      "valid data is submitted " in {
 
         forAll { (user: SignedInUser, transport: TransportEquipment) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(transport): _*)
           await(controller(user).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.containerIdNos))(any(), any())(any(), any(), any(), any())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.containerIdNos))(any(), any())(any(),
+                                                                                              any(),
+                                                                                              any(),
+                                                                                              any())
         }
       }
     }

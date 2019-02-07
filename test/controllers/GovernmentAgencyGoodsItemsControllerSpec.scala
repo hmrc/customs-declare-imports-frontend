@@ -16,35 +16,36 @@
 
 package controllers
 
-import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
+import domain.{ GoodsItemValueInformation, GovernmentAgencyGoodsItem }
 import domain.features.Feature
 import generators.Generators
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
+import uk.gov.hmrc.customs.test.assertions.{ HtmlAssertions, HttpAssertions }
 import uk.gov.hmrc.customs.test.behaviours._
-import uk.gov.hmrc.wco.dec.{status => _, _}
+import uk.gov.hmrc.wco.dec.{ status => _, _ }
 
-class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
-  with AuthenticationBehaviours
-  with FeatureBehaviours
-  with RequestHandlerBehaviours
-  with HttpAssertions
-  with HtmlAssertions
-  with Generators
-  with PropertyChecks {
+class GovernmentAgencyGoodsItemsControllerSpec
+    extends CustomsSpec
+    with AuthenticationBehaviours
+    with FeatureBehaviours
+    with RequestHandlerBehaviours
+    with HttpAssertions
+    with HtmlAssertions
+    with Generators
+    with PropertyChecks {
 
-  val goodsItemsPageUri = uriWithContextPath("/submit-declaration-goods/goods-item-value")
-  val goodsItemsUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-item")
+  val goodsItemsPageUri                  = uriWithContextPath("/submit-declaration-goods/goods-item-value")
+  val goodsItemsUri                      = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-item")
   val navigateToSelectedGoodsItemPageUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-items")
   val addMutualRecognitionPartiesPageUri = uriWithContextPath("/submit-declaration-goods/add-role-based-parties")
-  val addOriginsPageUri = uriWithContextPath("/submit-declaration-goods/add-origins")
-  val addManufacturersPageUri = uriWithContextPath("/submit-declaration-goods/add-manufacturers")
-  val addPackagingsPageUri = uriWithContextPath("/submit-declaration-goods/add-packagings")
-  val get = "GET"
-  val postMethod = "POST"
+  val addOriginsPageUri                  = uriWithContextPath("/submit-declaration-goods/add-origins")
+  val addManufacturersPageUri            = uriWithContextPath("/submit-declaration-goods/add-manufacturers")
+  val addPackagingsPageUri               = uriWithContextPath("/submit-declaration-goods/add-packagings")
+  val get                                = "GET"
+  val postMethod                         = "POST"
 
   "GovernmentAgencyGoodsItemsController" should {
 
@@ -67,8 +68,9 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       }
     }
 
-
-    "display GoodsItems values Page with pre-populated data that user has entered before " in withFeatures((enabled(Feature.submit))) {
+    "display GoodsItems values Page with pre-populated data that user has entered before " in withFeatures(
+      (enabled(Feature.submit))
+    ) {
       withSignedInUser() { (headers, session, tags) =>
         withCaching(None)
         withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>
@@ -87,17 +89,17 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       }
     }
     val invalidPayload = Map(
-      "customsValueAmount" -> "-0",
+      "customsValueAmount"                -> "-0",
       "statisticalValueAmount.currencyId" -> "name1nasdfghlertghoy asdflgothidlglfdleasdflksdf",
-      "statisticalValueAmount.value" -> "Address1 Address1 Address1 Address1 Address1 Address1 Address1 Address1",
-      "transactionNatureCode" -> "12345678912341234",
-      "destination.countryCode" -> "references",
-      "destination.regionId" -> "ID1234567",
-      "ucr.id" -> "ID1234567",
-      "ucr.traderAssignedReferenceId" -> "ID1234567",
-      "exportCountry.id" -> "ID1234567",
-      "valuationAdjustment.additionCode" -> "ID1234567",
-      "submit" -> "Add"
+      "statisticalValueAmount.value"      -> "Address1 Address1 Address1 Address1 Address1 Address1 Address1 Address1",
+      "transactionNatureCode"             -> "12345678912341234",
+      "destination.countryCode"           -> "references",
+      "destination.regionId"              -> "ID1234567",
+      "ucr.id"                            -> "ID1234567",
+      "ucr.traderAssignedReferenceId"     -> "ID1234567",
+      "exportCountry.id"                  -> "ID1234567",
+      "valuationAdjustment.additionCode"  -> "ID1234567",
+      "submit"                            -> "Add"
     )
 
     //TODO random validations tested should revisit
@@ -108,7 +110,9 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
           stringResult must include("customs Value Amount must not be negative")
           stringResult must include("id=\"error-message-sequenceNumeric-input\">This field is required")
           stringResult must include("Real number value expected")
-          stringResult must include("id=\"error-message-statisticalValueAmount_currencyId-input\">Currency ID is not a valid currency")
+          stringResult must include(
+            "id=\"error-message-statisticalValueAmount_currencyId-input\">Currency ID is not a valid currency"
+          )
           stringResult must include("valuationAdjustment should be less than or equal to 4 characters")
           stringResult must include("export Country code should be less than or equal to 2 characters")
           stringResult must include("country code is only 3 characters")
@@ -118,18 +122,18 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     }
 
     val validPayload = Map(
-      "customsValueAmount" -> "30.00",
-      "sequenceNumeric" -> "3",
+      "customsValueAmount"                -> "30.00",
+      "sequenceNumeric"                   -> "3",
       "statisticalValueAmount.currencyId" -> "GBP",
-      "statisticalValueAmount.value" -> "3345",
-      "transactionNatureCode" -> "123",
-      "destination.countryCode" -> "UK",
-      "destination.regionId" -> "UK",
-      "ucr.id" -> "ID1",
-      "ucr.traderAssignedReferenceId" -> "TRADER_REF-1",
-      "exportCountry.id" -> "PL",
-      "valuationAdjustment.additionCode" -> "DDC",
-      "submit" -> "Add"
+      "statisticalValueAmount.value"      -> "3345",
+      "transactionNatureCode"             -> "123",
+      "destination.countryCode"           -> "UK",
+      "destination.regionId"              -> "UK",
+      "ucr.id"                            -> "ID1",
+      "ucr.traderAssignedReferenceId"     -> "TRADER_REF-1",
+      "exportCountry.id"                  -> "PL",
+      "valuationAdjustment.additionCode"  -> "DDC",
+      "submit"                            -> "Add"
     )
 
     "navigate to good items page on click of Continue " in withFeatures(enabled(Feature.submit)) {
@@ -146,19 +150,20 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
 
     "display good items page with pre-populated data on revisiting the page " in withFeatures(enabled(Feature.submit)) {
       withSignedInUser() { (headers, session, tags) =>
-
-
         arbitrary[GoodsItemValueInformation].sample.foreach { sampleData =>
-
           withCaching(Some(sampleData))
           withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>
             includesHtmlInput(resp, "customsValueAmount", value = sampleData.customsValueAmount.getOrElse("").toString)
             includesHtmlInput(resp, "sequenceNumeric", value = sampleData.sequenceNumeric.toString)
-            includesHtmlInput(resp, "statisticalValueAmount.currencyId",
-              value = sampleData.statisticalValueAmount.flatMap(_.currencyId).getOrElse("").toString)
-            includesHtmlInput(resp, "statisticalValueAmount.value",
-              value = sampleData.statisticalValueAmount.flatMap(_.value).getOrElse("").toString)
-            includesHtmlInput(resp, "transactionNatureCode", value = sampleData.transactionNatureCode.getOrElse("").toString)
+            includesHtmlInput(resp,
+                              "statisticalValueAmount.currencyId",
+                              value = sampleData.statisticalValueAmount.flatMap(_.currencyId).getOrElse("").toString)
+            includesHtmlInput(resp,
+                              "statisticalValueAmount.value",
+                              value = sampleData.statisticalValueAmount.flatMap(_.value).getOrElse("").toString)
+            includesHtmlInput(resp,
+                              "transactionNatureCode",
+                              value = sampleData.transactionNatureCode.getOrElse("").toString)
           }
         }
       }
@@ -196,9 +201,10 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     }
   }
 
-  "pre-populate AddMutualRecognitionParties that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
+  "pre-populate AddMutualRecognitionParties that are added/cached on user navigating to the screen" in withFeatures(
+    (enabled(Feature.submit))
+  ) {
     withSignedInUser() { (headers, session, tags) =>
-
       val goodsItemGen = arbitrary[RoleBasedParty].map { r =>
         GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = List(r))
       }
@@ -226,9 +232,10 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     }
   }
 
-  "pre-populate addOriginsPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
+  "pre-populate addOriginsPage that are added/cached on user navigating to the screen" in withFeatures(
+    (enabled(Feature.submit))
+  ) {
     withSignedInUser() { (headers, session, tags) =>
-
       val goodsItemGen = arbitrary[Origin].map { o =>
         GovernmentAgencyGoodsItem(origins = List(o))
       }
@@ -262,9 +269,10 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     }
   }
 
-  "pre-populate addManufacturersPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
+  "pre-populate addManufacturersPage that are added/cached on user navigating to the screen" in withFeatures(
+    (enabled(Feature.submit))
+  ) {
     withSignedInUser() { (headers, session, tags) =>
-
       val goodsItemGen = arbitrary[NamedEntityWithAddress].map { e =>
         GovernmentAgencyGoodsItem(manufacturers = List(e))
       }
@@ -305,9 +313,10 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     }
   }
 
-  "pre-populate addPackagings that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
+  "pre-populate addPackagings that are added/cached on user navigating to the screen" in withFeatures(
+    (enabled(Feature.submit))
+  ) {
     withSignedInUser() { (headers, session, tags) =>
-
       val goodsItemGen = arbitrary[Packaging].map { p =>
         GovernmentAgencyGoodsItem(packagings = List(p))
       }

@@ -16,7 +16,7 @@
 
 package domain.auth
 
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.{ MustMatchers, WordSpec }
 import uk.gov.hmrc.customs.test.CustomsFixtures
 
 class SignedInUserSpec extends WordSpec with MustMatchers with CustomsFixtures {
@@ -24,12 +24,12 @@ class SignedInUserSpec extends WordSpec with MustMatchers with CustomsFixtures {
   "eori" should {
 
     "be NONE for user without CDS enrollment" in {
-      userFixture(eori = None).eori must be (None)
+      userFixture(eori = None).eori must be(None)
     }
 
     "be SOME for user with CDS enrollment" in {
       val eori = randomString(8)
-      userFixture(eori = Some(eori)).eori must be (Some(eori))
+      userFixture(eori = Some(eori)).eori must be(Some(eori))
     }
 
   }

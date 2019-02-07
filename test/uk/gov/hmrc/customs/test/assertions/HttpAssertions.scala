@@ -18,7 +18,7 @@ package uk.gov.hmrc.customs.test.assertions
 
 import java.net.URLEncoder
 
-import play.api.http.{HeaderNames, Status}
+import play.api.http.{ HeaderNames, Status }
 import play.api.mvc.Result
 import play.api.test.Helpers._
 
@@ -26,11 +26,11 @@ import scala.concurrent.Future
 
 trait HttpAssertions extends CustomsAssertions {
 
-  def wasNotFound(resp: Future[Result]): Unit = status(resp) must be (Status.NOT_FOUND)
+  def wasNotFound(resp: Future[Result]): Unit = status(resp) must be(Status.NOT_FOUND)
 
-  def wasOk(resp: Future[Result]): Unit = status(resp) must be (Status.OK)
+  def wasOk(resp: Future[Result]): Unit = status(resp) must be(Status.OK)
 
-  def wasBadRequest(resp: Future[Result]): Unit = status(resp) must be (Status.BAD_REQUEST)
+  def wasBadRequest(resp: Future[Result]): Unit = status(resp) must be(Status.BAD_REQUEST)
 
   def wasRedirected(toUri: String, resp: Future[Result]): Unit = {
     status(resp) must be(Status.SEE_OTHER)
@@ -38,7 +38,7 @@ trait HttpAssertions extends CustomsAssertions {
   }
 
   def wasRedirected(resp: Future[Result], location: Option[String] = None): Unit = {
-    status(resp) must be (Status.SEE_OTHER)
+    status(resp) must be(Status.SEE_OTHER)
     header(HeaderNames.LOCATION, resp) must be(location)
   }
 

@@ -16,7 +16,7 @@
 
 package config
 
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.{ MustMatchers, WordSpec }
 
 class OptionalAlphaValidatorSpec extends WordSpec with MustMatchers {
 
@@ -60,8 +60,7 @@ class OptionalAlphaValidatorSpec extends WordSpec with MustMatchers {
 
   }
 
-  def withValidator(length: Int)(test: OptionalAlphaValidator => Unit): Unit = {
+  def withValidator(length: Int)(test: OptionalAlphaValidator => Unit): Unit =
     test(OptionalAlphaValidator(length))
-  }
 
 }

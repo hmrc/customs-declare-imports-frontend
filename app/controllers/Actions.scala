@@ -17,22 +17,22 @@
 package controllers
 
 import com.google.inject.ImplementedBy
-import config.{AppConfig, ErrorHandler}
-import domain.auth.{AuthenticatedRequest, EORI, EORIRequest, SignedInUser}
+import config.{ AppConfig, ErrorHandler }
+import domain.auth.{ AuthenticatedRequest, EORI, EORIRequest, SignedInUser }
 import domain.features.Feature.Feature
 import domain.features.FeatureStatus
-import javax.inject.{Inject, Singleton}
+import javax.inject.{ Inject, Singleton }
 import play.api.mvc.Results._
 import play.api.mvc._
-import play.api.{Configuration, Environment}
+import play.api.{ Configuration, Environment }
 import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
-import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.auth.core.{ AuthConnector, AuthorisedFunctions }
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 @ImplementedBy(classOf[ActionsImpl])
 trait Actions {
@@ -45,25 +45,33 @@ trait Actions {
 }
 
 @Singleton
-class ActionsImpl @Inject()(authConnector: AuthConnector, errorHandler: ErrorHandler)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends Actions {
+class ActionsImpl @Inject()(authConnector: AuthConnector, errorHandler: ErrorHandler)(implicit val appConfig: AppConfig,
+                                                                                      ec: ExecutionContext)
+    extends Actions {
 
-  def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] = new AuthAction(authConnector)
+  def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] =
+    new AuthAction(authConnector)
 
   def eori: ActionRefiner[AuthenticatedRequest, EORIRequest] = new EORIAction(errorHandler)
 
-  def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request] = new ActionBuilder[Request] with ActionFilter[Request] {
+  def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request] =
+    new ActionBuilder[Request] with ActionFilter[Request] {
 
-    def filter[A](input: Request[A]): Future[Option[Result]] = Future.successful(
-      appConfig.featureStatus(feature) match {
-        case FeatureStatus.enabled => None
-        case FeatureStatus.disabled => Some(NotFound(errorHandler.notFoundTemplate(input)))
-        case FeatureStatus.suspended => Some(ServiceUnavailable(errorHandler.notFoundTemplate(input)))
-      }
-    )
-  }
+      def filter[A](input: Request[A]): Future[Option[Result]] = Future.successful(
+        appConfig.featureStatus(feature) match {
+          case FeatureStatus.enabled   => None
+          case FeatureStatus.disabled  => Some(NotFound(errorHandler.notFoundTemplate(input)))
+          case FeatureStatus.suspended => Some(ServiceUnavailable(errorHandler.notFoundTemplate(input)))
+        }
+      )
+    }
 }
 
-class AuthAction(auth: AuthConnector)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] with AuthorisedFunctions with AuthRedirects {
+class AuthAction(auth: AuthConnector)(implicit val appConfig: AppConfig, ec: ExecutionContext)
+    extends ActionBuilder[AuthenticatedRequest]
+    with ActionRefiner[Request, AuthenticatedRequest]
+    with AuthorisedFunctions
+    with AuthRedirects {
 
   override def authConnector: AuthConnector = auth
 
@@ -72,12 +80,19 @@ class AuthAction(auth: AuthConnector)(implicit val appConfig: AppConfig, ec: Exe
   override def env: Environment = appConfig.environment
 
   override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit val hc: HeaderCarrier =
+      HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
     authorised(SignedInUser.authorisationPredicate)
       .retrieve(credentials and name and email and affinityGroup and internalId and allEnrolments) {
-        case credentials ~ name ~ email ~ affinityGroup ~ internalId ~ allEnrolments => Future.successful(Right(AuthenticatedRequest(
-          request, SignedInUser(credentials, name, email, affinityGroup, internalId, allEnrolments)
-        )))
+        case credentials ~ name ~ email ~ affinityGroup ~ internalId ~ allEnrolments =>
+          Future.successful(
+            Right(
+              AuthenticatedRequest(
+                request,
+                SignedInUser(credentials, name, email, affinityGroup, internalId, allEnrolments)
+              )
+            )
+          )
       }
   }
 
@@ -89,5 +104,6 @@ class EORIAction(errorHandler: ErrorHandler) extends ActionRefiner[Authenticated
     Future.successful(
       request.user.eori
         .map(e => EORIRequest(request, EORI(e)))
-        .toRight(Unauthorized(errorHandler.notFoundTemplate(request))))
+        .toRight(Unauthorized(errorHandler.notFoundTemplate(request)))
+    )
 }

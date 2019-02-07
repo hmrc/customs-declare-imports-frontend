@@ -22,14 +22,15 @@ import forms.DeclarationFormMapping._
 import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.add_guarantee_references
 
-class AddGuaranteeReferencesController @Inject()
-(actions: Actions, cacheService: CustomsCacheService)
-(implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+class AddGuaranteeReferencesController @Inject()(actions: Actions, cacheService: CustomsCacheService)(
+    implicit val appConfig: AppConfig,
+    val messagesApi: MessagesApi
+) extends CustomsController {
 
   def form = Form(obligationGauranteeMapping)
 
@@ -40,22 +41,19 @@ class AddGuaranteeReferencesController @Inject()
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-    form.bindFromRequest().fold(
-      errors =>
-        cacheService.getByKey(req.eori, CacheKey.guaranteeReference).map { guaranteeReferences =>
-          BadRequest(add_guarantee_references(errors, guaranteeReferences.getOrElse(Seq())))
+    form
+      .bindFromRequest()
+      .fold(
+        errors =>
+          cacheService.getByKey(req.eori, CacheKey.guaranteeReference).map { guaranteeReferences =>
+            BadRequest(add_guarantee_references(errors, guaranteeReferences.getOrElse(Seq())))
         },
-
-      guaranteeRefs =>
-        cacheService
-          .upsert(req.eori, CacheKey.guaranteeReference)
-          (() => Seq(guaranteeRefs), guaranteeRefs +: _)
-          .map { _ =>
-            Redirect(routes.AddGuaranteeReferencesController.onPageLoad())
+        guaranteeRefs =>
+          cacheService
+            .upsert(req.eori, CacheKey.guaranteeReference)(() => Seq(guaranteeRefs), guaranteeRefs +: _)
+            .map { _ =>
+              Redirect(routes.AddGuaranteeReferencesController.onPageLoad())
           }
-    )
+      )
   }
 }
-
-
-

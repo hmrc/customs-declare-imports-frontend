@@ -22,37 +22,36 @@ import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.representative_details
 
 import scala.concurrent.Future
 
-class RepresentativeDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                               (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+class RepresentativeDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)(
+    implicit override val messagesApi: MessagesApi,
+    appConfig: AppConfig
+) extends CustomsController {
 
   val form = Form(agentMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-
     cache.getByKey(req.eori, CacheKey.representative).map { representative =>
-
       val popForm = representative.fold(form)(form.fill)
       Ok(representative_details(popForm))
     }
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-
-    form.bindFromRequest().fold(
-      errors =>
-        Future.successful(BadRequest(representative_details(errors))),
-      representative =>
-        cache.insert(req.eori, CacheKey.representative, representative).map { _ =>
-          Redirect(routes.ImporterDetailsController.onPageLoad())
+    form
+      .bindFromRequest()
+      .fold(
+        errors => Future.successful(BadRequest(representative_details(errors))),
+        representative =>
+          cache.insert(req.eori, CacheKey.representative, representative).map { _ =>
+            Redirect(routes.ImporterDetailsController.onPageLoad())
         }
-    )
+      )
   }
 }

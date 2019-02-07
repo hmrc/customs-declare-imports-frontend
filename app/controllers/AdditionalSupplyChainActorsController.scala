@@ -21,7 +21,7 @@ import config.AppConfig
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{ Action, AnyContent, Request }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import domain.DeclarationFormats._
@@ -29,40 +29,39 @@ import play.twirl.api.Html
 import uk.gov.hmrc.wco.dec.RoleBasedParty
 import views.html.role_based_party
 
-class AdditionalSupplyChainActorsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                                     (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+class AdditionalSupplyChainActorsController @Inject()(actions: Actions, cache: CustomsCacheService)(
+    implicit override val messagesApi: MessagesApi,
+    appConfig: AppConfig
+) extends CustomsController {
 
-  val form = Form(roleBasedPartyMapping)
+  val form             = Form(roleBasedPartyMapping)
   val messageKeyPrefix = "additionalSupplyChainActor"
 
   def view(form: Form[_], roles: Seq[RoleBasedParty])(implicit r: Request[_]): Html =
-    role_based_party(form, roles, messageKeyPrefix,
-      routes.AdditionalSupplyChainActorsController.onSubmit(),
-      routes.AuthorisationHoldersController.onPageLoad())
+    role_based_party(form,
+                     roles,
+                     messageKeyPrefix,
+                     routes.AdditionalSupplyChainActorsController.onSubmit(),
+                     routes.AuthorisationHoldersController.onPageLoad())
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-
     cache.getByKey(req.eori, CacheKey.additionalSupplyChainActors).map { roles =>
-
       Ok(view(form, roles.getOrElse(Seq.empty)))
     }
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-
-    form.bindFromRequest().fold(
-      errors =>
-        cache.getByKey(req.eori, CacheKey.additionalSupplyChainActors).map { roles =>
-
-          BadRequest(view(errors, roles.getOrElse(Seq.empty)))
+    form
+      .bindFromRequest()
+      .fold(
+        errors =>
+          cache.getByKey(req.eori, CacheKey.additionalSupplyChainActors).map { roles =>
+            BadRequest(view(errors, roles.getOrElse(Seq.empty)))
         },
-
-      roleBasedParty =>
-        cache
-          .upsert(req.eori, CacheKey.additionalSupplyChainActors)
-                 (() => Seq(roleBasedParty), roleBasedParty +: _)
-          .map(_ => Redirect(routes.AdditionalSupplyChainActorsController.onPageLoad()))
-    )
+        roleBasedParty =>
+          cache
+            .upsert(req.eori, CacheKey.additionalSupplyChainActors)(() => Seq(roleBasedParty), roleBasedParty +: _)
+            .map(_ => Redirect(routes.AdditionalSupplyChainActorsController.onPageLoad()))
+      )
   }
 }

@@ -18,10 +18,10 @@ package controllers.goodsitems
 
 import controllers.FakeActions
 import domain.GovernmentAgencyGoodsItem
-import domain.auth.{EORI, SignedInUser}
+import domain.auth.{ EORI, SignedInUser }
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq => eqTo, _}
+import org.mockito.ArgumentMatchers.{ eq => eqTo, _ }
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
@@ -31,19 +31,20 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, EndpointBehaviours }
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.wco.dec.GovernmentProcedure
 import views.html.goods_items_government_procedures
 
 import scala.concurrent.Future
 
-class GovernmentProceduresControllerSpec extends CustomsSpec
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with MockitoSugar
-  with EndpointBehaviours {
+class GovernmentProceduresControllerSpec
+    extends CustomsSpec
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with MockitoSugar
+    with EndpointBehaviours {
 
   private def form = Form(governmentProcedureMapping)
 
@@ -67,7 +68,6 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(Some(user)).onPageLoad()(fakeRequest)
 
           status(result) mustBe OK
@@ -81,7 +81,6 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(Some(user.user)).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -111,16 +110,22 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
 
       "user submits valid data" in {
 
-        forAll { (user: SignedInUser, governmentProcedure: GovernmentProcedure, governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
-          when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any(), any()))
-            .thenReturn(Future.successful(Some(governmentAgencyGoodsItem)))
-          when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
-            .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(governmentProcedure): _*)
-          val result = controller(Some(user)).onSubmit(request)
+        forAll {
+          (user: SignedInUser,
+           governmentProcedure: GovernmentProcedure,
+           governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
+            when(
+              mockCustomsCacheService
+                .getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any(), any())
+            ).thenReturn(Future.successful(Some(governmentAgencyGoodsItem)))
+            when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
+              .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(governmentProcedure): _*)
+            val result  = controller(Some(user)).onSubmit(request)
 
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.GovernmentProceduresController.onPageLoad().url)        }
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result) mustBe Some(routes.GovernmentProceduresController.onPageLoad().url)
+        }
       }
     }
 
@@ -129,7 +134,6 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
       "user does not have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(Some(user.user)).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -143,8 +147,8 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
 
         val badData =
           for {
-            gp <- arbitrary[GovernmentProcedure]
-            current <- stringsLongerThan(2)
+            gp       <- arbitrary[GovernmentProcedure]
+            current  <- stringsLongerThan(2)
             previous <- stringsLongerThan(2)
           } yield gp.copy(currentCode = Some(current), previousCode = Some(previous))
 
@@ -154,7 +158,7 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
 
               val request = fakeRequest.withFormUrlEncodedBody(asFormParams(invalidFormData): _*)
               val badForm = form.fillAndValidate(invalidFormData)
-              val result = controller(Some(user)).onSubmit(request)
+              val result  = controller(Some(user)).onSubmit(request)
 
               status(result) mustBe BAD_REQUEST
               contentAsString(result) mustBe view(badForm, data.map(_.governmentProcedures).getOrElse(Seq.empty))
@@ -167,16 +171,23 @@ class GovernmentProceduresControllerSpec extends CustomsSpec
 
       "valid data is provided" in {
 
-        forAll { (user: SignedInUser, governmentProcedure: GovernmentProcedure, governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
-          when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any(), any()))
-            .thenReturn(Future.successful(Some(governmentAgencyGoodsItem)))
-          when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
-            .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(governmentProcedure): _*)
-          await(controller(Some(user)).onSubmit(request))
+        forAll {
+          (user: SignedInUser,
+           governmentProcedure: GovernmentProcedure,
+           governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
+            when(
+              mockCustomsCacheService
+                .getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any(), any())
+            ).thenReturn(Future.successful(Some(governmentAgencyGoodsItem)))
+            when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
+              .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(governmentProcedure): _*)
+            await(controller(Some(user)).onSubmit(request))
 
-          verify(mockCustomsCacheService, atLeastOnce())
-            .cache[GovernmentAgencyGoodsItem](eqTo(user.eori.value), eqTo(CacheKey.goodsItem.key), any())(any(), any(), any())
+            verify(mockCustomsCacheService, atLeastOnce())
+              .cache[GovernmentAgencyGoodsItem](eqTo(user.eori.value), eqTo(CacheKey.goodsItem.key), any())(any(),
+                                                                                                            any(),
+                                                                                                            any())
         }
       }
     }

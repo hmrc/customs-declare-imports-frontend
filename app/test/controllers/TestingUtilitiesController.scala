@@ -19,21 +19,25 @@ package test.controllers
 import config.AppConfig
 import controllers.Actions
 import domain.auth.SignedInUser
-import javax.inject.{Inject, Singleton}
+import javax.inject.{ Inject, Singleton }
 import play.api.Logger
-import play.api.libs.json.{Json, OFormat}
-import play.api.mvc.{Action, AnyContent}
-import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString}
-import repositories.declaration.{Submission, SubmissionRepository}
+import play.api.libs.json.{ Json, OFormat }
+import play.api.mvc.{ Action, AnyContent }
+import reactivemongo.bson.{ BSONDocument, BSONObjectID, BSONString }
+import repositories.declaration.{ Submission, SubmissionRepository }
 import services.CustomsDeclarationsConnector
-import uk.gov.hmrc.play.bootstrap.controller.{BaseController, FrontendController}
+import uk.gov.hmrc.play.bootstrap.controller.{ BaseController, FrontendController }
 import uk.gov.hmrc.wco.dec.MetaData
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
-class TestingUtilitiesController @Inject()(actions: Actions, submissionRepository: SubmissionRepository, connector: CustomsDeclarationsConnector)
-                                          (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController {
+class TestingUtilitiesController @Inject()(
+    actions: Actions,
+    submissionRepository: SubmissionRepository,
+    connector: CustomsDeclarationsConnector
+)(implicit val appConfig: AppConfig, ec: ExecutionContext)
+    extends FrontendController {
 
   def displaySubmissions(eori: String): Action[AnyContent] = Action.async { implicit req =>
     submissionRepository.findByEori(eori).map { found =>
@@ -41,18 +45,30 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
     }
   }
 
-  def createNewSubmission(eori: String): Action[SubmissionWrapper] = Action.async(parse.json[SubmissionWrapper]) { implicit req =>
-    val s = req.body
-    submissionRepository.insert(Submission(
-      eori = eori, conversationId = s.conversationId, lrn = s.lrn, mrn = s.mrn
-    )).map(res => if (res.ok) Created else InternalServerError)
+  def createNewSubmission(eori: String): Action[SubmissionWrapper] = Action.async(parse.json[SubmissionWrapper]) {
+    implicit req =>
+      val s = req.body
+      submissionRepository
+        .insert(
+          Submission(
+            eori = eori,
+            conversationId = s.conversationId,
+            lrn = s.lrn,
+            mrn = s.mrn
+          )
+        )
+        .map(res => if (res.ok) Created else InternalServerError)
   }
 
-  def setMrnOnSubmission(eori: String, conversationId: String, mrn: String): Action[AnyContent] = Action.async { implicit req =>
-    submissionRepository.atomicUpdate(BSONDocument("conversationId" -> BSONString(conversationId)), BSONDocument("$set" -> BSONDocument("mrn" -> mrn))).map {
-      case Some(update) => Accepted(Json.toJson(update.updateType.savedValue))
-      case None => NotFound
-    }
+  def setMrnOnSubmission(eori: String, conversationId: String, mrn: String): Action[AnyContent] = Action.async {
+    implicit req =>
+      submissionRepository
+        .atomicUpdate(BSONDocument("conversationId" -> BSONString(conversationId)),
+                      BSONDocument("$set"           -> BSONDocument("mrn" -> mrn)))
+        .map {
+          case Some(update) => Accepted(Json.toJson(update.updateType.savedValue))
+          case None         => NotFound
+        }
   }
 
   def deleteSubmission(id: String): Action[AnyContent] = Action.async { implicit req =>
@@ -63,17 +79,19 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
 
   def deleteSubmissionByConversationId(conversationId: String): Action[AnyContent] = Action.async { implicit req =>
     submissionRepository.getByConversationId(conversationId).flatMap {
-      case Some(submission) => submissionRepository.removeById(submission.id).map { res =>
-        if (res.ok) Accepted else InternalServerError
-      }
+      case Some(submission) =>
+        submissionRepository.removeById(submission.id).map { res =>
+          if (res.ok) Accepted else InternalServerError
+        }
     }
   }
 
   def deleteSubmissionByEoriAndMrn(eori: String, mrn: String): Action[AnyContent] = Action.async { implicit req =>
     submissionRepository.getByEoriAndMrn(eori, mrn).flatMap {
-      case Some(submission) => submissionRepository.removeById(submission.id).map { res =>
-        if (res.ok) Accepted else InternalServerError
-      }
+      case Some(submission) =>
+        submissionRepository.removeById(submission.id).map { res =>
+          if (res.ok) Accepted else InternalServerError
+        }
     }
   }
 
@@ -82,14 +100,14 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
 
     val maybeLrn = MetaData.fromXml(authenticatedRequest.body).declaration.flatMap(_.functionalReferenceId)
 
-    maybeLrn.fold(Future.successful(BadRequest("Local Reference Number is required in metadata"))){ lrn =>
-        connector.submitImportDeclaration(MetaData.fromXml(authenticatedRequest.body), lrn).map { resp =>
-          Created(resp.conversationId)
-        }recover{
-          case e: Throwable =>
-            Logger.error("Error calling backend", e)
-            InternalServerError("Error calling backend")
-        }
+    maybeLrn.fold(Future.successful(BadRequest("Local Reference Number is required in metadata"))) { lrn =>
+      connector.submitImportDeclaration(MetaData.fromXml(authenticatedRequest.body), lrn).map { resp =>
+        Created(resp.conversationId)
+      } recover {
+        case e: Throwable =>
+          Logger.error("Error calling backend", e)
+          InternalServerError("Error calling backend")
+      }
     }
   }
 

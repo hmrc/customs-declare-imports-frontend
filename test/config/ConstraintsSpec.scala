@@ -16,7 +16,7 @@
 
 package config
 
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.{ MustMatchers, WordSpec }
 import uk.gov.hmrc.customs.test.CustomsFixtures
 
 class ConstraintsSpec extends WordSpec with MustMatchers with CustomsFixtures {
@@ -62,7 +62,7 @@ class ConstraintsSpec extends WordSpec with MustMatchers with CustomsFixtures {
     }
 
     "match floating point within precision and scale" in {
-      const.n(4,2)("42.24") must be(true)
+      const.n(4, 2)("42.24") must be(true)
     }
 
     "not match floating point beyond precision" in {

@@ -16,10 +16,10 @@
 
 package controllers
 
-import domain.auth.{EORI, SignedInUser}
+import domain.auth.{ EORI, SignedInUser }
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq => eqTo, _}
+import org.mockito.ArgumentMatchers.{ eq => eqTo, _ }
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
@@ -29,18 +29,19 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, EndpointBehaviours }
 import uk.gov.hmrc.wco.dec.PreviousDocument
 import views.html.add_previous_documents
 
 import scala.concurrent.Future
 
-class PreviousDocumentsControllerSpec extends CustomsSpec
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with MockitoSugar
-  with EndpointBehaviours {
+class PreviousDocumentsControllerSpec
+    extends CustomsSpec
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with MockitoSugar
+    with EndpointBehaviours {
 
   def form = Form(previousDocumentMapping)
 
@@ -60,7 +61,6 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(Some(user)).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
@@ -74,7 +74,6 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
       "user is missing an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(Some(user.user)).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -90,9 +89,10 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
 
         forAll(arbitrary[SignedInUser], documentGen) {
           case (user, documents) =>
-
-            when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.previousDocuments))(any(), any(), any()))
-              .thenReturn(Future.successful(documents))
+            when(
+              mockCustomsCacheService
+                .getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.previousDocuments))(any(), any(), any())
+            ).thenReturn(Future.successful(documents))
 
             val result = controller(Some(user)).onPageLoad(fakeRequest)
 
@@ -110,7 +110,6 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
       "valid data is submitted" in {
 
         forAll { (user: SignedInUser, document: PreviousDocument) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(document): _*)
           val result  = controller(Some(user)).onSubmit(request)
 
@@ -125,7 +124,6 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
       "user is missing an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(Some(user.user)).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -144,9 +142,10 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
 
         forAll(arbitrary[SignedInUser], badDataGen, option(listOf(arbitrary[PreviousDocument]))) {
           (user, badData, documents) =>
-
-            when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.previousDocuments))(any(), any(), any()))
-              .thenReturn(Future.successful(documents))
+            when(
+              mockCustomsCacheService
+                .getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.previousDocuments))(any(), any(), any())
+            ).thenReturn(Future.successful(documents))
 
             val request = fakeRequest.withFormUrlEncodedBody(asFormParams(badData): _*)
             val badForm = form.fillAndValidate(badData)
@@ -163,12 +162,14 @@ class PreviousDocumentsControllerSpec extends CustomsSpec
       "valid data is submitted" in {
 
         forAll { (user: SignedInUser, document: PreviousDocument) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(document): _*)
           await(controller(Some(user)).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.previousDocuments))(any(), any())(any(), any(), any(), any())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.previousDocuments))(any(), any())(any(),
+                                                                                                 any(),
+                                                                                                 any(),
+                                                                                                 any())
         }
 
       }

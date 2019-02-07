@@ -19,42 +19,43 @@ package uk.gov.hmrc.customs.test.behaviours
 import akka.stream.Materializer
 import config.AppConfig
 import domain.auth.EORI
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
-import org.mockito.ArgumentMatchers.{eq => eqTo, _}
+import org.mockito.{ ArgumentCaptor, ArgumentMatchers }
+import org.mockito.ArgumentMatchers.{ eq => eqTo, _ }
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import org.scalatestplus.play.{ OneAppPerSuite, PlaySpec }
 import play.api.Application
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.{ Messages, MessagesApi }
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.concurrent.Execution.Implicits
-import play.api.libs.json.{JsValue, Json, Writes}
+import play.api.libs.json.{ JsValue, Json, Writes }
 import play.api.test.FakeRequest
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.{CustomsFixtures, CustomsFutures}
+import uk.gov.hmrc.customs.test.{ CustomsFixtures, CustomsFutures }
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.reflect._
 
-trait CustomsSpec extends PlaySpec
-  with OneAppPerSuite
-  with CustomsFutures
-  with CustomsFixtures
-  with MockitoSugar
-  with BeforeAndAfterEach {
+trait CustomsSpec
+    extends PlaySpec
+    with OneAppPerSuite
+    with CustomsFutures
+    with CustomsFixtures
+    with MockitoSugar
+    with BeforeAndAfterEach {
 
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  implicit lazy val mat: Materializer = app.materializer
-  implicit lazy val ec: ExecutionContext = Implicits.defaultContext
-  implicit lazy val appConfig: AppConfig = component[AppConfig]
+  implicit lazy val hc: HeaderCarrier        = HeaderCarrier()
+  implicit lazy val mat: Materializer        = app.materializer
+  implicit lazy val ec: ExecutionContext     = Implicits.defaultContext
+  implicit lazy val appConfig: AppConfig     = component[AppConfig]
   implicit lazy val messagesApi: MessagesApi = component[MessagesApi]
-  implicit lazy val messages: Messages = messagesApi.preferred(fakeRequest)
+  implicit lazy val messages: Messages       = messagesApi.preferred(fakeRequest)
 
   lazy val fakeRequest = FakeRequest("", "")
 
@@ -82,7 +83,7 @@ trait CustomsSpec extends PlaySpec
       .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
   }
 
-  def withCachingUsingKey[T](dataToReturn: Option[T], id: String): OngoingStubbing[Future[CacheMap]]  = {
+  def withCachingUsingKey[T](dataToReturn: Option[T], id: String): OngoingStubbing[Future[CacheMap]] = {
     when(
       mockCustomsCacheService
         .fetchAndGetEntry[T](ArgumentMatchers.eq(appConfig.appName), ArgumentMatchers.eq(id))(any(), any(), any())
@@ -106,8 +107,8 @@ trait CustomsSpec extends PlaySpec
 
   // composite template method to be overridden by sub-types to customise the app
   // NB. when overriding, ALWAYS call super.customise(builder) and operate on the return value!
-  protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder = builder.overrides(
-    bind[CustomsCacheService].to(mockCustomsCacheService))
+  protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder =
+    builder.overrides(bind[CustomsCacheService].to(mockCustomsCacheService))
 
   // toJson strips out Some and None and replaces them with string values
   def asFormParams(cc: Product): List[(String, String)] =
@@ -117,9 +118,10 @@ trait CustomsSpec extends PlaySpec
         (f.getName, f.get(cc))
       }
       .flatMap {
-        case (n, l: List[Product]) => l.zipWithIndex.flatMap {
-          case (x, i) => asFormParams(x).map { case (k, v) => (s"$n[$i].$k", v) }
-        }
+        case (n, l: List[Product]) =>
+          l.zipWithIndex.flatMap {
+            case (x, i) => asFormParams(x).map { case (k, v) => (s"$n[$i].$k", v) }
+          }
         case (n, Some(p: Product)) => asFormParams(p).map { case (k, v) => (s"$n.$k", v) }
         case (n, Some(a))          => List((n, a.toString))
         case (n, None)             => List((n, ""))

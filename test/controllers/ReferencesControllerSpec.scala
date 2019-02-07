@@ -17,10 +17,10 @@
 package controllers
 
 import domain.References
-import domain.auth.{EORI, SignedInUser}
+import domain.auth.{ EORI, SignedInUser }
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
+import org.mockito.ArgumentMatchers.{ eq => eqTo, _ }
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
@@ -31,15 +31,16 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, EndpointBehaviours }
 import views.html.references
 
-class ReferencesControllerSpec extends CustomsSpec
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with EndpointBehaviours
-  with MockitoSugar {
+class ReferencesControllerSpec
+    extends CustomsSpec
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with EndpointBehaviours
+    with MockitoSugar {
 
   val form = Form(referencesMapping)
 
@@ -50,7 +51,7 @@ class ReferencesControllerSpec extends CustomsSpec
     new ReferencesController(new FakeActions(Some(user)), mockCustomsCacheService)
 
   val referencesGen: Gen[Option[References]] = option(arbitrary[References])
-  val uri = "/submit-declaration/references"
+  val uri                                    = "/submit-declaration/references"
 
   "onPageLoad" should {
 
@@ -62,7 +63,6 @@ class ReferencesControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(user).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
@@ -76,7 +76,6 @@ class ReferencesControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(user.user).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -86,17 +85,15 @@ class ReferencesControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], referencesGen) {
-        (user, references) =>
+      forAll(arbitrary[SignedInUser], referencesGen) { (user, references) =>
+        withCleanCache(EORI(user.eori.value), CacheKey.references, references) {
 
-          withCleanCache(EORI(user.eori.value), CacheKey.references, references) {
+          val popForm = references.fold(form)(form.fill)
+          val result  = controller(user).onPageLoad(fakeRequest)
 
-            val popForm = references.fold(form)(form.fill)
-            val result = controller(user).onPageLoad(fakeRequest)
-
-            status(result) mustBe OK
-            contentAsString(result) mustBe view(popForm)
-          }
+          status(result) mustBe OK
+          contentAsString(result) mustBe view(popForm)
+        }
       }
     }
   }
@@ -111,7 +108,6 @@ class ReferencesControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
@@ -125,7 +121,6 @@ class ReferencesControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(user.user).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -145,15 +140,13 @@ class ReferencesControllerSpec extends CustomsSpec
             r.copy(typeCode = Some(s))
           }
 
-        forAll(arbitrary[SignedInUser], badData) {
-          (user, formData) =>
+        forAll(arbitrary[SignedInUser], badData) { (user, formData) =>
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+          val popForm = form.fillAndValidate(formData)
+          val result  = controller(user).onSubmit(request)
 
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
-            val popForm = form.fillAndValidate(formData)
-            val result  = controller(user).onSubmit(request)
-
-            status(result) mustBe BAD_REQUEST
-            contentAsString(result) mustBe view(popForm)
+          status(result) mustBe BAD_REQUEST
+          contentAsString(result) mustBe view(popForm)
         }
       }
     }
@@ -163,7 +156,6 @@ class ReferencesControllerSpec extends CustomsSpec
       "valid data is posted" in {
 
         forAll { (user: SignedInUser, references: References) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(references): _*)
           await(controller(user).onSubmit(request))
 

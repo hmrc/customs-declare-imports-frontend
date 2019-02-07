@@ -22,18 +22,18 @@ import java.util.UUID
 
 import domain.auth.SignedInUser
 import org.mockito.Mockito.when
-import org.mockito.{ArgumentMatcher, ArgumentMatchers}
+import org.mockito.{ ArgumentMatcher, ArgumentMatchers }
 import org.scalatest.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.filters.csrf.CSRF.Token
-import play.filters.csrf.{CSRFConfig, CSRFConfigProvider, CSRFFilter}
+import play.filters.csrf.{ CSRFConfig, CSRFConfigProvider, CSRFFilter }
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrievals._
-import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
-import uk.gov.hmrc.auth.core.{AuthConnector, NoActiveSession}
+import uk.gov.hmrc.auth.core.retrieve.{ ~, Retrieval }
+import uk.gov.hmrc.auth.core.{ AuthConnector, NoActiveSession }
 import uk.gov.hmrc.customs.test.CustomsFixtures
-import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
+import uk.gov.hmrc.http.{ HeaderCarrier, SessionKeys }
 
 import scala.concurrent.Future
 
@@ -49,11 +49,12 @@ trait AuthenticationBehaviours extends CustomsSpec with CustomsFixtures with Moc
 
   private lazy val token: String = component[CSRFFilter].tokenProvider.generateToken
 
-  def ggLoginRedirectUri(fromUri: String): String = s"/gg/sign-in?continue=${URLEncoder.encode(fromUri, StandardCharsets.UTF_8.displayName())}&origin=${appConfig.appName}"
+  def ggLoginRedirectUri(fromUri: String): String =
+    s"/gg/sign-in?continue=${URLEncoder.encode(fromUri, StandardCharsets.UTF_8.displayName())}&origin=${appConfig.appName}"
 
   lazy val authenticationTags: Map[String, String] = Map(
     Token.NameRequestTag -> cfg.tokenName,
-    Token.RequestTag -> token
+    Token.RequestTag     -> token
   )
 
   //noinspection ConvertExpressionToSAM
@@ -61,15 +62,20 @@ trait AuthenticationBehaviours extends CustomsSpec with CustomsFixtures with Moc
     override def matches(hc: HeaderCarrier): Boolean = hc != null && hc.authorization.isEmpty
   }
 
-  def withSignedInUser(user: SignedInUser = randomUser)(test: (Map[String, String], Map[String, String], Map[String, String]) => Unit): Unit = {
+  def withSignedInUser(
+      user: SignedInUser = randomUser
+  )(test: (Map[String, String], Map[String, String], Map[String, String]) => Unit): Unit = {
     when(
       authConnector
         .authorise(
           ArgumentMatchers.argThat(cdsEnrollmentMatcher(user)),
-          ArgumentMatchers.eq(credentials and name and email and affinityGroup and internalId and allEnrolments))(ArgumentMatchers.any(), ArgumentMatchers.any()
-        )
+          ArgumentMatchers.eq(credentials and name and email and affinityGroup and internalId and allEnrolments)
+        )(ArgumentMatchers.any(), ArgumentMatchers.any())
     ).thenReturn(
-      Future.successful(new ~(new ~(new ~(new ~(new ~(user.credentials, user.name), user.email), user.affinityGroup), user.internalId), user.enrolments))
+      Future.successful(
+        new ~(new ~(new ~(new ~(new ~(user.credentials, user.name), user.email), user.affinityGroup), user.internalId),
+              user.enrolments)
+      )
     )
     test(Map(cfg.headerName -> token), userSession(user), authenticationTags)
   }
@@ -77,9 +83,9 @@ trait AuthenticationBehaviours extends CustomsSpec with CustomsFixtures with Moc
   def withoutSignedInUser()(test: (Map[String, String], Map[String, String]) => Unit): Unit = {
     when(
       authConnector
-        .authorise(
-          ArgumentMatchers.any(),
-          ArgumentMatchers.any[Retrieval[_]])(ArgumentMatchers.argThat(noBearerTokenMatcher), ArgumentMatchers.any()
+        .authorise(ArgumentMatchers.any(), ArgumentMatchers.any[Retrieval[_]])(
+          ArgumentMatchers.argThat(noBearerTokenMatcher),
+          ArgumentMatchers.any()
         )
     ).thenReturn(
       Future.failed(notLoggedInException)
@@ -89,7 +95,7 @@ trait AuthenticationBehaviours extends CustomsSpec with CustomsFixtures with Moc
 
   def userSession(user: SignedInUser): Map[String, String] = Map(
     SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-    SessionKeys.userId -> user.internalId.getOrElse(randomString(8))
+    SessionKeys.userId    -> user.internalId.getOrElse(randomString(8))
   )
 
   override protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder =
@@ -97,7 +103,8 @@ trait AuthenticationBehaviours extends CustomsSpec with CustomsFixtures with Moc
 
   //noinspection ConvertExpressionToSAM
   private def cdsEnrollmentMatcher(user: SignedInUser): ArgumentMatcher[Predicate] = new ArgumentMatcher[Predicate] {
-    override def matches(p: Predicate): Boolean = p == SignedInUser.authorisationPredicate && user.enrolments.getEnrolment(SignedInUser.cdsEnrolmentName).isDefined
+    override def matches(p: Predicate): Boolean =
+      p == SignedInUser.authorisationPredicate && user.enrolments.getEnrolment(SignedInUser.cdsEnrolmentName).isDefined
   }
 
 }

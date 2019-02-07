@@ -25,14 +25,15 @@ import play.twirl.api.Html
 import uk.gov.hmrc.customs.test.ViewMatchers
 import uk.gov.hmrc.wco.dec.ImportExportParty
 import views.behaviours.ViewBehaviours
-import views.html.components.{input_select, input_text}
+import views.html.components.{ input_select, input_text }
 import views.html.declarant_details
 
-class DeclarantDetailsSpec extends ViewBehaviours
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with ViewMatchers {
+class DeclarantDetailsSpec
+    extends ViewBehaviours
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with ViewMatchers {
 
   val form = Form(importExportPartyMapping)
 
@@ -51,7 +52,6 @@ class DeclarantDetailsSpec extends ViewBehaviours
     "display name field" in {
 
       forAll { party: ImportExportParty =>
-
         val popForm = form.fillAndValidate(party)
         val input   = input_text(popForm("name"), messages(s"$messagePrefix.name"))
         val html    = view(popForm)
@@ -63,7 +63,6 @@ class DeclarantDetailsSpec extends ViewBehaviours
     "display address line" in {
 
       forAll { party: ImportExportParty =>
-
         val popForm = form.fillAndValidate(party)
         val input   = input_text(popForm("address.line"), messages(s"$messagePrefix.address.line"))
         val html    = view(popForm)
@@ -75,7 +74,6 @@ class DeclarantDetailsSpec extends ViewBehaviours
     "display address city name" in {
 
       forAll { party: ImportExportParty =>
-
         val popForm = form.fillAndValidate(party)
         val input   = input_text(popForm("address.cityName"), messages(s"$messagePrefix.address.cityName"))
         val html    = view(popForm)
@@ -87,13 +85,11 @@ class DeclarantDetailsSpec extends ViewBehaviours
     "display address country code" in {
 
       forAll { party: ImportExportParty =>
-
         val popForm = form.fillAndValidate(party)
-        val input   = input_select(
-          popForm("address.countryCode"),
-          messages(s"$messagePrefix.address.countryCode"),
-          config.Options.countryOptions.toMap)
-        val html    = view(popForm)
+        val input = input_select(popForm("address.countryCode"),
+                                 messages(s"$messagePrefix.address.countryCode"),
+                                 config.Options.countryOptions.toMap)
+        val html = view(popForm)
 
         html must include(input)
       }
@@ -102,7 +98,6 @@ class DeclarantDetailsSpec extends ViewBehaviours
     "display address postcode" in {
 
       forAll { party: ImportExportParty =>
-
         val popForm = form.fillAndValidate(party)
         val input   = input_text(popForm("address.postcodeId"), messages(s"$messagePrefix.address.postcode"))
         val html    = view(popForm)
@@ -114,10 +109,10 @@ class DeclarantDetailsSpec extends ViewBehaviours
     "display id" in {
 
       forAll { party: ImportExportParty =>
-
         val popForm = form.fillAndValidate(party)
-        val input   = input_text(popForm("id"), messages(s"$messagePrefix.id"), hint = Some(messages("common.hints.eori")))
-        val html    = view(popForm)
+        val input =
+          input_text(popForm("id"), messages(s"$messagePrefix.id"), hint = Some(messages("common.hints.eori")))
+        val html = view(popForm)
 
         html must include(input)
       }

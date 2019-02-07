@@ -32,11 +32,7 @@ import views.html.components.input_text
 import views.html.components.table.table
 import views.html.guarantee_type
 
-class GuaranteeTypeSpec extends ViewBehaviours
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with ViewMatchers {
+class GuaranteeTypeSpec extends ViewBehaviours with PropertyChecks with Generators with OptionValues with ViewMatchers {
 
   val form = Form(guaranteeTypeMapping)
 
@@ -44,7 +40,7 @@ class GuaranteeTypeSpec extends ViewBehaviours
     guarantee_type(form, details, showForm)(fakeRequest, messages, appConfig)
 
   val simpleView: () => Html = () => view()
-  val messagePrefix = "guaranteeType"
+  val messagePrefix          = "guaranteeType"
 
   "Security details code view" should {
 
@@ -54,7 +50,6 @@ class GuaranteeTypeSpec extends ViewBehaviours
     "render security details code input" in {
 
       forAll { details: GuaranteeType =>
-
         val popForm = form.fillAndValidate(details.value)
         val input   = input_text(popForm("securityDetailsCode"), "Security details code")
         val html    = view(popForm)
@@ -89,7 +84,6 @@ class GuaranteeTypeSpec extends ViewBehaviours
       val dataGen = listOf(arbitrary[GuaranteeType]).map(_.map(_.value))
 
       forAll(dataGen) { details =>
-
         whenever(details.nonEmpty) {
 
           val tableTitle = details.size match {
@@ -98,8 +92,8 @@ class GuaranteeTypeSpec extends ViewBehaviours
           }
 
           val htmlTable = HtmlTable("Security details code")(details.map(_.securityDetailsCode))
-          val expected = table(htmlTable, Some(tableTitle))
-          val html = view(details = details)
+          val expected  = table(htmlTable, Some(tableTitle))
+          val html      = view(details = details)
 
           html must include(expected)
         }

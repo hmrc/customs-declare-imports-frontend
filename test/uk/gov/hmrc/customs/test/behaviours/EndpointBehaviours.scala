@@ -21,8 +21,7 @@ import play.api.test.Helpers._
 
 trait EndpointBehaviours extends CustomsSpec {
 
-  def authenticatedEndpoint(uri: String, method: String = GET): Unit = {
-
+  def authenticatedEndpoint(uri: String, method: String = GET): Unit =
     "redirect user" when {
       s"$uri endpoint is called with $method and without signed in user" in new IntegrationTest {
 
@@ -33,10 +32,8 @@ trait EndpointBehaviours extends CustomsSpec {
         }
       }
     }
-  }
 
-  def okEndpoint(uri: String, method: String = GET): Unit = {
-
+  def okEndpoint(uri: String, method: String = GET): Unit =
     "return 200" when {
 
       s"$uri endpoint is called with $method and with signed in user" in new IntegrationTest {
@@ -49,10 +46,8 @@ trait EndpointBehaviours extends CustomsSpec {
         }
       }
     }
-  }
 
-  def badRequestEndpoint(uri: String, method: String = GET): Unit = {
-
+  def badRequestEndpoint(uri: String, method: String = GET): Unit =
     "return 400" when {
 
       s"$uri endpoint is called with $method and with signed in user" in new IntegrationTest {
@@ -65,10 +60,8 @@ trait EndpointBehaviours extends CustomsSpec {
         }
       }
     }
-  }
 
-  def redirectedEndpoint(uri: String, redirectTo: String, method: String = GET): Unit = {
-
+  def redirectedEndpoint(uri: String, redirectTo: String, method: String = GET): Unit =
     "return 303" when {
 
       s"$uri endpoint is called with $method and with signed in user" in new IntegrationTest {
@@ -81,5 +74,4 @@ trait EndpointBehaviours extends CustomsSpec {
         }
       }
     }
-  }
 }

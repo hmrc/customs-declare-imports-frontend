@@ -16,10 +16,10 @@
 
 package controllers
 
-import domain.auth.{EORI, SignedInUser}
+import domain.auth.{ EORI, SignedInUser }
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
+import org.mockito.ArgumentMatchers.{ eq => eqTo, _ }
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
@@ -30,16 +30,17 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, EndpointBehaviours }
 import uk.gov.hmrc.wco.dec.Agent
 import views.html.representative_details
 
-class RepresentativeDetailsControllerSpec extends CustomsSpec
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with MockitoSugar
-  with EndpointBehaviours {
+class RepresentativeDetailsControllerSpec
+    extends CustomsSpec
+    with PropertyChecks
+    with Generators
+    with OptionValues
+    with MockitoSugar
+    with EndpointBehaviours {
 
   val form = Form(agentMapping)
 
@@ -50,7 +51,7 @@ class RepresentativeDetailsControllerSpec extends CustomsSpec
     new RepresentativeDetailsController(new FakeActions(Some(user)), mockCustomsCacheService)
 
   val agentGen: Gen[Option[Agent]] = option(arbitrary[Agent])
-  val uri = "/submit-declaration/representative-details"
+  val uri                          = "/submit-declaration/representative-details"
 
   "onPageLoad" should {
 
@@ -62,7 +63,6 @@ class RepresentativeDetailsControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(user).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
@@ -76,7 +76,6 @@ class RepresentativeDetailsControllerSpec extends CustomsSpec
       "user doesn't have an eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(user.user).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -86,17 +85,15 @@ class RepresentativeDetailsControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], agentGen) {
-        (user, agent) =>
+      forAll(arbitrary[SignedInUser], agentGen) { (user, agent) =>
+        withCleanCache(EORI(user.eori.value), CacheKey.representative, agent) {
 
-          withCleanCache(EORI(user.eori.value), CacheKey.representative, agent) {
+          val popForm = agent.fold(form)(form.fill)
+          val result  = controller(user).onPageLoad(fakeRequest)
 
-            val popForm = agent.fold(form)(form.fill)
-            val result  = controller(user).onPageLoad(fakeRequest)
-
-            status(result) mustBe OK
-            contentAsString(result) mustBe view(popForm)
-          }
+          status(result) mustBe OK
+          contentAsString(result) mustBe view(popForm)
+        }
       }
     }
   }
@@ -111,7 +108,6 @@ class RepresentativeDetailsControllerSpec extends CustomsSpec
       "user is signed in" in {
 
         forAll { user: SignedInUser =>
-
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
@@ -125,7 +121,6 @@ class RepresentativeDetailsControllerSpec extends CustomsSpec
       "user doesn't have eori" in {
 
         forAll { user: UnauthenticatedUser =>
-
           val result = controller(user.user).onSubmit(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
@@ -145,15 +140,13 @@ class RepresentativeDetailsControllerSpec extends CustomsSpec
             agent.copy(id = Some(id))
           }
 
-        forAll(arbitrary[SignedInUser], badData) {
-          (user, formData) =>
+        forAll(arbitrary[SignedInUser], badData) { (user, formData) =>
+          val popForm = form.fillAndValidate(formData)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+          val result  = controller(user).onSubmit(request)
 
-            val popForm = form.fillAndValidate(formData)
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
-            val result  = controller(user).onSubmit(request)
-
-            status(result) mustBe BAD_REQUEST
-            contentAsString(result) mustBe view(popForm)
+          status(result) mustBe BAD_REQUEST
+          contentAsString(result) mustBe view(popForm)
         }
       }
     }
@@ -163,7 +156,6 @@ class RepresentativeDetailsControllerSpec extends CustomsSpec
       "valid data is posted" in {
 
         forAll { (user: SignedInUser, agent: Agent) =>
-
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(agent): _*)
           await(controller(user).onSubmit(request))
 

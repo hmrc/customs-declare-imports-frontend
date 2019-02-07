@@ -40,18 +40,20 @@ class SubmissionJourney {
   val end: Call = routes.DeclarationController.onSubmitComplete()
 
   def prev(current: String): Either[Call, String] = current match {
-    case left if current == screens.head => Left(start)
+    case left if current == screens.head  => Left(start)
     case right if current == screens.last => Right(screens(screens.size - 2))
-    case _ => Right(screens.sliding(3).filter(window => window(1) == current).map(found => found.head).toSeq.head)
+    case _                                => Right(screens.sliding(3).filter(window => window(1) == current).map(found => found.head).toSeq.head)
   }
 
-  def next(current: String, forceLast: Boolean = false): Either[Call, String] = if (forceLast && screens.last != current) {
-    Right(screens.last)
-  } else current match {
-    case left if current == screens.last => Left(end)
-    case right if current == screens.head => Right(screens(1))
-    case _ => Right(screens.sliding(3).filter(window => window(1) == current).map(found => found.last).toSeq.head)
-  }
+  def next(current: String, forceLast: Boolean = false): Either[Call, String] =
+    if (forceLast && screens.last != current) {
+      Right(screens.last)
+    } else
+      current match {
+        case left if current == screens.last  => Left(end)
+        case right if current == screens.head => Right(screens(1))
+        case _                                => Right(screens.sliding(3).filter(window => window(1) == current).map(found => found.last).toSeq.head)
+      }
 
 }
 

@@ -22,28 +22,28 @@ import java.util.concurrent.TimeoutException
 import domain.auth.SignedInUser
 import org.scalatest.OptionValues
 import play.api.Configuration
-import play.api.http.{ContentTypes, HeaderNames, HttpVerbs, Status}
+import play.api.http.{ ContentTypes, HeaderNames, HttpVerbs, Status }
 import play.api.libs.ws.WSClient
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.ReadPreference
-import reactivemongo.api.commands.{DefaultWriteResult, WriteResult}
+import reactivemongo.api.commands.{ DefaultWriteResult, WriteResult }
 import reactivemongo.bson.BSONObjectID
-import repositories.declaration.{Submission, SubmissionRepository}
+import repositories.declaration.{ Submission, SubmissionRepository }
 import uk.gov.hmrc.customs.test.behaviours.CustomsSpec
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.bootstrap.http.{DefaultHttpClient, HttpClient}
+import uk.gov.hmrc.play.bootstrap.http.{ DefaultHttpClient, HttpClient }
 import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.collection.mutable
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues {
 
   // any required implicits (++ those in CustomsSpec)
 
   implicit val mc: ReactiveMongoComponent = component[ReactiveMongoComponent]
-  implicit val user: SignedInUser = userFixture(eori = Some(randomString(17)))
+  implicit val user: SignedInUser         = userFixture(eori = Some(randomString(17)))
 
   // some basic fixtures and helpers
 
@@ -55,7 +55,8 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
 
   val declarantLocalReferenceNumber = "Bobby3018"
 
-  val declarantAuthToken = "Bearer BXQ3/Treo4kQCZvVcCqKPkumwTEqDrjsQwNFOBQYFr1SDFlJRHEDF8UN2TvetUGpTYtMEOBk+k3c7YJ2IpIWT21luGvdx12z3wxC6lUn7DSKo0T+AzZMSOX4hoshFqLDgvqSofBGsxdpkTp2Sgv4duWjVJmbg8Iprh5Q09LeEKj9KwIkeIPK/mMlBESjue4V"
+  val declarantAuthToken =
+    "Bearer BXQ3/Treo4kQCZvVcCqKPkumwTEqDrjsQwNFOBQYFr1SDFlJRHEDF8UN2TvetUGpTYtMEOBk+k3c7YJ2IpIWT21luGvdx12z3wxC6lUn7DSKo0T+AzZMSOX4hoshFqLDgvqSofBGsxdpkTp2Sgv4duWjVJmbg8Iprh5Q09LeEKj9KwIkeIPK/mMlBESjue4V"
 
   val acceptContentType: String = s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml"
 
@@ -70,19 +71,30 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
 
   def otherResponse(status: Int): AnyRef with HttpResponse = HttpResponse(responseStatus = status)
 
-  def submitRequest(submission: MetaData, headers: Map[String, String]): HttpRequest = HttpRequest(submitUrl, submission.toXml.mkString, headers)
+  def submitRequest(submission: MetaData, headers: Map[String, String]): HttpRequest =
+    HttpRequest(submitUrl, submission.toXml.mkString, headers)
 
-  def cancelRequest(cancellation: MetaData, headers: Map[String, String]): HttpRequest = HttpRequest(cancelUrl, cancellation.toXml.mkString, headers)
+  def cancelRequest(cancellation: MetaData, headers: Map[String, String]): HttpRequest =
+    HttpRequest(cancelUrl, cancellation.toXml.mkString, headers)
 
-  def expectingAcceptedResponse(request: HttpRequest, headers: Map[String, String]): Either[Exception, HttpExpectation] = Right(HttpExpectation(
-    request,
-    acceptedResponse(randomConversationId)
-  ))
+  def expectingAcceptedResponse(request: HttpRequest,
+                                headers: Map[String, String]): Either[Exception, HttpExpectation] =
+    Right(
+      HttpExpectation(
+        request,
+        acceptedResponse(randomConversationId)
+      )
+    )
 
-  def expectingOtherResponse(request: HttpRequest, status: Int, headers: Map[String, String]): Either[Exception, HttpExpectation] = Right(HttpExpectation(
-    request,
-    otherResponse(status)
-  ))
+  def expectingOtherResponse(request: HttpRequest,
+                             status: Int,
+                             headers: Map[String, String]): Either[Exception, HttpExpectation] =
+    Right(
+      HttpExpectation(
+        request,
+        otherResponse(status)
+      )
+    )
 
   def expectingFailure(ex: Exception): Either[Exception, HttpExpectation] = Left(ex)
 
@@ -90,23 +102,29 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
 
   "submit import declaration" should {
 
-    "specify Content-Type as XML in request headers" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, http, _, _, _) =>
-      http.requests.head.headers(HeaderNames.CONTENT_TYPE) must be(ContentTypes.XML)
+    "specify Content-Type as XML in request headers" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) {
+      (_, http, _, _, _) =>
+        http.requests.head.headers(HeaderNames.CONTENT_TYPE) must be(ContentTypes.XML)
     }
 
-    "specify X-Local-Reference-Number in request headers" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration, Some(aRandomLocalReferenceNumber)) { (_, http, _, _, _) =>
+    "specify X-Local-Reference-Number in request headers" in simpleAcceptedSubmissionScenario(
+      aRandomSubmitDeclaration,
+      Some(aRandomLocalReferenceNumber)
+    ) { (_, http, _, _, _) =>
       http.requests.head.headers("X-Local-Reference-Number") must be(declarantLocalReferenceNumber)
     }
 
-    "send metadata as XML in request body" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, http, _, _, _) =>
-      http.requests.head.body must be(aRandomSubmitDeclaration.toXml.mkString)
+    "send metadata as XML in request body" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) {
+      (_, http, _, _, _) =>
+        http.requests.head.body must be(aRandomSubmitDeclaration.toXml.mkString)
     }
 
-    "save successfully submitted declaration" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) { (_, _, expectation, repo, _) =>
-      val saved = repo.findAll().futureValue.head
-      saved.lrn must be(aRandomSubmitDeclaration.declaration.value.functionalReferenceId)
-      saved.eori must be(user.requiredEori)
-      saved.conversationId must be(expectation.resp.header("X-Conversation-ID").get)
+    "save successfully submitted declaration" in simpleAcceptedSubmissionScenario(aRandomSubmitDeclaration) {
+      (_, _, expectation, repo, _) =>
+        val saved = repo.findAll().futureValue.head
+        saved.lrn must be(aRandomSubmitDeclaration.declaration.value.functionalReferenceId)
+        saved.eori must be(user.requiredEori)
+        saved.conversationId must be(expectation.resp.header("X-Conversation-ID").get)
     }
 
     "throw gateway timeout exception when request times out" in withoutLocalReferenceNumber() { _ =>
@@ -114,11 +132,12 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
       withHttpClient(expectingFailure(ex)) { http =>
         withSubmissionRepository() { repo =>
           withCustomsDeclarationsConnector(http, repo) { connector =>
-            connector.
-              submitImportDeclaration(aRandomSubmitDeclaration, "").
-              failed.futureValue.
-              asInstanceOf[GatewayTimeoutException].
-              message must be(http.gatewayTimeoutMessage(HttpVerbs.POST, submitUrl, ex))
+            connector
+              .submitImportDeclaration(aRandomSubmitDeclaration, "")
+              .failed
+              .futureValue
+              .asInstanceOf[GatewayTimeoutException]
+              .message must be(http.gatewayTimeoutMessage(HttpVerbs.POST, submitUrl, ex))
           }
         }
       }
@@ -129,33 +148,49 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
       withHttpClient(expectingFailure(ex)) { http =>
         withSubmissionRepository() { repo =>
           withCustomsDeclarationsConnector(http, repo) { connector =>
-            connector.
-              submitImportDeclaration(aRandomSubmitDeclaration, "").
-              failed.futureValue.
-              asInstanceOf[BadGatewayException].
-              message must be(http.badGatewayMessage(HttpVerbs.POST, submitUrl, ex))
+            connector
+              .submitImportDeclaration(aRandomSubmitDeclaration, "")
+              .failed
+              .futureValue
+              .asInstanceOf[BadGatewayException]
+              .message must be(http.badGatewayMessage(HttpVerbs.POST, submitUrl, ex))
           }
         }
       }
     }
 
-    "throw upstream 5xx exception when API responds with internal server error" in withoutLocalReferenceNumber() { headers =>
-      withHttpClient(expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.INTERNAL_SERVER_ERROR, headers)) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, "").failed.futureValue.asInstanceOf[Upstream5xxResponse]
-            ex.upstreamResponseCode must be(Status.INTERNAL_SERVER_ERROR)
-            ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
+    "throw upstream 5xx exception when API responds with internal server error" in withoutLocalReferenceNumber() {
+      headers =>
+        withHttpClient(
+          expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers),
+                                 Status.INTERNAL_SERVER_ERROR,
+                                 headers)
+        ) { http =>
+          withSubmissionRepository() { repo =>
+            withCustomsDeclarationsConnector(http, repo) { connector =>
+              val ex = connector
+                .submitImportDeclaration(aRandomSubmitDeclaration, "")
+                .failed
+                .futureValue
+                .asInstanceOf[Upstream5xxResponse]
+              ex.upstreamResponseCode must be(Status.INTERNAL_SERVER_ERROR)
+              ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
+            }
           }
         }
-      }
     }
 
     "throw upstream 4xx exception when API responds with bad request" in withoutLocalReferenceNumber() { headers =>
-      withHttpClient(expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.BAD_REQUEST, headers)) { http =>
+      withHttpClient(
+        expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.BAD_REQUEST, headers)
+      ) { http =>
         withSubmissionRepository() { repo =>
           withCustomsDeclarationsConnector(http, repo) { connector =>
-            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, "").failed.futureValue.asInstanceOf[Upstream4xxResponse]
+            val ex = connector
+              .submitImportDeclaration(aRandomSubmitDeclaration, "")
+              .failed
+              .futureValue
+              .asInstanceOf[Upstream4xxResponse]
             ex.upstreamResponseCode must be(Status.BAD_REQUEST)
             ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
           }
@@ -164,10 +199,16 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
     }
 
     "throw upstream 4xx exception when API responds with unauthhorised" in withoutLocalReferenceNumber() { headers =>
-      withHttpClient(expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.UNAUTHORIZED, headers)) { http =>
+      withHttpClient(
+        expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.UNAUTHORIZED, headers)
+      ) { http =>
         withSubmissionRepository() { repo =>
           withCustomsDeclarationsConnector(http, repo) { connector =>
-            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, "").failed.futureValue.asInstanceOf[Upstream4xxResponse]
+            val ex = connector
+              .submitImportDeclaration(aRandomSubmitDeclaration, "")
+              .failed
+              .futureValue
+              .asInstanceOf[Upstream4xxResponse]
             ex.upstreamResponseCode must be(Status.UNAUTHORIZED)
             ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
           }
@@ -179,79 +220,93 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
 
   // the test scenario builders
 
-  def simpleAcceptedSubmissionScenario(submission: MetaData, maybeLocalReferenceNumber: Option[String] = None)
-                                      (test: (Map[String, String], MockHttpClient, HttpExpectation, SubmissionRepository, CustomsDeclarationsConnector) => Unit): Unit = maybeLocalReferenceNumber match {
-    case Some(localReferenceNumber) => withLocalReferenceNumber(localReferenceNumber) { headers =>
-      val expectation = expectingAcceptedResponse(submitRequest(submission, headers), headers)
-      withHttpClient(expectation) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            whenReady(connector.submitImportDeclaration(submission, declarantLocalReferenceNumber)) { _ =>
-              test(headers, http, expectation.right.get, repo, connector)
+  def simpleAcceptedSubmissionScenario(submission: MetaData, maybeLocalReferenceNumber: Option[String] = None)(
+      test: (Map[String, String],
+             MockHttpClient,
+             HttpExpectation,
+             SubmissionRepository,
+             CustomsDeclarationsConnector) => Unit
+  ): Unit = maybeLocalReferenceNumber match {
+    case Some(localReferenceNumber) =>
+      withLocalReferenceNumber(localReferenceNumber) { headers =>
+        val expectation = expectingAcceptedResponse(submitRequest(submission, headers), headers)
+        withHttpClient(expectation) { http =>
+          withSubmissionRepository() { repo =>
+            withCustomsDeclarationsConnector(http, repo) { connector =>
+              whenReady(connector.submitImportDeclaration(submission, declarantLocalReferenceNumber)) { _ =>
+                test(headers, http, expectation.right.get, repo, connector)
+              }
             }
           }
         }
       }
-    }
-    case None => withoutLocalReferenceNumber() { headers =>
-      val expectation = expectingAcceptedResponse(submitRequest(submission, headers), headers)
-      withHttpClient(expectation) { http =>
-        withSubmissionRepository() { repo =>
-          withCustomsDeclarationsConnector(http, repo) { connector =>
-            whenReady(connector.submitImportDeclaration(submission, "")) { _ =>
-              test(headers, http, expectation.right.get, repo, connector)
+    case None =>
+      withoutLocalReferenceNumber() { headers =>
+        val expectation = expectingAcceptedResponse(submitRequest(submission, headers), headers)
+        withHttpClient(expectation) { http =>
+          withSubmissionRepository() { repo =>
+            withCustomsDeclarationsConnector(http, repo) { connector =>
+              whenReady(connector.submitImportDeclaration(submission, "")) { _ =>
+                test(headers, http, expectation.right.get, repo, connector)
+              }
             }
           }
         }
       }
-    }
   }
 
   def withoutLocalReferenceNumber()(test: Map[String, String] => Unit): Unit = withLocalReferenceNumber(None)(test)
 
-  def withLocalReferenceNumber(localReferenceNumber: String)(test: Map[String, String] => Unit): Unit = withLocalReferenceNumber(Some(localReferenceNumber))(test)
+  def withLocalReferenceNumber(localReferenceNumber: String)(test: Map[String, String] => Unit): Unit =
+    withLocalReferenceNumber(Some(localReferenceNumber))(test)
 
-  private def withLocalReferenceNumber(localReferenceNumber: Option[String] = None)(test: Map[String, String] => Unit): Unit = test(
+  private def withLocalReferenceNumber(localReferenceNumber: Option[String] = None)(
+      test: Map[String, String] => Unit
+  ): Unit = test(
     Map(
-      "X-Client-ID" -> appConfig.developerHubClientId,
-      HeaderNames.ACCEPT -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
-      HeaderNames.CONTENT_TYPE -> ContentTypes.XML,
+      "X-Client-ID"             -> appConfig.developerHubClientId,
+      HeaderNames.ACCEPT        -> s"application/vnd.hmrc.${appConfig.customsDeclarationsApiVersion}+xml",
+      HeaderNames.CONTENT_TYPE  -> ContentTypes.XML,
       HeaderNames.AUTHORIZATION -> declarantAuthToken
     ) ++ localReferenceNumber.map(id => "X-Local-Reference-Number" -> id)
   )
 
-  def withHttpClient(throwOrRespond: Either[Exception, HttpExpectation])
-                    (test: MockHttpClient => Unit): Unit = {
+  def withHttpClient(throwOrRespond: Either[Exception, HttpExpectation])(test: MockHttpClient => Unit): Unit =
     test(new MockHttpClient(throwOrRespond, component[Configuration], component[AuditConnector], component[WSClient]))
-  }
 
-  def withSubmissionRepository()(test: SubmissionRepository => Unit): Unit = test(new SubmissionRepository() {
+  def withSubmissionRepository()(test: SubmissionRepository => Unit): Unit =
+    test(new SubmissionRepository() {
 
-    val inserted: mutable.Buffer[Submission] = mutable.Buffer.empty
+      val inserted: mutable.Buffer[Submission] = mutable.Buffer.empty
 
-    // abuse findAll function for testing purposes :)
-    override def findAll(readPreference: ReadPreference = ReadPreference.primaryPreferred)
-                        (implicit ec: ExecutionContext): Future[List[Submission]] = Future.successful(inserted.toList)
+      // abuse findAll function for testing purposes :)
+      override def findAll(readPreference: ReadPreference = ReadPreference.primaryPreferred)(
+          implicit ec: ExecutionContext
+      ): Future[List[Submission]] = Future.successful(inserted.toList)
 
-    override def findByEori(eori: String): Future[Seq[Submission]] = throw new IllegalArgumentException("Unexpected call")
+      override def findByEori(eori: String): Future[Seq[Submission]] =
+        throw new IllegalArgumentException("Unexpected call")
 
-    override def getByConversationId(conversationId: String): Future[Option[Submission]] = throw new IllegalArgumentException("Unexpected call")
+      override def getByConversationId(conversationId: String): Future[Option[Submission]] =
+        throw new IllegalArgumentException("Unexpected call")
 
-    override def getByEoriAndMrn(eori: String, mrn: String): Future[Option[Submission]] = throw new IllegalArgumentException("Unexpected call")
+      override def getByEoriAndMrn(eori: String, mrn: String): Future[Option[Submission]] =
+        throw new IllegalArgumentException("Unexpected call")
 
-    override def insert(entity: Submission)(implicit ec: ExecutionContext): Future[WriteResult] = {
-      inserted += entity
-      Future.successful(DefaultWriteResult(ok = true, 1, Seq.empty, None, None, None))
-    }
+      override def insert(entity: Submission)(implicit ec: ExecutionContext): Future[WriteResult] = {
+        inserted += entity
+        Future.successful(DefaultWriteResult(ok = true, 1, Seq.empty, None, None, None))
+      }
 
-    override def isInsertion(newRecordId: BSONObjectID, oldRecord: Submission): Boolean = throw new IllegalArgumentException("Unexpected call")
+      override def isInsertion(newRecordId: BSONObjectID, oldRecord: Submission): Boolean =
+        throw new IllegalArgumentException("Unexpected call")
 
-  })
+    })
 
-  def withCustomsDeclarationsConnector(httpClient: HttpClient, submissionRepository: SubmissionRepository)
-                                      (test: CustomsDeclarationsConnector => Unit): Unit = {
+  def withCustomsDeclarationsConnector(httpClient: HttpClient, submissionRepository: SubmissionRepository)(
+      test: CustomsDeclarationsConnector => Unit
+  ): Unit =
     test(new CustomsDeclarationsConnector(appConfig, httpClient, submissionRepository))
-  }
 
 }
 
@@ -259,22 +314,27 @@ case class HttpExpectation(req: HttpRequest, resp: HttpResponse)
 
 case class HttpRequest(url: String, body: String, headers: Map[String, String])
 
-class MockHttpClient(throwOrRespond: Either[Exception, HttpExpectation], config: Configuration, auditConnector: AuditConnector, wsClient: WSClient) extends DefaultHttpClient(config, auditConnector, wsClient) {
+class MockHttpClient(throwOrRespond: Either[Exception, HttpExpectation],
+                     config: Configuration,
+                     auditConnector: AuditConnector,
+                     wsClient: WSClient)
+    extends DefaultHttpClient(config, auditConnector, wsClient) {
 
   val requests: mutable.Buffer[services.HttpRequest] = mutable.Buffer.empty
 
-  override def doPostString(url: String, body: String, headers: Seq[(String, String)])
-                           (implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  override def doPostString(url: String, body: String, headers: Seq[(String, String)])(
+      implicit hc: HeaderCarrier
+  ): Future[HttpResponse] = {
     requests += services.HttpRequest(url, body, headers.toMap)
     throwOrRespond.fold(
       ex => Future.failed(ex),
       respond => {
-        val validateUrl = (url == respond.req.url)
+        val validateUrl  = (url == respond.req.url)
         val validateBody = (body == respond.req.body)
-        if ( validateUrl && validateBody) {
+        if (validateUrl && validateBody) {
           Future.successful(respond.resp)
         } else {
-         Future.failed(new RuntimeException("Unable to match mock parameters"))
+          Future.failed(new RuntimeException("Unable to match mock parameters"))
         }
       }
     )

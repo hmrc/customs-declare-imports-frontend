@@ -22,14 +22,15 @@ import forms.DeclarationFormMapping._
 import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.deferred_payments
 
-class DeferredPaymentsController @Inject()
-(actions: Actions, cacheService: CustomsCacheService)
-(implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+class DeferredPaymentsController @Inject()(actions: Actions, cacheService: CustomsCacheService)(
+    implicit val appConfig: AppConfig,
+    val messagesApi: MessagesApi
+) extends CustomsController {
 
   def form = Form(additionalDocumentMapping)
 
@@ -40,19 +41,19 @@ class DeferredPaymentsController @Inject()
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-    form.bindFromRequest().fold(
-      errors =>
-        cacheService.getByKey(req.eori, CacheKey.additionalDocuments).map { additionalDocuments =>
-          BadRequest(deferred_payments(errors, additionalDocuments.getOrElse(Seq())))
+    form
+      .bindFromRequest()
+      .fold(
+        errors =>
+          cacheService.getByKey(req.eori, CacheKey.additionalDocuments).map { additionalDocuments =>
+            BadRequest(deferred_payments(errors, additionalDocuments.getOrElse(Seq())))
         },
-
-      additionalDocuments =>
-        cacheService
-          .upsert(req.eori, CacheKey.additionalDocuments)
-          (() => Seq(additionalDocuments), additionalDocuments +: _)
-          .map { _ =>
-            Redirect(routes.DeferredPaymentsController.onPageLoad())
+        additionalDocuments =>
+          cacheService
+            .upsert(req.eori, CacheKey.additionalDocuments)(() => Seq(additionalDocuments), additionalDocuments +: _)
+            .map { _ =>
+              Redirect(routes.DeferredPaymentsController.onPageLoad())
           }
-    )
+      )
   }
 }

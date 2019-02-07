@@ -25,14 +25,10 @@ import play.twirl.api.Html
 import uk.gov.hmrc.customs.test.ViewMatchers
 import uk.gov.hmrc.wco.dec.ImportExportParty
 import views.behaviours.ViewBehaviours
-import views.html.components.{input_select, input_text}
+import views.html.components.{ input_select, input_text }
 import views.html.seller_details
 
-class SellerDetailsSpec extends ViewBehaviours
-  with PropertyChecks
-  with Generators
-  with OptionValues
-  with ViewMatchers {
+class SellerDetailsSpec extends ViewBehaviours with PropertyChecks with Generators with OptionValues with ViewMatchers {
 
   val form = Form(importExportPartyMapping)
 
@@ -40,7 +36,7 @@ class SellerDetailsSpec extends ViewBehaviours
     seller_details(form)(fakeRequest, messages, appConfig)
 
   val simpleView: () => Html = () => view()
-  val messagePrefix = "sellerDetails"
+  val messagePrefix          = "sellerDetails"
 
   def getMessage(key: String): String = messages(s"$messagePrefix.$key")
 
@@ -52,7 +48,6 @@ class SellerDetailsSpec extends ViewBehaviours
     "display name input" in {
 
       forAll { seller: ImportExportParty =>
-
         val popForm = form.fillAndValidate(seller)
         val input   = input_text(popForm("name"), getMessage("name"))
 
@@ -63,7 +58,6 @@ class SellerDetailsSpec extends ViewBehaviours
     "display address line input" in {
 
       forAll { seller: ImportExportParty =>
-
         val popForm = form.fillAndValidate(seller)
         val input   = input_text(popForm("address.line"), getMessage("address.line"))
 
@@ -74,7 +68,6 @@ class SellerDetailsSpec extends ViewBehaviours
     "display address city name input" in {
 
       forAll { seller: ImportExportParty =>
-
         val popForm = form.fillAndValidate(seller)
         val input   = input_text(popForm("address.cityName"), getMessage("address.city"))
 
@@ -85,10 +78,11 @@ class SellerDetailsSpec extends ViewBehaviours
     "display address country input" in {
 
       forAll { seller: ImportExportParty =>
-
         val popForm = form.fillAndValidate(seller)
-        val input   =
-          input_select(popForm("address.countryCode"), getMessage("address.country"), config.Options.countryOptions.toMap)
+        val input =
+          input_select(popForm("address.countryCode"),
+                       getMessage("address.country"),
+                       config.Options.countryOptions.toMap)
 
         view(popForm) must include(input)
       }
@@ -97,7 +91,6 @@ class SellerDetailsSpec extends ViewBehaviours
     "display address postcode input" in {
 
       forAll { seller: ImportExportParty =>
-
         val popForm = form.fillAndValidate(seller)
         val input   = input_text(popForm("address.postcodeId"), getMessage("address.postcode"))
 
@@ -108,7 +101,6 @@ class SellerDetailsSpec extends ViewBehaviours
     "display communication phone number input" in {
 
       forAll { seller: ImportExportParty =>
-
         val popForm = form.fillAndValidate(seller)
         val input   = input_text(popForm("communication[0].id"), getMessage("communication.id"))
 
@@ -119,12 +111,8 @@ class SellerDetailsSpec extends ViewBehaviours
     "display id input" in {
 
       forAll { seller: ImportExportParty =>
-
         val popForm = form.fillAndValidate(seller)
-        val input   = input_text(
-          popForm("id"),
-          getMessage("id"),
-          hint = Some(messages("common.hints.eori")))
+        val input   = input_text(popForm("id"), getMessage("id"), hint = Some(messages("common.hints.eori")))
 
         view(popForm) must include(input)
       }

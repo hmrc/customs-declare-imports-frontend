@@ -29,8 +29,8 @@ trait FeatureBehaviours extends CustomsSpec {
     try {
       test
     } finally {
-      features.foreach {
-        feature => System.clearProperty(s"microservice.services.customs-declare-imports-frontend.features.${feature._1}")
+      features.foreach { feature =>
+        System.clearProperty(s"microservice.services.customs-declare-imports-frontend.features.${feature._1}")
       }
     }
   }

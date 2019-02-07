@@ -31,32 +31,32 @@ trait RequestHandlerBehaviours extends CustomsSpec {
 
   def uriWithContextPath(path: String): String = s"$contextPath$path"
 
-  def withRequest(method: String, uri: String,
+  def withRequest(method: String,
+                  uri: String,
                   headers: Map[String, String] = Map.empty,
                   session: Map[String, String] = Map.empty,
-                  tags: Map[String, String] = Map.empty)
-                 (test: Future[Result] => Unit): Unit = {
-    val r = FakeRequest(method, uri).
-      withHeaders(headers.toSeq: _*).
-      withSession(session.toSeq: _*).
-      copyFakeRequest(tags = tags)
+                  tags: Map[String, String] = Map.empty)(test: Future[Result] => Unit): Unit = {
+    val r = FakeRequest(method, uri)
+      .withHeaders(headers.toSeq: _*)
+      .withSession(session.toSeq: _*)
+      .copyFakeRequest(tags = tags)
     val res: Future[Result] = route(app, r).get.recover {
       case e: Exception => errorHandler.resolveError(r, e)
     }
     test(res)
   }
 
-  def withRequestAndFormBody(method: String, uri: String,
+  def withRequestAndFormBody(method: String,
+                             uri: String,
                              headers: Map[String, String] = Map.empty,
                              session: Map[String, String] = Map.empty,
                              tags: Map[String, String] = Map.empty,
-                             body: Map[String, String] = Map.empty)
-                            (test: Future[Result] => Unit): Unit = {
-    val r = FakeRequest(method, uri).
-      withHeaders(headers.toSeq: _*).
-      withSession(session.toSeq: _*).
-      copyFakeRequest(tags = tags).
-      withFormUrlEncodedBody(body.toSeq: _*)
+                             body: Map[String, String] = Map.empty)(test: Future[Result] => Unit): Unit = {
+    val r = FakeRequest(method, uri)
+      .withHeaders(headers.toSeq: _*)
+      .withSession(session.toSeq: _*)
+      .copyFakeRequest(tags = tags)
+      .withFormUrlEncodedBody(body.toSeq: _*)
     val res: Future[Result] = route(app, r).get.recover {
       case e: Exception => errorHandler.resolveError(r, e)
     }

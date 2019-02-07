@@ -16,16 +16,17 @@
 
 package controllers
 
-import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, RequestHandlerBehaviours}
+import uk.gov.hmrc.customs.test.assertions.{ HtmlAssertions, HttpAssertions }
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, RequestHandlerBehaviours }
 
-class UnauthorisedControllerSpec extends CustomsSpec
-  with RequestHandlerBehaviours
-  with HttpAssertions
-  with HtmlAssertions {
+class UnauthorisedControllerSpec
+    extends CustomsSpec
+    with RequestHandlerBehaviours
+    with HttpAssertions
+    with HtmlAssertions {
 
   val method = "GET"
-  val uri = uriWithContextPath("/enrol")
+  val uri    = uriWithContextPath("/enrol")
 
   s"$method $uri" should {
 

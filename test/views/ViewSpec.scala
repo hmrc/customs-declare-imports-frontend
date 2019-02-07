@@ -17,13 +17,12 @@
 package views
 
 import config.AppConfig
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.i18n.{Messages, MessagesApi}
+import org.scalatestplus.play.{ OneAppPerSuite, PlaySpec }
+import play.api.i18n.{ Messages, MessagesApi }
 import play.api.inject.Injector
 import play.api.test.FakeRequest
 
-trait ViewSpec extends PlaySpec
-  with OneAppPerSuite {
+trait ViewSpec extends PlaySpec with OneAppPerSuite {
 
   lazy val injector: Injector = app.injector
 

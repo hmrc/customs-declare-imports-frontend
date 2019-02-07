@@ -22,37 +22,36 @@ import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.exporter_details
 
 import scala.concurrent.Future
 
-class ExporterDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                         (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+class ExporterDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)(
+    implicit override val messagesApi: MessagesApi,
+    appConfig: AppConfig
+) extends CustomsController {
 
   val form = Form(importExportPartyMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-
     cache.getByKey(req.eori, CacheKey.exporter).map { exporter =>
-
       val popForm = exporter.fold(form)(form.fill)
       Ok(exporter_details(popForm))
     }
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-
-    form.bindFromRequest().fold(
-      errors =>
-        Future.successful(BadRequest(exporter_details(errors))),
-      exporter =>
-        cache.insert(req.eori, CacheKey.exporter, exporter).map { _ =>
-          Redirect(routes.DeclarationController.displaySubmitForm("representative-details"))
+    form
+      .bindFromRequest()
+      .fold(
+        errors => Future.successful(BadRequest(exporter_details(errors))),
+        exporter =>
+          cache.insert(req.eori, CacheKey.exporter, exporter).map { _ =>
+            Redirect(routes.DeclarationController.displaySubmitForm("representative-details"))
         }
-    )
+      )
   }
 }

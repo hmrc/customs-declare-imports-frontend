@@ -18,11 +18,11 @@ package generators
 
 import domain.auth.SignedInUser
 import org.scalacheck.Arbitrary.arbitrary
-import org.scalacheck.{Arbitrary, Gen}
-import org.scalacheck.Gen.{listOf, option}
-import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
-import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
+import org.scalacheck.{ Arbitrary, Gen }
+import org.scalacheck.Gen.{ listOf, option }
+import uk.gov.hmrc.auth.core.AffinityGroup.{ Agent, Individual, Organisation }
+import uk.gov.hmrc.auth.core.{ AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments }
+import uk.gov.hmrc.auth.core.retrieve.{ Credentials, Name }
 
 trait SignedInUserGen {
 
@@ -63,18 +63,20 @@ trait SignedInUserGen {
   val affinityGroupGen: Gen[AffinityGroup] =
     Gen.oneOf(Individual, Organisation, Agent)
 
-  val enrolmentGen: Gen[Enrolment] = Gen.oneOf(
-    "HMRC-CUS-ORG",
-    "HMRC-ATED-ORG",
-    "IR-CT",
-    "IR-SA",
-    "HMCE-VATDEC-ORG",
-    "HMRC-AWRS-ORG",
-    "HMRC-PSA-ORG",
-    "IR-SA-AGENT",
-    "IR-PAYE",
-    "HMRC-EI-ORG"
-  ).map(Enrolment(_))
+  val enrolmentGen: Gen[Enrolment] = Gen
+    .oneOf(
+      "HMRC-CUS-ORG",
+      "HMRC-ATED-ORG",
+      "IR-CT",
+      "IR-SA",
+      "HMCE-VATDEC-ORG",
+      "HMRC-AWRS-ORG",
+      "HMRC-PSA-ORG",
+      "IR-SA-AGENT",
+      "IR-PAYE",
+      "HMRC-EI-ORG"
+    )
+    .map(Enrolment(_))
 
   val enrolmentsGen: Gen[Enrolments] =
     listOf(enrolmentGen).map(es => Enrolments(es.toSet))

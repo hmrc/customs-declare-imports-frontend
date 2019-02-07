@@ -18,154 +18,175 @@ package controllers
 
 import config.AppConfig
 import domain.DeclarationFormats._
-import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
+import domain.{ GoodsItemValueInformation, GovernmentAgencyGoodsItem }
 import forms.DeclarationFormMapping._
-import javax.inject.{Inject, Singleton}
+import javax.inject.{ Inject, Singleton }
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{ Action, AnyContent }
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.wco.dec.{NamedEntityWithAddress, _}
+import uk.gov.hmrc.wco.dec.{ NamedEntityWithAddress, _ }
 
 import scala.concurrent.Future
-
-
 @Singleton
-class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheService: CustomsCacheService)(
+    implicit val appConfig: AppConfig,
+    val messagesApi: MessagesApi
+) extends CustomsController {
 
   val goodsItemValueInformationForm: Form[GoodsItemValueInformation] = Form(goodsItemValueInformationMapping)
-  val roleBasedPartiesForm: Form[RoleBasedParty] = Form(roleBasedPartyMapping)
-  val originsForm: Form[Origin] = Form(originMapping)
-  val namedEntityWithAddressForm: Form[NamedEntityWithAddress] = Form(namedEntityWithAddressMapping)
-  val packagingForm: Form[Packaging] = Form(packagingMapping)
+  val roleBasedPartiesForm: Form[RoleBasedParty]                     = Form(roleBasedPartyMapping)
+  val originsForm: Form[Origin]                                      = Form(originMapping)
+  val namedEntityWithAddressForm: Form[NamedEntityWithAddress]       = Form(namedEntityWithAddressMapping)
+  val packagingForm: Form[Packaging]                                 = Form(packagingMapping)
 
   val goodsItemValueInformationKey = "goodsItemValueInformation"
 
-
-  def showGoodsItemValuePage(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.fetchAndGetEntry[GoodsItemValueInformation](req.eori.value,
-        goodsItemValueInformationKey).map {
-        case Some(form) => Ok(views.html.goods_item_value(goodsItemValueInformationForm.fill(form)))
-        case _ => Ok(views.html.goods_item_value(goodsItemValueInformationForm))
-      }
+  def showGoodsItemValuePage(): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+    cacheService.fetchAndGetEntry[GoodsItemValueInformation](req.eori.value, goodsItemValueInformationKey).map {
+      case Some(form) => Ok(views.html.goods_item_value(goodsItemValueInformationForm.fill(form)))
+      case _          => Ok(views.html.goods_item_value(goodsItemValueInformationForm))
+    }
   }
 
   def submitGoodsItemValueSection(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>
-      goodsItemValueInformationForm.bindFromRequest().fold(
-        (formWithErrors: Form[GoodsItemValueInformation]) =>
-          Future.successful(BadRequest((views.html.goods_item_value(formWithErrors)))),
-        form => {
-          Logger.info("goodsItemValue form --->" + form)
-          val updatedGoodsItem = GovernmentAgencyGoodsItem(goodsItemValue = Some(form))
+      goodsItemValueInformationForm
+        .bindFromRequest()
+        .fold(
+          (formWithErrors: Form[GoodsItemValueInformation]) =>
+            Future.successful(BadRequest((views.html.goods_item_value(formWithErrors)))),
+          form => {
+            Logger.info("goodsItemValue form --->" + form)
+            val updatedGoodsItem = GovernmentAgencyGoodsItem(goodsItemValue = Some(form))
 
-          cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map {
-            _ => Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+            cacheService
+              .cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem)
+              .map { _ =>
+                Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+              }
           }
-        })
+        )
   }
 
-  def showGoodsItemPage(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit request =>
-      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key).map(res =>
-        Ok(views.html.gov_agency_goods_items(res)))
+  def showGoodsItemPage(): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit request =>
+    cacheService
+      .fetchAndGetEntry[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key)
+      .map(res => Ok(views.html.gov_agency_goods_items(res)))
   }
 
-
-  def showPackagings(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
-        Ok(views.html.goods_items_packagings(packagingForm, goodsItem.map(_.packagings).getOrElse(Seq.empty)))
-      }
+  def showPackagings(): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+    cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
+      Ok(views.html.goods_items_packagings(packagingForm, goodsItem.map(_.packagings).getOrElse(Seq.empty)))
+    }
   }
 
-  def showNamedEntryAddressParties(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
-        Ok(views.html.goods_items_named_entity_parties(namedEntityWithAddressForm, goodsItem.map(_.manufacturers).getOrElse(Seq.empty)))
-      }
+  def showNamedEntryAddressParties(): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+    cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
+      Ok(
+        views.html.goods_items_named_entity_parties(namedEntityWithAddressForm,
+                                                    goodsItem.map(_.manufacturers).getOrElse(Seq.empty))
+      )
+    }
   }
 
-  def showRoleBasedParties(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map {goodsItem =>
-        Ok(views.html.goods_items_role_based_parties(roleBasedPartiesForm, goodsItem.map(_.aeoMutualRecognitionParties).getOrElse(Seq.empty)))
-      }
+  def showRoleBasedParties(): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+    cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
+      Ok(
+        views.html.goods_items_role_based_parties(roleBasedPartiesForm,
+                                                  goodsItem.map(_.aeoMutualRecognitionParties).getOrElse(Seq.empty))
+      )
+    }
   }
 
-
-  def showOrigins(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map {
-        case Some(goodsItem) => Ok(views.html.goods_items_origins(roleBasedPartiesForm, goodsItem.origins))
-        case _ => Ok(views.html.goods_items_origins(roleBasedPartiesForm, Seq.empty))
-      }
+  def showOrigins(): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+    cacheService.getByKey(req.eori, CacheKey.goodsItem).map {
+      case Some(goodsItem) => Ok(views.html.goods_items_origins(roleBasedPartiesForm, goodsItem.origins))
+      case _               => Ok(views.html.goods_items_origins(roleBasedPartiesForm, Seq.empty))
+    }
   }
-
 
   def handleRoleBasedPartiesSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>
-      roleBasedPartiesForm.bindFromRequest().fold(
-        (formWithErrors: Form[RoleBasedParty]) =>
-          Future.successful(BadRequest(views.html.goods_items_role_based_parties(formWithErrors, List.empty))),
-        form =>
-          cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
-            val updatedGoodsItem = res match {
-              case Some(goodsItem) => goodsItem.copy(aeoMutualRecognitionParties = goodsItem.aeoMutualRecognitionParties :+ form)
-              case None => GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = Seq(form))
-            }
+      roleBasedPartiesForm
+        .bindFromRequest()
+        .fold(
+          (formWithErrors: Form[RoleBasedParty]) =>
+            Future.successful(BadRequest(views.html.goods_items_role_based_parties(formWithErrors, List.empty))),
+          form =>
+            cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
+              val updatedGoodsItem = res match {
+                case Some(goodsItem) =>
+                  goodsItem.copy(aeoMutualRecognitionParties = goodsItem.aeoMutualRecognitionParties :+ form)
+                case None => GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = Seq(form))
+              }
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key,
-              updatedGoodsItem).map { _ =>
-              Ok(views.html.goods_items_role_based_parties(roleBasedPartiesForm, updatedGoodsItem.aeoMutualRecognitionParties))
-            }
-          })
+              cacheService
+                .cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem)
+                .map { _ =>
+                  Ok(
+                    views.html.goods_items_role_based_parties(roleBasedPartiesForm,
+                                                              updatedGoodsItem.aeoMutualRecognitionParties)
+                  )
+                }
+          }
+        )
   }
 
-  def handleOriginsSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit request =>
-      originsForm.bindFromRequest().fold(
+  def handleOriginsSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit request =>
+    originsForm
+      .bindFromRequest()
+      .fold(
         (formWithErrors: Form[Origin]) =>
           Future.successful(BadRequest(views.html.goods_items_origins(formWithErrors, List.empty))),
         form =>
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(origins = goodsItem.origins :+ form)
-              case None => GovernmentAgencyGoodsItem(origins = Seq(form))
+              case None            => GovernmentAgencyGoodsItem(origins = Seq(form))
             }
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key,
-              updatedGoodsItem).map { _ =>
-              Ok(views.html.goods_items_origins(originsForm, updatedGoodsItem.origins))
-            }
-          })
+            cacheService
+              .cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem)
+              .map { _ =>
+                Ok(views.html.goods_items_origins(originsForm, updatedGoodsItem.origins))
+              }
+        }
+      )
   }
 
   def handleNamedEntityPartiesSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>
-      namedEntityWithAddressForm.bindFromRequest().fold(
-        (formWithErrors: Form[NamedEntityWithAddress]) =>
-          Future.successful(BadRequest(views.html.goods_items_named_entity_parties(formWithErrors, List.empty))),
-        form =>
-          cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
-            val updatedGoodsItem = res match {
-              case Some(goodsItem) => goodsItem.copy(manufacturers = goodsItem.manufacturers :+ form)
-              case None => GovernmentAgencyGoodsItem(manufacturers = Seq(form))
-            }
+      namedEntityWithAddressForm
+        .bindFromRequest()
+        .fold(
+          (formWithErrors: Form[NamedEntityWithAddress]) =>
+            Future.successful(BadRequest(views.html.goods_items_named_entity_parties(formWithErrors, List.empty))),
+          form =>
+            cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
+              val updatedGoodsItem = res match {
+                case Some(goodsItem) => goodsItem.copy(manufacturers = goodsItem.manufacturers :+ form)
+                case None            => GovernmentAgencyGoodsItem(manufacturers = Seq(form))
+              }
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
-              Ok(views.html.goods_items_named_entity_parties(namedEntityWithAddressForm, updatedGoodsItem.manufacturers))
-            }
-          })
+              cacheService
+                .cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem)
+                .map { _ =>
+                  Ok(
+                    views.html.goods_items_named_entity_parties(namedEntityWithAddressForm,
+                                                                updatedGoodsItem.manufacturers)
+                  )
+                }
+          }
+        )
   }
 
-  def handlePackagingsSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit request =>
-      packagingForm.bindFromRequest().fold(
+  def handlePackagingsSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit request =>
+    packagingForm
+      .bindFromRequest()
+      .fold(
         (formWithErrors: Form[Packaging]) =>
           Future.successful(BadRequest(views.html.goods_items_packagings(formWithErrors, List.empty))),
         form =>
@@ -173,13 +194,16 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
             Logger.info("NamedEntityWithAddress form --->" + form)
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(packagings = goodsItem.packagings :+ form)
-              case None => GovernmentAgencyGoodsItem(packagings = Seq(form))
+              case None            => GovernmentAgencyGoodsItem(packagings = Seq(form))
             }
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
-              Ok(views.html.goods_items_packagings(packagingForm, updatedGoodsItem.packagings))
-            }
-          })
+            cacheService
+              .cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem)
+              .map { _ =>
+                Ok(views.html.goods_items_packagings(packagingForm, updatedGoodsItem.packagings))
+              }
+        }
+      )
   }
 
 }

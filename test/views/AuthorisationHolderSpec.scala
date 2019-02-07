@@ -31,11 +31,7 @@ import views.html.authorisation_holder
 import views.html.components.input_text
 import views.html.components.table.table
 
-class AuthorisationHolderSpec
-  extends ViewBehaviours
-    with ViewMatchers
-    with PropertyChecks
-    with Generators {
+class AuthorisationHolderSpec extends ViewBehaviours with ViewMatchers with PropertyChecks with Generators {
 
   val emptyAuthorisationHolder: Seq[AuthorisationHolder] = Seq.empty
 
@@ -48,7 +44,6 @@ class AuthorisationHolderSpec
   val messagePrefix = "authorisationHolder"
 
   lazy val form = Form(authorisationHolderMapping)
-
 
   "Authorisation Holder Page" should {
 
@@ -76,24 +71,22 @@ class AuthorisationHolderSpec
     "display authorisation holder table heading for single item if authorisation holder is available" in {
 
       forAll { authorisationHolder: AuthorisationHolder =>
-
         val authorisationHolderSeq = Seq(authorisationHolder)
-        val doc = asDocument(view(form, authorisationHolderSeq))
+        val doc                    = asDocument(view(form, authorisationHolderSeq))
 
         assertContainsText(doc, s"${authorisationHolderSeq.size} " + messages("authorisationHolder.table.heading"))
       }
     }
 
-
     "display authorisation holder table heading for multiple items if authorisation holder is available" in {
 
       forAll(listOf(arbitrary[AuthorisationHolder])) { authorisationHolders =>
-
         whenever(authorisationHolders.size > 1) {
 
           val doc = asDocument(view(form, authorisationHolders))
 
-          assertContainsText(doc, s"${authorisationHolders.size} " + messages("authorisationHolder.table.multiple.heading"))
+          assertContainsText(doc,
+                             s"${authorisationHolders.size} " + messages("authorisationHolder.table.multiple.heading"))
         }
       }
     }
@@ -101,13 +94,14 @@ class AuthorisationHolderSpec
     "display table for authorisation holders" in {
 
       forAll(listOf(arbitrary[AuthorisationHolder])) { authorisationHolders =>
-
         whenever(authorisationHolders.nonEmpty) {
 
           val htmlTable =
-            HtmlTable("ID", "Category Code")(authorisationHolders.map(a => (a.id.getOrElse(""), a.categoryCode.getOrElse(""))))
+            HtmlTable("ID", "Category Code")(
+              authorisationHolders.map(a => (a.id.getOrElse(""), a.categoryCode.getOrElse("")))
+            )
           val tableComponent = table(htmlTable)
-          val rendered = view(form, authorisationHolders)
+          val rendered       = view(form, authorisationHolders)
 
           rendered must include(tableComponent)
         }

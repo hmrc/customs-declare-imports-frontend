@@ -29,21 +29,22 @@ import uk.gov.hmrc.wco.dec.ChargeDeduction
 import viewmodels.HtmlTable
 import views.behaviours.ViewBehaviours
 import views.html.add_additions_and_deductions
-import views.html.components.{input_select, input_text}
+import views.html.components.{ input_select, input_text }
 import views.html.components.table.table
 
-class AddAdditionsAndDeductionsSpec extends ViewBehaviours
-  with ViewMatchers
-  with PropertyChecks
-  with Generators
-  with OptionValues {
+class AddAdditionsAndDeductionsSpec
+    extends ViewBehaviours
+    with ViewMatchers
+    with PropertyChecks
+    with Generators
+    with OptionValues {
 
   val form = Form(chargeDeductionMapping)
 
   def view(form: Form[ChargeDeduction] = form, charges: Seq[ChargeDeduction] = Seq.empty): Html =
     add_additions_and_deductions(form, charges)(fakeRequest, messages, appConfig)
 
-  val simpleView: () => Html = () => view()
+  val simpleView: () => Html                 = () => view()
   val listView: Seq[ChargeDeduction] => Html = xs => view(charges = xs)
 
   val messagePrefix = "addAdditionsAndDeductions"
@@ -60,49 +61,44 @@ class AddAdditionsAndDeductionsSpec extends ViewBehaviours
 
     "contain type code field" in {
 
-      forAll(arbitrary[ChargeDeduction], listOf(arbitrary[ChargeDeduction])) {
-        (charge, data) =>
-
-          val popForm = form.fillAndValidate(charge)
-          val html = view(popForm, data)
-          html must include(input_text(popForm("chargesTypeCode"), "Type"))
+      forAll(arbitrary[ChargeDeduction], listOf(arbitrary[ChargeDeduction])) { (charge, data) =>
+        val popForm = form.fillAndValidate(charge)
+        val html    = view(popForm, data)
+        html must include(input_text(popForm("chargesTypeCode"), "Type"))
       }
     }
 
     "contain currency id field" in {
 
-      forAll(arbitrary[ChargeDeduction], listOf(arbitrary[ChargeDeduction])) {
-        (charge, data) =>
+      forAll(arbitrary[ChargeDeduction], listOf(arbitrary[ChargeDeduction])) { (charge, data) =>
+        val popForm = form.fillAndValidate(charge)
+        val html    = view(popForm, data)
+        val input =
+          input_select(popForm("otherChargeDeductionAmount.currencyId"), "Currency", config.Options.currencyTypes.toMap)
 
-          val popForm = form.fillAndValidate(charge)
-          val html = view(popForm, data)
-          val input =
-            input_select(popForm("otherChargeDeductionAmount.currencyId"), "Currency", config.Options.currencyTypes.toMap)
-
-          html must include(input)
+        html must include(input)
       }
     }
 
     "contain value field" in {
 
-      forAll(arbitrary[ChargeDeduction], listOf(arbitrary[ChargeDeduction])) {
-        (charge, data) =>
-
-          val popForm = form.fillAndValidate(charge)
-          val html = view(popForm, data)
-          html must include(input_text(popForm("otherChargeDeductionAmount.value"), "Value"))
+      forAll(arbitrary[ChargeDeduction], listOf(arbitrary[ChargeDeduction])) { (charge, data) =>
+        val popForm = form.fillAndValidate(charge)
+        val html    = view(popForm, data)
+        html must include(input_text(popForm("otherChargeDeductionAmount.value"), "Value"))
       }
     }
 
     "contain table of data" in {
 
       forAll(listOf(arbitrary[ChargeDeduction])) { data =>
-
         val htmlTable = HtmlTable("Type", "Currency", "Value")(
-          data.map(c => (
-            c.chargesTypeCode.getOrElse(""),
-            c.otherChargeDeductionAmount.flatMap(_.currencyId).getOrElse(""),
-            c.otherChargeDeductionAmount.flatMap(_.value).getOrElse("")))
+          data.map(
+            c =>
+              (c.chargesTypeCode.getOrElse(""),
+               c.otherChargeDeductionAmount.flatMap(_.currencyId).getOrElse(""),
+               c.otherChargeDeductionAmount.flatMap(_.value).getOrElse(""))
+          )
         )
 
         val html = view(charges = data)

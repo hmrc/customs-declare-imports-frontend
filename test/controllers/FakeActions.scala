@@ -15,8 +15,8 @@
  */
 
 package controllers
-import config.{AppConfig, ErrorHandler}
-import domain.auth.{AuthenticatedRequest, EORIRequest, SignedInUser}
+import config.{ AppConfig, ErrorHandler }
+import domain.auth.{ AuthenticatedRequest, EORIRequest, SignedInUser }
 import domain.features.Feature.Feature
 import play.api.i18n.MessagesApi
 import play.api.mvc._
@@ -24,7 +24,8 @@ import play.api.mvc.Results._
 
 import scala.concurrent.Future
 
-class FakeActions(signedInUser: Option[SignedInUser])(implicit messages: MessagesApi, appConfig: AppConfig) extends Actions {
+class FakeActions(signedInUser: Option[SignedInUser])(implicit messages: MessagesApi, appConfig: AppConfig)
+    extends Actions {
 
   override def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] =
     new ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] {

@@ -23,23 +23,24 @@ import org.scalacheck.Gen._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.prop.PropertyChecks
 import play.api.test.Helpers._
-import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
+import uk.gov.hmrc.customs.test.assertions.{ HtmlAssertions, HttpAssertions }
 import uk.gov.hmrc.customs.test.behaviours._
 import views.html.gov_agency_goods_items_list
 
-class GoodsItemsListControllerSpec extends CustomsSpec
-  with AuthenticationBehaviours
-  with FeatureBehaviours
-  with RequestHandlerBehaviours
-  with HttpAssertions
-  with HtmlAssertions
-  with Generators
-  with BeforeAndAfterEach
-  with PropertyChecks {
+class GoodsItemsListControllerSpec
+    extends CustomsSpec
+    with AuthenticationBehaviours
+    with FeatureBehaviours
+    with RequestHandlerBehaviours
+    with HttpAssertions
+    with HtmlAssertions
+    with Generators
+    with BeforeAndAfterEach
+    with PropertyChecks {
 
-  val get = "GET"
+  val get               = "GET"
   val goodsItemsListUri = uriWithContextPath("/submit-declaration-goods/gov-agency-goods-items")
-  val addGoodsItemUri = uriWithContextPath("/submit-declaration-goods/save-goods-item")
+  val addGoodsItemUri   = uriWithContextPath("/submit-declaration-goods/save-goods-item")
 
   val goodsItemsListGen = for {
     i  <- choose(0, 10)

@@ -16,9 +16,9 @@
 
 package config
 
-import domain.features.{Feature, FeatureStatus}
+import domain.features.{ Feature, FeatureStatus }
 import play.api.Environment
-import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, FeatureBehaviours}
+import uk.gov.hmrc.customs.test.behaviours.{ CustomsSpec, FeatureBehaviours }
 
 class AppConfigSpec extends CustomsSpec with FeatureBehaviours {
 
@@ -27,60 +27,60 @@ class AppConfigSpec extends CustomsSpec with FeatureBehaviours {
   "the config" should {
 
     "have assets prefix" in {
-      cfg.assetsPrefix must be ("http://localhost:9032/assets/3.3.2")
+      cfg.assetsPrefix must be("http://localhost:9032/assets/3.3.2")
     }
 
     "have analytics token" in {
-      cfg.analyticsToken must be ("N/A")
+      cfg.analyticsToken must be("N/A")
     }
 
     "have analytics host" in {
-      cfg.analyticsHost must be ("auto")
+      cfg.analyticsHost must be("auto")
     }
 
     "have 'report a problem' partial URL" in {
-      cfg.reportAProblemPartialUrl must be ("http://localhost:9250/contact/problem_reports_ajax?service=MyService")
+      cfg.reportAProblemPartialUrl must be("http://localhost:9250/contact/problem_reports_ajax?service=MyService")
     }
 
     "have 'report a problem' non-JS URL" in {
-      cfg.reportAProblemNonJSUrl must be ("http://localhost:9250/contact/problem_reports_nonjs?service=MyService")
+      cfg.reportAProblemNonJSUrl must be("http://localhost:9250/contact/problem_reports_nonjs?service=MyService")
     }
 
     "have default feature status" in {
-      cfg.defaultFeatureStatus must be (FeatureStatus.disabled)
+      cfg.defaultFeatureStatus must be(FeatureStatus.disabled)
     }
 
     "expose the environment" in {
-      cfg.environment must be (app.injector.instanceOf[Environment])
+      cfg.environment must be(app.injector.instanceOf[Environment])
     }
 
     "have a submit import declarations uri" in {
-      cfg.submitImportDeclarationUri must be ("/declaration")
+      cfg.submitImportDeclarationUri must be("/declaration")
     }
 
     "have a cancel import declarations uri" in {
-      cfg.cancelImportDeclarationUri must be ("/cancellation-requests")
+      cfg.cancelImportDeclarationUri must be("/cancellation-requests")
     }
 
     "have customs declarations endpoint" in {
-      cfg.customsDeclareImportsEndpoint must be ("http://localhost:6794")
+      cfg.customsDeclareImportsEndpoint must be("http://localhost:6794")
     }
 
     "have customs declarations API version" in {
-      cfg.customsDeclarationsApiVersion must be ("2.0")
+      cfg.customsDeclarationsApiVersion must be("2.0")
     }
 
     "have HMRC Developer Hub Client ID" in {
-      cfg.developerHubClientId must be (cfg.appName)
+      cfg.developerHubClientId must be(cfg.appName)
     }
     "have keyStoreSource" in {
-      cfg.keyStoreSource must be (cfg.appName)
+      cfg.keyStoreSource must be(cfg.appName)
     }
     "have keyStoreUrl" in {
-      cfg.keyStoreUrl must be ("http://localhost:8400")
+      cfg.keyStoreUrl must be("http://localhost:8400")
     }
     "have sessionCacheDomain" in {
-      cfg.sessionCacheDomain must be ("keystore")
+      cfg.sessionCacheDomain must be("keystore")
     }
     "have submission cache ID" in {
       cfg.submissionCacheId must be("submit-declaration")
@@ -90,11 +90,11 @@ class AppConfigSpec extends CustomsSpec with FeatureBehaviours {
   "feature status" should {
 
     "indicate default status for unset feature" in {
-      cfg.featureStatus(Feature.start) must be (cfg.defaultFeatureStatus)
+      cfg.featureStatus(Feature.start) must be(cfg.defaultFeatureStatus)
     }
 
     "fall back to system properties for unconfigured feature" in withFeatures(enabled(Feature.start)) {
-      cfg.featureStatus(Feature.start) must be (FeatureStatus.enabled)
+      cfg.featureStatus(Feature.start) must be(FeatureStatus.enabled)
     }
 
   }
@@ -105,12 +105,12 @@ class AppConfigSpec extends CustomsSpec with FeatureBehaviours {
     "override app config" in {
       val newStatus = cfg.defaultFeatureStatus match {
         case FeatureStatus.enabled => FeatureStatus.disabled
-        case _ => FeatureStatus.enabled
+        case _                     => FeatureStatus.enabled
       }
       cfg.setFeatureStatus(Feature.default, newStatus)
-      cfg.featureStatus(Feature.default) must be (newStatus)
+      cfg.featureStatus(Feature.default) must be(newStatus)
       System.clearProperty("microservice.services.customs-declare-imports-frontend.features.default")
-      cfg.featureStatus(Feature.default) must be (cfg.defaultFeatureStatus)
+      cfg.featureStatus(Feature.default) must be(cfg.defaultFeatureStatus)
     }
 
   }
@@ -118,19 +118,19 @@ class AppConfigSpec extends CustomsSpec with FeatureBehaviours {
   "is feature on" should {
 
     "return true for enabled feature" in withFeatures(enabled(Feature.start)) {
-      cfg.isFeatureOn(Feature.start) must be (true)
+      cfg.isFeatureOn(Feature.start) must be(true)
     }
 
     "return false for disabled feature" in withFeatures(disabled(Feature.start)) {
-      cfg.isFeatureOn(Feature.start) must be (false)
+      cfg.isFeatureOn(Feature.start) must be(false)
     }
 
     "return false for suspended feature" in withFeatures(suspended(Feature.start)) {
-      cfg.isFeatureOn(Feature.start) must be (false)
+      cfg.isFeatureOn(Feature.start) must be(false)
     }
 
     "return true for cancel feature enabled" in withFeatures(enabled(Feature.cancel)) {
-      cfg.isFeatureOn(Feature.cancel) must be (true)
+      cfg.isFeatureOn(Feature.cancel) must be(true)
     }
 
   }

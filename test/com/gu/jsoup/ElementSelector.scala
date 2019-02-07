@@ -21,7 +21,6 @@ import scala.collection.JavaConversions._
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 
-
 sealed trait ElementSelector extends ElementSelectorBuilders {
 
   protected def self = this
@@ -41,22 +40,22 @@ sealed trait ElementSelector extends ElementSelectorBuilders {
     ).mkString(" ")
 
   final def fold[A](
-                     select: (Element => Elements, Option[String]) => A,
-                     and: (A, A) => A,
-                     or: (A, A) => A
-                   ): A = this match {
-    case Select(f, desc) => select(f, desc)
+      select: (Element => Elements, Option[String]) => A,
+      and: (A, A) => A,
+      or: (A, A) => A
+  ): A = this match {
+    case Select(f, desc)  => select(f, desc)
     case And(left, right) => and(left.fold(select, and, or), right.fold(select, and, or))
-    case Or(left, right) => or(left.fold(select, and, or), right.fold(select, and, or))
+    case Or(left, right)  => or(left.fold(select, and, or), right.fold(select, and, or))
   }
 
   def and(right: ElementSelector): ElementSelector = And(self, right)
 
   def or(right: ElementSelector): ElementSelector = Or(self, right)
 
-  def || (right: ElementSelector): ElementSelector = or(right) // scalastyle:ignore method.name
+  def ||(right: ElementSelector): ElementSelector = or(right) // scalastyle:ignore method.name
 
-  def && (right: ElementSelector): ElementSelector = and(right) // scalastyle:ignore method.name
+  def &&(right: ElementSelector): ElementSelector = and(right) // scalastyle:ignore method.name
 
 }
 
@@ -65,7 +64,6 @@ case class And(left: ElementSelector, right: ElementSelector) extends ElementSel
 case class Or(left: ElementSelector, Right: ElementSelector) extends ElementSelector
 
 case class Select(f: Element => Elements, desc: Option[String]) extends ElementSelector
-
 
 trait ElementSelectorBuilders {
 
@@ -90,7 +88,7 @@ trait ElementSelectorBuilders {
 
   def withAttrValueMatching(key: String, pattern: String): ElementSelector =
     selfAnd(_.getElementsByAttributeValueMatching(key, pattern),
-      "with attribute %s matching pattern %s".format(key, pattern))
+            "with attribute %s matching pattern %s".format(key, pattern))
 
   def withSrc(value: String): ElementSelector =
     self.and(withAttrValue("src", value))
