@@ -61,13 +61,13 @@ class RoleBasedPartySpec extends ViewBehaviours
       behave like pageWithBackLink(view(messageKeyPrefix))
       behave like pageWithTableHeadings(listView(messageKeyPrefix), arbitrary[RoleBasedParty], messageKeyPrefix)
 
-      "contain id field" in {
+      "contain Identifier field" in {
 
         forAll { roleBasedParty: RoleBasedParty =>
 
           val popForm = form.fillAndValidate(roleBasedParty)
           val html = view(popForm, Seq.empty, messageKeyPrefix)
-          val input = input_text(popForm("id"), "ID")
+          val input = input_text(popForm("id"), "Identifier")
 
           html must include(input)
         }
@@ -90,7 +90,7 @@ class RoleBasedPartySpec extends ViewBehaviours
         forAll(listOf(arbitrary[RoleBasedParty])) { roles =>
 
           val htmlTable =
-            table(HtmlTable("ID", "Role Code")(roles.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
+            table(HtmlTable("Identifier", "Role Code")(roles.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
           val html = listView(messageKeyPrefix)(roles)
 
           html must include(htmlTable)

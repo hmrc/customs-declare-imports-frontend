@@ -49,7 +49,7 @@
                     <th scope="row">@messages("governmentAgencyGoodsItem.mutualRecognitionParties")</th>
                     <td>@goodsItem.map(_.aeoMutualRecognitionParties.size)</td>
                     <td>
-                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties().url" name="add" class="button" id="AddMutualRecognitionParties">@messages("governmentAgencyGoodsItem.add")
+                        <a href="@controllers.goodsitems.routes.AdditionalSupplyChainActorsController.onPageLoad().url" name="add" class="button" id="AddMutualRecognitionParties">@messages("governmentAgencyGoodsItem.add")
                             <span class="visually-hidden">@messages("governmentAgencyGoodsItem.mutualRecognitionParties")</span></a>
                         </div>
                     </td>
@@ -58,7 +58,7 @@
                     <th scope="row">@messages("governmentAgencyGoodsItem.domesticDutyParties")</th>
                     <td>@goodsItem.map(_.domesticDutyTaxParties.size)</td>
                     <td>
-                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showRoleBasedParties().url" name="add" class="button" id="AddDomesticDutyTaxParties">@messages("governmentAgencyGoodsItem.add")
+                        <a href="@controllers.goodsitems.routes.AdditionalSupplyChainActorsController.onPageLoad().url" name="add" class="button" id="AddDomesticDutyTaxParties">@messages("governmentAgencyGoodsItem.add")
                             <span class="visually-hidden">@messages("governmentAgencyGoodsItem.domesticDutyParties")</span></a>
                     </td>
                 </tr>
