@@ -17,7 +17,7 @@
 package generators
 
 
-import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem, References}
+import domain.{AboutGoods, GoodsItemValueInformation, GovernmentAgencyGoodsItem, References}
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
 import org.scalacheck.Arbitrary._
@@ -400,6 +400,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       code <- option(nonEmptyString.map(_.take(3)))
     } yield {
       Communication(id, code)
+    }
+  }
+
+  implicit val arbitraryAboutGoods: Arbitrary[AboutGoods] = Arbitrary {
+    for {
+      quantity <- option(choose(0, 99999999))
+      measure  <- option(arbitrary[Measure])
+    } yield {
+      AboutGoods(quantity, measure)
     }
   }
 

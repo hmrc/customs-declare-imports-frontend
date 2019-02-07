@@ -18,11 +18,10 @@ package forms
 
 import java.text.DecimalFormat
 
-import domain.GoodsItemValueInformation
+import domain.{AboutGoods, GoodsItemValueInformation, References}
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.data.Forms.{number, _}
-import domain.{GoodsItemValueInformation, References}
 import play.api.data.Forms._
 import play.api.data.Mapping
 import uk.gov.hmrc.wco.dec._
@@ -303,6 +302,14 @@ object DeclarationFormMapping {
       text.verifying("Status code is not valid", s => config.Options.agentFunctionCodes.exists(_._1 == s))),
     "address" -> optional(addressMapping)
   )(Agent.apply)(Agent.unapply)
+
+  val aboutGoodsMapping = mapping(
+    "totalPackageQuantity" -> optional(
+      number
+        .verifying("Total packages cannot be greater than 99,999,999", _ <= 99999999)
+        .verifying("Total packages cannot be less than 0", _ >= 0)),
+    "totalGrossMassMeasure" -> optional(measureMapping)
+  )(AboutGoods.apply)(AboutGoods.unapply)
 }
 
 case class ObligationGuaranteeForm (guarantees: Seq[ObligationGuarantee] = Seq.empty)
