@@ -108,6 +108,14 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield Office(id)
   }
 
+  implicit val arbitraryTradeTerms: Arbitrary[TradeTerms] = Arbitrary {
+    for {
+      conditionCode <- oneOf(config.Options.incoTermCodes).map(_._2)
+      locationId    <- option(arbitrary[String].map(_.take(17)))
+      locationCode  <- oneOf(config.Options.countryTypes).map(_._2)
+    } yield TradeTerms(Some(conditionCode), None, None, locationId, Some(locationCode))
+  }
+
   implicit val arbitraryCurrencyExchange: Arbitrary[CurrencyExchange] = Arbitrary {
     for {
       currencyTypeCode <- currencyGen

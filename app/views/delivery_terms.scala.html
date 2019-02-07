@@ -16,16 +16,32 @@
 
 @import config.{AppConfig, ValidationError}
 @import config.Fields._
+@import controllers.routes._
+@import uk.gov.hmrc.play.views.html._
 
-@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
+@(form: Form[_])(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
-@main_template(messages("pages.deliveryTerms.title")) {
+@main_template(title = messages("deliveryTerms.title")) {
 
-    @helpers.form("delivery-terms", "pages.deliveryTerms.form.legend", data) {
-        @helpers.selectInput(deliveryTermsIncotermCode, data)
-        @helpers.textInput(deliveryTermsUnlocodeCode, data)
-        @helpers.selectInput(deliveryTermsCountryCode, data)
-        @helpers.nextButton()
-    }
+
+    @components.back_link()
+
+    @components.error_summary(form.errors)
+
+           <fieldset>
+            <legend>
+                <h1 class="heading-large">@messages("deliveryTerms.heading")</h1>
+            </legend>
+               @components.input_select(
+                   form("conditionCode"),
+                   messages("deliveryTerms.tradeTerms.conditionCode"),
+                   config.Options.incoTermCodes.toMap,
+                   hint = Some(messages("deliveryTerms.tradeTerms.conditionCode.hint"))
+               )
+           </fieldset>
+
+            <button id="Add" name="submit">
+                @messages("common.button.continue")
+            </button>
 
 }

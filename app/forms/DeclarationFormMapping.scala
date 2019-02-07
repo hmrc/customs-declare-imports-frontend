@@ -74,6 +74,17 @@ object DeclarationFormMapping {
     "currency" -> optional(currencyExchangeMapping)
   )(InvoiceAndCurrency.apply)(InvoiceAndCurrency.unapply)
 
+  val tradeTermsMapping = mapping(
+    "conditionCode" -> optional(
+      text.verifying("Condition Code is not a valid condition code", x => config.Options.incoTermCodes.exists(_._2 == x))),
+    "countryRelationshipCode" -> ignored[Option[String]](None),
+    "description" -> ignored[Option[String]](None),
+    "locationId" -> optional(
+      text.verifying("Location ID should be less than or equal to 17 characters", _.length <= 17)),
+    "locationName" -> optional(
+      text.verifying("Location name is not a valid location name", x => config.Options.countryTypes.exists(_._2 == x))
+    ))(TradeTerms.apply)(TradeTerms.unapply)
+
   val measureMapping = mapping("unitCode" -> optional(text.verifying("Measurement Unit & Qualifier cannot be more than 5 characters", _.length <= 5)),
     "value" ->
       optional(bigDecimal.verifying("Quantity cannot be greater than 9999999999.999999", _.precision <= 16)
