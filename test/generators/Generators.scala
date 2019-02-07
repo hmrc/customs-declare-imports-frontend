@@ -404,7 +404,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       amount   <- arbitrary[Amount]
       currency <- arbitrary[CurrencyExchange]
-    } yield InvoiceAndCurrency(Some(amount), Some(currency))
+    } yield InvoiceAndCurrency(amount.currencyId.map(_ => amount), currency.currencyTypeCode.map(_ => currency))
   }
 
   implicit val arbitraryCommunication: Arbitrary[Communication] = Arbitrary {
