@@ -52,7 +52,7 @@ class SummaryOfGoodsController @Inject()(actions: Actions, cache: CustomsCacheSe
       summary =>
         cache
           .insert(req.eori, CacheKey.summaryOfGoods, summary)
-          .map(_ => Redirect(routes.DeclarationController.displaySubmitForm("transport")))
+          .map(_ => Redirect(routes.TransportController.onPageLoad()))
     )
   }
 }

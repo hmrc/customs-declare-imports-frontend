@@ -22,7 +22,7 @@
 
 @main_template(title = messages("transport.title")) {
 
- @helpers.form(action = SummaryOfGoodsController.onSubmit()) {
+ @helpers.form(action = TransportController.onSubmit()) {
 
   @components.back_link()
 
@@ -38,19 +38,19 @@
    @components.input_select(
     form("borderTransportMeans.modeCode"),
     messages("transport.borderTransportMeans.modeCode"),
-    config.Options.transportModeTypes.toMap
+    config.Options.transportModeTypes
    )
 
    @components.input_select(
     form("arrivalTransportMeans.modeCode"),
     messages("transport.arrivalTransportMeans.modeCode"),
-    config.Options.transportModeTypes.toMap
+    config.Options.transportModeTypes
    )
 
    @components.input_select(
     form("arrivalTransportMeans.identificationTypeCode"),
     messages("transport.arrivalTransportMeans.identificationTypeCode"),
-    config.Options.transportMeansIdentificationTypes.toMap
+    config.Options.transportMeansIdentificationTypes
    )
 
    @components.input_text(form("arrivalTransportMeans.id"), messages("transport.arrivalTransportMeans.id"))
@@ -58,7 +58,7 @@
    @components.input_select(
     form("borderTransportMeans.registrationNationalityCode"),
     messages("transport.borderTransportMeans.registrationNationalityCode"),
-    config.Options.countryOptions.toMap
+    config.Options.countryOptions
    )
   </fieldset>
 

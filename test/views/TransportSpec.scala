@@ -68,7 +68,7 @@ class TransportSpec extends ViewBehaviours
           input_select(
             popForm("borderTransportMeans.modeCode"),
             getMessage("borderTransportMeans.modeCode"),
-            config.Options.transportModeTypes.toMap
+            config.Options.transportModeTypes
           )
 
         view(popForm) must include(input)
@@ -84,7 +84,7 @@ class TransportSpec extends ViewBehaviours
           input_select(
             popForm("arrivalTransportMeans.modeCode"),
             getMessage("arrivalTransportMeans.modeCode"),
-            config.Options.transportModeTypes.toMap
+            config.Options.transportModeTypes
           )
 
         view(popForm) must include(input)
@@ -100,7 +100,7 @@ class TransportSpec extends ViewBehaviours
           input_select(
             popForm("arrivalTransportMeans.identificationTypeCode"),
             getMessage("arrivalTransportMeans.identificationTypeCode"),
-            config.Options.transportMeansIdentificationTypes.toMap
+            config.Options.transportMeansIdentificationTypes
           )
 
         view(popForm) must include(input)
@@ -127,7 +127,7 @@ class TransportSpec extends ViewBehaviours
           input_select(
             popForm("borderTransportMeans.registrationNationalityCode"),
             getMessage("borderTransportMeans.registrationNationalityCode"),
-            config.Options.countryOptions.toMap
+            config.Options.countryOptions
           )
 
         view(popForm) must include(input)

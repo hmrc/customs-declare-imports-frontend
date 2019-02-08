@@ -88,7 +88,7 @@ class SellerDetailsSpec extends ViewBehaviours
 
         val popForm = form.fillAndValidate(seller)
         val input   =
-          input_select(popForm("address.countryCode"), getMessage("address.country"), config.Options.countryOptions.toMap)
+          input_select(popForm("address.countryCode"), getMessage("address.country"), config.Options.countryOptions)
 
         view(popForm) must include(input)
       }

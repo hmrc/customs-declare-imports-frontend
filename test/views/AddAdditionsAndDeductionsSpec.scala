@@ -77,7 +77,7 @@ class AddAdditionsAndDeductionsSpec extends ViewBehaviours
           val popForm = form.fillAndValidate(charge)
           val html = view(popForm, data)
           val input =
-            input_select(popForm("otherChargeDeductionAmount.currencyId"), "Currency", config.Options.currencyTypes.toMap)
+            input_select(popForm("otherChargeDeductionAmount.currencyId"), "Currency", config.Options.currencyTypes)
 
           html must include(input)
       }
