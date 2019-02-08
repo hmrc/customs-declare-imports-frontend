@@ -16,6 +16,7 @@
 
 package generators
 
+import config.Options
 import domain.{GovernmentAgencyGoodsItem, _}
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
@@ -440,8 +441,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryBorderTransportMeans: Arbitrary[BorderTransportMeans] = Arbitrary {
     for {
-      modeCode <- option(intBetweenRange(0, 9))
-      regCode  <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
+      modeCode <- option(intBetweenRange(1, 9))
+      regCode  <- option(countryGen)
     } yield {
       BorderTransportMeans(None, None, None, None, regCode, modeCode)
     }
@@ -450,8 +451,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryTransportMeans: Arbitrary[TransportMeans] = Arbitrary {
     for {
       id       <- option(nonEmptyString.map(_.take(35)))
-      typeId   <- option(intBetweenRange(-9, 99).map(_.toString))
-      modeCode <- option(intBetweenRange(0, 9))
+      typeId   <- option(oneOf(Options.transportMeansIdentificationTypes.map(_._1)))
+      modeCode <- option(intBetweenRange(1, 9))
     } yield {
       TransportMeans(None, id, typeId, None, modeCode)
     }

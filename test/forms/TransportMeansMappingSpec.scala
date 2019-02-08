@@ -52,43 +52,30 @@ class TransportMeansMappingSpec extends WordSpec
 
     "fail" when {
 
-      "modeCode is longer than 1 character" in {
+      "modeCode is not a valid value" in {
 
         val badData =
-          TransportMeans.modeCode.setArbitrary(some(intOutsideRange(0, 9)))
+          TransportMeans.modeCode.setArbitrary(some(intOutsideRange(1, 9)))
 
         forAll(badData) { means =>
 
           form.fillAndValidate(means).fold(
-            _ must haveErrorMessage("Mode of transport at border must be a single digit"),
+            _ must haveErrorMessage("Inland mode of transport is invalid"),
             _ => fail("form should not succeed")
           )
         }
       }
 
-      "identificationTypeCode is longer than 2 digits" in {
+      "identificationTypeCode is not a valid value" in {
 
+        val options = config.Options.transportMeansIdentificationTypes.map(_._1).toSet
         val badData =
-          TransportMeans.identificationTypeCode.setArbitrary(some(numStrLongerThan(2)))
+          TransportMeans.identificationTypeCode.setArbitrary(some(stringsExceptSpecificValues(options)))
 
         forAll(badData) { means =>
 
           form.fillAndValidate(means).fold(
-            _ must haveErrorMessage("Type of identification cannot be longer than 2 digits"),
-            _ => fail("form should not succeed")
-          )
-        }
-      }
-
-      "identificationTypeCode is non numeric" in {
-
-        val badData =
-          TransportMeans.identificationTypeCode.setArbitrary(some(alphaLessThan(2)))
-
-        forAll(badData) { means =>
-
-          form.fillAndValidate(means).fold(
-            _ must haveErrorMessage("Type of identification must be a number"),
+            _ must haveErrorMessage("Type of identification is invalid"),
             _ => fail("form should not succeed")
           )
         }

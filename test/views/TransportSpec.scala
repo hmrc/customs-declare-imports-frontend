@@ -68,7 +68,7 @@ class TransportSpec extends ViewBehaviours
           input_select(
             popForm("borderTransportMeans.modeCode"),
             getMessage("borderTransportMeans.modeCode"),
-            config.Options.borderTransportMeansModeCodes.toMap
+            config.Options.transportModeTypes.toMap
           )
 
         view(popForm) must include(input)

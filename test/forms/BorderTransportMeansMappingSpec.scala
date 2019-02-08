@@ -54,43 +54,30 @@ class BorderTransportMeansMappingSpec extends WordSpec
 
     "fail" when {
 
-      "modeCode is longer than 1 digit" in {
+      "modeCode is not a valid value" in {
 
         val badData =
-          BorderTransportMeans.modeCode.setArbitrary(some(intOutsideRange(0, 9)))
+          BorderTransportMeans.modeCode.setArbitrary(some(intOutsideRange(1, 9)))
 
         forAll(badData) { means =>
 
           form.fillAndValidate(means).fold(
-            _ must haveErrorMessage("Mode of transport at border must be a single digit"),
+            _ must haveErrorMessage("Mode of transport at border is invalid"),
             _ => fail("form should not succeed")
           )
         }
       }
 
-      "registrationNationalityCode is longer than 2 characters" in {
+      "registrationNationalityCode is not a valid value" in {
 
+        val options = config.Options.countryOptions.map(_._1).toSet
         val badData =
-          BorderTransportMeans.registrationNationalityCode.setArbitrary(some(alphaLongerThan(2)))
+          BorderTransportMeans.registrationNationalityCode.setArbitrary(some(stringsExceptSpecificValues(options)))
 
         forAll(badData) { means =>
 
           form.fillAndValidate(means).fold(
-            _ must haveErrorMessage("Nationality of active means of transport cannot be longer than 2 characters"),
-            _ => fail("form should not succeed")
-          )
-        }
-      }
-
-      "registrationNationalityCode contains non alpha characters" in {
-
-        val badData =
-          BorderTransportMeans.registrationNationalityCode.setArbitrary(some(nonAlphaString.suchThat(_.nonEmpty)))
-
-        forAll(badData) { means =>
-
-          form.fillAndValidate(means).fold(
-            _ must haveErrorMessage("Nationality of active means of transport can only contain letters"),
+            _ must haveErrorMessage("Nationality of active means of transport is invalid"),
             _ => fail("form should not succeed")
           )
         }
