@@ -81,13 +81,12 @@ class TradeTermsFormMappingSpec extends WordSpec
 
       "locationName is not a locationName" in {
 
-        val badData = stringsExceptSpecificValues(config.Options.countryTypes.map(_._2).toSet)
-        forAll(arbitrary[TradeTerms], badData) {
+        forAll(arbitrary[TradeTerms], minStringLength(38)) {
           (tradeTerms, invalidLocationName) =>
 
             val data = tradeTerms.copy(locationName = Some(invalidLocationName))
             Form(tradeTermsMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Location name is not a valid location name"),
+              _ must haveErrorMessage("Location Name should be less than or equal to 37 characters"),
               _ => fail("form should not succeed")
             )
         }

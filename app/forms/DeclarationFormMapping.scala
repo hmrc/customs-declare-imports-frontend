@@ -82,7 +82,7 @@ object DeclarationFormMapping {
     "locationId" -> optional(
       text.verifying("Location ID should be less than or equal to 17 characters", _.length <= 17)),
     "locationName" -> optional(
-      text.verifying("Location name is not a valid location name", x => config.Options.countryTypes.exists(_._2 == x))
+      text.verifying("Location Name should be less than or equal to 37 characters", _.length <= 37)
     ))(TradeTerms.apply)(TradeTerms.unapply)
 
   val measureMapping = mapping("unitCode" -> optional(text.verifying("Measurement Unit & Qualifier cannot be more than 5 characters", _.length <= 5)),

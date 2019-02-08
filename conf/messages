@@ -360,7 +360,7 @@ deliveryTerms.heading=Delivery terms
 deliveryTerms.tradeTerms.conditionCode=INCOTERM code
 deliveryTerms.tradeTerms.conditionCode.hint=International Commercial Terms for the Declaration. Delivery terms code must be provided for declarations using valuation method 1 (transaction value of imported goods).
 deliveryTerms.tradeTerms.locationId=United Nations Code for Trade and Transport Locations (UN/LOCODE code)
-deliveryTerms.tradeTerms.locationName=Country
+deliveryTerms.tradeTerms.locationName=Location Name
 
 ## Invoice and currency
 invoiceAndCurrency.title=Invoice and Currency

@@ -39,11 +39,8 @@
                    hint = Some(messages("deliveryTerms.tradeTerms.conditionCode.hint"))
                )
                @components.input_text(form("locationId"), messages("deliveryTerms.tradeTerms.locationId"))
-               @components.input_select(
-                   form("locationName"),
-                   messages("deliveryTerms.tradeTerms.locationName"),
-                   config.Options.countryTypes.toMap
-               )
+               @components.input_text(form("locationName"), messages("deliveryTerms.tradeTerms.locationName"))
+
            </fieldset>
 
             <button id="Add" name="submit">

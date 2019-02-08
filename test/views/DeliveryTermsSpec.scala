@@ -80,11 +80,9 @@ class DeliveryTermsSpec extends ViewBehaviours
 
         val popForm = Form(tradeTermsMapping).fillAndValidate(tradeTerms)
         val input =
-          input_select(
-            popForm("locationName"),
-            messages("deliveryTerms.tradeTerms.locationName"),
-            config.Options.countryTypes.toMap
-          )
+          input_text(popForm("locationName"), messages("deliveryTerms.tradeTerms.locationName"))
+
+        view(popForm) must include(input)
       }
     }
   }
