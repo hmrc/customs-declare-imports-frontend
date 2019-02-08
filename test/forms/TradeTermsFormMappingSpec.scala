@@ -16,17 +16,14 @@
 
 package forms
 
-import uk.gov.hmrc.wco.dec.TradeTerms
-import domain.{InvoiceAndCurrency, References}
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
-import uk.gov.hmrc.wco.dec.{GovernmentProcedure, _}
+import uk.gov.hmrc.wco.dec.TradeTerms
 
 class TradeTermsFormMappingSpec extends WordSpec
   with MustMatchers

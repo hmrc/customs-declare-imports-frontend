@@ -30,8 +30,8 @@ import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.{ImportExportParty, TradeTerms}
-import views.html.{delivery_terms, seller_details}
+import uk.gov.hmrc.wco.dec.TradeTerms
+import views.html.delivery_terms
 
 class DeliveryTermsControllerSpec extends CustomsSpec
   with PropertyChecks
