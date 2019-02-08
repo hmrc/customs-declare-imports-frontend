@@ -23,7 +23,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
-import uk.gov.hmrc.wco.dec.{TradeTerms, Warehouse}
+import uk.gov.hmrc.wco.dec.Warehouse
 
 class WarehouseFormMappingSpec extends WordSpec
   with MustMatchers
@@ -45,6 +45,34 @@ class WarehouseFormMappingSpec extends WordSpec
         }
       }
     }
-  }
 
+    "fail" when {
+
+      "id length is greater than 35" in {
+        forAll(arbitrary[Warehouse], minStringLength(36)) {
+          (warehouse, invalidId) =>
+
+            val data = warehouse.copy(id = Some(invalidId))
+            Form(warehouseMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("ID should be less than or equal to 35 characters"),
+              e => fail("form should not succed")
+            )
+        }
+      }
+
+      "typeCode is not a typeCode" in {
+
+        val badData = stringsExceptSpecificValues(config.Options.customsWareHouseTypes.map(_._2).toSet)
+        forAll(arbitrary[Warehouse], badData) {
+          (warehouse, invalidTypeCode) =>
+
+            val data = warehouse.copy(typeCode = invalidTypeCode)
+            Form(warehouseMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Type Code is not a valid type code"),
+              e => fail("form should not succeed")
+            )
+        }
+      }
+    }
+  }
 }

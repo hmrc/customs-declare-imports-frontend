@@ -124,6 +124,7 @@ object DeclarationFormats extends ObligationGuaranteeFormats {
 
   implicit val currencyExchangeFormats = Json.format[CurrencyExchange]
 
+  implicit val warehouseFormats = Json.format[Warehouse]
 }
 
 trait ObligationGuaranteeFormats {
