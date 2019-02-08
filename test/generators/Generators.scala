@@ -111,6 +111,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   def currencyGen: Gen[String] = oneOf(config.Options.currencyTypes.map(_._2))
   def countryGen: Gen[String] = oneOf(config.Options.countryOptions.map(_._1))
 
+  private def zip[A, B](fa: Option[A], fb: Option[B]): Option[(A, B)] =
+    fa.flatMap(a => fb.map(b => (a, b)))
+
   implicit val arbitraryOffice: Arbitrary[Office] = Arbitrary {
     for {
       id <- option(arbitrary[String].map(_.take(8)))
@@ -159,8 +162,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryMeasure: Arbitrary[Measure] = Arbitrary {
     for {
-      unitCode <- option(arbitrary[String].map(_.take(3)))
-      value <- option(posDecimal(10, 2))
+      unitCode <- option(nonEmptyString.map(_.take(3)))
+      value    <- option(posDecimal(10, 2))
     } yield Measure(unitCode, value)
   }
 
@@ -428,9 +431,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryAboutGoods: Arbitrary[SummaryOfGoods] = Arbitrary {
     for {
       quantity <- option(choose(0, 99999999))
-      measure  <- option(arbitrary[Measure])
+      measure  <- arbitrary[Measure]
+      measureOpt = zip(measure.value, measure.unitCode).map(_ => measure)
     } yield {
-      SummaryOfGoods(quantity, measure)
+      SummaryOfGoods(quantity, measureOpt)
     }
   }
 

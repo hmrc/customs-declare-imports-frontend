@@ -164,11 +164,13 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
         forAll { (user: SignedInUser, formData: SummaryOfGoods) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
-          await(controller(user).onSubmit(request))
+          withCleanCache(EORI(user.eori.value), CacheKey.summaryOfGoods, None) {
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+            await(controller(user).onSubmit(request))
 
-          verify(mockCustomsCacheService, atLeastOnce())
-            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.summaryOfGoods), eqTo(formData))(any(), any(), any())
+            verify(mockCustomsCacheService, atLeastOnce())
+              .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.summaryOfGoods), eqTo(formData))(any(), any(), any())
+          }
         }
       }
     }
