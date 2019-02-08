@@ -108,6 +108,13 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield Office(id)
   }
 
+  implicit val arbitraryWarehouse: Arbitrary[Warehouse] = Arbitrary {
+    for {
+      id       <- option(nonEmptyString.map(_.take(35)))
+      typeCode <- oneOf(config.Options.customsWareHouseTypes.map(_._2))
+    } yield Warehouse(id, typeCode)
+  }
+
   implicit val arbitraryCurrencyExchange: Arbitrary[CurrencyExchange] = Arbitrary {
     for {
       currencyTypeCode <- currencyGen
