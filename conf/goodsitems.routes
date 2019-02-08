@@ -17,3 +17,6 @@ POST  /add-gov-agency-goods-items-additional-docs       controllers.goodsitems.A
 
 GET   /add-supply-chain-actors       controllers.goodsitems.AdditionalSupplyChainActorsController.onPageLoad()
 POST  /add-supply-chain-actors      controllers.goodsitems.AdditionalSupplyChainActorsController.onSubmit()
+
+GET   /add-packages     controllers.goodsitems.PackagingController.onPageLoad()
+POST  /add-packages    controllers.goodsitems.PackagingController.onSubmit()

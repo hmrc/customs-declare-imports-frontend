@@ -39,7 +39,6 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
   val goodsItemValueInformationForm: Form[GoodsItemValueInformation] = Form(goodsItemValueInformationMapping)
   val originsForm: Form[Origin] = Form(originMapping)
   val namedEntityWithAddressForm: Form[NamedEntityWithAddress] = Form(namedEntityWithAddressMapping)
-  val packagingForm: Form[Packaging] = Form(packagingMapping)
 
   val goodsItemValueInformationKey = "goodsItemValueInformation"
 
@@ -74,13 +73,6 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
         Ok(views.html.gov_agency_goods_items(res)))
   }
 
-
-  def showPackagings(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
-        Ok(views.html.goods_items_packagings(packagingForm, goodsItem.map(_.packagings).getOrElse(Seq.empty)))
-      }
-  }
 
   def showNamedEntryAddressParties(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit req =>
@@ -134,24 +126,4 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
             }
           })
   }
-
-  def handlePackagingsSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit request =>
-      packagingForm.bindFromRequest().fold(
-        (formWithErrors: Form[Packaging]) =>
-          Future.successful(BadRequest(views.html.goods_items_packagings(formWithErrors, List.empty))),
-        form =>
-          cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
-            Logger.info("NamedEntityWithAddress form --->" + form)
-            val updatedGoodsItem = res match {
-              case Some(goodsItem) => goodsItem.copy(packagings = goodsItem.packagings :+ form)
-              case None => GovernmentAgencyGoodsItem(packagings = Seq(form))
-            }
-
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
-              Ok(views.html.goods_items_packagings(packagingForm, updatedGoodsItem.packagings))
-            }
-          })
-  }
-
 }

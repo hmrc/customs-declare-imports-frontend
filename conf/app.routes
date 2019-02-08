@@ -60,7 +60,6 @@ GET         /submit-declaration/guarantee-type                  controllers.Guar
 GET         /submit-declaration/add-guarantee-type             controllers.GuaranteeTypeController.onPageLoad()
 POST        /submit-declaration/add-guarantee-type             controllers.GuaranteeTypeController.onSubmit()
 
-
 POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
 POST        /submit-declaration/another                        controllers.DeclarationController.onSubmitComplete
 
@@ -79,9 +78,6 @@ POST       /submit-declaration-goods/add-origins      controllers.GovernmentAgen
 
 GET       /submit-declaration-goods/add-manufacturers       controllers.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()
 POST       /submit-declaration-goods/add-manufacturers      controllers.GovernmentAgencyGoodsItemsController.handleNamedEntityPartiesSubmit()
-
-GET       /submit-declaration-goods/add-packagings       controllers.GovernmentAgencyGoodsItemsController.showPackagings()
-POST       /submit-declaration-goods/add-packagings      controllers.GovernmentAgencyGoodsItemsController.handlePackagingsSubmit()
 
 GET       /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.display()
 POST      /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()

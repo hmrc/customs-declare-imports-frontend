@@ -41,7 +41,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   val navigateToSelectedGoodsItemPageUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-items")
   val addOriginsPageUri = uriWithContextPath("/submit-declaration-goods/add-origins")
   val addManufacturersPageUri = uriWithContextPath("/submit-declaration-goods/add-manufacturers")
-  val addPackagingsPageUri = uriWithContextPath("/submit-declaration-goods/add-packagings")
   val get = "GET"
   val postMethod = "POST"
 
@@ -253,51 +252,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
         content should include element withAttrValue("name", "address.countrySubDivisionName")
         content should include element withAttrValue("name", "address.line")
         content should include element withAttrValue("name", "address.postcodeId")
-      }
-    }
-  }
-
-  "show addPackagingsPage fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(None)
-      withRequest(get, addPackagingsPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No Packagings available")
-        content should include element withAttrValue("name", "sequenceNumeric")
-        content should include element withAttrValue("name", "marksNumbersId")
-        content should include element withAttrValue("name", "quantity")
-        content should include element withAttrValue("name", "typeCode")
-        content should include element withAttrValue("name", "packingMaterialDescription")
-        content should include element withAttrValue("name", "lengthMeasure")
-        content should include element withAttrValue("name", "widthMeasure")
-        content should include element withAttrValue("name", "heightMeasure")
-        content should include element withAttrValue("name", "volumeMeasure.unitCode")
-        content should include element withAttrValue("name", "volumeMeasure.value")
-      }
-    }
-  }
-
-  "pre-populate addPackagings that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-
-      val goodsItemGen = arbitrary[Packaging].map { p =>
-        GovernmentAgencyGoodsItem(packagings = List(p))
-      }
-
-      withCaching(goodsItemGen.sample)
-      withRequest(get, addPackagingsPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("1 Goods Item Packagings added")
-        content should include element withAttrValue("name", "sequenceNumeric")
-        content should include element withAttrValue("name", "marksNumbersId")
-        content should include element withAttrValue("name", "quantity")
-        content should include element withAttrValue("name", "typeCode")
-        content should include element withAttrValue("name", "packingMaterialDescription")
-        content should include element withAttrValue("name", "lengthMeasure")
-        content should include element withAttrValue("name", "widthMeasure")
-        content should include element withAttrValue("name", "heightMeasure")
-        content should include element withAttrValue("name", "volumeMeasure.unitCode")
-        content should include element withAttrValue("name", "volumeMeasure.value")
       }
     }
   }
