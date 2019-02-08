@@ -70,7 +70,9 @@
 
             @components.input_text(field = form("categoryCode"),label = messages("governmentAgencyGoodsItemAdd.categoryCode"))
             @components.input_date(form, "effectiveDateTime.date",
-            '_label -> "Date of Validity of Documents",
+            '_groupClass -> "form-group",
+            '_label -> messages("governmentAgencyGoodsItemAdd.dateOfDocument"),
+            '_hintText -> messages("governmentAgencyGoodsItemAdd.dateOfDocument.hint"),
             '_labelClass -> "form-label" )
             @components.input_text(field = form("id"),label = messages("governmentAgencyGoodsItemAdd.id"))
             @components.input_text(field = form("typeCode"),label = messages("governmentAgencyGoodsItemAdd.typeCodeOfDocument"))

@@ -14,6 +14,15 @@ common.feedbackThird=will help us to improve it.
 common.error.summary.title=There is a problem
 common.id=ID
 common.roleCode=Role code
+common.date.day=Day
+common.date.month=Month
+common.date.year=Year
+
+## common form content
+common.form.day.class=form-group-day
+common.form.month.class=form-group-month
+common.form.year.class=form-group-year
+common.form.invalid.date=Date is invalid
 
 ## common buttons with shared labels
 common.button.startNow=Start now
@@ -499,6 +508,8 @@ governmentAgencyGoodsItem.refundRecipientParties=Refund recipient parties
 governmentAgencyGoodsItem.saveGoodsItem=Save goods item
 
 governmentAgencyGoodsItemAdd.title=Additional documents
+governmentAgencyGoodsItemAdd.dateOfDocument=Date of documents
+governmentAgencyGoodsItemAdd.dateOfDocument.hint=For example, 31 3 1980
 governmentAgencyGoodsItemAdd.categoryCode=Category
 governmentAgencyGoodsItemAdd.documentName=Status reason
 governmentAgencyGoodsItemAdd.id=Identifier
@@ -510,9 +521,6 @@ governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs=No of goods item additi
 governmentAgencyGoodsItemAdd.writeOffQuantity=Quantity
 governmentAgencyGoodsItemAdd.writeOffMeasurement=Measurement Unit & Qualifier
 governmentAgencyGoodsItemAdd.effectiveDateTime=Date of validity
-governmentAgencyGoodsItemAdd.day=Day
-governmentAgencyGoodsItemAdd.month=Month
-governmentAgencyGoodsItemAdd.year=Year
 
 governmentAgencyGoodsItemAdditionalInfo.title=Additional information
 governmentAgencyGoodsItemAdditionalInfo.p.additionalInformationAdded=additional information added

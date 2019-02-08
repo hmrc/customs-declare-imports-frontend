@@ -16,42 +16,42 @@
 
 @(formItem:Form[_], fieldName: String, args: (Symbol,Any)*)(implicit lang: Messages)
 
-@import uk.gov.hmrc.play.views.html.{ helpers => playUi}
 @import views.html.helper._
 
 @elements = @{ FieldElements(formItem(fieldName).id, formItem(fieldName), null, args.toMap, lang) }
 
-<div class="date-form-group @if(elements.hasErrors) {error}">
+<div class="date-form-group @elements.args.get('_groupClass) @if(formItem(s"$fieldName.day").hasErrors || formItem(s"$fieldName.month").hasErrors || formItem(s"$fieldName.year").hasErrors) {form-group-error}">
     <fieldset class="date-form-group form-date" id="@fieldName-fieldset">
-        <legend id="@elements.field.name-field" class="form-label-bold">
+        <legend id="@elements.field.name-field" class="@elements.args.get('_legendClass) form-label-bold">
             @elements.label
 
             @if(elements.args.get('_hintText).isDefined) {
             <span class="form-hint">@elements.args.get('_hintText)</span>
             }
 
-            @if(elements.hasErrors) {
-            <span class="error-message">
-                @elements.errors.map { error => <span class="error-notification">@Messages(error)</span> }
-            </span>
+            @if(formItem(s"$fieldName.day").hasErrors || formItem(s"$fieldName.month").hasErrors || formItem(s"$fieldName.year").hasErrors) {
+            <span class="error-message">messages("common.form.invalid.date")</span>
             }
         </legend>
-        @playUi.input(
+        @components.input(
         formItem(s"$fieldName.day"),
-        '_label -> Messages("date.fields.day"),
+        '_divClass -> Messages("common.form.day.class"),
+        '_label -> Messages("common.date.day"),
         '_labelClass -> "form-group form-group-day",
         '_inputClass -> "form-control input--xsmall",
         '_emptyValueText -> " "
         )
-        @playUi.input(
+        @components.input(
         formItem(s"$fieldName.month"),
+        '_divClass -> Messages("common.form.month.class"),
         '_label -> Messages("date.fields.month"),
         '_labelClass -> "form-group form-group-month",
         '_inputClass -> "form-control input--xsmall",
         '_emptyValueText -> " "
         )
-        @playUi.input(
+        @components.input(
         formItem(s"$fieldName.year"),
+        '_divClass -> Messages("common.form.year.class"),
         '_label -> Messages("date.fields.year"),
         '_labelClass -> "form-group form-group-year",
         '_inputClass -> "form-control input--xsmall",
