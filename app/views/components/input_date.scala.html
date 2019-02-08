@@ -14,11 +14,11 @@
  * limitations under the License.
  *@
 
-@(formItem:Form[_], fieldName: String, args: (Symbol,Any)*)(implicit lang: Messages)
+@(formItem:Form[_], fieldName: String, args: (Symbol,Any)*)(implicit messages: Messages)
 
 @import views.html.helper._
 
-@elements = @{ FieldElements(formItem(fieldName).id, formItem(fieldName), null, args.toMap, lang) }
+@elements = @{ FieldElements(formItem(fieldName).id, formItem(fieldName), null, args.toMap, messages) }
 
 <div class="date-form-group @elements.args.get('_groupClass) @if(formItem(s"$fieldName.day").hasErrors || formItem(s"$fieldName.month").hasErrors || formItem(s"$fieldName.year").hasErrors) {form-group-error}">
     <fieldset class="date-form-group form-date" id="@fieldName-fieldset">
@@ -30,7 +30,7 @@
             }
 
             @if(formItem(s"$fieldName.day").hasErrors || formItem(s"$fieldName.month").hasErrors || formItem(s"$fieldName.year").hasErrors) {
-            <span class="error-message">messages("common.form.invalid.date")</span>
+            <span class="error-message">@messages("common.form.invalid.date")</span>
             }
         </legend>
         @components.input(

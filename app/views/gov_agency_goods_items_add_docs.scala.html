@@ -27,7 +27,11 @@
 
     @helpers.form(action = controllers.goodsitems.routes.AdditionalDocumentController.onSubmit()) {
         @components.error_summary(form.errors)
-
+        <style type="text/css">
+            table {
+                word-wrap: break-word;
+            }
+        </style>
         <fieldset>
             <legend>
                 <h1>@messages("governmentAgencyGoodsItemAdd.title")</h1>
@@ -36,7 +40,7 @@
             @if(additionalDocuments.nonEmpty) {
                 <p>@messages("governmentAgencyGoodsItem.numberGoodsItemsAdditionalDocs") @additionalDocuments.size</p>
 
-                <table>
+                <table class="form-group" style="display: block; max-width: 100%;">
                     <thead>
                     <tr>
                         <th scope="col">@messages("governmentAgencyGoodsItemAdd.categoryCode")</th>
@@ -55,7 +59,7 @@
                             <tr>
                                 <td scope="row">@item.categoryCode</td>
                                 <td scope="row">@item.effectiveDateTime.map(_.dateTimeString.value)</td>
-                                <td scope="row">@item.id</td>
+                                <td scope="row"><span class="test">@item.id</span></td>
                                 <td scope="row">@item.name</td>
                                 <td scope="row">@item.typeCode</td>
                                 <td scope="row">@item.lpcoExemptionCode</td>
