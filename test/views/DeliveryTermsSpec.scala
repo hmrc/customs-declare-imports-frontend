@@ -16,7 +16,6 @@
 
 package views
 
-import domain.InvoiceAndCurrency
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalatest.OptionValues
@@ -27,7 +26,7 @@ import uk.gov.hmrc.customs.test.ViewMatchers
 import uk.gov.hmrc.wco.dec.TradeTerms
 import views.behaviours.ViewBehaviours
 import views.html.components.{input_select, input_text}
-import views.html.{delivery_terms, invoice_and_currency}
+import views.html.delivery_terms
 
 class DeliveryTermsSpec extends ViewBehaviours
   with PropertyChecks
@@ -44,9 +43,12 @@ class DeliveryTermsSpec extends ViewBehaviours
   val messagePrefix = "deliveryTerms"
 
   "Delivery terms view" should {
+
     behave like normalPage(simpleView, messagePrefix)
+    behave like pageWithBackLink(simpleView)
 
     "display condition code input" in {
+
       forAll{ tradeTerms: TradeTerms =>
 
         val popForm = Form(tradeTermsMapping).fillAndValidate(tradeTerms)
@@ -55,6 +57,34 @@ class DeliveryTermsSpec extends ViewBehaviours
             messages("deliveryTerms.tradeTerms.conditionCode"),
             config.Options.incoTermCodes.toMap,
             hint = Some(messages("deliveryTerms.tradeTerms.conditionCode.hint")))
+
+        view(popForm) must include(input)
+      }
+    }
+
+    "display location id input" in {
+
+      forAll{ tradeTerms: TradeTerms =>
+
+        val popForm = Form(tradeTermsMapping).fillAndValidate(tradeTerms)
+        val input =
+          input_text(popForm("locationId"), messages("deliveryTerms.tradeTerms.locationId"))
+
+        view(popForm) must include(input)
+      }
+    }
+
+    "display location name input" in {
+
+      forAll{ tradeTerms: TradeTerms =>
+
+        val popForm = Form(tradeTermsMapping).fillAndValidate(tradeTerms)
+        val input =
+          input_select(
+            popForm("locationName"),
+            messages("deliveryTerms.tradeTerms.locationName"),
+            config.Options.countryTypes.toMap
+          )
       }
     }
   }
