@@ -14,23 +14,56 @@
  * limitations under the License.
  *@
 
-@import config.{AppConfig, ValidationError}
-@import config.Fields._
+@import config.AppConfig
+@import controllers.routes._
+@import uk.gov.hmrc.play.views.html._
 
-@(data: Map[String, String])(implicit req:  Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
+@(form: Form[_])(implicit req:  Request[_], messages: Messages, cfg: AppConfig)
 
-@main_template(messages("pages.transport.title")) {
-    @helpers.form("transport", "pages.transport.form.legend", data) {
-        @helpers.textInput(containerCode, data)
-        @helpers.selectInput(borderTransportMeans, data)
-        @helpers.selectInput(arrivalTransportMeans, data)
-        @helpers.selectInput(arrivalTransportMeansIdentificationTypeCode, data)
-        @helpers.textInput(arrivalTransportMeansIdentificationId, data)
-        @helpers.textInput(transportEquipmentId, data)
-        @helpers.selectInput(borderTransportMeansRegistrationNationalityCode, data)
-        @helpers.nextButton()
-    }
+@main_template(title = messages("transport.title")) {
+
+ @helpers.form(action = SummaryOfGoodsController.onSubmit()) {
+
+  @components.back_link()
+
+  @components.error_summary(form.errors)
+
+  <fieldset>
+   <legend>
+    <h1 class="heading-large">@messages("transport.heading")</h1>
+   </legend>
+
+   @components.input_text(form("containerCode"), messages("transport.containerCode"))
+
+   @components.input_select(
+    form("borderTransportMeans.modeCode"),
+    messages("transport.borderTransportMeans.modeCode"),
+    config.Options.borderTransportMeansModeCodes.toMap
+   )
+
+   @components.input_select(
+    form("arrivalTransportMeans.modeCode"),
+    messages("transport.arrivalTransportMeans.modeCode"),
+    config.Options.transportModeTypes.toMap
+   )
+
+   @components.input_select(
+    form("arrivalTransportMeans.identificationTypeCode"),
+    messages("transport.arrivalTransportMeans.identificationTypeCode"),
+    config.Options.transportMeansIdentificationTypes.toMap
+   )
+
+   @components.input_text(form("arrivalTransportMeans.id"), messages("transport.arrivalTransportMeans.id"))
+
+   @components.input_select(
+    form("borderTransportMeans.registrationNationalityCode"),
+    messages("transport.borderTransportMeans.registrationNationalityCode"),
+    config.Options.countryOptions.toMap
+   )
+  </fieldset>
+
+  <button id="Add" name="submit">
+  @messages("common.button.continue")
+  </button>
+ }
 }
-
-
-
