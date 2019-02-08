@@ -111,8 +111,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryTradeTerms: Arbitrary[TradeTerms] = Arbitrary {
     for {
       conditionCode <- oneOf(config.Options.incoTermCodes).map(_._2)
-      locationId    <- option(arbitrary[String].map(_.take(17)))
-      locationName  <- option(arbitrary[String].map(_.take(37)))
+      locationId    <- option(nonEmptyString.map(_.take(17)))
+      locationName  <- option(nonEmptyString.map(_.take(37)))
     } yield TradeTerms(Some(conditionCode), None, None, locationId, locationName)
   }
 
