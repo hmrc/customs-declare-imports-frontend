@@ -123,6 +123,8 @@ object DeclarationFormats extends ObligationGuaranteeFormats {
   implicit val agentsFormats = Json.format[Agent]
 
   implicit val currencyExchangeFormats = Json.format[CurrencyExchange]
+  implicit val borderTransportMeansFormats = Json.format[BorderTransportMeans]
+  implicit val transportMeansFormats = Json.format[TransportMeans]
 
 }
 

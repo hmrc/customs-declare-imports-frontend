@@ -99,6 +99,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   def stringsExceptSpecificValues(excluded: Set[String]): Gen[String] =
     nonEmptyString suchThat (!excluded.contains(_))
 
+  def alphaLongerThan(minLength: Int): Gen[String] =
+    alphaStr suchThat (_.length > minLength)
+
+  def alphaLessThan(maxLength: Int): Gen[String] =
+    alphaStr suchThat(_.nonEmpty) map(_.take(maxLength))
+
+  def numStrLongerThan(minLength: Int): Gen[String] =
+    numStr suchThat (_.length > minLength)
+
   def currencyGen: Gen[String] = oneOf(config.Options.currencyTypes.map(_._2))
   def countryGen: Gen[String] = oneOf(config.Options.countryOptions.map(_._1))
 
@@ -422,6 +431,35 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       measure  <- option(arbitrary[Measure])
     } yield {
       SummaryOfGoods(quantity, measure)
+    }
+  }
+
+  implicit val arbitraryBorderTransportMeans: Arbitrary[BorderTransportMeans] = Arbitrary {
+    for {
+      modeCode <- option(intBetweenRange(0, 9))
+      regCode  <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
+    } yield {
+      BorderTransportMeans(None, None, None, None, regCode, modeCode)
+    }
+  }
+
+  implicit val arbitraryTransportMeans: Arbitrary[TransportMeans] = Arbitrary {
+    for {
+      id       <- option(nonEmptyString.map(_.take(35)))
+      typeId   <- option(intBetweenRange(-9, 99).map(_.toString))
+      modeCode <- option(intBetweenRange(0, 9))
+    } yield {
+      TransportMeans(None, id, typeId, None, modeCode)
+    }
+  }
+
+  implicit val arbitraryTransport: Arbitrary[Transport] = Arbitrary {
+    for {
+      container <- option(intBetweenRange(0, 9))
+      border    <- option(arbitrary[BorderTransportMeans])
+      arrival   <- option(arbitrary[TransportMeans])
+    } yield {
+      Transport(container, border, arrival)
     }
   }
 

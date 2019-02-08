@@ -36,8 +36,8 @@ object DeclarationFormMapping {
   def requireAllDependantFields[T](primary: T => Option[_])(fs: (T => Option[_])*): T => Boolean =
     t => primary(t).fold(true)(_ => fs.forall(f => f(t).nonEmpty))
 
-  def isAlpha: String => Boolean = _.matches("^[A-Za-z]*$")
-
+  val isAlpha: String => Boolean = _.matches("^[A-Za-z]*$")
+  val isInt: String => Boolean = _.matches("^[0-9-]*$")
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text.verifying("Issuing Authority must be less than 70 characters", _.length <= 70)),
@@ -329,6 +329,39 @@ object DeclarationFormMapping {
         .verifying("Total packages cannot be less than 0", _ >= 0)),
     "totalGrossMassMeasure" -> optional(measureMapping("Gross mass"))
   )(SummaryOfGoods.apply)(SummaryOfGoods.unapply)
+
+  val borderTransportMeansMapping = mapping(
+    "name" -> ignored[Option[String]](None),
+    "id" -> ignored[Option[String]](None),
+    "identificationTypeCode" -> ignored[Option[String]](None),
+    "typeCode" -> ignored[Option[String]](None),
+    "registrationNationalityCode" ->
+      optional(text
+        .verifying("Nationality of active means of transport cannot be longer than 2 characters", _.length <= 2)
+        .verifying("Nationality of active means of transport can only contain letters", isAlpha)),
+    "modeCode" ->
+      optional(number.verifying("Mode of transport at border must be a single digit", _.toString.length <= 1))
+  )(BorderTransportMeans.apply)(BorderTransportMeans.unapply)
+
+  val transportMeansMapping = mapping(
+    "name" -> ignored[Option[String]](None),
+    "id" ->
+      optional(text.verifying("ID No. cannot be longer than 35 characters", _.length <= 35)),
+    "identificationTypeCode" ->
+      optional(text
+        .verifying("Type of identification cannot be longer than 2 digits", _.length <= 2)
+        .verifying("Type of identification must be a number", isInt)),
+    "typeCode" -> ignored[Option[String]](None),
+    "modeCode" ->
+      optional(number.verifying("Mode of transport at border must be a single digit", _.toString.length <= 1))
+  )(TransportMeans.apply)(TransportMeans.unapply)
+
+  val transportMapping = mapping(
+    "containerCode" ->
+      optional(number.verifying("Container must be a single digit", _.toString.length <= 1)),
+    "borderTransportMeans" -> optional(borderTransportMeansMapping),
+    "arrivalTransportMeans" -> optional(transportMeansMapping)
+  )(Transport.apply)(Transport.unapply)
 }
 
 case class ObligationGuaranteeForm (guarantees: Seq[ObligationGuarantee] = Seq.empty)
