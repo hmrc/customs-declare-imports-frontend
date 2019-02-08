@@ -20,9 +20,9 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.wco.dec.{Office, Warehouse}
 import domain.DeclarationFormats._
 
-case class WarehouseAndCustoms(warehouse: Warehouse,
-                               presentationOffice: Office,
-                               supervisingOffice: Office)
+case class WarehouseAndCustoms(warehouse: Option[Warehouse],
+                               presentationOffice: Option[Office],
+                               supervisingOffice: Option[Office])
 
 object WarehouseAndCustoms {
 

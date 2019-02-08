@@ -18,7 +18,7 @@ package forms
 
 import java.text.DecimalFormat
 
-import domain.{GoodsItemValueInformation, InvoiceAndCurrency, References}
+import domain.{GoodsItemValueInformation, InvoiceAndCurrency, References, WarehouseAndCustoms}
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.data.Forms.{number, _}
@@ -79,12 +79,6 @@ object DeclarationFormMapping {
       optional(bigDecimal.verifying("Quantity cannot be greater than 9999999999.999999", _.precision <= 16)
       .verifying("Quantity cannot have more than 6 decimal places", _.scale <= 6)
       .verifying("Quantity must not be negative", _ >= 0)))(Measure.apply)(Measure.unapply)
-
-  val warehouseMapping = mapping(
-    "id" -> optional(text.verifying("ID should be less than or equal to 35 characters", _.length <= 35)),
-    "typeCode" -> text.verifying("Type Code is not a valid type code",
-      x => config.Options.customsWareHouseTypes.exists(_._2 == x))
-  )(Warehouse.apply)(Warehouse.unapply)
 
   val writeOffMapping = mapping("quantity" -> optional(measureMapping), "amount" -> optional(amountMapping))(WriteOff.apply)(WriteOff.unapply)
 
@@ -244,7 +238,18 @@ object DeclarationFormMapping {
   val officeMapping = mapping("id" -> optional(text
     .verifying("Office id should be less than or equal to 8 characters", _.length <= 8))
   )(Office.apply)(Office.unapply)
+  
+  val warehouseMapping = mapping(
+    "id" -> optional(text.verifying("ID should be less than or equal to 35 characters", _.length <= 35)),
+    "typeCode" -> text.verifying("Type Code is not a valid type code",
+      x => config.Options.customsWareHouseTypes.exists(_._2 == x))
+  )(Warehouse.apply)(Warehouse.unapply)
 
+  val warehouseAndCustomsMapping = mapping(
+    "warehouse" -> optional(warehouseMapping),
+    "presentationOffice" -> optional(officeMapping),
+    "supervisingOffice" -> optional(officeMapping)
+  )(WarehouseAndCustoms.apply)(WarehouseAndCustoms.unapply)
 
   val obligationGauranteeMapping =
     mapping("amount" -> optional(bigDecimal

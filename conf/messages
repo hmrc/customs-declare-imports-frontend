@@ -362,6 +362,17 @@ invoiceAndCurrency.invoiceAmount=Invoice Amount
 invoiceAndCurrency.exchangeCurrencyId=Currency ID
 invoiceAndCurrency.exchangeCurrencyAmount=Exchange Rate
 
+## Warehouse and customs offices
+
+warehouseAndCustomsOffices.title=Warehouse and customs offices
+warehouseAndCustomsOffices.heading=Warehouse and customs offices
+warehouseAndCustomsOffices.warehouse.id=Warehouse Identifier
+warehouseAndCustomsOffices.warehouse.typeCode=Warehouse Type
+warehouseAndCustomsOffices.presentationOffice=Details of customs office
+warehouseAndCustomsOffices.supervisingOffice=Supervising customs office
+warehouseAndCustomsOffices.h2.warehouseDetails=Details of warehouse goods are being held
+warehouseAndCustomsOffices.h2.customsOfficeDetails=Details of customs office
+
 ## Importer details
 importerDetails.title=Importer
 importerDetails.heading=Importer

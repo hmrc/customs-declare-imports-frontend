@@ -16,19 +16,34 @@
 
 @import config.{AppConfig, ValidationError}
 @import config.Fields._
+@import controllers.routes._
+@import uk.gov.hmrc.play.views.html._
 
-@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
+@(form: Form[_])(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
-@main_template(messages("pages.warehouseAndCustomsOffices.title")) {
+@main_template(messages("warehouseAndCustomsOffices.title")) {
 
-    @helpers.form("warehouse-and-customs-offices", "pages.warehouseAndCustomsOffices.form.legend", data) {
-        <h2 class="heading-medium">@messages("pages.warehouseAndCustomsOffices.h2.warehouseDetails")</h2>
-        @helpers.selectInput(identificationOfWarehouseWarehouseType, data)
-        @helpers.textInput(identificationOfWarehouseWarehouseIdentifier, data)
-        <h2 class="heading-medium">@messages("pages.warehouseAndCustomsOffices.h2.customsOfficeDetails")</h2>
-        @helpers.selectInput(customsOfficeOfPresentation, data)
-        @helpers.selectInput(superivisingCustomsOffice, data)
-        @helpers.nextButton()
-    }
+        @components.back_link()
+
+        @components.error_summary(form.errors)
+
+        <fieldset>
+            <legend>
+                <h1 class="heading-large">@messages("warehouseAndCustomsOffices.heading")</h1>
+            </legend>
+
+                <h2 class="heading-medium">@messages("pages.warehouseAndCustomsOffices.h2.warehouseDetails")</h2>
+                @components.input_select(form("warehouse.typeCode"),
+                                        messages("warehouseAndCustomsOffices.warehouse.typeCode"),
+                                        config.Options.customsWareHouseTypes.toMap)
+                @components.input_text(form("warehouse.id"), messages("warehouseAndCustomsOffices.warehouse.id"))
+
+                <h2 class="heading-medium">@messages("pages.warehouseAndCustomsOffices.h2.customsOfficeDetails")</h2>
+
+        </fieldset>
+
+        <button id="Add" name="submit">
+            @messages("common.button.continue")
+        </button>
 
 }
