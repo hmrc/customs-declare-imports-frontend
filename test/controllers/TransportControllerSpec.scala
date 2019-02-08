@@ -16,14 +16,13 @@
 
 package controllers
 
-import domain.SummaryOfGoods
+import domain.Transport
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
-import generators.Generators
+import generators.{Generators, Lenses}
 import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import org.scalatest.OptionValues
 import org.scalatest.mockito.MockitoSugar
@@ -32,25 +31,25 @@ import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import views.html.summary_of_goods
+import views.html.transport
 
-class SummaryOfGoodsControllerSpec extends CustomsSpec
+class TransportControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
+  with Lenses
   with OptionValues
   with MockitoSugar
   with EndpointBehaviours {
 
-  val form = Form(summaryOfGoodsMapping)
+  val form = Form(transportMapping)
 
   def view(form: Form[_] = form): String =
-    summary_of_goods(form)(fakeRequest, messages, appConfig).body
+    transport(form)(fakeRequest, messages, appConfig).body
 
   def controller(user: SignedInUser) =
-    new SummaryOfGoodsController(new FakeActions(Some(user)), mockCustomsCacheService)
+    new TransportController(new FakeActions(Some(user)), mockCustomsCacheService)
 
-  val summaryOfGoodsGen: Gen[Option[SummaryOfGoods]] = option(arbitrary[SummaryOfGoods])
-  val uri = "/submit-declaration/summary-of-goods"
+  val uri = "/submit-declaration/transport"
 
   "onPageLoad" should {
 
@@ -86,10 +85,10 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], summaryOfGoodsGen) {
+      forAll(arbitrary[SignedInUser], option(arbitrary[Transport])) {
         (user, cacheData) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.summaryOfGoods, cacheData) {
+          withCleanCache(EORI(user.eori.value), CacheKey.transport, cacheData) {
 
             val popForm = cacheData.fold(form)(form.fill)
             val result  = controller(user).onPageLoad(fakeRequest)
@@ -103,7 +102,7 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
   "onSubmit" should {
 
-    behave like redirectedEndpoint(uri, "/submit-declaration/transport", POST)
+    behave like redirectedEndpoint(uri, "/submit-declaration/location-of-goods", POST)
     behave like authenticatedEndpoint(uri, POST)
 
     "return SEE_OTHER" when {
@@ -115,12 +114,12 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.DeclarationController.displaySubmitForm("transport").url)
+          redirectLocation(result) mustBe Some(routes.DeclarationController.displaySubmitForm("location-of-goods").url)
         }
       }
     }
 
-    "return UNAUTHORIZED" when {
+    "return UNAUTHORISED" when {
 
       "user doesn't have an eori" in {
 
@@ -135,15 +134,10 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
     "return BAD_REQUEST" when {
 
-      "bad data is posted" in {
+      "invalid data is posted" in {
 
         val badData =
-          for {
-            goods <- arbitrary[SummaryOfGoods]
-            total <- intLessThan(0)
-          } yield {
-            goods.copy(totalPackageQuantity =  Some(total))
-          }
+          Transport.containerCode.setArbitrary(some(intGreaterThan(10)))
 
         forAll(arbitrary[SignedInUser], badData) {
           (user, formData) =>
@@ -162,15 +156,16 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
       "valid data is posted" in {
 
-        forAll { (user: SignedInUser, formData: SummaryOfGoods) =>
+        forAll { (user: SignedInUser, transport: Transport) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(transport): _*)
           await(controller(user).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
-            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.summaryOfGoods), eqTo(formData))(any(), any(), any())
+            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.transport), eqTo(transport))(any(), any(), any())
         }
       }
     }
   }
+
 }
