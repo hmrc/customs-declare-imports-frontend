@@ -16,7 +16,7 @@
 
 package forms
 
-import domain.References
+import domain.{InvoiceAndCurrency, References}
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalacheck.Arbitrary._
@@ -298,14 +298,14 @@ class DeclarationFormMappingSpec extends WordSpec
 
     "fail" when {
 
-      "id is longer than 17 characters" in {
+      "Identifer is longer than 17 characters" in {
 
         forAll(arbitrary[RoleBasedParty], minStringLength(18)) {
           (roleParty, id) =>
 
             val data = roleParty.copy(id = Some(id))
             Form(roleBasedPartyMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Role based party id should be less than or equal to 17 characters"),
+              _ must haveErrorMessage("Identifier should be less than or equal to 17 characters"),
               _ => fail("should not succeed")
             )
         }
@@ -318,16 +318,29 @@ class DeclarationFormMappingSpec extends WordSpec
 
             val data = roleParty.copy(roleCode = Some(roleCode))
             Form(roleBasedPartyMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Role code should be less than or equal to 3 characters"),
+              _ must haveErrorMessage("Role code should be 3 characters and must contain only A-Z characters"),
               _ => fail("should not succeed")
             )
         }
       }
 
-      "neither id or roleCode is supplied" in {
+      "roleCode has non Alpha characters" in {
 
+        forAll(arbitrary[RoleBasedParty], nonAlphaString) {
+          (roleParty, roleCode) =>
+            whenever(roleCode.nonEmpty) {
+              val data = roleParty.copy(roleCode = Some(roleCode))
+              Form(roleBasedPartyMapping).fillAndValidate(data).fold(
+                _ must haveErrorMessage("Role code should be 3 characters and must contain only A-Z characters"),
+                _ => fail("should not succeed")
+              )
+            }
+        }
+      }
+
+      "neither id or roleCode is supplied" in {
         Form(roleBasedPartyMapping).bind(Map.empty[String, String]).fold(
-          _ must haveErrorMessage("You must provide an ID or role code"),
+          _ must haveErrorMessage("You must provide an Identifier or Role code"),
           _ => fail("should not succeed")
         )
       }
@@ -503,6 +516,106 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
+  "currencyExchangeMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+        forAll { currencyExchange: CurrencyExchange =>
+
+          Form(currencyExchangeMapping).fillAndValidate(currencyExchange).fold(
+            _ => fail("Should not fail"),
+            _ mustBe currencyExchange
+          )
+        }
+      }
+    }
+
+    "fail" when {
+      "currencyTypeCode is not a currency" in {
+
+        val badData = stringsExceptSpecificValues(config.Options.currencyTypes.map(_._2).toSet)
+
+        forAll(arbitrary[CurrencyExchange], badData) { (currencyExchange, badData) =>
+
+          val data = currencyExchange.copy(currencyTypeCode = Some(badData))
+          Form(currencyExchangeMapping).fillAndValidate(data).fold(
+            _ must haveErrorMessage("CurrencyTypeCode is not a valid currency"),
+            _ => fail("Form should not succeed")
+          )
+        }
+      }
+
+      "rateNumeric has a precision greater than 12" in {
+
+        forAll(arbitrary[CurrencyExchange], decimal(13, 30, 0)) {
+          (currencyEnchange, invalidRateNumeric) =>
+
+            val data = currencyEnchange.copy(rateNumeric = Some(invalidRateNumeric))
+
+            Form(currencyExchangeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("RateNumeric cannot be greater than 9999999.99999"),
+              _ => fail("Form should not succeed")
+            )
+        }
+      }
+
+      "rateNumeric has a scale greater than 5" in {
+        val badData = choose(6, 16).flatMap(posDecimal(12, _))
+        forAll(arbitrary[CurrencyExchange], badData) {
+          (currencyExchange, invalidRateNumeric) =>
+            val data = currencyExchange.copy(rateNumeric = Some(invalidRateNumeric))
+
+            Form(currencyExchangeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("RateNumeric cannot have more than 5 decimal places"),
+              _ => fail("Form should not fail")
+            )
+        }
+      }
+
+      "rateNumeric has a negative value" in {
+
+        forAll(arbitrary[CurrencyExchange], intLessThan(0)) {
+          (currencyExchange, invalidRateNumeric) =>
+            val data = currencyExchange.copy(rateNumeric = Some(BigDecimal(invalidRateNumeric)))
+
+            Form(currencyExchangeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("RateNumeric must not be negative"),
+              _ => fail("Form should not fail")
+            )
+        }
+      }
+
+      "has a currencyTypeCode with no rateNumeric" in {
+
+        forAll { currencyExchange: CurrencyExchange =>
+
+          whenever(currencyExchange.currencyTypeCode.nonEmpty) {
+
+            Form(currencyExchangeMapping).bind(Map("currencyTypeCode" -> currencyExchange.currencyTypeCode.getOrElse(""))).fold(
+              _ must haveErrorMessage("Exchange rate is required when currency is provided"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
+
+      "has a rateNumeric with no currencyTypeCode" in {
+
+        forAll { currencyExchange: CurrencyExchange =>
+
+          whenever(currencyExchange.rateNumeric.nonEmpty) {
+
+            Form(currencyExchangeMapping).bind(Map("rateNumeric" -> currencyExchange.rateNumeric.fold("")(_.toString))).fold(
+              _ must haveErrorMessage("Currency ID is required when amount is provided"),
+              _ => fail("form should not succeed")
+            )
+          }
+        }
+      }
+    }
+  }
+
   "guaranteeTypeMapping" should {
     "bind" when {
 
@@ -578,7 +691,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             Form(obligationGauranteeMapping).fillAndValidate(arbitraryObligationGuarantee.copy(accessCode = Some(invalidAccessCode))).fold(
               error => error.error("accessCode") must haveMessage("AccessCode should be less than or equal to 4 characters"),
-              _     => fail("Should not succeed")
+              _ => fail("Should not succeed")
             )
         }
       }
@@ -924,6 +1037,21 @@ class DeclarationFormMappingSpec extends WordSpec
     }
   }
 
+  "invoiceAndCurrencyMapping" should {
+
+    "bind" when {
+
+      "valid values are bound" in {
+        forAll { invoiceAndCurrency: InvoiceAndCurrency =>
+
+          Form(invoiceAndCurrencyMapping).fillAndValidate(invoiceAndCurrency).fold(
+            e => fail("Form should not fail"),
+            _ mustBe invoiceAndCurrency
+          )
+        }
+      }
+    }
+  }
   "communicationMapping" should {
 
     "bind" when {

@@ -16,8 +16,7 @@
 
 package generators
 
-
-import domain.{SummaryOfGoods, GoodsItemValueInformation, GovernmentAgencyGoodsItem, References}
+import domain.{GovernmentAgencyGoodsItem, _}
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
 import org.scalacheck.Arbitrary._
@@ -109,6 +108,13 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield Office(id)
   }
 
+  implicit val arbitraryCurrencyExchange: Arbitrary[CurrencyExchange] = Arbitrary {
+    for {
+      currencyTypeCode <- currencyGen
+      rateNumeric      <- posDecimal(12, 5)
+    } yield CurrencyExchange(Some(currencyTypeCode), Some(rateNumeric))
+  }
+
   implicit val arbitraryObligationGuarantee: Arbitrary[ObligationGuarantee] = Arbitrary {
     for {
       amount              <- option(posDecimal(16, 2))
@@ -193,7 +199,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryRoleBasedParty: Arbitrary[RoleBasedParty] = Arbitrary {
     for {
       id <- option(arbitrary[String].map(_.take(17)))
-      roleCode <- option(arbitrary[String].map(_.take(3)))
+      roleCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(3)))
       if id.exists(_.nonEmpty) || roleCode.exists(_.nonEmpty)
     } yield RoleBasedParty(id, roleCode)
   }
@@ -392,6 +398,13 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield {
       Agent(party.name, party.id, code, party.address)
     }
+  }
+
+  implicit val arbitraryInvoiceAndCurrency: Arbitrary[InvoiceAndCurrency] = Arbitrary {
+    for {
+      amount   <- arbitrary[Amount]
+      currency <- arbitrary[CurrencyExchange]
+    } yield InvoiceAndCurrency(amount.currencyId.map(_ => amount), currency.currencyTypeCode.map(_ => currency))
   }
 
   implicit val arbitraryCommunication: Arbitrary[Communication] = Arbitrary {
