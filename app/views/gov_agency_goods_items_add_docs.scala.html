@@ -23,7 +23,7 @@
 
 @main_template(
     title = messages("governmentAgencyGoodsItemAdd.title"),
-    bodyClasses = None) {
+    bodyClasses = None, mainClass = Some("full-width")) {
 
     @helpers.form(action = controllers.goodsitems.routes.AdditionalDocumentController.onSubmit()) {
         @components.error_summary(form.errors)
