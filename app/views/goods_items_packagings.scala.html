@@ -22,41 +22,47 @@
 
 @(form:Form[_], packagings: Seq[Packaging])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
+@tableHeader = @{
+        if(packagings.size == 1)
+        { messages("packaging.table.heading", packagings.size)
+        } else {
+        messages("packaging.table.multiple.heading", packagings.size)
+        }
+}
+
 @main_template(
     title = messages("packaging.title"),
     bodyClasses = None) {
 
     @helpers.form(action = controllers.goodsitems.routes.PackagingController.onSubmit()) {
 
-
     @components.error_summary(form.errors)
 
-    <h2 class="heading-medium">@messages("packaging.heading")</h2>
-    @if(packagings.nonEmpty) {
-    @if(packagings.size == 1) {
-    <p>@packagings.size @messages("packaging.table.heading")</p>
-    } else {
-    <p>@packagings.size @messages("packaging.table.multiple.heading")</p>
-    }
-    }
+    <fieldset>
 
-    @components.table.table(
-    HtmlTable(
-    messages("packaging.typecode"),
-    messages("packaging.quantity"),
-    messages("packaging.marksNumbersId"))(
-    packagings.map(a => (a.typeCode.getOrElse(""),
-    a.quantity.getOrElse(""),
-    a.marksNumbersId.getOrElse("")))))
+        <h2 class="heading-medium">@messages("packaging.heading")</h2>
 
-    @components.input_text(field = form("typeCode"),label =  messages("packaging.typecode"))
-    @components.input_text(field = form("quantity"),label = messages("packaging.quantity"))
+        @components.table.table(
+            HtmlTable(
+                messages("packaging.typecode"),
+                messages("packaging.quantity"),
+                messages("packaging.marksNumbersId")
+                )(packagings.map{
+                a => (a.typeCode.getOrElse(""),
+                    a.quantity.getOrElse(""),
+                    a.marksNumbersId.getOrElse(""))
+                })
+                , Some(tableHeader))
 
-    @components.input_text(field = form("marksNumbersId"),label = messages("packaging.marksNumbersId"))
+        @components.input_text(field = form("typeCode"),label =  messages("packaging.typecode"))
+        @components.input_text(field = form("quantity"),label = messages("packaging.quantity"))
 
-<div class="section">
-    <button class="button" id="Add" value="Add" name = "submit">@messages("packaging.add")</button>
-    <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
-</div>
+        @components.input_text(field = form("marksNumbersId"),label = messages("packaging.marksNumbersId"))
+    </fieldset>
+
+        <div class="section">
+            <button class="button" id="Add" value="Add" name = "submit">@messages("packaging.add")</button>
+            <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
+        </div>
 }
 }

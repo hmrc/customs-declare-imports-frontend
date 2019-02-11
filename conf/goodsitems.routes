@@ -20,3 +20,6 @@ POST  /add-supply-chain-actors      controllers.goodsitems.AdditionalSupplyChain
 
 GET   /add-packages     controllers.goodsitems.PackagingController.onPageLoad()
 POST  /add-packages    controllers.goodsitems.PackagingController.onSubmit()
+
+GET   /add-origins     controllers.goodsitems.OriginsController.onPageLoad()
+POST  /add-origins    controllers.goodsitems.OriginsController.onSubmit()

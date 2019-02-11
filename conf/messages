@@ -574,11 +574,21 @@ governmentprocedures.currentCode=Requested Procedure Code
 governmentprocedures.previousCode=Previous Procedure Code
 governmentprocedures.addGovProcedures=Add government procedure
 
-packaging.title=Goods Packages
-packaging.heading=Goods Packages
+packaging.title=Goods packages
+packaging.heading=Goods packages
 packaging.table.heading=1 Package added
-packaging.table.multiple.heading=Packages added
+packaging.table.multiple.heading= {0} Packages added
 packaging.add=Add Package
-packaging.typecode=Type of Packages
+packaging.typecode=Type of packages
 packaging.quantity=Number of Packages
 packaging.marksNumbersId=Shipping Marks
+
+origin.title=Goods origin & Preferential origin
+origin.heading=Goods origin & Preferential origin
+origin.table.heading=Country of origin added
+origin.table.multiple.heading=Goods origin added preferential origin added
+origin.countryCode=Country of origin
+origin.typeCode=Origin type
+origin.add=Add origin
+origin.addPref=Add preferential origin
+origin.complete=Country of origin and preferential origin added

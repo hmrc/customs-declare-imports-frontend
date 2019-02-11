@@ -191,10 +191,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryOrigin: Arbitrary[Origin] = Arbitrary {
     for {
-      countryCode <- option(arbitrary[String].map(_.take(4)))
-      regionId <- option(arbitrary[String].map(_.take(9)))
-      typeCode <- option(arbitrary[String].map(_.take(3)))
-    } yield Origin(countryCode, regionId, typeCode)
+      countryCode <- countryGen
+      typeCode <- option(choose[Int](1, 9))
+      if(typeCode.nonEmpty)
+    } yield Origin(Some(countryCode), None)
   }
 
   implicit val arbitraryRoleBasedParty: Arbitrary[RoleBasedParty] = Arbitrary {

@@ -184,37 +184,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   }
 
 
-  "show addOriginsPage fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(None)
-      withRequest(get, addOriginsPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No Origins available")
-        content should include element withAttrValue("name", "countryCode")
-        content should include element withAttrValue("name", "regionId")
-        content should include element withAttrValue("name", "typeCode")
-      }
-    }
-  }
-
-  "pre-populate addOriginsPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-
-      val goodsItemGen = arbitrary[Origin].map { o =>
-        GovernmentAgencyGoodsItem(origins = List(o))
-      }
-
-      withCaching(goodsItemGen.sample)
-      withRequest(get, addOriginsPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("1 Goods Item Origins added")
-        content should include element withAttrValue("name", "countryCode")
-        content should include element withAttrValue("name", "regionId")
-        content should include element withAttrValue("name", "typeCode")
-      }
-    }
-  }
-
   "show addManufacturersPage fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
       withCaching(None)

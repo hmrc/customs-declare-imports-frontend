@@ -74,7 +74,7 @@
                     <th scope="row">@messages("governmentAgencyGoodsItem.originOfGoods")</th>
                     <td>@goodsItem.map(_.origins.size)</td>
                     <td>
-                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showOrigins().url" name="add" class="button" id="AddOrigins">@messages("governmentAgencyGoodsItem.add")
+                        <a href="@controllers.goodsitems.routes.OriginsController.onPageLoad().url" name="add" class="button" id="AddOrigins">@messages("governmentAgencyGoodsItem.add")
                             <span class="visually-hidden">@messages("governmentAgencyGoodsItem.originOfGoods")</span></a>
                     </td>
                 </tr>

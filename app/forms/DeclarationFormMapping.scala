@@ -189,12 +189,9 @@ object DeclarationFormMapping {
     .verifying("To add procedure codes you must provide Current Code or Previous code", require1Field[GovernmentProcedure](_.currentCode, _.previousCode))
 
   val originMapping = mapping(
-    "countryCode" -> optional(text.verifying("country Code  should be max of 4 characters", _.length <= 4)), // max 4 chars //expects ISO-3166-1 alpha2 code
-    "regionId" -> optional(text.verifying("regionId code should be 9 characters", _.length <= 9)),
-    "typeCode" -> optional(text.verifying("typeCode  should be 3 characters", _.length <= 7)) // max 3 chars
-  )(Origin.apply)(Origin.unapply)
-
-
+    "countryCode" -> text.verifying("Country of origin is invalid", code => config.Options.countryOptions.exists(_._1 == code)), // max 4 chars //expects ISO-3166-1 alpha2 code
+    "typeCode" -> optional(number.verifying("Origin type must be a digit and should be between 1-9", (i => i > 0 &&  i <= 9))) // max 3 chars
+  )((countryCode:String, typeCode:Option[Int]) => Origin(Some(countryCode), None, typeCode.map(_.toString)))(Origin.unapply(_).map(o=> (o._1.getOrElse(""), o._3.map(_.toInt))))
   val packagingMapping =
     mapping("sequenceNumeric" -> ignored[Option[Int]](None), //: Option[Int] = None, // unsigned max 99999
       "marksNumbersId" -> optional(text.verifying("Shipping Marks should be less than or equal to 512 characters", _.length <= 512)), //: Option[String] = None, // max 512 chars

@@ -37,7 +37,6 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
   (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
 
   val goodsItemValueInformationForm: Form[GoodsItemValueInformation] = Form(goodsItemValueInformationMapping)
-  val originsForm: Form[Origin] = Form(originMapping)
   val namedEntityWithAddressForm: Form[NamedEntityWithAddress] = Form(namedEntityWithAddressMapping)
 
   val goodsItemValueInformationKey = "goodsItemValueInformation"
@@ -79,34 +78,6 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
       cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
         Ok(views.html.goods_items_named_entity_parties(namedEntityWithAddressForm, goodsItem.map(_.manufacturers).getOrElse(Seq.empty)))
       }
-  }
-
-  def showOrigins(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map {
-        case Some(goodsItem) => Ok(views.html.goods_items_origins(originsForm, goodsItem.origins))
-        case _ => Ok(views.html.goods_items_origins(originsForm, Seq.empty))
-      }
-  }
-
-
-  def handleOriginsSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit request =>
-      originsForm.bindFromRequest().fold(
-        (formWithErrors: Form[Origin]) =>
-          Future.successful(BadRequest(views.html.goods_items_origins(formWithErrors, List.empty))),
-        form =>
-          cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
-            val updatedGoodsItem = res match {
-              case Some(goodsItem) => goodsItem.copy(origins = goodsItem.origins :+ form)
-              case None => GovernmentAgencyGoodsItem(origins = Seq(form))
-            }
-
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key,
-              updatedGoodsItem).map { _ =>
-              Ok(views.html.goods_items_origins(originsForm, updatedGoodsItem.origins))
-            }
-          })
   }
 
   def handleNamedEntityPartiesSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
