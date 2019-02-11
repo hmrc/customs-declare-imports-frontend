@@ -67,4 +67,7 @@ object CacheKey {
   val govAgencyGoodsItemsList = CacheKey("GovAgencyGoodsItemsList", new Identifier[Seq[GovernmentAgencyGoodsItem]] {})
   val goodsItem = CacheKey("GovAgencyGoodsItem", new Identifier[GovernmentAgencyGoodsItem] {})
   val govAgencyGoodsItemReference = CacheKey("GovAgencyGoodsItemReference", new Identifier[GovernmentAgencyGoodsItem] {})
+
+  val warehouseAndCustoms = CacheKey("WarehouseAndCustoms", new Identifier[WarehouseAndCustoms] {})
+
 }
