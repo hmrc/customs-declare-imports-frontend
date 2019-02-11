@@ -18,10 +18,10 @@ package forms
 
 import java.text.DecimalFormat
 
-import domain.{GoodsItemValueInformation, InvoiceAndCurrency, References}
+import domain._
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
-import play.api.data.Forms.{number, _}
+import play.api.data.Forms._
 import play.api.data.Mapping
 import uk.gov.hmrc.wco.dec._
 
@@ -74,11 +74,14 @@ object DeclarationFormMapping {
     "currency" -> optional(currencyExchangeMapping)
   )(InvoiceAndCurrency.apply)(InvoiceAndCurrency.unapply)
 
-  val measureMapping = mapping("unitCode" -> optional(text.verifying("Measurement Unit & Qualifier cannot be more than 5 characters", _.length <= 5)),
+  val measureMapping: Mapping[Measure] = measureMapping("Quantity")
+
+  private def measureMapping(valueKey: String): Mapping[Measure] = mapping(
+    "unitCode" -> optional(text.verifying("Measurement Unit & Qualifier cannot be more than 5 characters", _.length <= 5)),
     "value" ->
-      optional(bigDecimal.verifying("Quantity cannot be greater than 9999999999.999999", _.precision <= 16)
-      .verifying("Quantity cannot have more than 6 decimal places", _.scale <= 6)
-      .verifying("Quantity must not be negative", _ >= 0)))(Measure.apply)(Measure.unapply)
+      optional(bigDecimal.verifying(s"$valueKey cannot be greater than 9999999999.999999", _.precision <= 16)
+      .verifying(s"$valueKey cannot have more than 6 decimal places", _.scale <= 6)
+      .verifying(s"$valueKey must not be negative", _ >= 0)))(Measure.apply)(Measure.unapply)
 
   val writeOffMapping = mapping("quantity" -> optional(measureMapping), "amount" -> optional(amountMapping))(WriteOff.apply)(WriteOff.unapply)
 
@@ -318,6 +321,14 @@ object DeclarationFormMapping {
       text.verifying("Status code is not valid", s => config.Options.agentFunctionCodes.exists(_._1 == s))),
     "address" -> optional(addressMapping)
   )(Agent.apply)(Agent.unapply)
+
+  val summaryOfGoodsMapping = mapping(
+    "totalPackageQuantity" -> optional(
+      number
+        .verifying("Total packages cannot be greater than 99,999,999", _ <= 99999999)
+        .verifying("Total packages cannot be less than 0", _ >= 0)),
+    "totalGrossMassMeasure" -> optional(measureMapping("Gross mass"))
+  )(SummaryOfGoods.apply)(SummaryOfGoods.unapply)
 }
 
 case class ObligationGuaranteeForm (guarantees: Seq[ObligationGuarantee] = Seq.empty)

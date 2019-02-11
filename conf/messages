@@ -394,6 +394,12 @@ buyerDetails.address.postcode=Postcode
 buyerDetails.communication.id=Phone number
 buyerDetails.id=EORI number
 
+## Summary of goods
+summaryOfGoods.title=About the goods
+summaryOfGoods.heading=About the goods
+summaryOfGoods.totalPackage=Total packages
+summaryOfGoods.grossMass.value=Gross mass
+
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
 obligationGuarantees.amount=Amount

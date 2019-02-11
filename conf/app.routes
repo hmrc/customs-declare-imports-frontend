@@ -32,6 +32,9 @@ POST        /submit-declaration/seller-details                 controllers.Selle
 GET         /submit-declaration/buyer-details                  controllers.BuyerDetailsController.onPageLoad()
 POST        /submit-declaration/buyer-details                  controllers.BuyerDetailsController.onSubmit()
 
+GET         /submit-declaration/summary-of-goods               controllers.SummaryOfGoodsController.onPageLoad()
+POST        /submit-declaration/summary-of-goods               controllers.SummaryOfGoodsController.onSubmit()
+
 GET         /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onPageLoad()
 POST        /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onSubmit()
 
