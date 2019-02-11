@@ -18,29 +18,28 @@ package controllers
 
 import com.google.inject.Inject
 import config.AppConfig
-import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import views.html.buyer_details
+import views.html.transport
 
 import scala.concurrent.Future
 
-class BuyerDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                      (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
+class TransportController @Inject()(actions: Actions, cache: CustomsCacheService)
+                                   (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
   extends CustomsController {
 
-  val form = Form(importExportPartyMapping)
+  val form = Form(transportMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
-    cache.getByKey(req.eori, CacheKey.buyer).map { buyer =>
+    cache.getByKey(req.eori, CacheKey.transport).map { data =>
 
-      val popForm = buyer.fold(form)(form.fill)
-      Ok(buyer_details(popForm))
+      val popForm = data.fold(form)(form.fill)
+      Ok(transport(popForm))
     }
   }
 
@@ -48,12 +47,12 @@ class BuyerDetailsController @Inject()(actions: Actions, cache: CustomsCacheServ
 
     form.bindFromRequest().fold(
       errors =>
-        Future.successful(BadRequest(buyer_details(errors))),
+        Future.successful(BadRequest(transport(errors))),
 
-      buyer =>
+      transport =>
         cache
-          .insert(req.eori, CacheKey.buyer, buyer)
-          .map(_ => Redirect(routes.SummaryOfGoodsController.onPageLoad()))
+        .insert(req.eori, CacheKey.transport, transport)
+        .map(_ => Redirect(routes.DeclarationController.displaySubmitForm("location-of-goods")))
     )
   }
 }

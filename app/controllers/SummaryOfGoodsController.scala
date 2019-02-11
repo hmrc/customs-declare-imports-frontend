@@ -18,29 +18,28 @@ package controllers
 
 import com.google.inject.Inject
 import config.AppConfig
-import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import views.html.buyer_details
+import views.html.summary_of_goods
 
 import scala.concurrent.Future
 
-class BuyerDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                      (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
+class SummaryOfGoodsController @Inject()(actions: Actions, cache: CustomsCacheService)
+                                        (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
   extends CustomsController {
 
-  val form = Form(importExportPartyMapping)
+  val form = Form(summaryOfGoodsMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
-    cache.getByKey(req.eori, CacheKey.buyer).map { buyer =>
+    cache.getByKey(req.eori, CacheKey.summaryOfGoods).map { summary =>
 
-      val popForm = buyer.fold(form)(form.fill)
-      Ok(buyer_details(popForm))
+      val popForm = summary.fold(form)(form.fill)
+      Ok(summary_of_goods(popForm))
     }
   }
 
@@ -48,12 +47,12 @@ class BuyerDetailsController @Inject()(actions: Actions, cache: CustomsCacheServ
 
     form.bindFromRequest().fold(
       errors =>
-        Future.successful(BadRequest(buyer_details(errors))),
+        Future.successful(BadRequest(summary_of_goods(errors))),
 
-      buyer =>
+      summary =>
         cache
-          .insert(req.eori, CacheKey.buyer, buyer)
-          .map(_ => Redirect(routes.SummaryOfGoodsController.onPageLoad()))
+          .insert(req.eori, CacheKey.summaryOfGoods, summary)
+          .map(_ => Redirect(routes.TransportController.onPageLoad()))
     )
   }
 }

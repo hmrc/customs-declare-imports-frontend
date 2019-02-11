@@ -25,22 +25,22 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import views.html.buyer_details
+import views.html.delivery_terms
 
 import scala.concurrent.Future
 
-class BuyerDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                      (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
+class DeliveryTermsController @Inject()(actions: Actions, cache: CustomsCacheService)
+                                       (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
   extends CustomsController {
 
-  val form = Form(importExportPartyMapping)
+  val form = Form(tradeTermsMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
-    cache.getByKey(req.eori, CacheKey.buyer).map { buyer =>
+    cache.getByKey(req.eori, CacheKey.tradeTerms).map { tradeTerms =>
 
-      val popForm = buyer.fold(form)(form.fill)
-      Ok(buyer_details(popForm))
+      val popForm = tradeTerms.fold(form)(form.fill)
+      Ok(delivery_terms(popForm))
     }
   }
 
@@ -48,12 +48,11 @@ class BuyerDetailsController @Inject()(actions: Actions, cache: CustomsCacheServ
 
     form.bindFromRequest().fold(
       errors =>
-        Future.successful(BadRequest(buyer_details(errors))),
+        Future.successful(BadRequest(delivery_terms(errors))),
 
-      buyer =>
-        cache
-          .insert(req.eori, CacheKey.buyer, buyer)
-          .map(_ => Redirect(routes.SummaryOfGoodsController.onPageLoad()))
+      tradeTerms =>
+        cache.insert(req.eori, CacheKey.tradeTerms, tradeTerms)
+          .map(_ => Redirect(routes.InvoiceAndCurrencyController.onPageLoad()))
     )
   }
 }

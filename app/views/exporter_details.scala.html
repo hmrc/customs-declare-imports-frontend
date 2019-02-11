@@ -36,7 +36,7 @@
    @components.input_text(form("name"), messages("exporterDetails.name"))
    @components.input_text(form("address.line"), messages("exporterDetails.address.line"))
    @components.input_text(form("address.cityName"), messages("exporterDetails.address.cityName"))
-   @components.input_select(form("address.countryCode"), messages("exporterDetails.address.country"), config.Options.countryOptions.toMap)
+   @components.input_select(form("address.countryCode"), messages("exporterDetails.address.country"), config.Options.countryOptions)
    @components.input_text(form("address.postcodeId"), messages("exporterDetails.address.postcode"))
    @components.input_text(
     form("id"),

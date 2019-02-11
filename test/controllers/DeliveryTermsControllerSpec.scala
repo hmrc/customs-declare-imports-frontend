@@ -19,7 +19,7 @@ package controllers
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
+import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
@@ -30,24 +30,25 @@ import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.ImportExportParty
-import views.html.buyer_details
+import uk.gov.hmrc.wco.dec.TradeTerms
+import views.html.delivery_terms
 
-class BuyerDetailsControllerSpec extends CustomsSpec
+class DeliveryTermsControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
   with OptionValues
   with EndpointBehaviours {
 
-  val form = Form(importExportPartyMapping)
+  val form = Form(tradeTermsMapping)
 
-  def view(form: Form[_] = form): String = buyer_details(form)(fakeRequest, messages, appConfig).body
+  def view(form: Form[_] = form): String =
+    delivery_terms(form)(fakeRequest, messages, appConfig).body
 
   def controller(user: SignedInUser) =
-    new BuyerDetailsController(new FakeActions(Some(user)), mockCustomsCacheService)
+    new DeliveryTermsController(new FakeActions(Some(user)), mockCustomsCacheService)
 
-  val buyerGen: Gen[Option[ImportExportParty]] = option(arbitrary[ImportExportParty])
-  val uri = "/submit-declaration/buyer-details"
+  val tradeTermsGen: Gen[Option[TradeTerms]] = option(arbitrary[TradeTerms])
+  val uri = "/submit-declaration/delivery-terms"
 
   "onPageLoad" should {
 
@@ -58,9 +59,9 @@ class BuyerDetailsControllerSpec extends CustomsSpec
 
       "user is signed in" in {
 
-        forAll { user: SignedInUser =>
+        forAll { signedInUser: SignedInUser =>
 
-          val result = controller(user).onPageLoad(fakeRequest)
+          val result = controller(signedInUser).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
           contentAsString(result) mustBe view()
@@ -68,13 +69,13 @@ class BuyerDetailsControllerSpec extends CustomsSpec
       }
     }
 
-    "return UNAUTHORIED" when {
+    "return UNAUTHORIZED" when {
 
       "user doesn't have an eori" in {
 
-        forAll { user: UnauthenticatedUser =>
+        forAll { unauthenticatedUser: UnauthenticatedUser =>
 
-          val result = controller(user.user).onPageLoad(fakeRequest)
+          val result = controller(unauthenticatedUser.user).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
         }
@@ -83,27 +84,27 @@ class BuyerDetailsControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], buyerGen) {
-        (user, buyer) =>
+      forAll(arbitrary[SignedInUser], tradeTermsGen) {
+        (signedInUser, cacheData) =>
 
-        withCleanCache(EORI(user.eori.value), CacheKey.buyer, buyer) {
+          withCleanCache(EORI(signedInUser.eori.value), CacheKey.tradeTerms, cacheData) {
 
-          val popForm = buyer.fold(form)(form.fill)
-          val result  = controller(user).onPageLoad(fakeRequest)
+            val popForm = cacheData.fold(form)(form.fill)
+            val result = controller(signedInUser).onPageLoad(fakeRequest)
 
-          status(result) mustBe OK
-          contentAsString(result) mustBe view(popForm)
-        }
+            status(result) mustBe OK
+            contentAsString(result) mustBe view(popForm)
+          }
       }
     }
   }
 
   "onSubmit" should {
 
-    behave like redirectedEndpoint(uri, "/submit-declaration/summary-of-goods", POST)
+    behave like redirectedEndpoint(uri, "/submit-declaration/invoice-and-currency", POST)
     behave like authenticatedEndpoint(uri, POST)
 
-    "return OK" when {
+    "return SEE_OTHER" when {
 
       "valid data is posted" in {
 
@@ -112,7 +113,7 @@ class BuyerDetailsControllerSpec extends CustomsSpec
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.SummaryOfGoodsController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(routes.InvoiceAndCurrencyController.onPageLoad().url)
         }
       }
     }
@@ -136,17 +137,17 @@ class BuyerDetailsControllerSpec extends CustomsSpec
 
         val badData =
           for {
-            buyer <- arbitrary[ImportExportParty]
-            id    <- minStringLength(18)
+            tradeTerms   <- arbitrary[TradeTerms]
+            locationName <- minStringLength(38)
           } yield {
-            buyer.copy(id = Some(id))
+            tradeTerms.copy(locationName = Some(locationName))
           }
 
         forAll(arbitrary[SignedInUser], badData) {
           (user, formData) =>
 
-            val popForm = form.fillAndValidate(formData)
             val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+            val popForm = form.fillAndValidate(formData)
             val result  = controller(user).onSubmit(request)
 
             status(result) mustBe BAD_REQUEST
@@ -157,15 +158,15 @@ class BuyerDetailsControllerSpec extends CustomsSpec
 
     "save data in cache" when {
 
-      "valid data is posted" in {
+      "valid data is submitted" in {
 
-        forAll { (user: SignedInUser, formData: ImportExportParty) =>
+        forAll { (user: SignedInUser, formData: TradeTerms) =>
 
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
-            await(controller(user).onSubmit(request))
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+          await(controller(user).onSubmit(request))
 
-            verify(mockCustomsCacheService, atLeastOnce())
-              .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.buyer), eqTo(formData))(any(), any(), any())
+          verify(mockCustomsCacheService, atLeastOnce())
+            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.tradeTerms), eqTo(formData))(any(), any(), any())
         }
       }
     }

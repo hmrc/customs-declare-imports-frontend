@@ -36,7 +36,7 @@
    @components.input_text(form("name"), messages("buyerDetails.name"))
    @components.input_text(form("address.line"), messages("buyerDetails.address.line"))
    @components.input_text(form("address.cityName"), messages("buyerDetails.address.city"))
-   @components.input_select(form("address.countryCode"), messages("buyerDetails.address.country"), config.Options.countryOptions.toMap)
+   @components.input_select(form("address.countryCode"), messages("buyerDetails.address.country"), config.Options.countryOptions)
    @components.input_text(form("address.postcodeId"), messages("buyerDetails.address.postcode"))
    @components.input_text(form("communications[0].id"), messages("buyerDetails.communication.id"))
    @components.input_text(

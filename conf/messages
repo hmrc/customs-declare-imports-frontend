@@ -354,6 +354,14 @@ representativeDetails.address.postcode=Postcode
 representativeDetails.id=EORI number
 representativeDetails.statusCode=Status Code
 
+## Delivery terms
+deliveryTerms.title=Delivery terms
+deliveryTerms.heading=Delivery terms
+deliveryTerms.tradeTerms.conditionCode=INCOTERM code
+deliveryTerms.tradeTerms.conditionCode.hint=International Commercial Terms for the Declaration. Delivery terms code must be provided for declarations using valuation method 1 (transaction value of imported goods).
+deliveryTerms.tradeTerms.locationId=United Nations Code for Trade and Transport Locations (UN/LOCODE code)
+deliveryTerms.tradeTerms.locationName=Location Name
+
 ## Invoice and currency
 invoiceAndCurrency.title=Invoice and Currency
 invoiceAndCurrency.heading=Invoice and Currency
@@ -393,6 +401,22 @@ buyerDetails.address.country=Country
 buyerDetails.address.postcode=Postcode
 buyerDetails.communication.id=Phone number
 buyerDetails.id=EORI number
+
+## Summary of goods
+summaryOfGoods.title=About the goods
+summaryOfGoods.heading=About the goods
+summaryOfGoods.totalPackage=Total packages
+summaryOfGoods.grossMass.value=Gross mass
+
+## Transport
+transport.title=Transport
+transport.heading=Transport
+transport.containerCode=Container
+transport.borderTransportMeans.modeCode=Mode of Transport at border
+transport.arrivalTransportMeans.modeCode=Inland mode of transport
+transport.arrivalTransportMeans.identificationTypeCode=Identity of means of transport on arrival - Type of Identification
+transport.arrivalTransportMeans.id=Identity of means of transport on arrival - Identification Number
+transport.borderTransportMeans.registrationNationalityCode=Nationality of active means of transport crossing the border
 
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
