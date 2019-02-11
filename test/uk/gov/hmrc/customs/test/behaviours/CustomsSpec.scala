@@ -87,9 +87,9 @@ trait CustomsSpec extends PlaySpec
 
   def withImportsBackend[T](): OngoingStubbing[Future[Seq[Declaration]]] ={
     val decSeq = Seq(Declaration(DateTime.now, Some("LocalReferenceNumber"), Some("Mrn"),
-      Seq(DeclarationAction(DateTime.now(), DeclarationActionType.SUBMISSION, Seq(DeclarationNotification(11, "conversatioNid", DateTime.now()))))))
+      Seq(DeclarationAction(DateTime.now(), DeclarationActionType.SUBMISSION, Seq(DeclarationNotification(11, "conversationId", DateTime.now()))))))
 
-      when(mockCustomsDeclarationsConnector.getDeclarations).thenReturn(Future.successful(decSeq))
+      when(mockCustomsDeclarationsConnector.getDeclarations(any(), any())).thenReturn(Future.successful(decSeq))
   }
 
   def withCachingUsingKey[T](dataToReturn: Option[T], id: String): OngoingStubbing[Future[CacheMap]]  = {
