@@ -402,6 +402,22 @@ buyerDetails.address.postcode=Postcode
 buyerDetails.communication.id=Phone number
 buyerDetails.id=EORI number
 
+## Summary of goods
+summaryOfGoods.title=About the goods
+summaryOfGoods.heading=About the goods
+summaryOfGoods.totalPackage=Total packages
+summaryOfGoods.grossMass.value=Gross mass
+
+## Transport
+transport.title=Transport
+transport.heading=Transport
+transport.containerCode=Container
+transport.borderTransportMeans.modeCode=Mode of Transport at border
+transport.arrivalTransportMeans.modeCode=Inland mode of transport
+transport.arrivalTransportMeans.identificationTypeCode=Identity of means of transport on arrival - Type of Identification
+transport.arrivalTransportMeans.id=Identity of means of transport on arrival - Identification Number
+transport.borderTransportMeans.registrationNationalityCode=Nationality of active means of transport crossing the border
+
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
 obligationGuarantees.amount=Amount

@@ -92,7 +92,7 @@ class ImporterDetailsSpec extends ViewBehaviours
         val input   = input_select(
           popForm("address.countryCode"),
           messages(s"$messagePrefix.address.country"),
-          config.Options.countryOptions.toMap
+          config.Options.countryOptions
         )
         val html    = view(popForm)
 

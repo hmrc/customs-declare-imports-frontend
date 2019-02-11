@@ -37,7 +37,7 @@
    @components.input_text(form("name"), messages("importerDetails.name"))
    @components.input_text(form("address.line"), messages("importerDetails.address.line"))
    @components.input_text(form("address.cityName"), messages("importerDetails.address.city"))
-   @components.input_select(form("address.countryCode"), messages("importerDetails.address.country"), config.Options.countryOptions.toMap)
+   @components.input_select(form("address.countryCode"), messages("importerDetails.address.country"), config.Options.countryOptions)
    @components.input_text(form("address.postcodeId"), messages("importerDetails.address.postcode"))
    @components.input_text(form("id"), messages("importerDetails.id"), hint = Some(messages("common.hints.eori")))
   </fieldset>

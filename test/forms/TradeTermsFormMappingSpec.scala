@@ -51,7 +51,7 @@ class TradeTermsFormMappingSpec extends WordSpec
 
       "conditionCode is not a conditionCode" in {
 
-        val badData = stringsExceptSpecificValues(config.Options.incoTermCodes.map(_._2).toSet)
+        val badData = stringsExceptSpecificValues(config.Options.incoTermCodes.map(_._1).toSet)
         forAll(arbitrary[TradeTerms], badData) {
           (tradeTerms, invalidConditionCode) =>
 

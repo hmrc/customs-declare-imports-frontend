@@ -55,7 +55,7 @@ class DeliveryTermsSpec extends ViewBehaviours
         val input =
           input_select(popForm("conditionCode"),
             messages("deliveryTerms.tradeTerms.conditionCode"),
-            config.Options.incoTermCodes.toMap,
+            config.Options.incoTermCodes,
             hint = Some(messages("deliveryTerms.tradeTerms.conditionCode.hint")))
 
         view(popForm) must include(input)

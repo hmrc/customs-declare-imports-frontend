@@ -54,7 +54,7 @@
 
         <fieldset>
             @components.input_text(form("chargesTypeCode"), messages("addAdditionsAndDeductions.type"))
-            @components.input_select(form("otherChargeDeductionAmount.currencyId"), messages("addAdditionsAndDeductions.currency"), currencyTypes.toMap)
+            @components.input_select(form("otherChargeDeductionAmount.currencyId"), messages("addAdditionsAndDeductions.currency"), currencyTypes)
             @components.input_text(form("otherChargeDeductionAmount.value"), messages("addAdditionsAndDeductions.value"))
         </fieldset>
 

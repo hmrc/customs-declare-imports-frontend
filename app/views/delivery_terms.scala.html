@@ -36,7 +36,7 @@
                    @components.input_select(
                        form("conditionCode"),
                        messages("deliveryTerms.tradeTerms.conditionCode"),
-                       config.Options.incoTermCodes.toMap,
+                       config.Options.incoTermCodes,
                        hint = Some(messages("deliveryTerms.tradeTerms.conditionCode.hint"))
                    )
                    @components.input_text(form("locationId"), messages("deliveryTerms.tradeTerms.locationId"))
