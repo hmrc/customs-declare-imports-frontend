@@ -18,10 +18,11 @@ package services.cachekeys
 
 import domain.{GovernmentAgencyGoodsItem, InvoiceAndCurrency, References, SummaryOfGoods, _}
 import uk.gov.hmrc.wco.dec._
+import enumeratum._
 
-sealed trait TypedIdentifier[A]
+sealed trait TypedIdentifier[A] extends EnumEntry
 
-object TypedIdentifier {
+object TypedIdentifier extends Enum[TypedIdentifier[_]] {
 
   final case object DeclarantDetailsId            extends TypedIdentifier[ImportExportParty]
   final case object ReferencesId                  extends TypedIdentifier[References]
@@ -46,4 +47,6 @@ object TypedIdentifier {
   final case object GovAgencyGoodsItemsListId     extends TypedIdentifier[Seq[GovernmentAgencyGoodsItem]]
   final case object GovAgencyGoodsItemId          extends TypedIdentifier[GovernmentAgencyGoodsItem]
   final case object GovAgencyGoodsItemReferenceId extends TypedIdentifier[GovernmentAgencyGoodsItem]
+
+  override def values = findValues
 }

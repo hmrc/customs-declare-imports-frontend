@@ -37,9 +37,9 @@ lazy val scoverageSettings: Seq[Setting[_]] = Seq(
   coverageExcludedPackages := List(
     "<empty>"
     ,"Reverse.*"
-    ,"domain\\..*"
-    ,"forms\\..*"
-    ,"views\\..*"
+      ,"domain\\..*"
+      ,"forms\\..*"
+      ,"views\\..*"
     ,".*(BuildInfo|Routes|Options|FeatureSwitchController|TestingUtilitiesController).*"
   ).mkString(";"),
   coverageMinimum := 70,
