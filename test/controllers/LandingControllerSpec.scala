@@ -48,13 +48,14 @@ class LandingControllerSpec extends CustomsSpec
       }
     }
 
-//    "display message" in withFeatures(enabled(Feature.landing)) {
-//      withSignedInUser() { (headers, session, tags) =>
-//        withRequest(method, uri, headers, session, tags) { resp =>
-//          contentAsHtml(resp) should include element withName("h1").withValue(messagesApi("common.importDeclarations"))
-//        }
-//      }
-//    }
+    "display message" in withFeatures(enabled(Feature.landing)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withImportsBackend
+          withRequest(method, uri, headers, session, tags) { resp =>
+            contentAsHtml(resp) should include element withName("h1").withValue(messagesApi("common.importDeclarations"))
+          }
+      }
+    }
 
     "require authentication" in withFeatures(enabled(Feature.landing)) {
       withoutSignedInUser() { (_, _) =>
