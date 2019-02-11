@@ -16,8 +16,8 @@
 
 package services.cachekeys
 
+import domain.{GovernmentAgencyGoodsItem, InvoiceAndCurrency, References, SummaryOfGoods, _}
 import uk.gov.hmrc.wco.dec._
-import domain.{GovernmentAgencyGoodsItem, _}
 
 trait Identifier[A]
 

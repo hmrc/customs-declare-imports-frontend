@@ -410,7 +410,6 @@ transport.arrivalTransportMeans.identificationTypeCode=Identity of means of tran
 transport.arrivalTransportMeans.id=Identity of means of transport on arrival - Identification Number
 transport.borderTransportMeans.registrationNationalityCode=Nationality of active means of transport crossing the border
 
-
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
 obligationGuarantees.amount=Amount
