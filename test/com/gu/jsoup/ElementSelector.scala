@@ -30,7 +30,7 @@ sealed trait ElementSelector extends ElementSelectorBuilders {
     fold[Element => Elements](
       (f, desc) => f,
       (l, r) => elem => new Elements(l(elem) flatMap r.apply),
-      (l, r) => elem => new Elements(l(elem) ++ r(elem) distinct)
+      (l, r) => elem => new Elements(l(elem) ++ r(elem).distinct)
     )(elem)
 
   override final def toString: String =

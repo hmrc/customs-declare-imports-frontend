@@ -16,7 +16,7 @@
 
 package controllers.goodsitems
 
-import controllers.{FakeActions, routes}
+import controllers.FakeActions
 import domain.GovernmentAgencyGoodsItem
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._

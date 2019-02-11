@@ -25,6 +25,8 @@ import play.api.test.Helpers._
 import scala.concurrent.Future
 import scala.util.matching.Regex
 
+import scala.language.reflectiveCalls
+
 trait HtmlAssertions extends CustomsAssertions with JsoupShouldMatchers {
 
   def wasHtml(of: Future[Result]): Unit = of.futureValue.body.contentType must be(Some(ContentTypes.HTML))

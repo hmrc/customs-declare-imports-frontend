@@ -66,6 +66,9 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
       case Some(submission) => submissionRepository.removeById(submission.id).map { res =>
         if (res.ok) Accepted else InternalServerError
       }
+
+      case None =>
+        Future.successful(InternalServerError)
     }
   }
 
@@ -74,6 +77,9 @@ class TestingUtilitiesController @Inject()(actions: Actions, submissionRepositor
       case Some(submission) => submissionRepository.removeById(submission.id).map { res =>
         if (res.ok) Accepted else InternalServerError
       }
+
+      case None =>
+        Future.successful(InternalServerError)
     }
   }
 
