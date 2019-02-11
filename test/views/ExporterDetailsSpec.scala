@@ -89,7 +89,7 @@ class ExporterDetailsSpec extends ViewBehaviours
       forAll { exporter: ImportExportParty =>
 
         val popForm = form.fillAndValidate(exporter)
-        val input   = input_select(popForm("address.countryCode"), messages(s"$messagePrefix.address.country"), config.Options.countryOptions.toMap)
+        val input   = input_select(popForm("address.countryCode"), messages(s"$messagePrefix.address.country"), config.Options.countryOptions)
         val html    = view(popForm)
 
         html must include(input)

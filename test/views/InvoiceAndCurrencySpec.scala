@@ -54,7 +54,7 @@ class InvoiceAndCurrencySpec extends ViewBehaviours
         val input   = input_select(
           popForm("invoice.currencyId"),
           messages(s"$messagePrefix.invoiceCurrencyId"),
-          config.Options.currencyTypes.toMap)
+          config.Options.currencyTypes)
 
         view(popForm) must include(input)
       }
@@ -77,7 +77,7 @@ class InvoiceAndCurrencySpec extends ViewBehaviours
         val input   = input_select(
           popForm("currency.currencyTypeCode"),
           messages(s"$messagePrefix.exchangeCurrencyId"),
-          config.Options.currencyTypes.toMap)
+          config.Options.currencyTypes)
 
         view(popForm) must include(input)
       }

@@ -18,6 +18,7 @@ package forms
 
 import java.text.DecimalFormat
 
+import config.Options
 import domain._
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
@@ -36,8 +37,11 @@ object DeclarationFormMapping {
   def requireAllDependantFields[T](primary: T => Option[_])(fs: (T => Option[_])*): T => Boolean =
     t => primary(t).fold(true)(_ => fs.forall(f => f(t).nonEmpty))
 
-  def isAlpha: String => Boolean = _.matches("^[A-Za-z]*$")
+  def isInList(tuples: Seq[(String, String)]): String => Boolean =
+    s => tuples.exists(_._1 == s)
 
+  val isAlpha: String => Boolean = _.matches("^[A-Za-z]*$")
+  val isInt: String => Boolean = _.matches("^[0-9-]*$")
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text.verifying("Issuing Authority must be less than 70 characters", _.length <= 70)),
@@ -326,9 +330,43 @@ object DeclarationFormMapping {
     "totalPackageQuantity" -> optional(
       number
         .verifying("Total packages cannot be greater than 99,999,999", _ <= 99999999)
-        .verifying("Total packages cannot be less than 0", _ >= 0)),
+        .verifying("Total packages cannot be less than 0", _ >= 0)
+    ).verifying("Total packages is required", _.nonEmpty),
     "totalGrossMassMeasure" -> optional(measureMapping("Gross mass"))
   )(SummaryOfGoods.apply)(SummaryOfGoods.unapply)
+
+  val borderTransportMeansMapping = mapping(
+    "name" -> ignored[Option[String]](None),
+    "id" -> ignored[Option[String]](None),
+    "identificationTypeCode" -> ignored[Option[String]](None),
+    "typeCode" -> ignored[Option[String]](None),
+    "registrationNationalityCode" ->
+      optional(text
+        .verifying("Nationality of active means of transport is invalid", isInList(Options.countryOptions))),
+    "modeCode" ->
+      optional(number
+        .verifying("Mode of transport at border is invalid", i => isInList(Options.transportModeTypes)(i.toString)))
+  )(BorderTransportMeans.apply)(BorderTransportMeans.unapply)
+
+  val transportMeansMapping = mapping(
+    "name" -> ignored[Option[String]](None),
+    "id" ->
+      optional(text.verifying("ID No. cannot be longer than 35 characters", _.length <= 35)),
+    "identificationTypeCode" ->
+      optional(text
+        .verifying("Type of identification is invalid", isInList(Options.transportMeansIdentificationTypes))),
+    "typeCode" -> ignored[Option[String]](None),
+    "modeCode" ->
+      optional(number
+        .verifying("Inland mode of transport is invalid", i => isInList(Options.transportModeTypes)(i.toString)))
+  )(TransportMeans.apply)(TransportMeans.unapply)
+
+  val transportMapping = mapping(
+    "containerCode" ->
+      optional(number.verifying("Container must be a single digit", _.toString.length <= 1)),
+    "borderTransportMeans" -> optional(borderTransportMeansMapping),
+    "arrivalTransportMeans" -> optional(transportMeansMapping)
+  )(Transport.apply)(Transport.unapply)
 }
 
 case class ObligationGuaranteeForm (guarantees: Seq[ObligationGuarantee] = Seq.empty)
