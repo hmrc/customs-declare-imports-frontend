@@ -57,7 +57,7 @@ class WarehouseAndCustomsOfficesSpec extends ViewBehaviours
         val popForm = Form(warehouseAndCustomsMapping).fillAndValidate(warehouseAndCustoms)
         val input = input_select(popForm("warehouse.typeCode"),
           messages("warehouseAndCustomsOffices.warehouse.typeCode"),
-          config.Options.customsWareHouseTypes.toMap)
+          config.Options.customsWareHouseTypes)
 
         view(popForm) must include(input)
       }
@@ -82,7 +82,7 @@ class WarehouseAndCustomsOfficesSpec extends ViewBehaviours
         val popForm = Form(warehouseAndCustomsMapping).fillAndValidate(warehouseAndCustoms)
         val input = input_select(popForm("presentationOffice.id"),
           messages("warehouseAndCustomsOffices.presentationOffice"),
-          config.Options.supervisingCustomsOffices.toMap)
+          config.Options.supervisingCustomsOffices)
 
         view(popForm) must include(input)
       }
@@ -95,7 +95,7 @@ class WarehouseAndCustomsOfficesSpec extends ViewBehaviours
         val popForm = Form(warehouseAndCustomsMapping).fillAndValidate(warehouseAndCustoms)
         val input = input_select(popForm("supervisingOffice.id"),
           messages("warehouseAndCustomsOffices.supervisingOffice"),
-          config.Options.supervisingCustomsOffices.toMap)
+          config.Options.supervisingCustomsOffices)
 
         view(popForm) must include(input)
       }

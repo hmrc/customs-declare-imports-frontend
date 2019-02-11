@@ -16,38 +16,40 @@
 
 package controllers
 
+import domain.Transport
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
-import generators.Generators
+import generators.{Generators, Lenses}
 import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import org.scalatest.OptionValues
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.ImportExportParty
-import views.html.buyer_details
+import views.html.transport
 
-class BuyerDetailsControllerSpec extends CustomsSpec
+class TransportControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
+  with Lenses
   with OptionValues
+  with MockitoSugar
   with EndpointBehaviours {
 
-  val form = Form(importExportPartyMapping)
+  val form = Form(transportMapping)
 
-  def view(form: Form[_] = form): String = buyer_details(form)(fakeRequest, messages, appConfig).body
+  def view(form: Form[_] = form): String =
+    transport(form)(fakeRequest, messages, appConfig).body
 
   def controller(user: SignedInUser) =
-    new BuyerDetailsController(new FakeActions(Some(user)), mockCustomsCacheService)
+    new TransportController(new FakeActions(Some(user)), mockCustomsCacheService)
 
-  val buyerGen: Gen[Option[ImportExportParty]] = option(arbitrary[ImportExportParty])
-  val uri = "/submit-declaration/buyer-details"
+  val uri = "/submit-declaration/transport"
 
   "onPageLoad" should {
 
@@ -68,7 +70,7 @@ class BuyerDetailsControllerSpec extends CustomsSpec
       }
     }
 
-    "return UNAUTHORIED" when {
+    "return UNAUTHORIZED" when {
 
       "user doesn't have an eori" in {
 
@@ -83,27 +85,27 @@ class BuyerDetailsControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], buyerGen) {
-        (user, buyer) =>
+      forAll(arbitrary[SignedInUser], option(arbitrary[Transport])) {
+        (user, cacheData) =>
 
-        withCleanCache(EORI(user.eori.value), CacheKey.buyer, buyer) {
+          withCleanCache(EORI(user.eori.value), CacheKey.transport, cacheData) {
 
-          val popForm = buyer.fold(form)(form.fill)
-          val result  = controller(user).onPageLoad(fakeRequest)
+            val popForm = cacheData.fold(form)(form.fill)
+            val result  = controller(user).onPageLoad(fakeRequest)
 
-          status(result) mustBe OK
-          contentAsString(result) mustBe view(popForm)
-        }
+            status(result) mustBe OK
+            contentAsString(result) mustBe view(popForm)
+          }
       }
     }
   }
 
   "onSubmit" should {
 
-    behave like redirectedEndpoint(uri, "/submit-declaration/summary-of-goods", POST)
+    behave like redirectedEndpoint(uri, "/submit-declaration/location-of-goods", POST)
     behave like authenticatedEndpoint(uri, POST)
 
-    "return OK" when {
+    "return SEE_OTHER" when {
 
       "valid data is posted" in {
 
@@ -112,12 +114,12 @@ class BuyerDetailsControllerSpec extends CustomsSpec
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.SummaryOfGoodsController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(routes.DeclarationController.displaySubmitForm("location-of-goods").url)
         }
       }
     }
 
-    "return UNAUTHORIZED" when {
+    "return UNAUTHORISED" when {
 
       "user doesn't have an eori" in {
 
@@ -132,15 +134,10 @@ class BuyerDetailsControllerSpec extends CustomsSpec
 
     "return BAD_REQUEST" when {
 
-      "bad data is posted" in {
+      "invalid data is posted" in {
 
         val badData =
-          for {
-            buyer <- arbitrary[ImportExportParty]
-            id    <- minStringLength(18)
-          } yield {
-            buyer.copy(id = Some(id))
-          }
+          Transport.containerCode.setArbitrary(some(intGreaterThan(10)))
 
         forAll(arbitrary[SignedInUser], badData) {
           (user, formData) =>
@@ -159,15 +156,16 @@ class BuyerDetailsControllerSpec extends CustomsSpec
 
       "valid data is posted" in {
 
-        forAll { (user: SignedInUser, formData: ImportExportParty) =>
+        forAll { (user: SignedInUser, transport: Transport) =>
 
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
-            await(controller(user).onSubmit(request))
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(transport): _*)
+          await(controller(user).onSubmit(request))
 
-            verify(mockCustomsCacheService, atLeastOnce())
-              .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.buyer), eqTo(formData))(any(), any(), any())
+          verify(mockCustomsCacheService, atLeastOnce())
+            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.transport), eqTo(transport))(any(), any(), any())
         }
       }
     }
   }
+
 }

@@ -16,6 +16,7 @@
 
 package generators
 
+import config.Options
 import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem, InvoiceAndCurrency, References}
 import domain.{GovernmentAgencyGoodsItem => _, _}
 import forms.DeclarationFormMapping.Date
@@ -100,8 +101,20 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   def stringsExceptSpecificValues(excluded: Set[String]): Gen[String] =
     nonEmptyString suchThat (!excluded.contains(_))
 
+  def alphaLongerThan(minLength: Int): Gen[String] =
+    alphaStr suchThat (_.length > minLength)
+
+  def alphaLessThan(maxLength: Int): Gen[String] =
+    alphaStr suchThat(_.nonEmpty) map(_.take(maxLength))
+
+  def numStrLongerThan(minLength: Int): Gen[String] =
+    numStr suchThat (_.length > minLength)
+
   def currencyGen: Gen[String] = oneOf(config.Options.currencyTypes.map(_._2))
   def countryGen: Gen[String] = oneOf(config.Options.countryOptions.map(_._1))
+
+  private def zip[A, B](fa: Option[A], fb: Option[B]): Option[(A, B)] =
+    fa.flatMap(a => fb.map(b => (a, b)))
 
   implicit val arbitraryOffice: Arbitrary[Office] = Arbitrary {
     for {
@@ -118,10 +131,18 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryWarehouseAndCustoms: Arbitrary[WarehouseAndCustoms] = Arbitrary {
     for {
-      warehouse          <- option(arbitrary[Warehouse])
+      warehouse <- option(arbitrary[Warehouse])
       presentationOffice <- option(arbitrary[Office])
-      supervisingOffice  <- option(arbitrary[Office])
+      supervisingOffice <- option(arbitrary[Office])
     } yield WarehouseAndCustoms(warehouse, presentationOffice, supervisingOffice)
+  }
+
+  implicit val arbitraryTradeTerms: Arbitrary[TradeTerms] = Arbitrary {
+    for {
+      conditionCode <- oneOf(config.Options.incoTermCodes).map(_._1)
+      locationId    <- option(nonEmptyString.map(_.take(17)))
+      locationName  <- option(nonEmptyString.map(_.take(37)))
+    } yield TradeTerms(Some(conditionCode), None, None, locationId, locationName)
   }
 
   implicit val arbitraryCurrencyExchange: Arbitrary[CurrencyExchange] = Arbitrary {
@@ -166,8 +187,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryMeasure: Arbitrary[Measure] = Arbitrary {
     for {
-      unitCode <- option(arbitrary[String].map(_.take(3)))
-      value <- option(posDecimal(10, 2))
+      unitCode <- option(nonEmptyString.map(_.take(3)))
+      value    <- option(posDecimal(10, 2))
     } yield Measure(unitCode, value)
   }
 
@@ -429,6 +450,46 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       code <- option(nonEmptyString.map(_.take(3)))
     } yield {
       Communication(id, code)
+    }
+  }
+
+  implicit val arbitraryAboutGoods: Arbitrary[SummaryOfGoods] = Arbitrary {
+    for {
+      quantity <- choose(0, 99999999)
+      measure  <- arbitrary[Measure]
+      measureOpt = zip(measure.value, measure.unitCode).map(_ => measure)
+    } yield {
+      SummaryOfGoods(Some(quantity), measureOpt)
+    }
+  }
+
+  implicit val arbitraryBorderTransportMeans: Arbitrary[BorderTransportMeans] = Arbitrary {
+    for {
+      modeCode <- option(intBetweenRange(1, 9))
+      regCode  <- option(countryGen)
+    } yield {
+      BorderTransportMeans(None, None, None, None, regCode, modeCode)
+    }
+  }
+
+  implicit val arbitraryTransportMeans: Arbitrary[TransportMeans] = Arbitrary {
+    for {
+      id       <- option(nonEmptyString.map(_.take(35)))
+      typeId   <- option(oneOf(Options.transportMeansIdentificationTypes.map(_._1)))
+      modeCode <- option(intBetweenRange(1, 9))
+    } yield {
+      TransportMeans(None, id, typeId, None, modeCode)
+    }
+  }
+
+  implicit val arbitraryTransport: Arbitrary[Transport] = Arbitrary {
+    for {
+      container <- option(intBetweenRange(0, 9))
+      border    <- arbitrary[BorderTransportMeans]
+      arrival   <- option(arbitrary[TransportMeans])
+      borderOpt = zip(border.registrationNationalityCode, border.modeCode).map(_ => border)
+    } yield {
+      Transport(container, borderOpt, arrival)
     }
   }
 

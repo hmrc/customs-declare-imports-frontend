@@ -62,7 +62,7 @@ class WarehouseFormMappingSpec extends WordSpec
 
       "typeCode is not a typeCode" in {
 
-        val badData = stringsExceptSpecificValues(config.Options.customsWareHouseTypes.map(_._2).toSet)
+        val badData = stringsExceptSpecificValues(config.Options.customsWareHouseTypes.map(_._1).toSet)
         forAll(arbitrary[Warehouse], badData) {
           (warehouse, invalidTypeCode) =>
 
