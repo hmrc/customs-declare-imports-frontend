@@ -16,7 +16,7 @@
 
 package generators
 
-import domain.Transport
+import domain.{SummaryOfGoods, Transport}
 import org.scalacheck.Arbitrary._
 import org.scalacheck.{Arbitrary, Gen}
 import uk.gov.hmrc.wco.dec.{BorderTransportMeans, TransportMeans}
@@ -62,5 +62,11 @@ trait Lenses {
 
     val containerCode: GenLens[Transport, Option[Int]] =
       GenLens(_.containerCode, a => _.copy(containerCode = a))
+  }
+
+  object SummaryOfGoods {
+
+    val totalPackageQuantity: GenLens[SummaryOfGoods, Option[Int]] =
+      GenLens(_.totalPackageQuantity, a => _.copy(totalPackageQuantity = a))
   }
 }

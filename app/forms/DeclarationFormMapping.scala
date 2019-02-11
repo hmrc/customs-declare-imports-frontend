@@ -330,7 +330,8 @@ object DeclarationFormMapping {
     "totalPackageQuantity" -> optional(
       number
         .verifying("Total packages cannot be greater than 99,999,999", _ <= 99999999)
-        .verifying("Total packages cannot be less than 0", _ >= 0)),
+        .verifying("Total packages cannot be less than 0", _ >= 0)
+    ).verifying("Total packages is required", _.nonEmpty),
     "totalGrossMassMeasure" -> optional(measureMapping("Gross mass"))
   )(SummaryOfGoods.apply)(SummaryOfGoods.unapply)
 

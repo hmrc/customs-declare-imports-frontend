@@ -431,11 +431,11 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryAboutGoods: Arbitrary[SummaryOfGoods] = Arbitrary {
     for {
-      quantity <- option(choose(0, 99999999))
+      quantity <- choose(0, 99999999)
       measure  <- arbitrary[Measure]
       measureOpt = zip(measure.value, measure.unitCode).map(_ => measure)
     } yield {
-      SummaryOfGoods(quantity, measureOpt)
+      SummaryOfGoods(Some(quantity), measureOpt)
     }
   }
 

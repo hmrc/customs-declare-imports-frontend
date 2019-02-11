@@ -19,8 +19,8 @@ package controllers
 import domain.SummaryOfGoods
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
-import generators.Generators
-import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
+import generators.{Generators, Lenses}
+import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
@@ -37,6 +37,7 @@ import views.html.summary_of_goods
 class SummaryOfGoodsControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
+  with Lenses
   with OptionValues
   with MockitoSugar
   with EndpointBehaviours {
@@ -103,16 +104,17 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
   "onSubmit" should {
 
-    behave like redirectedEndpoint(uri, "/submit-declaration/transport", POST)
+    behave like badRequestEndpoint(uri, POST)
     behave like authenticatedEndpoint(uri, POST)
 
     "return SEE_OTHER" when {
 
       "valid data is posted" in {
 
-        forAll { user: SignedInUser =>
+        forAll { (user: SignedInUser, summary: SummaryOfGoods) =>
 
-          val result = controller(user).onSubmit(fakeRequest)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(summary): _*)
+          val result  = controller(user).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(routes.TransportController.onPageLoad().url)
@@ -137,13 +139,7 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
       "bad data is posted" in {
 
-        val badData =
-          for {
-            goods <- arbitrary[SummaryOfGoods]
-            total <- intLessThan(0)
-          } yield {
-            goods.copy(totalPackageQuantity =  Some(total))
-          }
+        val badData = SummaryOfGoods.totalPackageQuantity.setArbitrary(some(intLessThan(0)))
 
         forAll(arbitrary[SignedInUser], badData) {
           (user, formData) =>
