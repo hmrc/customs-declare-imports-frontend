@@ -35,6 +35,8 @@ object CacheKey {
 
   val importer = CacheKey("Importer", new Identifier[ImportExportParty] {})
 
+  val tradeTerms = CacheKey("TradeTerms", new Identifier[TradeTerms] {})
+
   val invoiceAndCurrency = CacheKey("InvoiceAndCurrency", new Identifier[InvoiceAndCurrency] {})
 
   val seller = CacheKey("Seller", new Identifier[ImportExportParty] {})
