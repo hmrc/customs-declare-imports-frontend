@@ -16,6 +16,7 @@
 
 package views
 
+import domain.WarehouseAndCustoms
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalatest.OptionValues
@@ -42,10 +43,62 @@ class WarehouseAndCustomsOfficesSpec extends ViewBehaviours
 
   val messagePrefix = "warehouseAndCustomsOffices"
 
+  val messageKeys = List("h2.warehouseDetails", "h2.customsOfficeDetails")
+
   "warehouse and customs page" must {
 
-    behave like normalPage(simpleView, messagePrefix)
+    behave like normalPage(simpleView, messagePrefix, messageKeys: _*)
     behave like pageWithBackLink(simpleView)
 
+    "display warehouse type input" in {
+
+      forAll { warehouseAndCustoms: WarehouseAndCustoms =>
+
+        val popForm = Form(warehouseAndCustomsMapping).fillAndValidate(warehouseAndCustoms)
+        val input = input_select(popForm("warehouse.typeCode"),
+          messages("warehouseAndCustomsOffices.warehouse.typeCode"),
+          config.Options.customsWareHouseTypes.toMap)
+
+        view(popForm) must include(input)
+      }
+    }
+
+    "display warehouse id input" in {
+
+      forAll { warehouseAndCustoms: WarehouseAndCustoms =>
+
+        val popForm = Form(warehouseAndCustomsMapping).fillAndValidate(warehouseAndCustoms)
+        val input = input_text(popForm("warehouse.id"),
+          messages("warehouseAndCustomsOffices.warehouse.id"))
+
+        view(popForm) must include(input)
+      }
+    }
+
+    "display presentation office input" in {
+
+      forAll { warehouseAndCustoms: WarehouseAndCustoms =>
+
+        val popForm = Form(warehouseAndCustomsMapping).fillAndValidate(warehouseAndCustoms)
+        val input = input_select(popForm("presentationOffice.id"),
+          messages("warehouseAndCustomsOffices.presentationOffice"),
+          config.Options.supervisingCustomsOffices.toMap)
+
+        view(popForm) must include(input)
+      }
+    }
+
+    "display supervising office input" in {
+
+      forAll {  warehouseAndCustoms: WarehouseAndCustoms =>
+
+        val popForm = Form(warehouseAndCustomsMapping).fillAndValidate(warehouseAndCustoms)
+        val input = input_select(popForm("supervisingOffice.id"),
+          messages("warehouseAndCustomsOffices.supervisingOffice"),
+          config.Options.supervisingCustomsOffices.toMap)
+
+        view(popForm) must include(input)
+      }
+    }
   }
 }

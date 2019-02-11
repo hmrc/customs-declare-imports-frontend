@@ -39,7 +39,12 @@
                 @components.input_text(form("warehouse.id"), messages("warehouseAndCustomsOffices.warehouse.id"))
 
                 <h2 class="heading-medium">@messages("pages.warehouseAndCustomsOffices.h2.customsOfficeDetails")</h2>
-
+                @components.input_select(form("presentationOffice.id"),
+                                         messages("warehouseAndCustomsOffices.presentationOffice"),
+                                         config.Options.supervisingCustomsOffices.toMap)
+                @components.input_select(form("supervisingOffice.id"),
+                                         messages("warehouseAndCustomsOffices.supervisingOffice"),
+                                         config.Options.supervisingCustomsOffices.toMap)
         </fieldset>
 
         <button id="Add" name="submit">
