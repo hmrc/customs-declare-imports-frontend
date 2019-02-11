@@ -16,6 +16,7 @@
 
 @import config.AppConfig
 @import models.Declaration
+@import models.DeclarationActionType.DeclarationActionType
 @import uk.gov.hmrc.play.views.formatting.Dates._
 @import org.joda.time.LocalDate
 
@@ -32,7 +33,7 @@
             <section class="declaration-listing">
                 <h2 class="heading-large">
                   <span class="heading-secondary"><span class="visually-hidden">Submitted on</span>@submission.submittedDateTime.toString("dd MMMM YYYY HH:mm")</span>
-                  MRN @submission.mrn
+                  @submission.mrn.map { mrn => <span>MRN @mrn</span> }
                 </h2>
                 <h3 class="heading-medium">LRN @submission.localReferenceNumber</h3>
                 @for(action <- submission.actions) {
@@ -55,6 +56,12 @@
                                     </tr>
                                 }
                             </tbody>
+                            @if(submission.mrn.isDefined && !submission.actions.exists(_.actionType == DeclarationActionType.CANCELLATION)) {
+                                <tfoot>
+                                    <td colspan="2"></td>
+                                    <td><a href="#">Cancel<span class="visually-hidden"> declaration @submission.localReferenceNumber</span></a></td>
+                                </tfoot>
+                            }
                         </table>
                     }
                 }

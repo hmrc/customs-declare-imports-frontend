@@ -27,7 +27,7 @@ object DeclarationActionType extends Enumeration {
   implicit def valueToDeclarationActionType(v: Value): Val = v.asInstanceOf[Val]
 
   val SUBMISSION = Val("Submission")
-  val CANCELLATIONS = Val("Cancellation")
+  val CANCELLATION = Val("Cancellation")
 
   implicit val reads = Reads.enumNameReads(DeclarationActionType)
 }
@@ -40,9 +40,9 @@ case class DeclarationAction(dateTimeSent: DateTime, actionType: DeclarationActi
 case class Declaration(submittedDateTime: DateTime, localReferenceNumber: Option[String], mrn: Option[String] = None, actions: Seq[DeclarationAction] = Seq.empty)
 
 object Declaration {
-  implicit def dateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
+  implicit def dateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isAfter _)
 
-  implicit val dateTimeReads = Reads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss'Z'")
+  implicit val dateTimeReads = Reads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   implicit val declarationNotificationFormat = Json.format[DeclarationNotification]
   implicit val declarationActionFormat = Json.format[DeclarationAction]
   implicit val declarationFormat = Json.format[Declaration]
