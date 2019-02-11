@@ -39,7 +39,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   val goodsItemsPageUri = uriWithContextPath("/submit-declaration-goods/goods-item-value")
   val goodsItemsUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-item")
   val navigateToSelectedGoodsItemPageUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-items")
-  val addMutualRecognitionPartiesPageUri = uriWithContextPath("/submit-declaration-goods/add-role-based-parties")
   val addOriginsPageUri = uriWithContextPath("/submit-declaration-goods/add-origins")
   val addManufacturersPageUri = uriWithContextPath("/submit-declaration-goods/add-manufacturers")
   val addPackagingsPageUri = uriWithContextPath("/submit-declaration-goods/add-packagings")
@@ -185,33 +184,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     }
   }
 
-  "show AddMutualRecognitionParties fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(None)
-      withRequest(get, addMutualRecognitionPartiesPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        content should include element withAttrValue("name", "id")
-        content should include element withAttrValue("name", "roleCode")
-      }
-    }
-  }
-
-  "pre-populate AddMutualRecognitionParties that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-
-      val goodsItemGen = arbitrary[RoleBasedParty].map { r =>
-        GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = List(r))
-      }
-
-      withCaching(goodsItemGen.sample)
-      withRequest(get, addMutualRecognitionPartiesPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("1 mutual recognition parties added")
-        content should include element withAttrValue("name", "roleCode")
-        content should include element withAttrValue("name", "id")
-      }
-    }
-  }
 
   "show addOriginsPage fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>

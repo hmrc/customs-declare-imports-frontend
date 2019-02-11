@@ -51,7 +51,7 @@ class ExporterDetailsController @Inject()(actions: Actions, cache: CustomsCacheS
         Future.successful(BadRequest(exporter_details(errors))),
       exporter =>
         cache.insert(req.eori, CacheKey.exporter, exporter).map { _ =>
-          Redirect(routes.DeclarationController.displaySubmitForm("representative-details"))
+          Redirect(routes.RepresentativeDetailsController.onPageLoad())
         }
     )
   }

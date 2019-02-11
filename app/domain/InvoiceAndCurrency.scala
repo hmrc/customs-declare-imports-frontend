@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,16 +12,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import config.{AppConfig, ValidationError}
+package domain
 
-@(current: String, data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]] = Map.empty)
+import play.api.libs.json.Json
+import uk.gov.hmrc.wco.dec.{Amount, CurrencyExchange}
+import domain.DeclarationFormats._
 
-@current match {
-    case "transport" => { @transport(data) }
-    case "location-of-goods" => { @location_of_goods(data) }
-    case "warehouse-and-customs-offices" => { @warehouse_and_customs_offices(data) }
-    case "delivery-terms" => { @delivery_terms(data) }
-    case "check-your-answers" => { @check_your_answers(data) }
+case class InvoiceAndCurrency(invoice: Option[Amount], currency: Option[CurrencyExchange])
+
+object InvoiceAndCurrency {
+
+  implicit val format = Json.format[InvoiceAndCurrency]
+
 }

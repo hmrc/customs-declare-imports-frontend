@@ -18,29 +18,28 @@ package controllers
 
 import com.google.inject.Inject
 import config.AppConfig
-import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import views.html.importer_details
+import views.html.invoice_and_currency
 
 import scala.concurrent.Future
 
-class ImporterDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                         (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
+class InvoiceAndCurrencyController @Inject()(actions: Actions, cache: CustomsCacheService)
+                                            (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
   extends CustomsController {
 
-  val form = Form(importExportPartyMapping)
+  val form = Form(invoiceAndCurrencyMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
-    cache.getByKey(req.eori, CacheKey.importer).map { importer =>
+    cache.getByKey(req.eori, CacheKey.invoiceAndCurrency).map { invoiceAndCurrency =>
 
-      val popForm = importer.fold(form)(form.fill)
-      Ok(importer_details(popForm))
+      val popForm = invoiceAndCurrency.fold(form)(form.fill)
+      Ok(invoice_and_currency(popForm))
     }
   }
 
@@ -48,12 +47,11 @@ class ImporterDetailsController @Inject()(actions: Actions, cache: CustomsCacheS
 
     form.bindFromRequest().fold(
       errors =>
-        Future.successful(BadRequest(importer_details(errors))),
-
-      importer =>
+        Future.successful(BadRequest(invoice_and_currency(errors))),
+      invoiceAndCurrency =>
         cache
-          .insert(req.eori, CacheKey.importer, importer)
-          .map(_ => Redirect(routes.SellerDetailsController.onPageLoad()))
+          .insert(req.eori, CacheKey.invoiceAndCurrency, invoiceAndCurrency)
+          .map(_ => Redirect(routes.PreviousDocumentsController.onPageLoad()))
     )
   }
 }

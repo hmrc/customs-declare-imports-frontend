@@ -18,27 +18,28 @@
 @import controllers.routes._
 @import uk.gov.hmrc.play.views.html._
 
-@(form: Form[_])(implicit req:  Request[_], messages: Messages, cfg: AppConfig)
+@(form: Form[_])(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
-@main_template(title = messages("summaryOfGoods.title")) {
+@main_template(title = messages("invoiceAndCurrency.title")) {
 
-    @helpers.form(action = SummaryOfGoodsController.onSubmit()) {
+    @helpers.form(action = InvoiceAndCurrencyController.onSubmit()) {
 
         @components.back_link()
 
         @components.error_summary(form.errors)
 
-        <fieldset>
-            <legend>
-                <h1 class="heading-large">@messages("summaryOfGoods.heading")</h1>
-            </legend>
+        <h1 class="heading-large">@messages("invoiceAndCurrency.heading")</h1>
 
-            @components.input_text(form("totalPackageQuantity"), messages("summaryOfGoods.totalPackage"))
-            @components.input_text(form("totalGrossMassMeasure.value"), messages("summaryOfGoods.grossMass.value"))
+        <fieldset>
+            @components.input_select(form("invoice.currencyId"), messages("invoiceAndCurrency.invoiceCurrencyId"), config.Options.currencyTypes.toMap)
+            @components.input_text(form("invoice.value"), messages("invoiceAndCurrency.invoiceAmount"))
+            @components.input_select(form("currency.currencyTypeCode"), messages("invoiceAndCurrency.exchangeCurrencyId"), config.Options.currencyTypes.toMap)
+            @components.input_text(form("currency.rateNumeric"), messages("invoiceAndCurrency.exchangeCurrencyAmount"))
         </fieldset>
 
         <button id="Add" name="submit">
-        @messages("common.button.continue")
+            @messages("common.button.continue")
         </button>
+
     }
 }

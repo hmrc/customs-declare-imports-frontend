@@ -363,6 +363,14 @@ representativeDetails.address.postcode=Postcode
 representativeDetails.id=EORI number
 representativeDetails.statusCode=Status Code
 
+## Invoice and currency
+invoiceAndCurrency.title=Invoice and Currency
+invoiceAndCurrency.heading=Invoice and Currency
+invoiceAndCurrency.invoiceCurrencyId=Invoice Currency
+invoiceAndCurrency.invoiceAmount=Invoice Amount
+invoiceAndCurrency.exchangeCurrencyId=Currency ID
+invoiceAndCurrency.exchangeCurrencyAmount=Exchange Rate
+
 ## Importer details
 importerDetails.title=Importer
 importerDetails.heading=Importer
@@ -372,6 +380,34 @@ importerDetails.address.city=City
 importerDetails.address.country=Country
 importerDetails.address.postcode=Postcode
 importerDetails.id=EORI number
+
+## Seller details
+sellerDetails.title=Seller
+sellerDetails.heading=Seller
+sellerDetails.name=Seller’s Name
+sellerDetails.address.line=First Line of Address
+sellerDetails.address.city=City
+sellerDetails.address.country=Country
+sellerDetails.address.postcode=Postcode
+sellerDetails.communication.id=Phone number
+sellerDetails.id=EORI number
+
+## Buyer details
+buyerDetails.title=Buyer
+buyerDetails.heading=Buyer
+buyerDetails.name=Buyer’s Name
+buyerDetails.address.line=First Line of Address
+buyerDetails.address.city=City
+buyerDetails.address.country=Country
+buyerDetails.address.postcode=Postcode
+buyerDetails.communication.id=Phone number
+buyerDetails.id=EORI number
+
+## Summary of goods
+summaryOfGoods.title=About the goods
+summaryOfGoods.heading=About the goods
+summaryOfGoods.totalPackage=Total packages
+summaryOfGoods.grossMass.value=Gross mass
 
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
@@ -397,7 +433,7 @@ authorisationHolder.categoryCode=Category Code
 authorisationHolder.addAuthorisationHolderButton=Add Authorisation Holder
 
 ## Role based party
-roleBasedParty.id=ID
+roleBasedParty.id=Identifier
 roleBasedParty.roleCode=Role Code
 
 ## Additional supply chain actors

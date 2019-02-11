@@ -16,41 +16,40 @@
 
 package controllers
 
+import domain.InvoiceAndCurrency
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
 import generators.Generators
-import org.mockito.ArgumentMatchers.{eq=>eqTo, _}
+import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import org.scalatest.OptionValues
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.ImportExportParty
-import views.html.exporter_details
+import uk.gov.hmrc.wco.dec.{Amount, CurrencyExchange}
+import views.html.invoice_and_currency
 
-class ExporterDetailsControllerSpec extends CustomsSpec
+class InvoiceAndCurrencyControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
   with OptionValues
-  with MockitoSugar
   with EndpointBehaviours {
 
-  val form = Form(importExportPartyMapping)
+  val form = Form(invoiceAndCurrencyMapping)
 
   def view(form: Form[_] = form): String =
-    exporter_details(form)(fakeRequest, messages, appConfig).body
+    invoice_and_currency(form)(fakeRequest, messages, appConfig).body
 
   def controller(user: SignedInUser) =
-    new ExporterDetailsController(new FakeActions(Some(user)), mockCustomsCacheService)
+    new InvoiceAndCurrencyController(new FakeActions(Some(user)), mockCustomsCacheService)
 
-  val exporterGen: Gen[Option[ImportExportParty]] = option(arbitrary[ImportExportParty])
-  val uri = "/submit-declaration/exporter-details"
+  val invoiceAndCurrencyGen: Gen[Option[InvoiceAndCurrency]] = option(arbitrary[InvoiceAndCurrency])
+  val uri = "/submit-declaration/invoice-and-currency"
 
   "onPageLoad" should {
 
@@ -86,10 +85,10 @@ class ExporterDetailsControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], exporterGen) {
+      forAll(arbitrary[SignedInUser], invoiceAndCurrencyGen) {
         (user, cacheData) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.exporter, cacheData) {
+          withCleanCache(EORI(user.eori.value), CacheKey.invoiceAndCurrency, cacheData) {
 
             val popForm = cacheData.fold(form)(form.fill)
             val result  = controller(user).onPageLoad(fakeRequest)
@@ -103,19 +102,19 @@ class ExporterDetailsControllerSpec extends CustomsSpec
 
   "onSubmit" should {
 
-    behave like redirectedEndpoint(uri, "/submit-declaration/representative-details", POST)
+    behave like redirectedEndpoint(uri, "/submit-declaration/add-previous-documents", POST)
     behave like authenticatedEndpoint(uri, POST)
 
     "return SEE_OTHER" when {
 
-      "user is signed in" in {
+      "valid data is posted" in {
 
         forAll { user: SignedInUser =>
 
           val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.RepresentativeDetailsController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(routes.PreviousDocumentsController.onPageLoad().url)
         }
       }
     }
@@ -139,10 +138,11 @@ class ExporterDetailsControllerSpec extends CustomsSpec
 
         val badData =
           for {
-            p  <- arbitrary[ImportExportParty]
-            id <- minStringLength(18)
+            invoice            <- arbitrary[Amount]
+            currency           <- arbitrary[CurrencyExchange]
+            invalidRateNumeric <- decimal(13, 30, 0)
           } yield {
-            p.copy(id = Some(id))
+            InvoiceAndCurrency(Some(invoice), Some(currency.copy(rateNumeric = Some(invalidRateNumeric))))
           }
 
         forAll(arbitrary[SignedInUser], badData) {
@@ -155,7 +155,6 @@ class ExporterDetailsControllerSpec extends CustomsSpec
             status(result) mustBe BAD_REQUEST
             contentAsString(result) mustBe view(popForm)
         }
-
       }
     }
 
@@ -163,13 +162,14 @@ class ExporterDetailsControllerSpec extends CustomsSpec
 
       "valid data is posted" in {
 
-        forAll { (user: SignedInUser, exporter: ImportExportParty) =>
+        forAll { (user: SignedInUser, invoiceAndCurrency: InvoiceAndCurrency) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(exporter): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(invoiceAndCurrency): _*)
           await(controller(user).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
-            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.exporter), eqTo(exporter))(any(), any(), any())
+            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.invoiceAndCurrency), eqTo(invoiceAndCurrency)
+            )(any(), any(), any())
         }
       }
     }
