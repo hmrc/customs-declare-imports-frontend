@@ -469,10 +469,11 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryTransport: Arbitrary[Transport] = Arbitrary {
     for {
       container <- option(intBetweenRange(0, 9))
-      border    <- option(arbitrary[BorderTransportMeans])
+      border    <- arbitrary[BorderTransportMeans]
       arrival   <- option(arbitrary[TransportMeans])
+      borderOpt = zip(border.registrationNationalityCode, border.modeCode).map(_ => border)
     } yield {
-      Transport(container, border, arrival)
+      Transport(container, borderOpt, arrival)
     }
   }
 
