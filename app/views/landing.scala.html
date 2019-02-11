@@ -22,7 +22,7 @@
 
 @(submissions: Seq[Declaration])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@main_template(title = messages("common.importDeclarations"), bodyClasses = None, mainClass = Some("full-width")) {
+@main_template(title = messages("landingpage.title"), bodyClasses = None, mainClass = Some("full-width")) {
     <div class="form-group">
         <h1 class="heading-xlarge">@messages("common.importDeclarations")</h1>
     </div>
@@ -32,7 +32,7 @@
         @for(submission <- submissions) {
             <section class="declaration-listing">
                 <h2 class="heading-large">
-                  <span class="heading-secondary"><span class="visually-hidden">Submitted on</span>@submission.submittedDateTime.toString("dd MMMM YYYY HH:mm")</span>
+                  <span class="heading-secondary"><span class="visually-hidden">Submitted on </span>@submission.submittedDateTime.toString("dd MMMM YYYY HH:mm")</span>
                   @submission.mrn.map { mrn => <span>MRN @mrn</span> }
                 </h2>
                 <h3 class="heading-medium">LRN @submission.localReferenceNumber</h3>

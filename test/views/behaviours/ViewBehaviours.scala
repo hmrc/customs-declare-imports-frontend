@@ -16,7 +16,6 @@
 
 package views.behaviours
 
-import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.Gen.listOf
 import org.scalatest.prop.PropertyChecks
@@ -25,7 +24,6 @@ import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.wco.dec.AuthorisationHolder
 import viewmodels.HtmlTable
 import views.ViewSpecBase
-import views.html.components.table.table
 
 trait ViewBehaviours extends ViewSpecBase with PropertyChecks {
 

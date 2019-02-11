@@ -149,6 +149,8 @@ startpage.needList.bullet4=procedure codes
 startpage.needList.bullet5=details of your import and where it came from
 
 ## landing page
+landingpage.heading=Your import declarations
+landingpage.title=Your import declarations
 landingpage.LRN=LRN
 landingpage.MRN=Movement Reference Number
 landingpage.MRN.unknown=Not yet assigned
