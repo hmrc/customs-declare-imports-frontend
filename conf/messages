@@ -149,6 +149,8 @@ startpage.needList.bullet4=procedure codes
 startpage.needList.bullet5=details of your import and where it came from
 
 ## landing page
+landingpage.heading=Your import declarations
+landingpage.title=Your import declarations
 landingpage.LRN=LRN
 landingpage.MRN=Movement Reference Number
 landingpage.MRN.unknown=Not yet assigned
@@ -632,3 +634,18 @@ origin.typeCode=Origin type
 origin.add=Add origin
 origin.addPref=Add preferential origin
 origin.complete=Country of origin and preferential origin added
+
+# Declaration notifications
+
+declaration.notification.1=Your declaration has been accepted. NOTE: If you need to make changes to it, cancel the declaration and start again.
+declaration.notification.2=Your declaration has been received. Thank you. NOTE: If you need to make changes to it, cancel the declaration and start again.
+declaration.notification.3=Your declaration has been rejected.
+declaration.notification.5=We need to hold your goods while they are physically checked.
+declaration.notification.6=Please make sure all your documents are attached and correct.  Some documents are needed, please give us all relevant docs for this declaration.
+declaration.notification.7=Changes have been made to your declaration.  Confirmation of the amendments that have been made.
+declaration.notification.8=Your goods will now be released.
+declaration.notification.9=You now have clearance, so your goods will be released.
+declaration.notification.10=Your declaration has been cancelled
+declaration.notification.13=You need to pay your taxes now.
+declaration.notification.14=Please pay more into your reserve account to complete payment.
+declaration.notification.15=Your payment term has ended. Please pay the remaining amount.

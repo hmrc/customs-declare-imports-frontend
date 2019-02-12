@@ -16,16 +16,16 @@
 
 @import config.AppConfig
 
-@import repositories.declaration.Submission
+@import models.Declaration
 
-@(submission: Submission)(implicit req: Request[_], messages: Messages, cfg: AppConfig)
+@(declaration: Declaration)(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
 @main_template(title = messages("confirmationpage.titleAndHeading")) {
 	<div class="govuk-box-highlight">
 	  <h1 id="heading-application-submitted" class="heading-xlarge">@messages("confirmationpage.titleAndHeading")</h1>
 	  <p class="font-large">
 	    @messages("confirmationpage.yourLRN")<br>
-	    <strong class="bold">@{submission.lrn.getOrElse(messages("lrn.missing"))}</strong>
+	    <strong class="bold">@{declaration.localReferenceNumber.getOrElse(messages("lrn.missing"))}</strong>
 	  </p>
 	</div>
 

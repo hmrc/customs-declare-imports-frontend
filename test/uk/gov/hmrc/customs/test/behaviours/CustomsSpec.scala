@@ -19,6 +19,8 @@ package uk.gov.hmrc.customs.test.behaviours
 import akka.stream.Materializer
 import config.AppConfig
 import domain.auth.EORI
+import models.{Declaration, DeclarationAction, DeclarationActionType, DeclarationNotification}
+import org.joda.time.DateTime
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
@@ -33,7 +35,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.concurrent.Execution.Implicits
 import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.test.FakeRequest
-import services.CustomsCacheService
+import services.{CustomsCacheService, CustomsDeclarationsConnector}
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.{CustomsFixtures, CustomsFutures}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -63,6 +65,7 @@ trait CustomsSpec extends PlaySpec
   protected def component[T: ClassTag]: T = app.injector.instanceOf[T]
 
   val mockCustomsCacheService: CustomsCacheService = mock[CustomsCacheService]
+  val mockCustomsDeclarationsConnector: CustomsDeclarationsConnector = mock[CustomsDeclarationsConnector]
 
   def withCaching[T](form: Option[T]): OngoingStubbing[Future[CacheMap]] = {
     when(mockCustomsCacheService.get(any(), any())(any(), any()))
@@ -80,6 +83,13 @@ trait CustomsSpec extends PlaySpec
       .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
     when(mockCustomsCacheService.cache[T](any(), any(), any())(any(), any(), any()))
       .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
+  }
+
+  def withImportsBackend[T](): OngoingStubbing[Future[Seq[Declaration]]] ={
+    val decSeq = Seq(Declaration(DateTime.now, Some("LocalReferenceNumber"), Some("Mrn"),
+      Seq(DeclarationAction(DateTime.now(), DeclarationActionType.SUBMISSION, Seq(DeclarationNotification(11, "conversationId", DateTime.now()))))))
+
+      when(mockCustomsDeclarationsConnector.getDeclarations(any(), any())).thenReturn(Future.successful(decSeq))
   }
 
   def withCachingUsingKey[T](dataToReturn: Option[T], id: String): OngoingStubbing[Future[CacheMap]]  = {
@@ -107,7 +117,8 @@ trait CustomsSpec extends PlaySpec
   // composite template method to be overridden by sub-types to customise the app
   // NB. when overriding, ALWAYS call super.customise(builder) and operate on the return value!
   protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder = builder.overrides(
-    bind[CustomsCacheService].to(mockCustomsCacheService))
+    bind[CustomsCacheService].to(mockCustomsCacheService),
+    bind[CustomsDeclarationsConnector].to(mockCustomsDeclarationsConnector))
 
   // toJson strips out Some and None and replaces them with string values
   def asFormParams(cc: Product): List[(String, String)] =

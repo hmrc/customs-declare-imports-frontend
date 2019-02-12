@@ -22,60 +22,16 @@ import domain.auth.SignedInUser
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.libs.json.{Json, OFormat}
-import play.api.mvc.{Action, AnyContent}
-import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString}
-import repositories.declaration.{Submission, SubmissionRepository}
+import play.api.mvc.Action
 import services.CustomsDeclarationsConnector
-import uk.gov.hmrc.play.bootstrap.controller.{BaseController, FrontendController}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestingUtilitiesController @Inject()(actions: Actions, submissionRepository: SubmissionRepository, connector: CustomsDeclarationsConnector)
+class TestingUtilitiesController @Inject()(actions: Actions, connector: CustomsDeclarationsConnector)
                                           (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController {
-
-  def displaySubmissions(eori: String): Action[AnyContent] = Action.async { implicit req =>
-    submissionRepository.findByEori(eori).map { found =>
-      Ok(Json.toJson(found))
-    }
-  }
-
-  def createNewSubmission(eori: String): Action[SubmissionWrapper] = Action.async(parse.json[SubmissionWrapper]) { implicit req =>
-    val s = req.body
-    submissionRepository.insert(Submission(
-      eori = eori, conversationId = s.conversationId, lrn = s.lrn, mrn = s.mrn
-    )).map(res => if (res.ok) Created else InternalServerError)
-  }
-
-  def setMrnOnSubmission(eori: String, conversationId: String, mrn: String): Action[AnyContent] = Action.async { implicit req =>
-    submissionRepository.atomicUpdate(BSONDocument("conversationId" -> BSONString(conversationId)), BSONDocument("$set" -> BSONDocument("mrn" -> mrn))).map {
-      case Some(update) => Accepted(Json.toJson(update.updateType.savedValue))
-      case None => NotFound
-    }
-  }
-
-  def deleteSubmission(id: String): Action[AnyContent] = Action.async { implicit req =>
-    submissionRepository.removeById(BSONObjectID.parse(id).get).map { result =>
-      if (result.ok) Accepted else InternalServerError
-    }
-  }
-
-  def deleteSubmissionByConversationId(conversationId: String): Action[AnyContent] = Action.async { implicit req =>
-    submissionRepository.getByConversationId(conversationId).flatMap {
-      case Some(submission) => submissionRepository.removeById(submission.id).map { res =>
-        if (res.ok) Accepted else InternalServerError
-      }
-    }
-  }
-
-  def deleteSubmissionByEoriAndMrn(eori: String, mrn: String): Action[AnyContent] = Action.async { implicit req =>
-    submissionRepository.getByEoriAndMrn(eori, mrn).flatMap {
-      case Some(submission) => submissionRepository.removeById(submission.id).map { res =>
-        if (res.ok) Accepted else InternalServerError
-      }
-    }
-  }
 
   def submitDeclarationXml: Action[String] = actions.auth.async(parse.tolerantText) { implicit authenticatedRequest =>
     implicit val user: SignedInUser = authenticatedRequest.user
