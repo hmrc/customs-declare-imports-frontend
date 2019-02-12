@@ -44,8 +44,6 @@ trait CustomsDeclarationsApiBehaviours extends CustomsSpec with MockitoSugar{
     test(connector.addExpectedSubmission(request))
   }
 
-  override protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder =
-    super.customise(builder).overrides(bind[CustomsDeclarationsConnector].to(connector))
 
 }
 
