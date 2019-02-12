@@ -23,6 +23,9 @@
 
 @main_template(messages("warehouseAndCustomsOffices.title")) {
 
+@helpers.form(action = WarehouseAndCustomsController.onSubmit()) {
+
+
         @components.back_link()
 
         @components.error_summary(form.errors)
@@ -50,5 +53,5 @@
         <button id="Add" name="submit">
             @messages("common.button.continue")
         </button>
-
+    }
 }
