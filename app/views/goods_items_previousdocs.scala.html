@@ -23,7 +23,7 @@
 @(form:Form[_], previousDocuments: Seq[PreviousDocument])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
-    title = messages("previousDocuments.title"),
+    title = messages("addPreviousDocument.title"),
     bodyClasses = None) {
 
     @helpers.form(action = controllers.goodsitems.routes.PreviousDocumentsController.onSubmit()) {

@@ -208,22 +208,21 @@ object DeclarationFormMapping {
     .verifying("To add procedure codes you must provide Current Code or Previous code", require1Field[GovernmentProcedure](_.currentCode, _.previousCode))
 
   val originMapping = mapping(
-    "countryCode" -> optional(text.verifying("country Code  should be max of 4 characters", _.length <= 4)), // max 4 chars //expects ISO-3166-1 alpha2 code
-    "regionId" -> optional(text.verifying("regionId code should be 9 characters", _.length <= 9)),
-    "typeCode" -> optional(text.verifying("typeCode  should be 3 characters", _.length <= 7)) // max 3 chars
-  )(Origin.apply)(Origin.unapply)
-
-
+    "countryCode" -> text.verifying("Country of origin is invalid", code => config.Options.countryOptions.exists(_._1 == code)), // max 4 chars //expects ISO-3166-1 alpha2 code
+    "typeCode" -> optional(number.verifying("Origin type must be a digit and should be between 1-9", (i => i > 0 &&  i <= 9))) // max 3 chars
+  )((countryCode:String, typeCode:Option[Int]) => Origin(Some(countryCode), None, typeCode.map(_.toString)))(Origin.unapply(_).map(o=> (o._1.getOrElse(""), o._3.map(_.toInt))))
   val packagingMapping =
-    mapping("sequenceNumeric" -> optional(number(0, 99999)), //: Option[Int] = None, // unsigned max 99999
-      "marksNumbersId" -> optional(text.verifying("marks Numbers Id should be less than or equal to 512 characters", _.length <= 512)), //: Option[String] = None, // max 512 chars
-      "quantity" -> optional(number(0, 99999)), //: Option[Int] = None, // max 99999999
-      "typeCode" -> optional(text.verifying("type Code  should be 2 characters", _.length == 2)), //: Option[String] = None, // max 2 chars
-      "packingMaterialDescription" -> optional(text.verifying("packing Material Description should be less than or equal to 256 characters", _.length <= 256)), // Option[String] = None, // max 256 chars
-      "lengthMeasure" -> optional(longNumber), //: Option[Long] = None, // unsigned int max 999999999999999
-      "widthMeasure" -> optional(longNumber), //: Option[Long] = None, // unsigned int max 999999999999999
-      "heightMeasure" -> optional(longNumber), //: Option[Long] = None, // unsigned int max 999999999999999
-      "volumeMeasure" -> optional(measureMapping))(Packaging.apply)(Packaging.unapply)
+    mapping("sequenceNumeric" -> ignored[Option[Int]](None), //: Option[Int] = None, // unsigned max 99999
+      "marksNumbersId" -> optional(text.verifying("Shipping Marks should be less than or equal to 512 characters", _.length <= 512)), //: Option[String] = None, // max 512 chars
+      "quantity" -> optional(number.verifying("Number of Packages must be greater than 0 and less than 99999999", (q => q > 0 && q.toString.length <= 8))), //: Option[Int] = None, // max 99999999
+      "typeCode" -> optional(text.verifying("Type of Packages should be 2 characters", _.length == 2)), //: Option[String] = None, // max 2 chars
+      "packingMaterialDescription" -> ignored[Option[String]](None), // Option[String] = None, // max 256 chars
+      "lengthMeasure" -> ignored[Option[Long]](None), //: Option[Long] = None, // unsigned int max 999999999999999
+      "widthMeasure" -> ignored[Option[Long]](None), //: Option[Long] = None, // unsigned int max 999999999999999
+      "heightMeasure" -> ignored[Option[Long]](None), //: Option[Long] = None, // unsigned int max 999999999999999
+      "volumeMeasure" -> ignored[Option[Measure]](None))(Packaging.apply)(Packaging.unapply)
+      .verifying("You must provide Shipping Marks, Number of Packages or Type for package to be added", require1Field[Packaging](_.marksNumbersId, _.quantity, _.typeCode))
+
 
   val contactMapping = mapping(
     "name" -> optional(text.verifying("name should be less than or equal to 70 characters", _.length <= 70)) //: Option[String] = None, // max 70 chars
@@ -272,9 +271,9 @@ object DeclarationFormMapping {
 
   val obligationGauranteeMapping =
     mapping("amount" -> optional(bigDecimal
-        .verifying("Amount cannot be greater than 99999999999999.99", _.precision <= 16)
-        .verifying("Amount cannot have more than 2 decimal places", _.scale <= 2)
-        .verifying("Amount must not be negative", _ >= 0)),
+      .verifying("Amount cannot be greater than 99999999999999.99", _.precision <= 16)
+      .verifying("Amount cannot have more than 2 decimal places", _.scale <= 2)
+      .verifying("Amount must not be negative", _ >= 0)),
       "id" -> optional(text.verifying("Id should be less than or equal to 35 characters", _.length <= 35)), //max schema length is 70
       "referenceId" -> optional(text.verifying("ReferenceId should be less than or equal to 35 characters", _.length <= 35)),
       "securityDetailsCode" -> optional(text.verifying("SecurityDetailsCode should be less than or equal to 3 characters", _.length <= 3)),
@@ -392,6 +391,6 @@ object DeclarationFormMapping {
   )(Transport.apply)(Transport.unapply)
 }
 
-case class ObligationGuaranteeForm (guarantees: Seq[ObligationGuarantee] = Seq.empty)
+case class ObligationGuaranteeForm(guarantees: Seq[ObligationGuarantee] = Seq.empty)
 
 

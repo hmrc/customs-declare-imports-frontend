@@ -18,5 +18,11 @@ POST  /add-gov-agency-goods-items-additional-docs       controllers.goodsitems.A
 GET   /add-supply-chain-actors       controllers.goodsitems.AdditionalSupplyChainActorsController.onPageLoad()
 POST  /add-supply-chain-actors      controllers.goodsitems.AdditionalSupplyChainActorsController.onSubmit()
 
+GET   /add-packages     controllers.goodsitems.PackagingController.onPageLoad()
+POST  /add-packages    controllers.goodsitems.PackagingController.onSubmit()
+
+GET   /add-origins     controllers.goodsitems.OriginsController.onPageLoad()
+POST  /add-origins    controllers.goodsitems.OriginsController.onSubmit()
+
 GET   /add-fiscal-references      controllers.goodsitems.AdditionalFiscalReferencesController.onPageLoad()
 POST  /add-fiscal-references      controllers.goodsitems.AdditionalFiscalReferencesController.onSubmit()
