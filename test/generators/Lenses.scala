@@ -16,12 +16,17 @@
 
 package generators
 
-import domain.{SummaryOfGoods, Transport}
+import domain.DeclarationFormats._
+import domain.{References, SummaryOfGoods, Transport}
 import org.scalacheck.Arbitrary._
 import org.scalacheck.{Arbitrary, Gen}
-import uk.gov.hmrc.wco.dec.{BorderTransportMeans, TransportMeans}
+import org.scalatest.OptionValues
+import play.api.libs.json._
+import services.cachekeys.CacheKey
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.wco.dec.{Agent, BorderTransportMeans, ImportExportParty, TransportMeans}
 
-trait Lenses {
+trait Lenses extends OptionValues {
 
   case class GenLens[S, A](
     private val pGet: S => A,
@@ -37,7 +42,7 @@ trait Lenses {
       set(a)(arbitrary[S])
   }
 
-  object BorderTransportMeans {
+  object BorderTransportMeansLens {
 
     val modeCode: GenLens[BorderTransportMeans, Option[Int]] =
       GenLens(_.modeCode, a => _.copy(modeCode = a))
@@ -46,7 +51,7 @@ trait Lenses {
       GenLens(_.registrationNationalityCode, a => _.copy(registrationNationalityCode = a))
   }
 
-  object TransportMeans {
+  object TransportMeansLens {
 
     val modeCode: GenLens[TransportMeans, Option[Int]] =
       GenLens(_.modeCode, a => _.copy(modeCode = a))
@@ -58,15 +63,27 @@ trait Lenses {
       GenLens(_.id, a => _.copy(id = a))
   }
 
-  object Transport {
+  object TransportLens {
 
     val containerCode: GenLens[Transport, Option[Int]] =
       GenLens(_.containerCode, a => _.copy(containerCode = a))
   }
 
-  object SummaryOfGoods {
+  object SummaryOfGoodsLens {
 
     val totalPackageQuantity: GenLens[SummaryOfGoods, Option[Int]] =
       GenLens(_.totalPackageQuantity, a => _.copy(totalPackageQuantity = a))
+  }
+
+  object CacheMapLens {
+
+    private def mapProperty[T: Reads: Writes](id: CacheKey[T]): GenLens[CacheMap, T] =
+      GenLens(_.getEntry[T](id.key).value, a => s => CacheMap(s.id, s.data + (id.key -> Json.toJson(a))))
+
+    val declarantDetails: GenLens[CacheMap, ImportExportParty] = mapProperty(CacheKey.declarantDetails)
+    val references: GenLens[CacheMap, References] = mapProperty(CacheKey.references)
+    val exporter: GenLens[CacheMap, ImportExportParty] = mapProperty(CacheKey.exporter)
+    val representative: GenLens[CacheMap, Agent] = mapProperty(CacheKey.representative)
+    val importer: GenLens[CacheMap, ImportExportParty] = mapProperty(CacheKey.importer)
   }
 }

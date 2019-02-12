@@ -57,7 +57,7 @@ class BorderTransportMeansMappingSpec extends WordSpec
       "modeCode is not a valid value" in {
 
         val badData =
-          BorderTransportMeans.modeCode.setArbitrary(some(intOutsideRange(1, 9)))
+          BorderTransportMeansLens.modeCode.setArbitrary(some(intOutsideRange(1, 9)))
 
         forAll(badData) { means =>
 
@@ -72,7 +72,7 @@ class BorderTransportMeansMappingSpec extends WordSpec
 
         val options = config.Options.countryOptions.map(_._1).toSet
         val badData =
-          BorderTransportMeans.registrationNationalityCode.setArbitrary(some(stringsExceptSpecificValues(options)))
+          BorderTransportMeansLens.registrationNationalityCode.setArbitrary(some(stringsExceptSpecificValues(options)))
 
         forAll(badData) { means =>
 

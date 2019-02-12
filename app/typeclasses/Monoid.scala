@@ -62,7 +62,7 @@ trait MonoidInstances extends ProductTypeClassCompanion[Monoid] {
       override def append(l: Option[A], r: Option[A]): Option[A] =
         r.fold(l)(Some(_))
     }
-  
+
   implicit def seqMonoid[A]: Monoid[Seq[A]] =
     new Monoid[Seq[A]] {
       override def empty: Seq[A] = Seq.empty
