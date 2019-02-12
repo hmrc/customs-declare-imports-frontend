@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import config.AppConfig
 import domain.auth.SignedInUser
 import javax.inject.Singleton
-import models.Declaration
+import models.{Cancellation, Declaration}
 import play.api.http.{ContentTypes, HeaderNames, Status}
 import play.api.mvc.Codec
 import uk.gov.hmrc.http._
@@ -49,6 +49,10 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
 
   def getDeclarations(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[Declaration]] = {
     httpClient.GET[Seq[Declaration]](s"${appConfig.customsDeclareImportsEndpoint}/declarations")
+  }
+
+  def cancelDeclaration(cancellation: Cancellation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
+    httpClient.POST[Cancellation, CustomsDeclarationsResponse](s"${appConfig.customsDeclareImportsEndpoint}/cancel", cancellation)
   }
 
   private def postMetaData(uri: String,

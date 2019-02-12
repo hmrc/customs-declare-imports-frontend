@@ -1,5 +1,5 @@
 @*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,31 +19,21 @@
 @import domain.auth.AuthenticatedRequest
 @import uk.gov.hmrc.play.views.html.helpers
 
-@import repositories.declaration.Submission
+@(mrn: String, form: Form[CancelForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
 
-@(submission: Submission, form: Form[CancelForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
+@main_template(title = messages("cancelpage.titleAndHeader")) {
+    @helpers.form(routes.DeclarationController.handleCancelForm(mrn)) {
 
-@main_template(title = messages("cancelpage.titleAndHeader"), bodyClasses = None) {
+        @components.back_link()
+        @components.error_summary(form.errors)
 
-    @helpers.form(routes.DeclarationController.handleCancelForm(submission.mrn.getOrElse(""))) {
         <fieldset>
             <legend>
-                <h1 class="heading-xlarge">@messages("cancelpage.titleAndHeader") @submission.mrn.map { mrn => @mrn }</h1>
+                <h1 class="heading-xlarge">@messages("cancelpage.titleAndHeader") @mrn</h1>
             </legend>
 
-            <div class="form-group">
-            @helpers.textArea(form("statementDescription"),
-                '_label -> messages("cancelpage.tellUsWhy"),
-                '_inputHint -> messages("cancelpage.tellUsWhyHint"),
-                '_inputClass -> "form-control")
-            </div>
-
-            <div class="form-group">
-            @helpers.input(form("changeReasonCode"),
-                '_label -> messages("cancelpage.cancellationCode"),
-                '_inputHint -> messages("cancelpage.cancellationCodeHint"),
-                '_inputClass -> "form-control")
-            </div>
+            @components.input_text(form("reasonCode"), messages("cancelpage.cancellationCode"), hint = Some(messages("cancelpage.cancellationCodeHint")))
+            @components.input_textarea(form("description"), messages("cancelpage.tellUsWhy"), hint = Some(messages("cancelpage.tellUsWhyHint")))
         </fieldset>
 
         <button class="button" type="submit">@messages("cancelpage.button.cancel")</button>

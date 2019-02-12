@@ -20,8 +20,11 @@ import config._
 import domain.auth.{AuthenticatedRequest, SignedInUser}
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
+import models.Cancellation
 import org.joda.time.DateTime
 import play.api.Logger
+import play.api.data.Form
+import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{CustomsCacheService, CustomsDeclarationsConnector}
@@ -104,26 +107,14 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     } else { invalid(data("last-page"), data) }
   }
 
-  def displayCancelForm(mrn: String): Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
-    submissionRepository.getByEoriAndMrn(req.user.requiredEori, mrn).map {
-      case Some(submission) => Ok(views.html.cancel_form(submission, Cancel.form))
-      case None => NotFound(views.html.error_template("Submission Not Found", "Submission Not Found", "We're sorry but we couldn't find that submission."))
-    }
+  def displayCancelForm(mrn: String): Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth) { implicit req =>
+    Ok(views.html.cancel_form(mrn, Cancel.form))
   }
 
   def handleCancelForm(mrn: String): Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
-    val resultForm = Cancel.form.bindFromRequest()
-    submissionRepository.getByEoriAndMrn(req.user.requiredEori, mrn).flatMap {
-      case Some(submission) => resultForm.fold(
-        errors => Future.successful(BadRequest(views.html.cancel_form(submission, errors))),
-        success => {
-          client.cancelImportDeclaration(success.toMetaData(submission)).map { _ =>
-            Ok(views.html.cancel_confirmation())
-          }
-        }
-      )
-      case None => Future.successful(NotFound(views.html.error_template("Submission Not Found", "Submission Not Found", "We're sorry but we couldn't find that submission."))) // TODO throw specific ApplicationException type to be handled via ErrorHandler
-    }
+    Cancel.form.bindFromRequest().fold(
+      errors => Future.successful(BadRequest(views.html.cancel_form(mrn, errors))),
+      success => client.cancelDeclaration(Cancellation(mrn, success.reasonCode, success.description)).map(_ => Ok(views.html.cancel_confirmation())))
   }
 
   private def invalid(name: String, data: Map[String, String])(implicit req: AuthenticatedRequest[AnyContent], errors: Map[String, Seq[ValidationError]]): Future[Result] = Future.successful(BadRequest(views.html.generic_view(name, data)))
@@ -197,24 +188,9 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
 
 object Cancel {
   val form: Form[CancelForm] = Form[CancelForm](mapping(
-    "statementDescription" -> nonEmptyText(maxLength = 512),
-    "changeReasonCode" -> nonEmptyText
+    "reasonCode" -> number(min = 0, max = 10),
+    "description" -> nonEmptyText(maxLength = 512)
   )(CancelForm.apply)(CancelForm.unapply))
 }
 
-case class CancelForm(statementDescription: String, changeReasonCode: String) {
-
-  def toMetaData(submission: Submission): MetaData = MetaData(declaration = Declaration(
-    typeCode = Some("INV"),
-    functionCode = Some(13),
-    functionalReferenceId = submission.lrn,
-    id = submission.mrn,
-    additionalInformations = Seq(AdditionalInformation(
-      statementDescription = Some(statementDescription)
-    )),
-    amendments = Seq(Amendment(
-      changeReasonCode = Some(changeReasonCode)
-    ))
-  ))
-
-}
+case class CancelForm(reasonCode: Int, description: String)

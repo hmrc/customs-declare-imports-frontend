@@ -44,8 +44,7 @@
                 @if(charLimit.isDefined){maxLength="@{charLimit}" }
                 data-char-field
                 cols="30"
-                rows="20"
-        />
+                rows="20"></textarea>
         @if(charLimit.isDefined){
         <noscript>
             <p class="char-counter-text flush">@messages("site.textarea.char_limit", charLimit.get)</p>
