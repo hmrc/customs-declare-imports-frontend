@@ -92,7 +92,7 @@ class DeclarantDetailsSpec extends ViewBehaviours
         val input   = input_select(
           popForm("address.countryCode"),
           messages(s"$messagePrefix.address.countryCode"),
-          config.Options.countryOptions.toMap)
+          config.Options.countryOptions)
         val html    = view(popForm)
 
         html must include(input)

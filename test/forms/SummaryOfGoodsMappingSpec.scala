@@ -76,6 +76,14 @@ class SummaryOfGoodsMappingSpec extends WordSpec
             )
         }
       }
+
+      "totalPackageQuantity is empty" in {
+
+        form.bind(Map[String, String]()).fold(
+          _ must haveErrorMessage("Total packages is required"),
+          _ => fail("form should not succeed")
+        )
+      }
     }
   }
 }

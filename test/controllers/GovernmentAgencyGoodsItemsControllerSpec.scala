@@ -20,12 +20,15 @@ import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
 import domain.features.Feature
 import generators.Generators
 import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
 import uk.gov.hmrc.wco.dec.{status => _, _}
+
+import scala.annotation.tailrec
 
 class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
@@ -44,6 +47,19 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   val addPackagingsPageUri = uriWithContextPath("/submit-declaration-goods/add-packagings")
   val get = "GET"
   val postMethod = "POST"
+
+  def sampleGen[A](gen: Gen[A]): Option[A] = {
+
+    @tailrec
+    def loop(retries: Int): Option[A] =
+      if(retries <= 0) None
+      else gen.sample match {
+        case None => loop(retries - 1)
+        case opt  => opt
+      }
+
+    loop(10)
+  }
 
   "GovernmentAgencyGoodsItemsController" should {
 
@@ -147,7 +163,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withSignedInUser() { (headers, session, tags) =>
 
 
-        arbitrary[GoodsItemValueInformation].sample.foreach { sampleData =>
+        sampleGen(arbitrary[GoodsItemValueInformation]).foreach { sampleData =>
 
           withCaching(Some(sampleData))
           withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>
@@ -205,7 +221,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
         GovernmentAgencyGoodsItem(origins = List(o))
       }
 
-      withCaching(goodsItemGen.sample)
+      withCaching(sampleGen(goodsItemGen))
       withRequest(get, addOriginsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Goods Item Origins added")
@@ -241,7 +257,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
         GovernmentAgencyGoodsItem(manufacturers = List(e))
       }
 
-      withCaching(goodsItemGen.sample)
+      withCaching(sampleGen(goodsItemGen))
       withRequest(get, addManufacturersPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Manufacturers added")
@@ -284,7 +300,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
         GovernmentAgencyGoodsItem(packagings = List(p))
       }
 
-      withCaching(goodsItemGen.sample)
+      withCaching(sampleGen(goodsItemGen))
       withRequest(get, addPackagingsPageUri, headers, session, tags) { resp =>
         val content = contentAsHtml(resp)
         contentAsString(resp) must include("1 Goods Item Packagings added")

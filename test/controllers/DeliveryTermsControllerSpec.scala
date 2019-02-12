@@ -16,42 +16,39 @@
 
 package controllers
 
-import domain.SummaryOfGoods
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
-import generators.{Generators, Lenses}
+import generators.Generators
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import org.scalatest.OptionValues
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import views.html.summary_of_goods
+import uk.gov.hmrc.wco.dec.TradeTerms
+import views.html.delivery_terms
 
-class SummaryOfGoodsControllerSpec extends CustomsSpec
+class DeliveryTermsControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
-  with Lenses
   with OptionValues
-  with MockitoSugar
   with EndpointBehaviours {
 
-  val form = Form(summaryOfGoodsMapping)
+  val form = Form(tradeTermsMapping)
 
   def view(form: Form[_] = form): String =
-    summary_of_goods(form)(fakeRequest, messages, appConfig).body
+    delivery_terms(form)(fakeRequest, messages, appConfig).body
 
   def controller(user: SignedInUser) =
-    new SummaryOfGoodsController(new FakeActions(Some(user)), mockCustomsCacheService)
+    new DeliveryTermsController(new FakeActions(Some(user)), mockCustomsCacheService)
 
-  val summaryOfGoodsGen: Gen[Option[SummaryOfGoods]] = option(arbitrary[SummaryOfGoods])
-  val uri = "/submit-declaration/summary-of-goods"
+  val tradeTermsGen: Gen[Option[TradeTerms]] = option(arbitrary[TradeTerms])
+  val uri = "/submit-declaration/delivery-terms"
 
   "onPageLoad" should {
 
@@ -62,9 +59,9 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
       "user is signed in" in {
 
-        forAll { user: SignedInUser =>
+        forAll { signedInUser: SignedInUser =>
 
-          val result = controller(user).onPageLoad(fakeRequest)
+          val result = controller(signedInUser).onPageLoad(fakeRequest)
 
           status(result) mustBe OK
           contentAsString(result) mustBe view()
@@ -76,9 +73,9 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
       "user doesn't have an eori" in {
 
-        forAll { user: UnauthenticatedUser =>
+        forAll { unauthenticatedUser: UnauthenticatedUser =>
 
-          val result = controller(user.user).onPageLoad(fakeRequest)
+          val result = controller(unauthenticatedUser.user).onPageLoad(fakeRequest)
 
           status(result) mustBe UNAUTHORIZED
         }
@@ -87,13 +84,13 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], summaryOfGoodsGen) {
-        (user, cacheData) =>
+      forAll(arbitrary[SignedInUser], tradeTermsGen) {
+        (signedInUser, cacheData) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.summaryOfGoods, cacheData) {
+          withCleanCache(EORI(signedInUser.eori.value), CacheKey.tradeTerms, cacheData) {
 
             val popForm = cacheData.fold(form)(form.fill)
-            val result  = controller(user).onPageLoad(fakeRequest)
+            val result = controller(signedInUser).onPageLoad(fakeRequest)
 
             status(result) mustBe OK
             contentAsString(result) mustBe view(popForm)
@@ -104,20 +101,19 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
   "onSubmit" should {
 
-    behave like badRequestEndpoint(uri, POST)
+    behave like redirectedEndpoint(uri, "/submit-declaration/invoice-and-currency", POST)
     behave like authenticatedEndpoint(uri, POST)
 
     "return SEE_OTHER" when {
 
       "valid data is posted" in {
 
-        forAll { (user: SignedInUser, summary: SummaryOfGoods) =>
+        forAll { user: SignedInUser =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(summary): _*)
-          val result  = controller(user).onSubmit(request)
+          val result = controller(user).onSubmit(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.TransportController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(routes.InvoiceAndCurrencyController.onPageLoad().url)
         }
       }
     }
@@ -139,13 +135,19 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
       "bad data is posted" in {
 
-        val badData = SummaryOfGoods.totalPackageQuantity.setArbitrary(some(intLessThan(0)))
+        val badData =
+          for {
+            tradeTerms   <- arbitrary[TradeTerms]
+            locationName <- minStringLength(38)
+          } yield {
+            tradeTerms.copy(locationName = Some(locationName))
+          }
 
         forAll(arbitrary[SignedInUser], badData) {
           (user, formData) =>
 
-            val popForm = form.fillAndValidate(formData)
             val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+            val popForm = form.fillAndValidate(formData)
             val result  = controller(user).onSubmit(request)
 
             status(result) mustBe BAD_REQUEST
@@ -156,15 +158,15 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
     "save data in cache" when {
 
-      "valid data is posted" in {
+      "valid data is submitted" in {
 
-        forAll { (user: SignedInUser, formData: SummaryOfGoods) =>
+        forAll { (user: SignedInUser, formData: TradeTerms) =>
 
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
           await(controller(user).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce())
-            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.summaryOfGoods), eqTo(formData))(any(), any(), any())
+            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.tradeTerms), eqTo(formData))(any(), any(), any())
         }
       }
     }

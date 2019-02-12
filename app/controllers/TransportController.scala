@@ -24,22 +24,22 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import views.html.summary_of_goods
+import views.html.transport
 
 import scala.concurrent.Future
 
-class SummaryOfGoodsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                        (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
+class TransportController @Inject()(actions: Actions, cache: CustomsCacheService)
+                                   (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
   extends CustomsController {
 
-  val form = Form(summaryOfGoodsMapping)
+  val form = Form(transportMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
-    cache.getByKey(req.eori, CacheKey.summaryOfGoods).map { summary =>
+    cache.getByKey(req.eori, CacheKey.transport).map { data =>
 
-      val popForm = summary.fold(form)(form.fill)
-      Ok(summary_of_goods(popForm))
+      val popForm = data.fold(form)(form.fill)
+      Ok(transport(popForm))
     }
   }
 
@@ -47,12 +47,12 @@ class SummaryOfGoodsController @Inject()(actions: Actions, cache: CustomsCacheSe
 
     form.bindFromRequest().fold(
       errors =>
-        Future.successful(BadRequest(summary_of_goods(errors))),
+        Future.successful(BadRequest(transport(errors))),
 
-      summary =>
+      transport =>
         cache
-          .insert(req.eori, CacheKey.summaryOfGoods, summary)
-          .map(_ => Redirect(routes.TransportController.onPageLoad()))
+        .insert(req.eori, CacheKey.transport, transport)
+        .map(_ => Redirect(routes.DeclarationController.displaySubmitForm("location-of-goods")))
     )
   }
 }

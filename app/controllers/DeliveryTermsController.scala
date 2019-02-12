@@ -18,28 +18,29 @@ package controllers
 
 import com.google.inject.Inject
 import config.AppConfig
+import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import views.html.summary_of_goods
+import views.html.delivery_terms
 
 import scala.concurrent.Future
 
-class SummaryOfGoodsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                        (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
+class DeliveryTermsController @Inject()(actions: Actions, cache: CustomsCacheService)
+                                       (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
   extends CustomsController {
 
-  val form = Form(summaryOfGoodsMapping)
+  val form = Form(tradeTermsMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
-    cache.getByKey(req.eori, CacheKey.summaryOfGoods).map { summary =>
+    cache.getByKey(req.eori, CacheKey.tradeTerms).map { tradeTerms =>
 
-      val popForm = summary.fold(form)(form.fill)
-      Ok(summary_of_goods(popForm))
+      val popForm = tradeTerms.fold(form)(form.fill)
+      Ok(delivery_terms(popForm))
     }
   }
 
@@ -47,12 +48,11 @@ class SummaryOfGoodsController @Inject()(actions: Actions, cache: CustomsCacheSe
 
     form.bindFromRequest().fold(
       errors =>
-        Future.successful(BadRequest(summary_of_goods(errors))),
+        Future.successful(BadRequest(delivery_terms(errors))),
 
-      summary =>
-        cache
-          .insert(req.eori, CacheKey.summaryOfGoods, summary)
-          .map(_ => Redirect(routes.TransportController.onPageLoad()))
+      tradeTerms =>
+        cache.insert(req.eori, CacheKey.tradeTerms, tradeTerms)
+          .map(_ => Redirect(routes.InvoiceAndCurrencyController.onPageLoad()))
     )
   }
 }

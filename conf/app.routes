@@ -23,6 +23,9 @@ POST        /submit-declaration/representative-details         controllers.Repre
 GET         /submit-declaration/importer-details               controllers.ImporterDetailsController.onPageLoad()
 POST        /submit-declaration/importer-details               controllers.ImporterDetailsController.onSubmit()
 
+GET         /submit-declaration/delivery-terms                 controllers.DeliveryTermsController.onPageLoad()
+POST        /submit-declaration/delivery-terms                 controllers.DeliveryTermsController.onSubmit()
+
 GET         /submit-declaration/invoice-and-currency           controllers.InvoiceAndCurrencyController.onPageLoad()
 POST        /submit-declaration/invoice-and-currency           controllers.InvoiceAndCurrencyController.onSubmit()
 
@@ -34,6 +37,9 @@ POST        /submit-declaration/buyer-details                  controllers.Buyer
 
 GET         /submit-declaration/summary-of-goods               controllers.SummaryOfGoodsController.onPageLoad()
 POST        /submit-declaration/summary-of-goods               controllers.SummaryOfGoodsController.onSubmit()
+
+GET         /submit-declaration/transport                      controllers.TransportController.onPageLoad()
+POST        /submit-declaration/transport                      controllers.TransportController.onSubmit()
 
 GET         /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onPageLoad()
 POST        /submit-declaration/add-authorisation-holder       controllers.AuthorisationHoldersController.onSubmit()
