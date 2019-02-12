@@ -32,16 +32,18 @@ class LandingControllerSpec extends CustomsSpec
 
   s"$method $uri" should {
 
-//    "return 200" in withFeatures(enabled(Feature.landing)) {
-//      withSignedInUser() { (headers, session, tags) =>
-//        withRequest(method, uri, headers, session, tags) {
-//          wasOk
-//        }
-//      }
-//    }
+   "return 200" in withFeatures(enabled(Feature.landing)) {
+     withSignedInUser() { (headers, session, tags) =>
+       withImportsBackend
+       withRequest(method, uri, headers, session, tags) {
+         wasOk
+       }
+     }
+   }
 
     "return HTML" in withFeatures(enabled(Feature.landing)) {
       withSignedInUser() { (headers, session, tags) =>
+        withImportsBackend
         withRequest(method, uri, headers, session, tags) {
           wasHtml
         }
@@ -52,7 +54,7 @@ class LandingControllerSpec extends CustomsSpec
       withSignedInUser() { (headers, session, tags) =>
         withImportsBackend
         withRequest(method, uri, headers, session, tags) { resp =>
-          contentAsHtml(resp) should include element withName("h1").withValue(messagesApi("common.importDeclarations"))
+          contentAsHtml(resp) should include element withName("h1").withValue(messagesApi("landingpage.title"))
         }
       }
     }
