@@ -35,24 +35,24 @@
         </legend>
         @components.input(
         formItem(s"$fieldName.day"),
-        '_divClass -> Messages("common.form.day.class"),
-        '_label -> Messages("common.date.day"),
+        '_divClass -> "form-group-day",
+        '_label -> "Day",
         '_labelClass -> "form-group form-group-day",
         '_inputClass -> "form-control input--xsmall",
         '_emptyValueText -> " "
         )
         @components.input(
         formItem(s"$fieldName.month"),
-        '_divClass -> Messages("common.form.month.class"),
-        '_label -> Messages("date.fields.month"),
+        '_divClass -> "form-group-month",
+        '_label -> "Month",
         '_labelClass -> "form-group form-group-month",
         '_inputClass -> "form-control input--xsmall",
         '_emptyValueText -> " "
         )
         @components.input(
         formItem(s"$fieldName.year"),
-        '_divClass -> Messages("common.form.year.class"),
-        '_label -> Messages("date.fields.year"),
+        '_divClass -> "form-group-year",
+        '_label -> "Year",
         '_labelClass -> "form-group form-group-year",
         '_inputClass -> "form-control input--xsmall",
         '_emptyValueText -> " "

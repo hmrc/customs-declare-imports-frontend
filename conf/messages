@@ -19,9 +19,6 @@ common.date.month=Month
 common.date.year=Year
 
 ## common form content
-common.form.day.class=form-group-day
-common.form.month.class=form-group-month
-common.form.year.class=form-group-year
 common.form.invalid.date=Date is invalid
 
 ## common buttons with shared labels
