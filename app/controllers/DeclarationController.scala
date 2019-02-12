@@ -57,9 +57,9 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     }
   }
 
-  def displaySubmitConfirmation(conversationId: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async {
+  def displaySubmitConfirmation(conversationId: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth) {
     implicit req => {
-      Future.successful(Ok(views.html.submit_confirmation(new Declaration(DateTime.now, Some("Local Reference Number"), Some("MRN")))))
+      Ok(views.html.submit_confirmation(new Declaration(DateTime.now, Some("Local Reference Number"), Some("MRN"))))
     }
   }
 

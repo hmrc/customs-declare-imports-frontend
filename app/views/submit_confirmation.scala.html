@@ -18,18 +18,18 @@
 
 @import models.Declaration
 
-@(submission: Declaration)(implicit req: Request[_], messages: Messages, cfg: AppConfig)
+@(declaration: Declaration)(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
 @main_template(title = messages("confirmationpage.titleAndHeading")) {
 	<div class="govuk-box-highlight">
 	  <h1 id="heading-application-submitted" class="heading-xlarge">@messages("confirmationpage.titleAndHeading")</h1>
 	  <p class="font-large">
 	    @messages("confirmationpage.yourLRN")<br>
-	    <strong class="bold">@{submission.localReferenceNumber.getOrElse(messages("lrn.missing"))}</strong>
+	    <strong class="bold">@{declaration.localReferenceNumber.getOrElse(messages("lrn.missing"))}</strong>
 	  </p>
 	</div>
 
-	<h2 class="heading-medium" id="next-steps">@messages("confirmationpage.whatHappensNext") DRAFT PAGE</h2>
+	<h2 class="heading-medium" id="next-steps">@messages("confirmationpage.whatHappensNext")</h2>
 
 	<p>@messages("confirmationpage.p.part1") <a href="@routes.LandingController.displayLandingPage()">@messages("confirmationpage.p.part2")</a> @messages("confirmationpage.p.part3")</p>
 }

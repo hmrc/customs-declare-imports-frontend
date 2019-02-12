@@ -32,18 +32,25 @@ object DeclarationActionType extends Enumeration {
   implicit val reads = Reads.enumNameReads(DeclarationActionType)
 }
 
+trait WithDateTime {
+  implicit def dateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isAfter _)
+  implicit val dateTimeReads = Reads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+}
 
 case class DeclarationNotification(functionCode: Int, conversationId: String, dateTimeIssued: DateTime)
 
+object DeclarationNotification extends WithDateTime {
+  implicit val format = Json.format[DeclarationNotification]
+}
+
 case class DeclarationAction(dateTimeSent: DateTime, actionType: DeclarationActionType, notifications: Seq[DeclarationNotification] = Seq.empty)
+
+object DeclarationAction extends WithDateTime {
+  implicit val format = Json.format[DeclarationAction]
+}
 
 case class Declaration(submittedDateTime: DateTime, localReferenceNumber: Option[String], mrn: Option[String] = None, actions: Seq[DeclarationAction] = Seq.empty)
 
-object Declaration {
-  implicit def dateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isAfter _)
-
-  implicit val dateTimeReads = Reads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-  implicit val declarationNotificationFormat = Json.format[DeclarationNotification]
-  implicit val declarationActionFormat = Json.format[DeclarationAction]
+object Declaration extends WithDateTime {
   implicit val declarationFormat = Json.format[Declaration]
 }
