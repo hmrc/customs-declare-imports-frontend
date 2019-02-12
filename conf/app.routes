@@ -23,6 +23,9 @@ POST        /submit-declaration/representative-details         controllers.Repre
 GET         /submit-declaration/importer-details               controllers.ImporterDetailsController.onPageLoad()
 POST        /submit-declaration/importer-details               controllers.ImporterDetailsController.onSubmit()
 
+GET         /submit-declaration/warehouse-and-customs-offices       controllers.WarehouseAndCustomsController.onPageLoad()
+POST        /submit-declaration/warehouse-and-customs-offices       controllers.WarehouseAndCustomsController.onSubmit()
+
 GET         /submit-declaration/delivery-terms                 controllers.DeliveryTermsController.onPageLoad()
 POST        /submit-declaration/delivery-terms                 controllers.DeliveryTermsController.onSubmit()
 

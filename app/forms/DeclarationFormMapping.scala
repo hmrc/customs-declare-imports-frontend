@@ -18,6 +18,7 @@ package forms
 
 import java.text.DecimalFormat
 
+import domain.{GoodsItemValueInformation, InvoiceAndCurrency, References, WarehouseAndCustoms}
 import config.Options
 import domain._
 import org.joda.time.DateTime
@@ -256,7 +257,18 @@ object DeclarationFormMapping {
   val officeMapping = mapping("id" -> optional(text
     .verifying("Office id should be less than or equal to 8 characters", _.length <= 8))
   )(Office.apply)(Office.unapply)
+  
+  val warehouseMapping = mapping(
+    "id" -> optional(text.verifying("ID should be less than or equal to 35 characters", _.length <= 35)),
+    "typeCode" -> text.verifying("Type Code is not a valid type code",
+      x => config.Options.customsWareHouseTypes.exists(_._2 == x))
+  )(Warehouse.apply)(Warehouse.unapply)
 
+  val warehouseAndCustomsMapping = mapping(
+    "warehouse" -> optional(warehouseMapping),
+    "presentationOffice" -> optional(officeMapping),
+    "supervisingOffice" -> optional(officeMapping)
+  )(WarehouseAndCustoms.apply)(WarehouseAndCustoms.unapply)
 
   val obligationGauranteeMapping =
     mapping("amount" -> optional(bigDecimal

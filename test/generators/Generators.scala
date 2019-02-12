@@ -17,7 +17,8 @@
 package generators
 
 import config.Options
-import domain.{GovernmentAgencyGoodsItem, _}
+import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem, InvoiceAndCurrency, References}
+import domain.{GovernmentAgencyGoodsItem => _, _}
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
 import org.scalacheck.Arbitrary._
@@ -117,8 +118,27 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryOffice: Arbitrary[Office] = Arbitrary {
     for {
-      id <- option(arbitrary[String].map(_.take(8)))
+      id <- option(nonEmptyString.map(_.take(8)))
     } yield Office(id)
+  }
+
+  implicit val arbitraryWarehouse: Arbitrary[Warehouse] = Arbitrary {
+    for {
+      id       <- option(nonEmptyString.map(_.take(35)))
+      typeCode <- oneOf(config.Options.customsWareHouseTypes.map(_._1))
+    } yield Warehouse(id, typeCode)
+  }
+
+  implicit val arbitraryWarehouseAndCustoms: Arbitrary[WarehouseAndCustoms] = Arbitrary {
+    for {
+      warehouse          <- option(arbitrary[Warehouse])
+      presentationOffice <- arbitrary[Office]
+      supervisingOffice  <- arbitrary[Office]
+    } yield WarehouseAndCustoms(
+      warehouse,
+      presentationOffice.id.map(_ => presentationOffice),
+      supervisingOffice.id.map(_ => supervisingOffice)
+    )
   }
 
   implicit val arbitraryTradeTerms: Arbitrary[TradeTerms] = Arbitrary {
