@@ -13,6 +13,7 @@ object AppDependencies {
     "uk.gov.hmrc" %% "http-caching-client" % "7.1.0",
     "uk.gov.hmrc" %% "play-reactivemongo" % "6.2.0",
     "uk.gov.hmrc" %% "wco-dec" % "0.18.0",
+    "com.chuusai" %% "shapeless" % "2.3.3",
     "com.beachape" %% "enumeratum" % "1.5.13"
   )
 
