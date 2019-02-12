@@ -10,3 +10,16 @@
   height: 10px;
   background-color: #005ea5;
 }
+
+.wide-table {
+	th,
+	td {
+		vertical-align: top;
+
+		.long-input {
+			display: block;
+			width: 100px;
+			word-break: break-word;
+		}
+	}
+}
