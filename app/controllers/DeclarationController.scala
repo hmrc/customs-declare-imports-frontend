@@ -104,6 +104,28 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     } else { invalid(data("last-page"), data) }
   }
 
+  def displayCancelForm(mrn: String): Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
+    submissionRepository.getByEoriAndMrn(req.user.requiredEori, mrn).map {
+      case Some(submission) => Ok(views.html.cancel_form(submission, Cancel.form))
+      case None => NotFound(views.html.error_template("Submission Not Found", "Submission Not Found", "We're sorry but we couldn't find that submission."))
+    }
+  }
+
+  def handleCancelForm(mrn: String): Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
+    val resultForm = Cancel.form.bindFromRequest()
+    submissionRepository.getByEoriAndMrn(req.user.requiredEori, mrn).flatMap {
+      case Some(submission) => resultForm.fold(
+        errors => Future.successful(BadRequest(views.html.cancel_form(submission, errors))),
+        success => {
+          client.cancelImportDeclaration(success.toMetaData(submission)).map { _ =>
+            Ok(views.html.cancel_confirmation())
+          }
+        }
+      )
+      case None => Future.successful(NotFound(views.html.error_template("Submission Not Found", "Submission Not Found", "We're sorry but we couldn't find that submission."))) // TODO throw specific ApplicationException type to be handled via ErrorHandler
+    }
+  }
+
   private def invalid(name: String, data: Map[String, String])(implicit req: AuthenticatedRequest[AnyContent], errors: Map[String, Seq[ValidationError]]): Future[Result] = Future.successful(BadRequest(views.html.generic_view(name, data)))
 
   private def cacheSubmission(data: Map[String, String])(f: (Map[String, String], CacheMap) => Future[Result])(implicit req: AuthenticatedRequest[AnyContent]): Future[Result] = cache.get(appConfig.submissionCacheId, req.user.requiredEori).flatMap { existing =>
@@ -168,5 +190,31 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
       metaData.copy(declaration = metaData.declaration.map(_.copy(goodsShipment = goodsShipmentNew, obligationGuarantees = obligationGuaranteeForm.get.guarantees)))
     }))
   }
+
+}
+
+// cancel declaration form objects
+
+object Cancel {
+  val form: Form[CancelForm] = Form[CancelForm](mapping(
+    "statementDescription" -> nonEmptyText(maxLength = 512),
+    "changeReasonCode" -> nonEmptyText
+  )(CancelForm.apply)(CancelForm.unapply))
+}
+
+case class CancelForm(statementDescription: String, changeReasonCode: String) {
+
+  def toMetaData(submission: Submission): MetaData = MetaData(declaration = Declaration(
+    typeCode = Some("INV"),
+    functionCode = Some(13),
+    functionalReferenceId = submission.lrn,
+    id = submission.mrn,
+    additionalInformations = Seq(AdditionalInformation(
+      statementDescription = Some(statementDescription)
+    )),
+    amendments = Seq(Amendment(
+      changeReasonCode = Some(changeReasonCode)
+    ))
+  ))
 
 }
