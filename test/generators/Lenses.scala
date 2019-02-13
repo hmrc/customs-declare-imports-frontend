@@ -17,14 +17,14 @@
 package generators
 
 import domain.DeclarationFormats._
-import domain.{References, SummaryOfGoods, Transport}
+import domain.{InvoiceAndCurrency, References, SummaryOfGoods, Transport}
 import org.scalacheck.Arbitrary._
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.OptionValues
 import play.api.libs.json._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.wco.dec.{Agent, BorderTransportMeans, ImportExportParty, TransportMeans}
+import uk.gov.hmrc.wco.dec._
 
 trait Lenses extends OptionValues {
 
@@ -85,5 +85,7 @@ trait Lenses extends OptionValues {
     val exporter: GenLens[CacheMap, ImportExportParty] = mapProperty(CacheKey.exporter)
     val representative: GenLens[CacheMap, Agent] = mapProperty(CacheKey.representative)
     val importer: GenLens[CacheMap, ImportExportParty] = mapProperty(CacheKey.importer)
+    val tradeTerms: GenLens[CacheMap, TradeTerms] = mapProperty(CacheKey.tradeTerms)
+    val invoiceAndCurrency: GenLens[CacheMap, InvoiceAndCurrency] = mapProperty(CacheKey.invoiceAndCurrency)
   }
 }

@@ -24,7 +24,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.wco.dec.{Agent, ImportExportParty}
+import uk.gov.hmrc.wco.dec.{Agent, ImportExportParty, TradeTerms}
 
 class MetaDataConverterSpec extends WordSpec
   with MustMatchers
@@ -69,7 +69,7 @@ class MetaDataConverterSpec extends WordSpec
           .asMetaData(cacheMap)(CacheKey.references.identifier)
           .declaration
 
-        dec.flatMap(_.typeCode) mustBe data.flatMap(_.typeCode)
+        dec.flatMap(_.typeCode) mustBe data.flatMap(d => d.typeCode.flatMap(a => d.typerCode.map(b => a + b)))
         dec.flatMap(_.functionalReferenceId) mustBe data.flatMap(_.functionalReferenceId)
         dec.flatMap(_.goodsShipment.flatMap(_.transactionNatureCode)) mustBe data.flatMap(_.transactionNatureCode)
         dec.flatMap(_.goodsShipment.flatMap(_.ucr.flatMap(_.traderAssignedReferenceId))) mustBe
@@ -120,6 +120,38 @@ class MetaDataConverterSpec extends WordSpec
           .declaration
           .flatMap(_.goodsShipment)
           .flatMap(_.importer) mustBe data
+      }
+    }
+
+    "convert using TradeTermsId" in {
+
+      val cacheMapGen = CacheMapLens.tradeTerms.setArbitrary(arbitrary[TradeTerms])
+
+      forAll(cacheMapGen) { cacheMap =>
+
+        val data = cacheMap.getEntry[TradeTerms](CacheKey.tradeTerms.key)
+
+        MetaDataConverter
+          .asMetaData(cacheMap)(CacheKey.tradeTerms.identifier)
+          .declaration
+          .flatMap(_.goodsShipment)
+          .flatMap(_.tradeTerms) mustBe data
+      }
+    }
+
+    "convert using InvoiceAndCurrencyId" in {
+
+      val cacheMapGen = CacheMapLens.invoiceAndCurrency.setArbitrary(arbitrary[InvoiceAndCurrency])
+
+      forAll(cacheMapGen) { cacheMap =>
+
+        val data = cacheMap.getEntry[InvoiceAndCurrency](CacheKey.invoiceAndCurrency.key)
+
+        val dec = MetaDataConverter
+          .asMetaData(cacheMap)(CacheKey.invoiceAndCurrency.identifier)
+          .declaration
+
+
       }
     }
   }

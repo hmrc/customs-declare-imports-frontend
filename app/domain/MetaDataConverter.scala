@@ -32,7 +32,7 @@ object MetaDataConverter {
     case ReferencesId => {
       val refData = cache.getEntry[References](references.key)
       MetaData(declaration = Some(Declaration(
-        typeCode = refData.flatMap(_.typeCode),
+        typeCode = refData.flatMap(r => r.typeCode.flatMap(a => r.typerCode.map(b => a + b))),
         functionalReferenceId = refData.flatMap(_.functionalReferenceId),
         goodsShipment = Some(GoodsShipment(
           transactionNatureCode = refData.flatMap(_.transactionNatureCode),
@@ -49,6 +49,9 @@ object MetaDataConverter {
 
     case ImporterId =>
       MetaData(declaration = Some(Declaration(goodsShipment = Some(GoodsShipment(importer = cache.getEntry[ImportExportParty](importer.key))))))
+
+    case TradeTermsId =>
+      MetaData(declaration = Some(Declaration(goodsShipment = Some(GoodsShipment(tradeTerms = cache.getEntry[TradeTerms](tradeTerms.key))))))
 
     case _ => throw new MatchError("Hide exhaustivity warnings, remove before merging!!!!!!")
   }
