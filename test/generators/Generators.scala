@@ -21,8 +21,10 @@ import domain.{GovernmentAgencyGoodsItem, _}
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen._
+import org.scalacheck.Gen.{zip, _}
 import org.scalacheck.{Arbitrary, Gen, Shrink}
+import play.api.libs.json.{JsString, JsValue}
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.wco.dec._
 
 trait Generators extends SignedInUserGen with ViewModelGenerators {
@@ -143,13 +145,13 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       referenceId         <- option(arbitrary[String].map(_.take(35)))
       securityDetailsCode <- option(arbitrary[String].map(_.take(3)))
       accessCode          <- option(arbitrary[String].map(_.take(4)))
-      office              <- option(arbitraryOffice.arbitrary)
+      office              <- option(arbitrary[Office])
     } yield ObligationGuarantee(amount, id, referenceId, securityDetailsCode, accessCode, office)
   }
 
   implicit val arbitraryObligationGuaranteeForm: Arbitrary[ObligationGuaranteeForm] = Arbitrary {
     for {
-      guarantees <- Gen.listOfN(1, arbitraryObligationGuarantee.arbitrary)
+      guarantees <- Gen.listOfN(1, arbitrary[ObligationGuarantee])
     } yield ObligationGuaranteeForm(guarantees)
   }
 
@@ -477,6 +479,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     }
   }
 
+  implicit val mapGen: Gen[Map[String, JsValue]] =
+    listOf(Gen.zip(arbitrary[String], arbitrary[String]).map {
+      case (k, v) => Map[String, JsValue](k -> JsString(v))
+    }).map(_.fold(Map())(_ ++ _))
+
+  implicit val arbitraryCacheMap = Arbitrary {
+    Gen.zip(arbitrary[String], mapGen).map { case (k, m) => CacheMap(k, m) }
+  }
+
   def intGreaterThan(min: Int): Gen[Int] =
     choose(min + 1, Int.MaxValue)
 
@@ -526,3 +537,5 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   val nonAlphaString: Gen[String] = listOf(nonAlphaChar).map(_.mkString)
 }
+
+object Generators extends Generators

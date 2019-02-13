@@ -26,6 +26,7 @@ import services.cachekeys.CacheKey._
 object MetaDataConverter {
 
   def asMetaData(cache: CacheMap): TypedIdentifier[_] => MetaData = {
+
     case DeclarantDetailsId =>
       MetaData(declaration = Some(Declaration(declarant = cache.getEntry[ImportExportParty](declarantDetails.key))))
 
@@ -89,6 +90,63 @@ object MetaDataConverter {
       )))
     }
 
+    case AuthorisationHoldersId =>
+      MetaData(declaration = Some(Declaration(
+        authorisationHolders = cache.getEntry[Seq[AuthorisationHolder]](authorisationHolders.key).getOrElse(Seq.empty)
+      )))
+
+    case GuaranteeReferencesId =>
+      MetaData(declaration = Some(Declaration(
+        obligationGuarantees = cache.getEntry[Seq[ObligationGuarantee]](guaranteeReferences.key).getOrElse(Seq.empty)
+      )))
+
+    case PreviousDocumentsId =>
+      MetaData(declaration = Some(Declaration(
+        goodsShipment = Some(GoodsShipment(
+          previousDocuments = cache.getEntry[Seq[PreviousDocument]](previousDocuments.key).getOrElse(Seq.empty)
+      )))))
+
+    case AdditionalDocumentsId =>
+      MetaData(declaration = Some(Declaration(
+        additionalDocuments = cache.getEntry[Seq[AdditionalDocument]](additionalDocuments.key).getOrElse(Seq.empty)
+      )))
+
+    case AdditionalSupplyChainActorsId =>
+      MetaData(declaration = Some(Declaration(
+        goodsShipment = Some(GoodsShipment(
+          aeoMutualRecognitionParties = cache.getEntry[Seq[RoleBasedParty]](additionalSupplyChainActors.key).getOrElse(Seq.empty)
+        ))
+      )))
+
+    case DomesticDutyTaxPartyId =>
+      MetaData(declaration = Some(Declaration(
+        goodsShipment = Some(GoodsShipment(
+          domesticDutyTaxParties = cache.getEntry[Seq[RoleBasedParty]](domesticDutyTaxParty.key).getOrElse(Seq.empty)
+        ))
+      )))
+
+    case AdditionsAndDeductionsId =>
+      MetaData(declaration = Some(Declaration(
+        goodsShipment = Some(GoodsShipment(
+          customsValuation = Some(CustomsValuation(
+            chargeDeductions = cache.getEntry[Seq[ChargeDeduction]](additionsAndDeductions.key).getOrElse(Seq.empty)
+          ))
+        ))
+      )))
+
+    case ContainerIdNosId =>
+      MetaData(declaration = Some(Declaration(
+        goodsShipment = Some(GoodsShipment(
+          consignment = Some(Consignment(
+            transportEquipments = cache.getEntry[Seq[TransportEquipment]](containerIdNos.key).getOrElse(Seq.empty)
+          ))
+        )))
+      ))
+
+    case GuaranteeTypeId =>
+      MetaData(declaration = Some(Declaration(
+        obligationGuarantees = cache.getEntry[Seq[ObligationGuarantee]](guaranteeTypes.key).getOrElse(Seq.empty)
+      )))
 
     case _ => throw new MatchError("Hide exhaustivity warnings, remove before merging!!!!!!")
   }

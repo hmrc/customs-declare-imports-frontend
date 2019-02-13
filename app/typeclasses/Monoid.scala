@@ -17,6 +17,7 @@
 package typeclasses
 
 import shapeless._
+import uk.gov.hmrc.http.cache.client.CacheMap
 
 trait Monoid[T] {
 
@@ -70,6 +71,16 @@ trait MonoidInstances extends ProductTypeClassCompanion[Monoid] {
       override def append(l: Seq[A], r: Seq[A]): Seq[A] =
         l ++ r
     }
+
+  implicit def cacheMapMonoid: Monoid[CacheMap] =
+    new Monoid[CacheMap] {
+      override def empty: CacheMap = CacheMap("", Map())
+
+      override def append(l: CacheMap, r: CacheMap): CacheMap =
+        if (r == empty) l
+        else CacheMap(r.id, l.data ++ r.data)
+    }
+
 
   object typeClass extends ProductTypeClass[Monoid] {
 

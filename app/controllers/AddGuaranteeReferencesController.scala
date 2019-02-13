@@ -34,7 +34,7 @@ class AddGuaranteeReferencesController @Inject()
   def form = Form(obligationGauranteeMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
-    cacheService.getByKey(req.eori, CacheKey.guaranteeReference).map { guaranteeReferences =>
+    cacheService.getByKey(req.eori, CacheKey.guaranteeReferences).map { guaranteeReferences =>
       Ok(add_guarantee_references(form, guaranteeReferences.getOrElse(Seq())))
     }
   }
@@ -42,13 +42,13 @@ class AddGuaranteeReferencesController @Inject()
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
     form.bindFromRequest().fold(
       errors =>
-        cacheService.getByKey(req.eori, CacheKey.guaranteeReference).map { guaranteeReferences =>
+        cacheService.getByKey(req.eori, CacheKey.guaranteeReferences).map { guaranteeReferences =>
           BadRequest(add_guarantee_references(errors, guaranteeReferences.getOrElse(Seq())))
         },
 
       guaranteeRefs =>
         cacheService
-          .upsert(req.eori, CacheKey.guaranteeReference)
+          .upsert(req.eori, CacheKey.guaranteeReferences)
           (() => Seq(guaranteeRefs), guaranteeRefs +: _)
           .map { _ =>
             Redirect(routes.AddGuaranteeReferencesController.onPageLoad())

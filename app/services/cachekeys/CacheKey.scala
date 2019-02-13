@@ -62,7 +62,7 @@ object CacheKey {
 
   val authorisationHolders = CacheKey("AuthorisationHolders", AuthorisationHoldersId)
 
-  val guaranteeReference = CacheKey("GuaranteeReferences", GuaranteeReferencesId)
+  val guaranteeReferences = CacheKey("GuaranteeReferences", GuaranteeReferencesId)
 
   val previousDocuments = CacheKey("PreviousDocuments", PreviousDocumentsId)
 
@@ -76,7 +76,7 @@ object CacheKey {
 
   val containerIdNos = CacheKey("ContainerIdNos", ContainerIdNosId)
 
-  val guaranteeType = CacheKey("GuaranteeType", GuaranteeTypeId)
+  val guaranteeTypes = CacheKey("GuaranteeTypes", GuaranteeTypeId)
 
   val govAgencyGoodsItemsList = CacheKey("GovAgencyGoodsItemsList", GovAgencyGoodsItemsListId)
   val goodsItem = CacheKey("GovAgencyGoodsItem", GovAgencyGoodsItemId)

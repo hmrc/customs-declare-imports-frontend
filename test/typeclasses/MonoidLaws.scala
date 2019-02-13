@@ -17,16 +17,19 @@
 package typeclasses
 
 import Monoid.ops._
+import generators.Generators
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
 import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
+import uk.gov.hmrc.http.cache.client.CacheMap
 
 class OptionMonoidLaws          extends MonoidLaws(option(arbitrary[String]))
 class RecursiveOptionMonoidLaws extends MonoidLaws(option(zip(arbitrary[String], arbitrary[Int])))
 class Tuple2MonoidLaws          extends MonoidLaws(zip(option(arbitrary[String]), option(arbitrary[Int])))
 class SeqMonoidLaws             extends MonoidLaws[Seq[String]](listOf(arbitrary[String]))
+class CacheMapMonoidLaws        extends MonoidLaws[CacheMap](Generators.arbitraryCacheMap.arbitrary)
 
 abstract class MonoidLaws[T: Monoid](gen: Gen[T]) extends WordSpec
   with MustMatchers
