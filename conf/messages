@@ -49,9 +49,6 @@ common.hints.statusCode=This code declares the way in which the declarant is rep
 ## specific pages
 pages.references.form.legend=References
 
-pages.exporter.details.title=Exporter'’s Details
-pages.exporter.details.form.legend=Exporter'’s details
-
 pages.representative.details.title=Representative'’s Details
 pages.representative.details.form.legend=Representative'’s details
 
@@ -337,10 +334,10 @@ references.functionalReferenceId=LRN
 references.transactionNatureCode=Nature of transaction
 
 ## Exporter details
-exporterDetails.title=Exporter
-exporterDetails.heading=Exporter
+exporterDetails.title=Exporter'’s details
+exporterDetails.heading=Exporter'’s details
 exporterDetails.name=Name
-exporterDetails.address.line=Street and Number
+exporterDetails.address.line=Street and number
 exporterDetails.address.cityName=City
 exporterDetails.address.country=Country
 exporterDetails.address.postcode=Postcode
