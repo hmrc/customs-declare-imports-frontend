@@ -80,12 +80,16 @@ trait Lenses extends OptionValues {
     private def mapProperty[T: Reads: Writes](id: CacheKey[T]): GenLens[CacheMap, T] =
       GenLens(_.getEntry[T](id.key).value, a => s => CacheMap(s.id, s.data + (id.key -> Json.toJson(a))))
 
-    val declarantDetails: GenLens[CacheMap, ImportExportParty] = mapProperty(CacheKey.declarantDetails)
-    val references: GenLens[CacheMap, References] = mapProperty(CacheKey.references)
-    val exporter: GenLens[CacheMap, ImportExportParty] = mapProperty(CacheKey.exporter)
-    val representative: GenLens[CacheMap, Agent] = mapProperty(CacheKey.representative)
-    val importer: GenLens[CacheMap, ImportExportParty] = mapProperty(CacheKey.importer)
-    val tradeTerms: GenLens[CacheMap, TradeTerms] = mapProperty(CacheKey.tradeTerms)
-    val invoiceAndCurrency: GenLens[CacheMap, InvoiceAndCurrency] = mapProperty(CacheKey.invoiceAndCurrency)
+    val declarantDetails   = mapProperty(CacheKey.declarantDetails)
+    val references         = mapProperty(CacheKey.references)
+    val exporter           = mapProperty(CacheKey.exporter)
+    val representative     = mapProperty(CacheKey.representative)
+    val importer           = mapProperty(CacheKey.importer)
+    val tradeTerms         = mapProperty(CacheKey.tradeTerms)
+    val invoiceAndCurrency = mapProperty(CacheKey.invoiceAndCurrency)
+    val seller             = mapProperty(CacheKey.seller)
+    val buyer              = mapProperty(CacheKey.buyer)
+    val summaryOfGoods     = mapProperty(CacheKey.summaryOfGoods)
+    val transport          = mapProperty(CacheKey.transport)
   }
 }

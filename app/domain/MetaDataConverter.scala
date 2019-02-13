@@ -53,6 +53,43 @@ object MetaDataConverter {
     case TradeTermsId =>
       MetaData(declaration = Some(Declaration(goodsShipment = Some(GoodsShipment(tradeTerms = cache.getEntry[TradeTerms](tradeTerms.key))))))
 
+    case InvoiceAndCurrencyId => {
+      val data = cache.getEntry[InvoiceAndCurrency](invoiceAndCurrency.key)
+
+      MetaData(declaration = Some(Declaration(
+        invoiceAmount = data.flatMap(_.invoice),
+        currencyExchanges = data.flatMap(_.currency).toSeq
+      )))
+    }
+
+    case SellerId =>
+      MetaData(declaration = Some(Declaration(goodsShipment = Some(GoodsShipment(seller = cache.getEntry[ImportExportParty](seller.key))))))
+
+    case BuyerId =>
+      MetaData(declaration = Some(Declaration(goodsShipment = Some(GoodsShipment(buyer = cache.getEntry[ImportExportParty](buyer.key))))))
+
+    case SummaryOfGoodsId => {
+      val data = cache.getEntry[SummaryOfGoods](summaryOfGoods.key)
+      MetaData(declaration = Some(Declaration(
+        totalPackageQuantity = data.flatMap(_.totalPackageQuantity),
+        totalGrossMassMeasure = data.flatMap(_.totalGrossMassMeasure)
+      )))
+    }
+
+    case TransportId => {
+      val data = cache.getEntry[Transport](transport.key)
+      MetaData(declaration = Some(Declaration(
+        borderTransportMeans = data.flatMap(_.borderTransportMeans),
+        goodsShipment = Some(GoodsShipment(
+          consignment = Some(Consignment(
+            containerCode = data.flatMap(_.containerCode.map(_.toString)),
+            arrivalTransportMeans = data.flatMap(_.arrivalTransportMeans)
+          ))
+        ))
+      )))
+    }
+
+
     case _ => throw new MatchError("Hide exhaustivity warnings, remove before merging!!!!!!")
   }
 

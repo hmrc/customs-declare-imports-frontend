@@ -18,8 +18,8 @@ package domain
 
 import domain.DeclarationFormats._
 import generators.{Generators, Lenses}
-import org.scalacheck.Arbitrary._
 import org.scalacheck.Arbitrary
+import org.scalacheck.Arbitrary._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import services.cachekeys.CacheKey
@@ -34,11 +34,6 @@ class MetaDataConverterSpec extends WordSpec
 
   implicit val arbitraryCacheMap: Arbitrary[CacheMap] =
     Arbitrary(arbitrary[String].map(CacheMap(_, Map())))
-
-  implicit class OptionOps[A](val option: Option[A]) {
-
-    def >>[B](f: A => Option[B]): Option[B] = option.flatMap(f)
-  }
 
   "asMetaData" should {
 
@@ -65,9 +60,7 @@ class MetaDataConverterSpec extends WordSpec
 
         val data = cacheMap.getEntry[References](CacheKey.references.key)
 
-        val dec = MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.references.identifier)
-          .declaration
+        val dec = MetaDataConverter.asMetaData(cacheMap)(CacheKey.references.identifier).declaration
 
         dec.flatMap(_.typeCode) mustBe data.flatMap(d => d.typeCode.flatMap(a => d.typerCode.map(b => a + b)))
         dec.flatMap(_.functionalReferenceId) mustBe data.flatMap(_.functionalReferenceId)
@@ -147,11 +140,77 @@ class MetaDataConverterSpec extends WordSpec
 
         val data = cacheMap.getEntry[InvoiceAndCurrency](CacheKey.invoiceAndCurrency.key)
 
+        val dec = MetaDataConverter.asMetaData(cacheMap)(CacheKey.invoiceAndCurrency.identifier).declaration
+
+        dec.flatMap(_.invoiceAmount) mustBe data.flatMap(_.invoice)
+        dec.flatMap(_.currencyExchanges.headOption) mustBe data.flatMap(_.currency)
+      }
+    }
+
+    "convert using SellerId" in {
+
+      val cacheMapGen = CacheMapLens.seller.setArbitrary(arbitrary[ImportExportParty])
+
+      forAll(cacheMapGen) { cacheMap =>
+
+        val data = cacheMap.getEntry[ImportExportParty](CacheKey.seller.key)
+
+        MetaDataConverter
+          .asMetaData(cacheMap)(CacheKey.seller.identifier)
+          .declaration
+          .flatMap(_.goodsShipment)
+          .flatMap(_.seller) mustBe data
+      }
+    }
+
+    "convert using BuyerId" in {
+
+      val cacheMapGen = CacheMapLens.buyer.setArbitrary(arbitrary[ImportExportParty])
+
+      forAll(cacheMapGen) { cacheMap =>
+
+        val data = cacheMap.getEntry[ImportExportParty](CacheKey.buyer.key)
+
+        MetaDataConverter
+          .asMetaData(cacheMap)(CacheKey.buyer.identifier)
+          .declaration
+          .flatMap(_.goodsShipment)
+          .flatMap(_.buyer) mustBe data
+      }
+    }
+
+    "convert using SummaryOfGoodsId" in {
+
+      val cacheMapGen = CacheMapLens.summaryOfGoods.setArbitrary(arbitrary[SummaryOfGoods])
+
+      forAll(cacheMapGen) { cacheMap =>
+
+        val data = cacheMap.getEntry[SummaryOfGoods](CacheKey.summaryOfGoods.key)
+
+        val dec = MetaDataConverter.asMetaData(cacheMap)(CacheKey.summaryOfGoods.identifier).declaration
+
+        dec.flatMap(_.totalPackageQuantity) mustBe data.flatMap(_.totalPackageQuantity)
+        dec.flatMap(_.totalGrossMassMeasure) mustBe data.flatMap(_.totalGrossMassMeasure)
+      }
+    }
+
+    "convert using TransportId" in {
+
+      val cacheMapGen = CacheMapLens.transport.setArbitrary(arbitrary[Transport])
+
+      forAll(cacheMapGen) { cacheMap =>
+
+        val data = cacheMap.getEntry[Transport](CacheKey.transport.key)
+
         val dec = MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.invoiceAndCurrency.identifier)
+          .asMetaData(cacheMap)(CacheKey.transport.identifier)
           .declaration
 
+        val consignment = dec.flatMap(_.goodsShipment).flatMap(_.consignment)
 
+        dec.flatMap(_.borderTransportMeans) mustBe data.flatMap(_.borderTransportMeans)
+        consignment.flatMap(_.containerCode) mustBe data.flatMap(_.containerCode.map(_.toString))
+        consignment.flatMap(_.arrivalTransportMeans) mustBe data.flatMap(_.arrivalTransportMeans)
       }
     }
   }
