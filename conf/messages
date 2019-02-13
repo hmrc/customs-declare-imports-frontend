@@ -47,7 +47,6 @@ common.hints.eori=Economic Operator Registration and Identification (EORI) numbe
 common.hints.statusCode=This code declares the way in which the declarant is representing the Importer.
 
 ## specific pages
-pages.references.title=Reference Numbers
 pages.references.form.legend=References
 
 pages.exporter.details.title=Exporter'’s Details
@@ -329,13 +328,13 @@ declarantDetails.address.postcode=Postcode
 declarantDetails.id=EORI number
 
 ## References
-references.title=Reference Numbers
-references.heading=Reference Numbers
-references.typeCode=Declaration Type
-references.typerCode=Additional Declaration Type
-references.traderAssignedReferenceId=Reference Number/UCR
+references.title=Reference numbers
+references.heading=Reference numbers
+references.typeCode=Declaration type
+references.typerCode=Additional declaration type
+references.traderAssignedReferenceId=Reference number/UCR
 references.functionalReferenceId=LRN
-references.transactionNatureCode=Nature of Transaction
+references.transactionNatureCode=Nature of transaction
 
 ## Exporter details
 exporterDetails.title=Exporter
