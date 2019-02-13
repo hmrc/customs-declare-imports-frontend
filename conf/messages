@@ -47,10 +47,6 @@ common.hints.eori=Economic Operator Registration and Identification (EORI) numbe
 common.hints.statusCode=This code declares the way in which the declarant is representing the Importer.
 
 ## specific pages
-# (I noted most use title case for title but not for form heading so have made it consistently that way, for right or wrong - please correct if it is the latter)
-pages.declarant.details.title=Declarant'’s Details
-pages.declarant.details.form.legend=Declarant'’s details
-
 pages.references.title=Reference Numbers
 pages.references.form.legend=References
 
@@ -323,10 +319,10 @@ contains.required=This is a mandatory field. Please select from one of the avail
 contains.optional=When specified, the value of this field must be one of the available options
 
 ## Declarant details
-declarantDetails.title=Declarant
-declarantDetails.heading=Declarant
+declarantDetails.title=Declarant'’s details
+declarantDetails.heading=Declarant'’s details
 declarantDetails.name=Name
-declarantDetails.address.line=Street and Number
+declarantDetails.address.line=Street and number
 declarantDetails.address.cityName=City
 declarantDetails.address.countryCode=Country
 declarantDetails.address.postcode=Postcode
