@@ -49,9 +49,6 @@ common.hints.statusCode=This code declares the way in which the declarant is rep
 ## specific pages
 pages.references.form.legend=References
 
-pages.representative.details.title=Representative'’s Details
-pages.representative.details.form.legend=Representative'’s details
-
 pages.importer.details.title=Importer'’s Details
 pages.importer.details.form.legend=Importer'’s details
 
@@ -344,15 +341,15 @@ exporterDetails.address.postcode=Postcode
 exporterDetails.id=EORI number
 
 ## Representative details
-representativeDetails.title=Representative
-representativeDetails.heading=Representative
+representativeDetails.title=Representative'’s details
+representativeDetails.heading=Representative'’s details
 representativeDetails.name=Name
 representativeDetails.address.line=Street and Number
 representativeDetails.address.cityName=City
 representativeDetails.address.country=Country
 representativeDetails.address.postcode=Postcode
 representativeDetails.id=EORI number
-representativeDetails.statusCode=Status Code
+representativeDetails.statusCode=Status code
 
 ## Delivery terms
 deliveryTerms.title=Delivery terms
