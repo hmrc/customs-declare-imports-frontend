@@ -30,7 +30,7 @@ object Monoid extends MonoidInstances {
 
   def apply[T](implicit ev: Monoid[T]): Monoid[T] = ev
 
-  def empty[T: Monoid]: T = Monoid(implicitly[Monoid[T]]).empty
+  def empty[T: Monoid]: T = implicitly[Monoid[T]].empty
 
   object ops {
 
