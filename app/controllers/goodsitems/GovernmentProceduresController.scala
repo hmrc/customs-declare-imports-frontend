@@ -19,7 +19,6 @@ package controllers.goodsitems
 import config.AppConfig
 import controllers.{Actions, CustomsController}
 import domain.DeclarationFormats._
-import domain.GovernmentAgencyGoodsItem
 import forms.DeclarationFormMapping._
 import javax.inject.{Inject, Singleton}
 import play.api.data.Form
@@ -27,7 +26,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.wco.dec.GovernmentProcedure
+import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, GovernmentProcedure}
 
 @Singleton
 class GovernmentProceduresController @Inject()(actions: Actions, cacheService: CustomsCacheService)
@@ -55,7 +54,7 @@ class GovernmentProceduresController @Inject()(actions: Actions, cacheService: C
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(governmentProcedures = goodsItem.governmentProcedures :+ form)
-              case None => GovernmentAgencyGoodsItem(governmentProcedures = Seq(form))
+              case None => GovernmentAgencyGoodsItem(governmentProcedures = Seq(form), sequenceNumeric = 0)
             }
             cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map {
               _ => Redirect(routes.GovernmentProceduresController.onPageLoad())

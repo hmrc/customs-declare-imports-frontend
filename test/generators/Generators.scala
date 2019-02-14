@@ -17,7 +17,7 @@
 package generators
 
 import config.Options
-import domain.{GovernmentAgencyGoodsItem, _}
+import domain._
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
 import org.scalacheck.Arbitrary._
@@ -344,7 +344,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield ValuationAdjustment(additionCode)
   }
 
-  implicit val arbitraryGoodsItemValueInformation: Arbitrary[GoodsItemValueInformation] = Arbitrary {
+  implicit val arbitraryGovernmentAgencyGoodsItem: Arbitrary[GovernmentAgencyGoodsItem] = Arbitrary {
     for {
       customsValueAmount <- option(arbitrary[BigDecimal].map(_.max(9999999999999999.99999)))
       sequenceNumeric <- arbitrary[Int].map(_.max(99999))
@@ -354,13 +354,6 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       ucr <- option(arbitraryUcr.arbitrary)
       exportCountry <- option(arbitraryExportCountry.arbitrary)
       valuationAdjustment <- option(arbitraryValuationAdjustment.arbitrary)
-    } yield GoodsItemValueInformation(customsValueAmount, sequenceNumeric,
-      statisticalValueAmount, transactionNatureCode, destination, ucr, exportCountry, valuationAdjustment)
-  }
-
-  implicit val arbitraryGovernmentAgencyGoodsItem: Arbitrary[GovernmentAgencyGoodsItem] = Arbitrary {
-    for {
-      goodsItemValue <- option(arbitraryGoodsItemValueInformation.arbitrary)
       additionalDocuments <- Gen.listOfN(1,arbitraryGovernmentAgencyGoodsItemAdditionalDocument.arbitrary)
       additionalInformations <- Gen.listOfN(1, arbitraryAdditionalInfo.arbitrary)
       aeoMutualRecognitionParties <- Gen.listOfN(1, arbitraryRoleBasedParty.arbitrary)
@@ -371,8 +364,26 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       packagings <- Gen.listOfN(1, arbitraryPackaging.arbitrary)
       previousDocuments <- Gen.listOfN(1, arbitraryPreviousDocument.arbitrary)
       if(additionalDocuments.size > 0 )
-    } yield GovernmentAgencyGoodsItem(goodsItemValue, additionalDocuments, additionalInformations, aeoMutualRecognitionParties,
-      domesticParties, governmentProcedures, manufacturers, origins, packagings, previousDocuments)
+    } yield {
+      GovernmentAgencyGoodsItem(
+        customsValueAmount = customsValueAmount,
+        sequenceNumeric = sequenceNumeric,
+        statisticalValueAmount = statisticalValueAmount,
+        transactionNatureCode = transactionNatureCode,
+        additionalDocuments = additionalDocuments,
+        additionalInformations = additionalInformations,
+        aeoMutualRecognitionParties = aeoMutualRecognitionParties,
+        destination = destination,
+        domesticDutyTaxParties = domesticParties,
+        exportCountry = exportCountry,
+        governmentProcedures = governmentProcedures,
+        manufacturers = manufacturers,
+        origins = origins,
+        packagings = packagings,
+        previousDocuments = previousDocuments,
+        ucr = ucr,
+        valuationAdjustment = valuationAdjustment)
+    }
   }
 
   implicit val arbitraryTransportEquipment = Arbitrary {

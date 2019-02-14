@@ -16,7 +16,7 @@
 
 package services.cachekeys
 
-import domain.{GovernmentAgencyGoodsItem, InvoiceAndCurrency, References, SummaryOfGoods, _}
+import domain.{InvoiceAndCurrency, References, SummaryOfGoods, _}
 import uk.gov.hmrc.wco.dec._
 import enumeratum._
 

@@ -18,7 +18,6 @@ package controllers
 
 import config.AppConfig
 import domain.DeclarationFormats._
-import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
 import forms.DeclarationFormMapping._
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
@@ -36,7 +35,7 @@ import scala.concurrent.Future
 class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
   (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
 
-  val goodsItemValueInformationForm: Form[GoodsItemValueInformation] = Form(goodsItemValueInformationMapping)
+  val governmentAgencyGoodsItemForm: Form[GovernmentAgencyGoodsItem] = Form(goodsItemValueInformationMapping)
   val originsForm: Form[Origin] = Form(originMapping)
   val namedEntityWithAddressForm: Form[NamedEntityWithAddress] = Form(namedEntityWithAddressMapping)
   val packagingForm: Form[Packaging] = Form(packagingMapping)
@@ -46,23 +45,22 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
 
   def showGoodsItemValuePage(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit req =>
-      cacheService.fetchAndGetEntry[GoodsItemValueInformation](req.eori.value,
+      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](req.eori.value,
         goodsItemValueInformationKey).map {
-        case Some(form) => Ok(views.html.goods_item_value(goodsItemValueInformationForm.fill(form)))
-        case _ => Ok(views.html.goods_item_value(goodsItemValueInformationForm))
+        case Some(form) => Ok(views.html.goods_item_value(governmentAgencyGoodsItemForm.fill(form)))
+        case _ => Ok(views.html.goods_item_value(governmentAgencyGoodsItemForm))
       }
   }
 
   def submitGoodsItemValueSection(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>
-      goodsItemValueInformationForm.bindFromRequest().fold(
-        (formWithErrors: Form[GoodsItemValueInformation]) =>
-          Future.successful(BadRequest((views.html.goods_item_value(formWithErrors)))),
+      governmentAgencyGoodsItemForm.bindFromRequest().fold(
+        formWithErrors =>
+          Future.successful(BadRequest(views.html.goods_item_value(formWithErrors))),
         form => {
           Logger.info("goodsItemValue form --->" + form)
-          val updatedGoodsItem = GovernmentAgencyGoodsItem(goodsItemValue = Some(form))
 
-          cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map {
+          cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, form).map {
             _ => Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
           }
         })
@@ -107,7 +105,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(origins = goodsItem.origins :+ form)
-              case None => GovernmentAgencyGoodsItem(origins = Seq(form))
+              case None => GovernmentAgencyGoodsItem(origins = Seq(form), sequenceNumeric = 0)
             }
 
             cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key,
@@ -126,7 +124,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(manufacturers = goodsItem.manufacturers :+ form)
-              case None => GovernmentAgencyGoodsItem(manufacturers = Seq(form))
+              case None => GovernmentAgencyGoodsItem(manufacturers = Seq(form), sequenceNumeric = 0)
             }
 
             cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
@@ -145,7 +143,7 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
             Logger.info("NamedEntityWithAddress form --->" + form)
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(packagings = goodsItem.packagings :+ form)
-              case None => GovernmentAgencyGoodsItem(packagings = Seq(form))
+              case None => GovernmentAgencyGoodsItem(packagings = Seq(form), sequenceNumeric = 0)
             }
 
             cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>

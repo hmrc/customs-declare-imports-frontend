@@ -19,7 +19,6 @@ package controllers.goodsitems
 import config.AppConfig
 import controllers.{Actions, CustomsController}
 import domain.DeclarationFormats._
-import domain.GovernmentAgencyGoodsItem
 import forms.DeclarationFormMapping._
 import javax.inject.{Inject, Singleton}
 import play.api.data.Form
@@ -27,7 +26,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.wco.dec.AdditionalInformation
+import uk.gov.hmrc.wco.dec.{AdditionalInformation, GovernmentAgencyGoodsItem}
 
 @Singleton
 class AdditionalInformationController @Inject()(actions: Actions, cacheService: CustomsCacheService)
@@ -53,7 +52,7 @@ class AdditionalInformationController @Inject()(actions: Actions, cacheService: 
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(additionalInformations = form +: goodsItem.additionalInformations)
-              case None => GovernmentAgencyGoodsItem(additionalInformations = Seq(form))
+              case None => GovernmentAgencyGoodsItem(additionalInformations = Seq(form), sequenceNumeric = 0)
             }
 
             cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>

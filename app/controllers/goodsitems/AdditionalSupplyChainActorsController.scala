@@ -19,7 +19,6 @@ package controllers.goodsitems
 import config.AppConfig
 import controllers.{Actions, CustomsController}
 import domain.DeclarationFormats._
-import domain.GovernmentAgencyGoodsItem
 import forms.DeclarationFormMapping._
 import javax.inject.{Inject, Singleton}
 import play.api.data.Form
@@ -28,7 +27,7 @@ import play.api.mvc.{Action, AnyContent, Request}
 import play.twirl.api.Html
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.wco.dec.RoleBasedParty
+import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, RoleBasedParty}
 import views.html.role_based_party
 
 @Singleton
@@ -61,7 +60,7 @@ class AdditionalSupplyChainActorsController @Inject()(actions: Actions, cacheSer
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(aeoMutualRecognitionParties = goodsItem.aeoMutualRecognitionParties :+ form)
-              case None => GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = Seq(form))
+              case None => GovernmentAgencyGoodsItem(aeoMutualRecognitionParties = Seq(form), sequenceNumeric = 0)
             }
             cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
               Redirect(routes.AdditionalSupplyChainActorsController.onPageLoad())
