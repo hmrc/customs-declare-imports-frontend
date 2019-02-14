@@ -18,14 +18,13 @@ package controllers
 
 import com.google.inject.Inject
 import config.AppConfig
-import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import views.html.{delivery_terms, location_of_goods}
+import views.html.location_of_goods
 
 import scala.concurrent.Future
 

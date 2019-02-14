@@ -37,5 +37,4 @@ class SubmissionJourneySpec extends WordSpec with MustMatchers {
       journey.next(journey.screens.last, true).left.get must be(journey.end)
     }
   }
-
 }
