@@ -43,6 +43,8 @@ object CacheKey {
 
   val buyer = CacheKey("Buyer", new Identifier[ImportExportParty] {})
 
+  val locationOfGoods = CacheKey("LocationOfGoods", new Identifier[LocationOfGoods] {})
+
   val summaryOfGoods = CacheKey("SummaryOfGoods", new Identifier[SummaryOfGoods] {})
 
   val transport = CacheKey("Transport", new Identifier[Transport] {})

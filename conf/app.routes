@@ -29,6 +29,8 @@ POST        /submit-declaration/delivery-terms                 controllers.Deliv
 GET         /submit-declaration/invoice-and-currency           controllers.InvoiceAndCurrencyController.onPageLoad()
 POST        /submit-declaration/invoice-and-currency           controllers.InvoiceAndCurrencyController.onSubmit()
 
+GET         /submit-declaration/location-of-goods              controllers.LocationOfGoodsController.onPageLoad()
+
 GET         /submit-declaration/seller-details                 controllers.SellerDetailsController.onPageLoad()
 POST        /submit-declaration/seller-details                 controllers.SellerDetailsController.onSubmit()
 

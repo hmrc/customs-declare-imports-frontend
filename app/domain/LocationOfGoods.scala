@@ -28,8 +28,5 @@ case class LocationOfGoods(goodsLocation: Option[GoodsLocation],
 
 object LocationOfGoods {
 
-/*
   implicit val format = Json.format[LocationOfGoods]
-*/
-
 }
