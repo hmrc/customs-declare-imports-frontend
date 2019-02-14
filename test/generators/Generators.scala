@@ -507,7 +507,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryGoodsLocation: Arbitrary[GoodsLocation] = Arbitrary {
     for {
       name     <- option(nonEmptyString.map(_.take(35)))
-      id       <- intBetweenRange(0, 999).map(_.toString)
+      id       <- nonEmptyString.map(_.take(3))
       typeCode <- option(oneOf(config.Options.goodsLocationTypeCode.map(_._1)))
       address  <- option(arbitrary[GoodsLocationAddress])
     } yield {
