@@ -408,6 +408,21 @@ buyerDetails.address.postcode=Postcode
 buyerDetails.communication.id=Phone number
 buyerDetails.id=EORI number
 
+## Location of goods
+locationOfGoods.title=Location of goods
+locationOfGoods.heading=Location of goods
+locationOfGoods.goodsLocation.name=Identification of location
+locationOfGoods.goodsLocation.id=Additional identifier
+locationOfGoods.goodsLocation.typeCode=Type of location
+locationOfGoods.goodsLocationAddress.line=Street and number
+locationOfGoods.goodsLocationAddress.postcodeId=Postcode
+locationOfGoods.goodsLocationAddress.cityName=City
+locationOfGoods.goodsLocationAddress.countryCode=Country
+locationOfGoods.goodsLocationAddress.typeCode=Qualifier of the identification
+locationOfGoods.destination.countryCode=Country of destination code
+locationOfGoods.exportCountry.id=Country of dispatch/export code
+locationOfGoods.loadingLocation.id=Airport code
+
 ## Summary of goods
 summaryOfGoods.title=About the goods
 summaryOfGoods.heading=About the goods
