@@ -157,7 +157,13 @@ object MetaDataMapping {
         obligationGuarantees = cache.getEntry[Seq[ObligationGuarantee]](guaranteeTypes.key).getOrElse(Seq.empty)
       )))
 
-    case GovAgencyGoodsItemsListId     => MetaData()
+    case GovAgencyGoodsItemsListId =>
+      MetaData(declaration = Some(Declaration(
+        goodsShipment = Some(GoodsShipment(
+          governmentAgencyGoodsItems = cache.getEntry[Seq[GovernmentAgencyGoodsItem]](govAgencyGoodsItemsList.key).getOrElse(Seq.empty)
+        ))
+      )))
+
     case GovAgencyGoodsItemId          => MetaData()
     case GovAgencyGoodsItemReferenceId => MetaData()
   }

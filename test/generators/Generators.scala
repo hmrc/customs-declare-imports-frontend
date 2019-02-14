@@ -249,15 +249,16 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryGovernmentAgencyGoodsItemAdditionalDocument: Arbitrary[GovernmentAgencyGoodsItemAdditionalDocument] = Arbitrary {
     for {
-      categoryCode <- option(numStr.map(_.take(1)))
+      categoryCode <- option(numChar.map(_.toString))
       effectiveDateTime <- option(arbitrary[DateTimeElement])
       id <- option(nonEmptyString.map(_.take(20)))
       name <- option(nonEmptyString.map(_.take(20)))
-      typeCode <- option(numStr.map(_.take(3)))
-      lpcoExemptionCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
-      submitter <- option(arbitraryGovernmentAgencyGoodsItemAdditionalDocumentSubmitter.arbitrary)
-      writeOff <- option(arbitrary[WriteOff])
-      if categoryCode.exists(_.size ==1) && typeCode.exists(_.size == 3) && lpcoExemptionCode.exists(_.size == 2 && submitter.isDefined && writeOff.isDefined)
+      typeCode <- option(listOfN(3, numChar).map(_.mkString))
+      lpcoExemptionCode <- option(listOfN(2, alphaChar).map(_.mkString))
+      submitter <- arbitrary[GovernmentAgencyGoodsItemAdditionalDocumentSubmitter]
+        .flatMap(x => lpcoExemptionCode.fold(option(x))(_ => some(x)))
+      writeOff <- arbitrary[WriteOff]
+        .flatMap(c => lpcoExemptionCode.fold(option(c))(_ => some(c)))
     } yield {
       GovernmentAgencyGoodsItemAdditionalDocument(categoryCode, effectiveDateTime, id, name, typeCode, lpcoExemptionCode, submitter, writeOff)
     }

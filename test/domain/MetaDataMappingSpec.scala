@@ -57,7 +57,8 @@ class MetaDataMappingSpec extends WordSpec
       CacheMapLens.domesticDutyTaxParty.set(list(arbitrary[RoleBasedParty])),
       CacheMapLens.additionsAndDeductions.set(list(arbitrary[ChargeDeduction])),
       CacheMapLens.containerIdNos.set(list(arbitrary[TransportEquipment])),
-      CacheMapLens.guaranteeTypes.set(list(arbitrary[ObligationGuarantee]))
+      CacheMapLens.guaranteeTypes.set(list(arbitrary[ObligationGuarantee])),
+      CacheMapLens.govAgencyGoodsItemsList.set(list(arbitrary[GovernmentAgencyGoodsItem]))
     ).foldLeft(const(Monoid.empty[CacheMap])) { case (acc, f) => f(acc) }
   }
 
@@ -341,6 +342,20 @@ class MetaDataMappingSpec extends WordSpec
           .declaration
           .map(_.obligationGuarantees)
           .exists(_.containsSlice(data.getOrElse(Seq.empty))) mustBe true
+      }
+    }
+
+    "convert using GovAgencyGoodsItemsListId" in {
+
+      forAll { cacheMap: CacheMap =>
+
+        val data = cacheMap.getEntry[Seq[GovernmentAgencyGoodsItem]](CacheKey.govAgencyGoodsItemsList.key)
+
+        MetaDataMapping
+          .produce(cacheMap)
+          .declaration
+          .flatMap(_.goodsShipment)
+          .map(_.governmentAgencyGoodsItems) mustBe data
       }
     }
   }
