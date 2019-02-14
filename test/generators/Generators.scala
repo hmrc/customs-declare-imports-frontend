@@ -292,7 +292,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryDestination: Arbitrary[Destination] = Arbitrary {
     for {
-      countryCode <- option(arbitrary[String].map(_.take(3)))
+      countryCode <- option(oneOf(config.Options.countryOptions.map(_._1)))
       regionId <- option(arbitrary[String].map(_.take(9)))
     } yield Destination(countryCode, regionId)
   }
@@ -306,7 +306,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryExportCountry: Arbitrary[ExportCountry] = Arbitrary {
     for {
-      id <- arbitrary[String].map(_.take(2)) // either "102" or "304"
+      id <- oneOf(config.Options.countryTypes.map(_._1)) // either "102" or "304"
     } yield ExportCountry(id)
   }
 
@@ -474,6 +474,50 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       borderOpt = zip(border.registrationNationalityCode, border.modeCode).map(_ => border)
     } yield {
       Transport(container, borderOpt, arrival)
+    }
+  }
+
+  implicit val arbitraryGoodsLocationAddress: Arbitrary[GoodsLocationAddress] = Arbitrary {
+    for {
+      line        <- option(nonEmptyString.map(_.take(70)))
+      postcodeId  <- option(nonEmptyString.map(_.take(9)))
+      cityName    <- option(nonEmptyString.map(_.take(35)))
+      countryCode <- option(oneOf(config.Options.countryOptions.map(_._1)))
+      typeCode    <- option(oneOf(config.Options.goodsLocationTypeCode.map(_._1)))
+    } yield {
+      GoodsLocationAddress(typeCode, cityName, countryCode, line, postcodeId)
+    }
+  }
+
+  implicit val arbitraryGoodsLocation: Arbitrary[GoodsLocation] = Arbitrary {
+    for {
+      name     <- option(nonEmptyString.map(_.take(35)))
+      id       <- intBetweenRange(0, 999).map(_.toString)
+      typeCode <- option(oneOf(config.Options.goodsLocationTypeCode.map(_._1)))
+      address  <- option(arbitrary[GoodsLocationAddress])
+    } yield {
+      GoodsLocation(name, id, typeCode, address)
+    }
+  }
+
+  implicit val arbitraryLoadingLocation: Arbitrary[LoadingLocation] = Arbitrary {
+    for {
+      name <- option(nonEmptyString.map(_.take(256)))
+      id   <- option(nonEmptyString.map(_.take(17)))
+    } yield {
+      LoadingLocation(name, id)
+    }
+  }
+
+  implicit val arbitraryLocationOfGoods: Arbitrary[LocationOfGoods] = Arbitrary {
+    for {
+      goodsLocation        <- option(arbitrary[GoodsLocation])
+      goodsLocationAddress <- option(arbitrary[GoodsLocationAddress])
+      destination          <- option(arbitrary[Destination])
+      exportCountry        <- option(arbitrary[ExportCountry])
+      loadingLocation      <- option(arbitrary[LoadingLocation])
+    } yield {
+      LocationOfGoods(goodsLocation, goodsLocationAddress, destination, exportCountry, loadingLocation)
     }
   }
 

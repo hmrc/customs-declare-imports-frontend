@@ -127,6 +127,9 @@ object DeclarationFormats extends ObligationGuaranteeFormats {
   implicit val borderTransportMeansFormats = Json.format[BorderTransportMeans]
   implicit val transportMeansFormats = Json.format[TransportMeans]
 
+  implicit val goodsLocationAddressFormats = Json.format[GoodsLocationAddress]
+  implicit val goodsLocationFormats = Json.format[GoodsLocation]
+
 }
 
 trait ObligationGuaranteeFormats {
