@@ -18,7 +18,7 @@ package domain
 
 import domain.DeclarationFormats._
 import generators.{Generators, Lenses}
-import org.scalacheck.Arbitrary
+import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
@@ -35,6 +35,8 @@ class MetaDataConverterSpec extends WordSpec
   with Lenses {
 
   override implicit val arbitraryCacheMap: Arbitrary[CacheMap] = Arbitrary {
+    def list[A]: Gen[A] => Gen[List[A]] = varListOf[A](10) _
+
     List(
       CacheMapLens.declarantDetails.set(arbitrary[ImportExportParty]),
       CacheMapLens.references.set(arbitrary[References]),
@@ -47,15 +49,15 @@ class MetaDataConverterSpec extends WordSpec
       CacheMapLens.buyer.set(arbitrary[ImportExportParty]),
       CacheMapLens.summaryOfGoods.set(arbitrary[SummaryOfGoods]),
       CacheMapLens.transport.set(arbitrary[Transport]),
-      CacheMapLens.authorisationHolders.set(listOf(arbitrary[AuthorisationHolder])),
-      CacheMapLens.guaranteeReferences.set(listOf(arbitrary[ObligationGuarantee])),
-      CacheMapLens.previousDocuments.set(listOf(arbitrary[PreviousDocument])),
-      CacheMapLens.additionalDocuments.set(listOf(arbitrary[AdditionalDocument])),
-      CacheMapLens.additionalSupplyChainActors.set(listOf(arbitrary[RoleBasedParty])),
-      CacheMapLens.domesticDutyTaxParty.set(listOf(arbitrary[RoleBasedParty])),
-      CacheMapLens.additionsAndDeductions.set(listOf(arbitrary[ChargeDeduction])),
-      CacheMapLens.containerIdNos.set(listOf(arbitrary[TransportEquipment])),
-      CacheMapLens.guaranteeTypes.set(listOf(arbitrary[ObligationGuarantee]))
+      CacheMapLens.authorisationHolders.set(list(arbitrary[AuthorisationHolder])),
+      CacheMapLens.guaranteeReferences.set(list(arbitrary[ObligationGuarantee])),
+      CacheMapLens.previousDocuments.set(list(arbitrary[PreviousDocument])),
+      CacheMapLens.additionalDocuments.set(list(arbitrary[AdditionalDocument])),
+      CacheMapLens.additionalSupplyChainActors.set(list(arbitrary[RoleBasedParty])),
+      CacheMapLens.domesticDutyTaxParty.set(list(arbitrary[RoleBasedParty])),
+      CacheMapLens.additionsAndDeductions.set(list(arbitrary[ChargeDeduction])),
+      CacheMapLens.containerIdNos.set(list(arbitrary[TransportEquipment])),
+      CacheMapLens.guaranteeTypes.set(list(arbitrary[ObligationGuarantee]))
     ).foldLeft(const(Monoid.empty[CacheMap])) { case (acc, f) => f(acc) }
   }
 
@@ -68,7 +70,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[ImportExportParty](CacheKey.declarantDetails.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.declarantDetails.identifier)
+          .produce(cacheMap)
           .declaration
           .flatMap(_.declarant) mustBe data
       }
@@ -80,7 +82,7 @@ class MetaDataConverterSpec extends WordSpec
 
         val data = cacheMap.getEntry[References](CacheKey.references.key)
 
-        val dec = MetaDataConverter.asMetaData(cacheMap)(CacheKey.references.identifier).declaration
+        val dec = MetaDataConverter.produce(cacheMap).declaration
 
         dec.flatMap(_.typeCode) mustBe data.flatMap(d => d.typeCode.flatMap(a => d.typerCode.map(b => a + b)))
         dec.flatMap(_.functionalReferenceId) mustBe data.flatMap(_.functionalReferenceId)
@@ -97,7 +99,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[ImportExportParty](CacheKey.exporter.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.exporter.identifier)
+          .produce(cacheMap)
           .declaration
           .flatMap(_.exporter) mustBe data
       }
@@ -110,7 +112,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[Agent](CacheKey.representative.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.representative.identifier)
+          .produce(cacheMap)
           .declaration
           .flatMap(_.agent) mustBe data
       }
@@ -123,7 +125,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[ImportExportParty](CacheKey.importer.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.importer.identifier)
+          .produce(cacheMap)
           .declaration
           .flatMap(_.goodsShipment)
           .flatMap(_.importer) mustBe data
@@ -137,7 +139,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[TradeTerms](CacheKey.tradeTerms.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.tradeTerms.identifier)
+          .produce(cacheMap)
           .declaration
           .flatMap(_.goodsShipment)
           .flatMap(_.tradeTerms) mustBe data
@@ -150,7 +152,7 @@ class MetaDataConverterSpec extends WordSpec
 
         val data = cacheMap.getEntry[InvoiceAndCurrency](CacheKey.invoiceAndCurrency.key)
 
-        val dec = MetaDataConverter.asMetaData(cacheMap)(CacheKey.invoiceAndCurrency.identifier).declaration
+        val dec = MetaDataConverter.produce(cacheMap).declaration
 
         dec.flatMap(_.invoiceAmount) mustBe data.flatMap(_.invoice)
         dec.flatMap(_.currencyExchanges.headOption) mustBe data.flatMap(_.currency)
@@ -164,7 +166,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[ImportExportParty](CacheKey.seller.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.seller.identifier)
+          .produce(cacheMap)
           .declaration
           .flatMap(_.goodsShipment)
           .flatMap(_.seller) mustBe data
@@ -178,7 +180,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[ImportExportParty](CacheKey.buyer.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.buyer.identifier)
+          .produce(cacheMap)
           .declaration
           .flatMap(_.goodsShipment)
           .flatMap(_.buyer) mustBe data
@@ -191,7 +193,7 @@ class MetaDataConverterSpec extends WordSpec
 
         val data = cacheMap.getEntry[SummaryOfGoods](CacheKey.summaryOfGoods.key)
 
-        val dec = MetaDataConverter.asMetaData(cacheMap)(CacheKey.summaryOfGoods.identifier).declaration
+        val dec = MetaDataConverter.produce(cacheMap).declaration
 
         dec.flatMap(_.totalPackageQuantity) mustBe data.flatMap(_.totalPackageQuantity)
         dec.flatMap(_.totalGrossMassMeasure) mustBe data.flatMap(_.totalGrossMassMeasure)
@@ -205,7 +207,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[Transport](CacheKey.transport.key)
 
         val dec = MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.transport.identifier)
+          .produce(cacheMap)
           .declaration
 
         val consignment = dec.flatMap(_.goodsShipment).flatMap(_.consignment)
@@ -223,7 +225,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[Seq[AuthorisationHolder]](CacheKey.authorisationHolders.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.authorisationHolders.identifier)
+          .produce(cacheMap)
           .declaration
           .map(_.authorisationHolders) mustBe data
       }
@@ -236,9 +238,10 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[Seq[ObligationGuarantee]](CacheKey.guaranteeReferences.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.guaranteeReferences.identifier)
+          .produce(cacheMap)
           .declaration
-          .map(_.obligationGuarantees) mustBe data
+          .map(_.obligationGuarantees)
+          .exists(_.containsSlice(data.getOrElse(Seq.empty))) mustBe true
       }
     }
 
@@ -249,7 +252,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[Seq[PreviousDocument]](CacheKey.previousDocuments.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.previousDocuments.identifier)
+          .produce(cacheMap)
           .declaration
           .flatMap(_.goodsShipment)
           .map(_.previousDocuments) mustBe data
@@ -263,7 +266,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[Seq[AdditionalDocument]](CacheKey.additionalDocuments.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.additionalDocuments.identifier)
+          .produce(cacheMap)
           .declaration
           .map(_.additionalDocuments) mustBe data
       }
@@ -276,7 +279,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[Seq[RoleBasedParty]](CacheKey.additionalSupplyChainActors.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.additionalSupplyChainActors.identifier)
+          .produce(cacheMap)
           .declaration
           .flatMap(_.goodsShipment)
           .map(_.aeoMutualRecognitionParties) mustBe data
@@ -290,7 +293,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[Seq[RoleBasedParty]](CacheKey.domesticDutyTaxParty.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.domesticDutyTaxParty.identifier)
+          .produce(cacheMap)
           .declaration
           .flatMap(_.goodsShipment)
           .map(_.domesticDutyTaxParties) mustBe data
@@ -304,7 +307,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[Seq[ChargeDeduction]](CacheKey.additionsAndDeductions.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.additionsAndDeductions.identifier)
+          .produce(cacheMap)
           .declaration
           .flatMap(_.goodsShipment)
           .flatMap(_.customsValuation)
@@ -319,7 +322,7 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[Seq[TransportEquipment]](CacheKey.containerIdNos.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.containerIdNos.identifier)
+          .produce(cacheMap)
           .declaration
           .flatMap(_.goodsShipment)
           .flatMap(_.consignment)
@@ -334,9 +337,10 @@ class MetaDataConverterSpec extends WordSpec
         val data = cacheMap.getEntry[Seq[ObligationGuarantee]](CacheKey.guaranteeTypes.key)
 
         MetaDataConverter
-          .asMetaData(cacheMap)(CacheKey.guaranteeTypes.identifier)
+          .produce(cacheMap)
           .declaration
-          .map(_.obligationGuarantees) mustBe data
+          .map(_.obligationGuarantees)
+          .exists(_.containsSlice(data.getOrElse(Seq.empty))) mustBe true
       }
     }
   }

@@ -82,8 +82,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     arbitrary[Int] suchThat (x => x < min || x > max)
 
   def nonBooleans: Gen[String] =
-    arbitrary[String]
-      .suchThat(_.nonEmpty)
+    nonEmptyString
       .suchThat(_ != "true")
       .suchThat(_ != "false")
 
@@ -110,6 +109,12 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   def numStrLongerThan(minLength: Int): Gen[String] =
     numStr suchThat (_.length > minLength)
+
+  def varListOf[A](max: Int)(gen: Gen[A]): Gen[List[A]] =
+    for {
+      i  <- choose(0, max)
+      xs <- listOfN(i, gen)
+    } yield xs
 
   def currencyGen: Gen[String] = oneOf(config.Options.currencyTypes.map(_._2))
   def countryGen: Gen[String] = oneOf(config.Options.countryOptions.map(_._1))
@@ -479,7 +484,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     }
   }
 
-  implicit val mapGen: Gen[Map[String, JsValue]] =
+  val mapGen: Gen[Map[String, JsValue]] =
     listOf(Gen.zip(arbitrary[String], arbitrary[String]).map {
       case (k, v) => Map[String, JsValue](k -> JsString(v))
     }).map(_.fold(Map())(_ ++ _))

@@ -26,7 +26,7 @@ import org.scalatest.{MustMatchers, WordSpec}
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 class OptionMonoidLaws          extends MonoidLaws(option(arbitrary[String]))
-class RecursiveOptionMonoidLaws extends MonoidLaws(option(zip(arbitrary[String], arbitrary[Int])))
+class RecursiveOptionMonoidLaws extends MonoidLaws(option(Generators.arbitraryAmount.arbitrary))
 class Tuple2MonoidLaws          extends MonoidLaws(zip(option(arbitrary[String]), option(arbitrary[Int])))
 class SeqMonoidLaws             extends MonoidLaws[Seq[String]](listOf(arbitrary[String]))
 class CacheMapMonoidLaws        extends MonoidLaws[CacheMap](Generators.arbitraryCacheMap.arbitrary)
@@ -39,7 +39,7 @@ abstract class MonoidLaws[T: Monoid](gen: Gen[T]) extends WordSpec
 
     forAll(gen) { instance =>
 
-      instance.append(Monoid.empty) mustBe instance
+      instance |+| Monoid.empty mustBe instance
     }
   }
 
@@ -47,7 +47,7 @@ abstract class MonoidLaws[T: Monoid](gen: Gen[T]) extends WordSpec
 
     forAll(gen) { instance =>
 
-      Monoid.empty.append(instance) mustBe instance
+      Monoid.empty |+| instance mustBe instance
     }
   }
 
@@ -55,7 +55,7 @@ abstract class MonoidLaws[T: Monoid](gen: Gen[T]) extends WordSpec
 
     forAll(gen, gen, gen) { (m1, m2, m3) =>
 
-      m1.append(m2).append(m3) mustBe m1.append(m2.append(m3))
+      m1 |+| m2 |+| m3 mustBe m1 |+| (m2 |+| m3)
     }
   }
 }

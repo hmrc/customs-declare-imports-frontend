@@ -24,7 +24,6 @@ trait Monoid[T] {
   def empty: T
 
   def append(l: T, r: T): T
-
 }
 
 object Monoid extends MonoidInstances {
@@ -37,14 +36,13 @@ object Monoid extends MonoidInstances {
 
     implicit class MonoidOps[T](val left: T) extends AnyVal {
 
-      def empty(implicit ev: Monoid[T]): T = ev.empty
-
-      def append(right: T)(implicit ev: Monoid[T]): T = ev.append(left, right)
+      def |+|(right: T)(implicit ev: Monoid[T]): T = ev.append(left, right)
     }
   }
 }
 
-trait MonoidInstances extends ProductTypeClassCompanion[Monoid] {
+trait MonoidInstances extends ProductTypeClassCompanion[Monoid]
+  with LowPriorityImplicitsMonoidInstances {
 
   import Monoid.ops._
 
@@ -53,15 +51,7 @@ trait MonoidInstances extends ProductTypeClassCompanion[Monoid] {
       override def empty: Option[A] = None
 
       override def append(l: Option[A], r: Option[A]): Option[A] =
-        l.flatMap(a => r.map(b => a.append(b)))
-    }
-
-  implicit def rightBiasedOptionMonoid[A]: Monoid[Option[A]] =
-    new Monoid[Option[A]] {
-      override def empty: Option[A] = None
-
-      override def append(l: Option[A], r: Option[A]): Option[A] =
-        r.fold(l)(Some(_))
+        l.fold(r)(a => r.fold(l)(b => Some(a |+| b)))
     }
 
   implicit def seqMonoid[A]: Monoid[Seq[A]] =
@@ -107,4 +97,15 @@ trait MonoidInstances extends ProductTypeClassCompanion[Monoid] {
           from(instance.append(to(l), to(r)))
       }
   }
+}
+
+trait LowPriorityImplicitsMonoidInstances {
+
+  implicit def rightBiasedOptionMonoid[A]: Monoid[Option[A]] =
+    new Monoid[Option[A]] {
+      override def empty: Option[A] = None
+
+      override def append(l: Option[A], r: Option[A]): Option[A] =
+        r.fold(l)(Some(_))
+    }
 }

@@ -22,8 +22,17 @@ import uk.gov.hmrc.wco.dec._
 import services.cachekeys.TypedIdentifier
 import services.cachekeys.TypedIdentifier._
 import services.cachekeys.CacheKey._
+import typeclasses.Monoid
 
 object MetaDataConverter {
+
+  import Monoid.ops._
+
+  def produce(cacheMap: CacheMap): MetaData = {
+    val applied = asMetaData(cacheMap)
+
+    TypedIdentifier.values.foldLeft(Monoid.empty[MetaData])((z, a) => z |+| applied(a))
+  }
 
   def asMetaData(cache: CacheMap): TypedIdentifier[_] => MetaData = {
 
@@ -148,7 +157,6 @@ object MetaDataConverter {
         obligationGuarantees = cache.getEntry[Seq[ObligationGuarantee]](guaranteeTypes.key).getOrElse(Seq.empty)
       )))
 
-    case _ => throw new MatchError("Hide exhaustivity warnings, remove before merging!!!!!!")
+    case _ => MetaData()
   }
-
 }
