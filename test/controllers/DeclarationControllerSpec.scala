@@ -18,6 +18,9 @@ package controllers
 
 import config.SubmissionJourney
 import domain.features.Feature
+import org.mockito.ArgumentMatchers.{any, eq => meq}
+import org.mockito.Mockito.verify
+import models.Cancellation
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -74,43 +77,48 @@ class DeclarationControllerSpec extends CustomsSpec
     }
   }
 
-  s"$post $submitUri" should {
+  s"$post $cancelUri" should {
     val payload = Map(
-      "declaration.declarant.name" -> "name1",
-      "declaration.declarant.address.line" -> "Address1",
-      "declaration.declarant.id" -> "12345678912341234",
-      "next-page" -> "references"
-    )
+      "reasonCode" -> "01",
+      "description" -> "a description")
     implicit val hc = HeaderCarrier()
 
-    "return 303" in withFeatures(enabled(Feature.submit)) {
+    "return 200 when the form is valid" in withFeatures(enabled(Feature.cancel)) {
       withSignedInUser() { (headers, session, tags) =>
-        withRequestAndFormBody(post, submitUri, headers, session, tags, payload) { resp =>
-          // TODO make assertions about handling of form submission
-          wasRedirected(journeyUri(SubmissionJourney.screens(1)), resp)
-        }
-      }
-    }
-    val errorsPayload = Map(
-      "declaration.declarant.name" -> "name1",
-      "declaration.declarant.address.line" -> "Address1",
-      "declaration.declarant.id" -> "41234",
-      "next-page" -> "references"
-    )
+        withImportsBackend
+        withRequestAndFormBody(post, cancelUri, headers, session, tags, payload) { resp =>
+          wasHtml(resp)
+          wasOk(resp)
 
-    "return to same page with errors" in withFeatures(enabled(Feature.submit)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withRequestAndFormBody(post, submitUri, headers, session, tags, errorsPayload) {
-          // TODO make assertions about form error handling
-          wasHtml
+          verify(mockCustomsDeclarationsConnector).cancelDeclaration(meq(Cancellation(mrn, payload("reasonCode").toInt, payload("description"))))(any(), any())
         }
       }
     }
 
-    "be behind a feature switch" in withFeatures(disabled(Feature.submit)) {
+    val errorsPayload: Map[String, String] = Map.empty
+
+    "return to same page with errors" in withFeatures(enabled(Feature.cancel)) {
       withSignedInUser() { (headers, session, tags) =>
-        withRequest(post, submitUri, headers, session, tags) {
+        withRequestAndFormBody(post, cancelUri, headers, session, tags, errorsPayload) { resp =>
+          wasBadRequest(resp)
+          includesHtmlLink(resp, "#description")
+          includesHtmlLink(resp, "#reasonCode")
+        }
+      }
+    }
+
+    "be behind a feature switch" in withFeatures(disabled(Feature.cancel)) {
+      withSignedInUser() { (headers, session, tags) =>
+        withRequest(post, cancelUri, headers, session, tags) {
           wasNotFound
+        }
+      }
+    }
+
+    "require authentication" in withFeatures(enabled(Feature.cancel)) {
+      withoutSignedInUser() { (_, _) =>
+        withRequest(post, cancelUri) { resp =>
+          wasRedirected(ggLoginRedirectUri(cancelUri), resp)
         }
       }
     }
@@ -120,7 +128,6 @@ class DeclarationControllerSpec extends CustomsSpec
   s"$get $cancelUri" should {
 
     "return 200" in withFeatures(enabled(Feature.cancel)) {
-      repo.insert(Submission(eori = randomUser.requiredEori, conversationId = randomString(16), lrn = None, mrn = Some(mrn)))
       withSignedInUser() { (headers, session, tags) =>
         withRequest(get, cancelUri, headers, session, tags) {
           wasOk
@@ -137,7 +144,7 @@ class DeclarationControllerSpec extends CustomsSpec
     }
 
     "require authentication" in withFeatures(enabled(Feature.cancel)) {
-      withoutSignedInUser() {
+      withoutSignedInUser() { (_, _) =>
         withRequest(get, cancelUri) { resp =>
           wasRedirected(ggLoginRedirectUri(cancelUri), resp)
         }

@@ -35,7 +35,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.concurrent.Execution.Implicits
 import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.test.FakeRequest
-import services.{CustomsCacheService, CustomsDeclarationsConnector}
+import services.{CustomsCacheService, CustomsDeclarationsConnector, CustomsDeclarationsResponse}
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.{CustomsFixtures, CustomsFutures}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -85,11 +85,12 @@ trait CustomsSpec extends PlaySpec
       .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
   }
 
-  def withImportsBackend[T](): OngoingStubbing[Future[Seq[Declaration]]] ={
+  def withImportsBackend[T](): OngoingStubbing[Future[Seq[Declaration]]] = {
     val decSeq = Seq(Declaration(DateTime.now, Some("LocalReferenceNumber"), Some("Mrn"),
       Seq(DeclarationAction(DateTime.now(), DeclarationActionType.SUBMISSION, Seq(DeclarationNotification(11, "conversationId", DateTime.now()))))))
 
-      when(mockCustomsDeclarationsConnector.getDeclarations(any(), any())).thenReturn(Future.successful(decSeq))
+    when(mockCustomsDeclarationsConnector.cancelDeclaration(any())(any(), any())).thenReturn(Future.successful(CustomsDeclarationsResponse("conversationId")))
+    when(mockCustomsDeclarationsConnector.getDeclarations(any(), any())).thenReturn(Future.successful(decSeq))
   }
 
   def withCachingUsingKey[T](dataToReturn: Option[T], id: String): OngoingStubbing[Future[CacheMap]]  = {

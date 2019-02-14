@@ -21,9 +21,11 @@ import java.util.concurrent.TimeoutException
 
 import akka.actor.ActorSystem
 import domain.auth.SignedInUser
+import models.Cancellation
 import org.scalatest.OptionValues
 import play.api.Configuration
 import play.api.http.{ContentTypes, HeaderNames, HttpVerbs, Status}
+import play.api.libs.json.{Json, Writes}
 import play.api.libs.ws.WSClient
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.ReadPreference
@@ -61,18 +63,20 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
 
   val aRandomSubmitDeclaration: MetaData = randomSubmitDeclaration
 
-  val aRandomCancelDeclaration: MetaData = randomCancelDeclaration
+  val aRandomCancelDeclaration: Cancellation = randomCancelDeclaration
 
-  def acceptedResponse(conversationId: String): AnyRef with HttpResponse = HttpResponse(
+  val aRandomWcoCancelDeclaration: MetaData = randomWcoCancelDeclaration
+
+  def acceptedResponse(conversationId: String): HttpResponse = HttpResponse(
     responseStatus = Status.ACCEPTED,
     responseHeaders = Map("X-Conversation-ID" -> Seq(conversationId))
   )
 
-  def otherResponse(status: Int): AnyRef with HttpResponse = HttpResponse(responseStatus = status)
+  def otherResponse(status: Int): HttpResponse = HttpResponse(responseStatus = status)
 
   def submitRequest(submission: MetaData, headers: Map[String, String]): HttpRequest = HttpRequest(submitUrl, submission.toXml.mkString, headers)
 
-  def cancelRequest(cancellation: MetaData, headers: Map[String, String]): HttpRequest = HttpRequest(cancelUrl, cancellation.toXml.mkString, headers)
+  def cancelRequest(cancellation: Cancellation, headers: Map[String, String]): HttpRequest = HttpRequest(cancelUrl, Json.toJson(cancellation).toString, headers)
 
   def expectingAcceptedResponse(request: HttpRequest, headers: Map[String, String]): Either[Exception, HttpExpectation] = Right(HttpExpectation(
     request,
@@ -160,6 +164,70 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
 
   }
 
+  "cancel import declaration" should {
+
+    "send cancellation as JSON in request body" in simpleCancellationScenario(aRandomCancelDeclaration) { (_, http, _,  _) =>
+      http.requests.head.body must be(Json.toJson(aRandomCancelDeclaration).toString)
+    }
+
+    "throw gateway timeout exception when request times out" in withoutLocalReferenceNumber() { _ =>
+      val ex = new TimeoutException("API is not responding")
+      withHttpClient(expectingFailure(ex)) { http =>
+          withCustomsDeclarationsConnector(http) { connector =>
+            connector.
+              cancelDeclaration(aRandomCancelDeclaration).
+              failed.futureValue.
+              asInstanceOf[GatewayTimeoutException].
+              message must be(http.gatewayTimeoutMessage(HttpVerbs.POST, cancelUrl, ex))
+          }
+      }
+    }
+
+    "throw bad gateway exception when request cannot connect" in withoutLocalReferenceNumber() { _ =>
+      val ex = new ConnectException("API is down")
+      withHttpClient(expectingFailure(ex)) { http =>
+          withCustomsDeclarationsConnector(http) { connector =>
+            connector.
+              cancelDeclaration(aRandomCancelDeclaration).
+              failed.futureValue.
+              asInstanceOf[BadGatewayException].
+              message must be(http.badGatewayMessage(HttpVerbs.POST, cancelUrl, ex))
+          }
+      }
+    }
+
+    "throw upstream 5xx exception when API responds with internal server error" in withoutLocalReferenceNumber() { headers =>
+      withHttpClient(expectingOtherResponse(cancelRequest(aRandomCancelDeclaration, headers), Status.INTERNAL_SERVER_ERROR, headers)) { http =>
+          withCustomsDeclarationsConnector(http) { connector =>
+            val ex = connector.cancelDeclaration(aRandomCancelDeclaration).failed.futureValue.asInstanceOf[Upstream5xxResponse]
+            ex.upstreamResponseCode must be(Status.INTERNAL_SERVER_ERROR)
+            ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
+          }
+      }
+    }
+
+    "throw upstream 4xx exception when API responds with bad request" in withoutLocalReferenceNumber() { headers =>
+      withHttpClient(expectingOtherResponse(cancelRequest(aRandomCancelDeclaration, headers), Status.BAD_REQUEST, headers)) { http =>
+          withCustomsDeclarationsConnector(http) { connector =>
+            val ex = connector.cancelDeclaration(aRandomCancelDeclaration).failed.futureValue.asInstanceOf[Upstream4xxResponse]
+            ex.upstreamResponseCode must be(Status.BAD_REQUEST)
+            ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
+          }
+      }
+    }
+
+    "throw upstream 4xx exception when API responds with unauthhorised" in withoutLocalReferenceNumber() { headers =>
+      withHttpClient(expectingOtherResponse(cancelRequest(aRandomCancelDeclaration, headers), Status.UNAUTHORIZED, headers)) { http =>
+          withCustomsDeclarationsConnector(http) { connector =>
+            val ex = connector.cancelDeclaration(aRandomCancelDeclaration).failed.futureValue.asInstanceOf[Upstream4xxResponse]
+            ex.upstreamResponseCode must be(Status.UNAUTHORIZED)
+            ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
+          }
+      }
+    }
+
+  }
+
   // the test scenario builders
 
   def simpleAcceptedSubmissionScenario(submission: MetaData, maybeLocalReferenceNumber: Option[String] = None)
@@ -200,6 +268,13 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
     ) ++ localReferenceNumber.map(id => "X-Local-Reference-Number" -> id)
   )
 
+  private def withJsonHeaders(test: Map[String, String] => Unit): Unit = test(Map(
+    "X-Client-ID" -> appConfig.developerHubClientId,
+    HeaderNames.ACCEPT -> ContentTypes.JSON,
+    HeaderNames.CONTENT_TYPE -> ContentTypes.JSON,
+    HeaderNames.AUTHORIZATION -> declarantAuthToken
+  ))
+
   def withHttpClient(throwOrRespond: Either[Exception, HttpExpectation])
                     (test: MockHttpClient => Unit): Unit = {
     test(new MockHttpClient(throwOrRespond, component[Configuration], component[AuditConnector], component[WSClient]))
@@ -209,6 +284,18 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
   def withCustomsDeclarationsConnector(httpClient: HttpClient)
                                       (test: CustomsDeclarationsConnector => Unit): Unit = {
     test(new CustomsDeclarationsConnector(appConfig, httpClient))
+  }
+
+  def simpleCancellationScenario(cancellation: Cancellation)
+                                (test: (Map[String, String], MockHttpClient, HttpExpectation,  CustomsDeclarationsConnector) => Unit): Unit = withJsonHeaders { headers =>
+    val expectation = expectingAcceptedResponse(cancelRequest(cancellation, headers), headers)
+    withHttpClient(expectation) { http =>
+      withCustomsDeclarationsConnector(http) { connector =>
+        whenReady(connector.cancelDeclaration(cancellation)) { _ =>
+          test(headers, http, expectation.right.get, connector)
+        }
+      }
+    }
   }
 
 }
@@ -234,6 +321,23 @@ class MockHttpClient(throwOrRespond: Either[Exception, HttpExpectation], config:
           Future.successful(respond.resp)
         } else {
          Future.failed(new RuntimeException("Unable to match mock parameters"))
+        }
+      }
+    )
+  }
+
+  override def doPost[A](url: String, body: A, headers: Seq[(String, String)])(implicit rds: Writes[A], hc: HeaderCarrier): Future[HttpResponse] = {
+    val jsonBody = Json.toJson(body).toString
+    requests += services.HttpRequest(url, jsonBody, headers.toMap)
+    throwOrRespond.fold(
+      ex => Future.failed(ex),
+      respond => {
+        val validateUrl = url == respond.req.url
+        val validateBody = jsonBody == respond.req.body
+        if ( validateUrl && validateBody) {
+          Future.successful(respond.resp)
+        } else {
+          Future.failed(new RuntimeException("Unable to match mock parameters"))
         }
       }
     )

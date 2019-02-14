@@ -52,7 +52,7 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
   }
 
   def cancelDeclaration(cancellation: Cancellation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
-    httpClient.POST[Cancellation, CustomsDeclarationsResponse](s"${appConfig.customsDeclareImportsEndpoint}/cancel", cancellation)
+    httpClient.POST[Cancellation, CustomsDeclarationsResponse](s"${appConfig.customsDeclareImportsEndpoint}${appConfig.cancelImportDeclarationUri}", cancellation)
   }
 
   private def postMetaData(uri: String,
