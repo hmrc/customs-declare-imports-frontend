@@ -43,4 +43,16 @@ class LocationOfGoodsController @Inject()(actions: Actions, cache: CustomsCacheS
       Ok(location_of_goods(popForm))
     }
   }
+
+  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+
+    form.bindFromRequest().fold(
+      errors =>
+        Future.successful(BadRequest(location_of_goods(errors))),
+
+      locationOfGoods =>
+        cache.insert(req.eori, CacheKey.locationOfGoods, locationOfGoods)
+          .map(_ => Redirect(routes.WarehouseAndCustomsController.onPageLoad()))
+    )
+  }
 }

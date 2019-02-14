@@ -309,8 +309,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryDestination: Arbitrary[Destination] = Arbitrary {
     for {
       countryCode <- option(oneOf(config.Options.countryOptions.map(_._1)))
-      regionId <- option(arbitrary[String].map(_.take(9)))
-    } yield Destination(countryCode, regionId)
+    } yield Destination(countryCode, None)
   }
 
   implicit val arbitraryUcr: Arbitrary[Ucr] = Arbitrary {
@@ -518,10 +517,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryLoadingLocation: Arbitrary[LoadingLocation] = Arbitrary {
     for {
-      name <- option(nonEmptyString.map(_.take(256)))
       id   <- option(nonEmptyString.map(_.take(17)))
     } yield {
-      LoadingLocation(name, id)
+      LoadingLocation(None, id)
     }
   }
 
@@ -529,11 +527,11 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       goodsLocation        <- option(arbitrary[GoodsLocation])
       goodsLocationAddress <- option(arbitrary[GoodsLocationAddress])
-      destination          <- option(arbitrary[Destination])
+      destination          <- arbitrary[Destination]
       exportCountry        <- option(arbitrary[ExportCountry])
-      loadingLocation      <- option(arbitrary[LoadingLocation])
+      loadingLocation      <- arbitrary[LoadingLocation]
     } yield {
-      LocationOfGoods(goodsLocation, goodsLocationAddress, destination, exportCountry, loadingLocation)
+      LocationOfGoods(goodsLocation, goodsLocationAddress, destination.countryCode.map(_=>destination), exportCountry, loadingLocation.id.map(_=>loadingLocation))
     }
   }
 

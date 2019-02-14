@@ -31,8 +31,8 @@ import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.TradeTerms
-import views.html.{delivery_terms, location_of_goods}
+import uk.gov.hmrc.wco.dec.LoadingLocation
+import views.html.location_of_goods
 
 class LocationOfGoodsControllerSpec extends CustomsSpec
   with PropertyChecks
@@ -100,6 +100,81 @@ class LocationOfGoodsControllerSpec extends CustomsSpec
     }
   }
 
-  
+  "onSubmit" should {
 
+    behave like redirectedEndpoint(uri, "/submit-declaration/warehouse-and-customs-offices", POST)
+    behave like authenticatedEndpoint(uri, POST)
+
+    "return SEE_OTHER" when {
+
+      "valid data is posted" in {
+
+        forAll { user: SignedInUser =>
+
+          val result = controller(user).onSubmit(fakeRequest)
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.WarehouseAndCustomsController.onPageLoad().url)
+        }
+      }
+    }
+
+    "return UNAUTHORIZED" when {
+
+      "user doesn't have an eori" in {
+
+        forAll { user: UnauthenticatedUser =>
+
+          val result = controller(user.user).onSubmit(fakeRequest)
+
+          status(result) mustBe UNAUTHORIZED
+        }
+      }
+    }
+
+    "return BAD_REQUEST" when {
+
+      "bad data is posted" in {
+
+        val badData =
+          for {
+            locationOfGoods <- arbitrary[LocationOfGoods]
+            loadingLocation <- arbitrary[LoadingLocation]
+            id              <- minStringLength(18)
+          } yield {
+            locationOfGoods.copy(loadingLocation = Some(loadingLocation.copy(id = Some(id))))
+          }
+
+        forAll(arbitrary[SignedInUser], badData) {
+          (user, formData) =>
+
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+            val popForm = form.fillAndValidate(formData)
+            val result  = controller(user).onSubmit(request)
+
+            status(result) mustBe BAD_REQUEST
+            contentAsString(result) mustBe view(popForm)
+        }
+      }
+    }
+
+    "save data in cache" when {
+
+      "valid data is submitted" in {
+
+        forAll { (user: SignedInUser, formData: LocationOfGoods) =>
+
+          withCleanCache(EORI(user.eori.value), CacheKey.locationOfGoods, None){
+
+
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
+          await(controller(user).onSubmit(request))
+
+          verify(mockCustomsCacheService, atLeastOnce())
+            .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.locationOfGoods), eqTo(formData))(any(), any(), any())
+        }
+        }
+      }
+    }
+  }
 }

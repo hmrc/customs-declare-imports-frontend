@@ -23,10 +23,6 @@ class SubmissionJourney {
 
   // list of journey screen names as presented in URLs. Note that "submit" is a reserved word!
   val screens: List[String] = List(
-    "location-of-goods",
-    "warehouse-and-customs-offices",
-    "delivery-terms",
-    "add-previous-documents",
     "check-your-answers"
   )
 

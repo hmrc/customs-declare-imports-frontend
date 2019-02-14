@@ -23,6 +23,7 @@
 
 @main_template(messages("locationOfGoods.title")) {
 
+    @helpers.form(action = LocationOfGoodsController.onSubmit()) {
 
         @components.back_link()
 
@@ -61,4 +62,5 @@
        <button id="Add" name="submit">
            @messages("common.button.continue")
        </button>
+    }
 }
