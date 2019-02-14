@@ -15,41 +15,61 @@
  *@
 
 @import config.AppConfig
-@import repositories.declaration.Submission
+@import models.Declaration
+@import models.DeclarationActionType.DeclarationActionType
 @import uk.gov.hmrc.play.views.formatting.Dates._
 @import org.joda.time.LocalDate
 
-@(submissions: Seq[Submission])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(declarations: Seq[Declaration])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-    @main_template(title = messages("common.importDeclarations"), bodyClasses = None, mainClass = Some("full-width")) {
-        <div class="form-group">
-            <h1 class="heading-xlarge">@messages("common.importDeclarations")</h1>
-        </div>
-        @if(submissions.nonEmpty) {
-            <p><a class="button" href="@routes.DeclarationController.displaySubmitForm("declarant-details")">@messages("common.button.createNew")</a></p>
+@main_template(title = messages("landingpage.title"), mainClass = Some("full-width")) {
+    <div class="form-group">
+        <h1 class="heading-xlarge">@messages("landingpage.title")</h1>
+    </div>
+    <p><a class="button" href="@routes.DeclarantDetailsController.onPageLoad()">@messages("common.button.createNew")</a></p>
 
-            <h2 class="heading-medium">@messages("landingpage.submissions.heading")</h2>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th scope="col">@messages("landingpage.LRN")</th>
-                        <th scope="col">@messages("landingpage.MRN")</th>
-                        <th scope="col">@messages("landingpage.dateSubmitted")</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @for(submission <- submissions) {
-                    <tr>
-                        <td scope="row">@submission.lrn.getOrElse(messages("lrn.missing"))</td>
-                        <td>@submission.mrn.getOrElse(messages("landingpage.MRN.unknown"))</td>
-                        <td>@formatDate(new LocalDate(submission.submittedTimestamp))</td>
-                    </tr>
+    @if(declarations.nonEmpty) {
+        @for(declaration <- declarations) {
+            <section class="declaration-listing">
+                <h2 class="heading-large">
+                  <span class="heading-secondary"><span class="visually-hidden">Submitted on </span>@declaration.submittedDateTime.toString("dd MMMM YYYY HH:mm")</span>
+                  @declaration.mrn.map { mrn => <span>MRN @mrn</span> }
+                </h2>
+                <h3 class="heading-medium">LRN @declaration.localReferenceNumber</h3>
+                @for(action <- declaration.actions) {
+                    @if(action.notifications.nonEmpty) {
+                        <table class="declaration-data">
+                            <caption class="heading-small">@action.actionType.displayName notifications</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Notification</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for(notification <- action.notifications) {
+                                    <tr>
+                                        <td scope="row">@messages(s"declaration.notification.${notification.functionCode}")</td>
+                                        <td>@notification.dateTimeIssued.toString("dd MMMM YYYY")</td>
+                                        <td>@notification.dateTimeIssued.toString("HH:mm")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            @if(!declaration.actions.exists(_.actionType == DeclarationActionType.CANCELLATION)) {
+                                @declaration.mrn.map { mrn =>
+                                    <tfoot>
+                                        <td colspan="2"></td>
+                                        <td><a href="#">Cancel<span class="visually-hidden"> declaration @declaration.localReferenceNumber</span></a></td>
+                                    </tfoot>
+                                }
+                            }
+                        </table>
+                    }
                 }
-                </tbody>
-            </table>
-        } else {
-            <p>@messages("landingpage.submissions.empty")</p>
-            <p><a class="button" href="@routes.DeclarantDetailsController.onPageLoad()">@messages("common.button.createNew")</a></p>
+            </section>
         }
+    } else {
+        <p>@messages("landingpage.submissions.empty")</p>
     }
+}

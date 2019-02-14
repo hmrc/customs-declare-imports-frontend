@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customs.test
+package domain
 
-import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
-import uk.gov.hmrc.customs.test.behaviours._
+import play.api.libs.json.Json
+import uk.gov.hmrc.wco.dec.{Office, Warehouse}
+import domain.DeclarationFormats._
 
-trait IntegrationTest extends AuthenticationBehaviours
-  with FeatureBehaviours
-  with RequestHandlerBehaviours
-  with CustomsDeclarationsApiBehaviours
-  with HttpAssertions
-  with HtmlAssertions
+case class WarehouseAndCustoms(warehouse: Option[Warehouse],
+                               presentationOffice: Option[Office],
+                               supervisingOffice: Option[Office])
+
+object WarehouseAndCustoms {
+
+  implicit val format = Json.format[WarehouseAndCustoms]
+  
+}

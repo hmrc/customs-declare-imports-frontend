@@ -47,18 +47,7 @@ common.hints.eori=Economic Operator Registration and Identification (EORI) numbe
 common.hints.statusCode=This code declares the way in which the declarant is representing the Importer.
 
 ## specific pages
-# (I noted most use title case for title but not for form heading so have made it consistently that way, for right or wrong - please correct if it is the latter)
-pages.declarant.details.title=Declarant'’s Details
-pages.declarant.details.form.legend=Declarant'’s details
-
-pages.references.title=Reference Numbers
 pages.references.form.legend=References
-
-pages.exporter.details.title=Exporter'’s Details
-pages.exporter.details.form.legend=Exporter'’s details
-
-pages.representative.details.title=Representative'’s Details
-pages.representative.details.form.legend=Representative'’s details
 
 pages.importer.details.title=Importer'’s Details
 pages.importer.details.form.legend=Importer'’s details
@@ -149,6 +138,8 @@ startpage.needList.bullet4=procedure codes
 startpage.needList.bullet5=details of your import and where it came from
 
 ## landing page
+landingpage.heading=Your import declarations
+landingpage.title=Your import declarations
 landingpage.LRN=LRN
 landingpage.MRN=Movement Reference Number
 landingpage.MRN.unknown=Not yet assigned
@@ -321,44 +312,44 @@ contains.required=This is a mandatory field. Please select from one of the avail
 contains.optional=When specified, the value of this field must be one of the available options
 
 ## Declarant details
-declarantDetails.title=Declarant
-declarantDetails.heading=Declarant
+declarantDetails.title=Declarant'’s details
+declarantDetails.heading=Declarant'’s details
 declarantDetails.name=Name
-declarantDetails.address.line=Street and Number
+declarantDetails.address.line=Street and number
 declarantDetails.address.cityName=City
 declarantDetails.address.countryCode=Country
 declarantDetails.address.postcode=Postcode
 declarantDetails.id=EORI number
 
 ## References
-references.title=Reference Numbers
-references.heading=Reference Numbers
-references.typeCode=Declaration Type
-references.typerCode=Additional Declaration Type
-references.traderAssignedReferenceId=Reference Number/UCR
+references.title=Reference numbers
+references.heading=Reference numbers
+references.typeCode=Declaration type
+references.typerCode=Additional declaration type
+references.traderAssignedReferenceId=Reference number/UCR
 references.functionalReferenceId=LRN
-references.transactionNatureCode=Nature of Transaction
+references.transactionNatureCode=Nature of transaction
 
 ## Exporter details
-exporterDetails.title=Exporter
-exporterDetails.heading=Exporter
+exporterDetails.title=Exporter'’s details
+exporterDetails.heading=Exporter'’s details
 exporterDetails.name=Name
-exporterDetails.address.line=Street and Number
+exporterDetails.address.line=Street and number
 exporterDetails.address.cityName=City
 exporterDetails.address.country=Country
 exporterDetails.address.postcode=Postcode
 exporterDetails.id=EORI number
 
 ## Representative details
-representativeDetails.title=Representative
-representativeDetails.heading=Representative
+representativeDetails.title=Representative'’s details
+representativeDetails.heading=Representative'’s details
 representativeDetails.name=Name
 representativeDetails.address.line=Street and Number
 representativeDetails.address.cityName=City
 representativeDetails.address.country=Country
 representativeDetails.address.postcode=Postcode
 representativeDetails.id=EORI number
-representativeDetails.statusCode=Status Code
+representativeDetails.statusCode=Status code
 
 ## Delivery terms
 deliveryTerms.title=Delivery terms
@@ -375,6 +366,17 @@ invoiceAndCurrency.invoiceCurrencyId=Invoice Currency
 invoiceAndCurrency.invoiceAmount=Invoice Amount
 invoiceAndCurrency.exchangeCurrencyId=Currency ID
 invoiceAndCurrency.exchangeCurrencyAmount=Exchange Rate
+
+## Warehouse and customs offices
+
+warehouseAndCustomsOffices.title=Warehouse and customs offices
+warehouseAndCustomsOffices.heading=Warehouse and customs offices
+warehouseAndCustomsOffices.warehouse.id=Warehouse Identifier
+warehouseAndCustomsOffices.warehouse.typeCode=Warehouse Type
+warehouseAndCustomsOffices.presentationOffice=Details of customs office
+warehouseAndCustomsOffices.supervisingOffice=Supervising customs office
+warehouseAndCustomsOffices.h2.warehouseDetails=Details of warehouse goods are being held
+warehouseAndCustomsOffices.h2.customsOfficeDetails=Details of customs office
 
 ## Importer details
 importerDetails.title=Importer
@@ -617,3 +619,37 @@ governmentprocedures.govProceduresAdded=government procedures added
 governmentprocedures.currentCode=Requested Procedure Code
 governmentprocedures.previousCode=Previous Procedure Code
 governmentprocedures.addGovProcedures=Add government procedure
+
+packaging.title=Goods packages
+packaging.heading=Goods packages
+packaging.table.heading=1 Package added
+packaging.table.multiple.heading= {0} Packages added
+packaging.add=Add Package
+packaging.typecode=Type of packages
+packaging.quantity=Number of Packages
+packaging.marksNumbersId=Shipping Marks
+
+origin.title=Goods origin & Preferential origin
+origin.heading=Goods origin & Preferential origin
+origin.table.heading=Country of origin added
+origin.table.multiple.heading=Goods origin added preferential origin added
+origin.countryCode=Country of origin
+origin.typeCode=Origin type
+origin.add=Add origin
+origin.addPref=Add preferential origin
+origin.complete=Country of origin and preferential origin added
+
+# Declaration notifications
+
+declaration.notification.1=Your declaration has been accepted. NOTE: If you need to make changes to it, cancel the declaration and start again.
+declaration.notification.2=Your declaration has been received. Thank you. NOTE: If you need to make changes to it, cancel the declaration and start again.
+declaration.notification.3=Your declaration has been rejected.
+declaration.notification.5=We need to hold your goods while they are physically checked.
+declaration.notification.6=Please make sure all your documents are attached and correct.  Some documents are needed, please give us all relevant docs for this declaration.
+declaration.notification.7=Changes have been made to your declaration.  Confirmation of the amendments that have been made.
+declaration.notification.8=Your goods will now be released.
+declaration.notification.9=You now have clearance, so your goods will be released.
+declaration.notification.10=Your declaration has been cancelled
+declaration.notification.13=You need to pay your taxes now.
+declaration.notification.14=Please pay more into your reserve account to complete payment.
+declaration.notification.15=Your payment term has ended. Please pay the remaining amount.

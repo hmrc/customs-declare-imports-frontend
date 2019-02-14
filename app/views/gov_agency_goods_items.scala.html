@@ -74,7 +74,7 @@
                     <th scope="row">@messages("governmentAgencyGoodsItem.originOfGoods")</th>
                     <td>@goodsItem.map(_.origins.size)</td>
                     <td>
-                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showOrigins().url" name="add" class="button" id="AddOrigins">@messages("governmentAgencyGoodsItem.add")
+                        <a href="@controllers.goodsitems.routes.OriginsController.onPageLoad().url" name="add" class="button" id="AddOrigins">@messages("governmentAgencyGoodsItem.add")
                             <span class="visually-hidden">@messages("governmentAgencyGoodsItem.originOfGoods")</span></a>
                     </td>
                 </tr>
@@ -88,11 +88,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">@messages("governmentAgencyGoodsItem.packagings")</th>
+                    <th scope="row">@messages("packaging.title")</th>
                     <td>@goodsItem.map(_.packagings.size)</td>
                     <td>
-                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showPackagings().url" name="add" class="button" id="AddPackagings">@messages("governmentAgencyGoodsItem.add")
-                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.packagings")</span></a>
+                        <a href="@controllers.goodsitems.routes.PackagingController.onPageLoad().url" name="add" class="button" id="AddPackagings">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("packaging.title")</span></a>
                     </td>
                 </tr>
                 <tr>
