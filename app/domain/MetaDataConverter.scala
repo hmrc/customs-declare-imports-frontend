@@ -157,6 +157,8 @@ object MetaDataConverter {
         obligationGuarantees = cache.getEntry[Seq[ObligationGuarantee]](guaranteeTypes.key).getOrElse(Seq.empty)
       )))
 
-    case _ => MetaData()
+    case GovAgencyGoodsItemsListId    => MetaData()
+    case GovAgencyGoodsItemId         => MetaData()
+    case GovAgencyGoodsItemReferenceId=> MetaData()
   }
 }
