@@ -24,7 +24,7 @@ import services.cachekeys.TypedIdentifier._
 import services.cachekeys.CacheKey._
 import typeclasses.Monoid
 
-object MetaDataConverter {
+object MetaDataMapping {
 
   import Monoid.ops._
 
@@ -157,8 +157,8 @@ object MetaDataConverter {
         obligationGuarantees = cache.getEntry[Seq[ObligationGuarantee]](guaranteeTypes.key).getOrElse(Seq.empty)
       )))
 
-    case GovAgencyGoodsItemsListId    => MetaData()
-    case GovAgencyGoodsItemId         => MetaData()
-    case GovAgencyGoodsItemReferenceId=> MetaData()
+    case GovAgencyGoodsItemsListId     => MetaData()
+    case GovAgencyGoodsItemId          => MetaData()
+    case GovAgencyGoodsItemReferenceId => MetaData()
   }
 }
