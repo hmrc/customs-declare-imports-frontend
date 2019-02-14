@@ -19,7 +19,7 @@ package uk.gov.hmrc.customs.test
 import java.util.UUID
 
 import domain.auth.SignedInUser
-import models.Cancellation
+import models.{Cancellation, ChangeReasonCode}
 import uk.gov.hmrc.auth.core.AffinityGroup.Individual
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, EnrolmentIdentifier, Enrolments}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
@@ -50,7 +50,7 @@ trait CustomsFixtures {
     functionalReferenceId = Some(randomString(35))
   )))
 
-  protected def randomCancelDeclaration: Cancellation = Cancellation(randomString(40), randomInt(2), randomString(50))
+  protected def randomCancelDeclaration: Cancellation = Cancellation(randomString(40), randomChangeReasonCode, randomString(50))
 
   protected def randomWcoCancelDeclaration: MetaData = MetaData(
     wcoDataModelVersionCode = Some(randomString(6)),
@@ -107,6 +107,8 @@ trait CustomsFixtures {
   protected def randomISO4217CurrencyCode: String = iso4217(randomInt(iso4217.length))
 
   protected def randomISO3166Alpha2CountryCode: String = iso3166(randomInt(iso3166.length))
+
+  protected def randomChangeReasonCode = ChangeReasonCode.values.toSeq(randomInt(ChangeReasonCode.values.size))
 
   private val randomZ: String = z(randomInt(z.length))
 

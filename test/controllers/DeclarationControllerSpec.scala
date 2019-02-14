@@ -20,7 +20,7 @@ import config.SubmissionJourney
 import domain.features.Feature
 import org.mockito.ArgumentMatchers.{any, eq => meq}
 import org.mockito.Mockito.verify
-import models.Cancellation
+import models.{Cancellation, ChangeReasonCode}
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -79,7 +79,7 @@ class DeclarationControllerSpec extends CustomsSpec
 
   s"$post $cancelUri" should {
     val payload = Map(
-      "reasonCode" -> "01",
+      "changeReasonCode" -> ChangeReasonCode.DUPLICATE.toString,
       "description" -> "a description")
     implicit val hc = HeaderCarrier()
 
@@ -90,7 +90,7 @@ class DeclarationControllerSpec extends CustomsSpec
           wasHtml(resp)
           wasOk(resp)
 
-          verify(mockCustomsDeclarationsConnector).cancelDeclaration(meq(Cancellation(mrn, payload("reasonCode").toInt, payload("description"))))(any(), any())
+          verify(mockCustomsDeclarationsConnector).cancelDeclaration(meq(Cancellation(mrn, ChangeReasonCode.withName(payload("changeReasonCode")), payload("description"))))(any(), any())
         }
       }
     }
