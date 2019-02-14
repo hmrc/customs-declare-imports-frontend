@@ -16,9 +16,23 @@
 
 package models
 
-import play.api.libs.json.Json
+import models.ChangeReasonCode.ChangeReasonCode
+import play.api.libs.json.{Format, Json, Reads, Writes}
 
-case class Cancellation(mrn: String, reasonCode: Int, description: String)
+object ChangeReasonCode extends Enumeration(1) {
+  type ChangeReasonCode = Value
+
+  protected case class Val(displayName: String) extends super.Val
+  implicit def valueToChangeReasonCode(v: Value): Val = v.asInstanceOf[Val]
+
+  val NO_LONGER_REQUIRED = Val("Declaration is no longer required")
+  val DUPLICATE = Val("Duplicate declaration")
+  val OTHER = Val("Other")
+
+  implicit val format = Format(Reads.enumNameReads(ChangeReasonCode), Writes.enumNameWrites)
+}
+
+case class Cancellation(mrn: String, changeReasonCode: ChangeReasonCode, description: String)
 
 object Cancellation {
   implicit val format = Json.format[Cancellation]

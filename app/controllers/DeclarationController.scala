@@ -21,9 +21,10 @@ import domain.auth.{AuthenticatedRequest, SignedInUser}
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
 import models.Cancellation
+import models.ChangeReasonCode
 import org.joda.time.DateTime
 import play.api.Logger
-import play.api.data.Form
+import play.api.data.{Form, FormError, Forms}
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
@@ -34,9 +35,12 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, MetaData}
 import forms.ObligationGuaranteeForm
 import domain.DeclarationFormats._
+import models.ChangeReasonCode.ChangeReasonCode
 import models.Declaration
+import play.api.data.format.Formatter
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 @Singleton
 class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: CustomsCacheService)(implicit val messagesApi: MessagesApi, val appConfig: AppConfig,
@@ -114,7 +118,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
   def handleCancelForm(mrn: String): Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
     Cancel.form.bindFromRequest().fold(
       errors => Future.successful(BadRequest(views.html.cancel_form(mrn, errors))),
-      success => client.cancelDeclaration(Cancellation(mrn, success.reasonCode, success.description)).map(_ => Ok(views.html.cancel_confirmation())))
+      success => client.cancelDeclaration(Cancellation(mrn, success.changeReasonCode, success.description)).map(_ => Ok(views.html.cancel_confirmation())))
   }
 
   private def invalid(name: String, data: Map[String, String])(implicit req: AuthenticatedRequest[AnyContent], errors: Map[String, Seq[ValidationError]]): Future[Result] = Future.successful(BadRequest(views.html.generic_view(name, data)))
@@ -188,9 +192,21 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
 
 object Cancel {
   val form: Form[CancelForm] = Form[CancelForm](mapping(
-    "reasonCode" -> number(min = 0, max = 10),
+    "changeReasonCode" -> Forms.of[ChangeReasonCode],
     "description" -> nonEmptyText(maxLength = 512)
   )(CancelForm.apply)(CancelForm.unapply))
+
+  implicit def changeRequestCodeFormat: Formatter[ChangeReasonCode] = new Formatter[ChangeReasonCode] {
+    override def bind(key: String, data: Map[String, String]) =
+      data.get(key)
+        .flatMap(name => Try(ChangeReasonCode.withName(name)).toOption)
+        .toRight(Seq(FormError(key, "error.required", Nil)))
+
+    override def unbind(key: String, value: ChangeReasonCode) = Map(key -> value.toString)
+  }
+
+  def changeReasonCodes: Seq[(String, String)] = ChangeReasonCode.values.foldLeft(Map.empty: Map[String, String]) { (m, crc) => m + (crc.toString -> crc.displayName) }.toSeq
+
 }
 
-case class CancelForm(reasonCode: Int, description: String)
+case class CancelForm(changeReasonCode: ChangeReasonCode, description: String)

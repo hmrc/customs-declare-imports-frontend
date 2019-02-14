@@ -15,7 +15,7 @@
  *@
 
 @import config.AppConfig
-@import controllers.routes
+@import controllers.{Cancel, routes}
 @import domain.auth.AuthenticatedRequest
 @import uk.gov.hmrc.play.views.html.helpers
 
@@ -32,7 +32,7 @@
                 <h1 class="heading-xlarge">@messages("cancelpage.titleAndHeader") @mrn</h1>
             </legend>
 
-            @components.input_text(form("reasonCode"), messages("cancelpage.cancellationCode"), hint = Some(messages("cancelpage.cancellationCodeHint")))
+            @components.input_select(form("changeReasonCode"), messages("cancelpage.cancellationCode"), Cancel.changeReasonCodes)
             @components.input_textarea(form("description"), messages("cancelpage.tellUsWhy"), hint = Some(messages("cancelpage.tellUsWhyHint")))
         </fieldset>
 
