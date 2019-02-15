@@ -28,9 +28,12 @@ import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.ObligationGuarantee
 import views.html.guarantee_type
 
-class GuaranteeTypeController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                       (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+import scala.concurrent.ExecutionContext
+
+class GuaranteeTypeController @Inject()
+  (actions: Actions, cache: CustomsCacheService)
+  (implicit override val messagesApi: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
+extends CustomsController {
 
   val form = Form(guaranteeTypeMapping)
 

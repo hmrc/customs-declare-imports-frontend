@@ -29,7 +29,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.filters.csrf.CSRF.Token
 import play.filters.csrf.{CSRFConfig, CSRFConfigProvider, CSRFFilter}
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AuthConnector, NoActiveSession}
 import uk.gov.hmrc.customs.test.CustomsFixtures
@@ -61,6 +61,11 @@ trait AuthenticationBehaviours extends CustomsSpec with CustomsFixtures with Moc
     override def matches(hc: HeaderCarrier): Boolean = hc != null && hc.authorization.isEmpty
   }
 
+  private implicit class HelperOps[A](a: A) {
+
+    def ~[B](b: B) = new ~(a, b)
+  }
+
   def withSignedInUser(user: SignedInUser = randomUser)(test: (Map[String, String], Map[String, String], Map[String, String]) => Unit): Unit = {
     when(
       authConnector
@@ -69,7 +74,7 @@ trait AuthenticationBehaviours extends CustomsSpec with CustomsFixtures with Moc
           ArgumentMatchers.eq(credentials and name and email and affinityGroup and internalId and allEnrolments))(ArgumentMatchers.any(), ArgumentMatchers.any()
         )
     ).thenReturn(
-      Future.successful(new ~(new ~(new ~(new ~(new ~(user.credentials, user.name), user.email), user.affinityGroup), user.internalId), user.enrolments))
+      Future.successful(Some(user.credentials) ~ Some(user.name) ~ user.email ~ user.affinityGroup ~ user.internalId ~ user.enrolments)
     )
     test(Map(cfg.headerName -> token), userSession(user), authenticationTags)
   }

@@ -164,6 +164,9 @@ object MetaDataMapping {
         ))
       )))
 
+    case WarehouseAndCustomsId =>
+      MetaData()
+
     case GovAgencyGoodsItemId          => MetaData()
     case GovAgencyGoodsItemReferenceId => MetaData()
   }

@@ -47,6 +47,7 @@ object TypedIdentifier extends Enum[TypedIdentifier[_]] {
   final case object GovAgencyGoodsItemsListId     extends TypedIdentifier[Seq[GovernmentAgencyGoodsItem]]
   final case object GovAgencyGoodsItemId          extends TypedIdentifier[GovernmentAgencyGoodsItem]
   final case object GovAgencyGoodsItemReferenceId extends TypedIdentifier[GovernmentAgencyGoodsItem]
+  final case object WarehouseAndCustomsId         extends TypedIdentifier[WarehouseAndCustoms]
 
   override def values = findValues
 }

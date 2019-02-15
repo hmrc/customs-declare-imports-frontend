@@ -28,9 +28,10 @@
 
    @components.error_summary(form.errors)
 
-   <h1 class="heading-large">@messages("references.heading")</h1>
-
    <fieldset>
+    <legend>
+      <h1 class="heading-large">@messages("references.heading")</h1>
+    </legend>
     @components.input_text(form("typeCode"), messages("references.typeCode"))
     @components.input_text(form("typerCode"), messages("references.typerCode"))
     @components.input_text(form("traderAssignedReferenceId"), messages("references.traderAssignedReferenceId"))
@@ -38,7 +39,7 @@
     @components.input_text(form("transactionNatureCode"), messages("references.transactionNatureCode"))
    </fieldset>
 
-   <button id="Add" name="submit">
+   <button id="Add" name="submit" class="button">
     @messages("common.button.continue")
    </button>
   }

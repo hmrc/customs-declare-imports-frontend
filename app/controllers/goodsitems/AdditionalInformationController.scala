@@ -28,9 +28,11 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.{AdditionalInformation, GovernmentAgencyGoodsItem}
 
+import scala.concurrent.ExecutionContext
+
 @Singleton
 class AdditionalInformationController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi)
+  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi, ec: ExecutionContext)
   extends CustomsController {
 
   def additionalInformationForm: Form[AdditionalInformation] = Form(additionalInformationMapping)

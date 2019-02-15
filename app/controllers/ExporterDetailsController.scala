@@ -27,11 +27,12 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.exporter_details
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class ExporterDetailsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                         (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+class ExporterDetailsController @Inject()
+  (actions: Actions, cache: CustomsCacheService)
+  (implicit override val messagesApi: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
+extends CustomsController {
 
   val form = Form(importExportPartyMapping)
 

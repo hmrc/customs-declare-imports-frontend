@@ -67,6 +67,7 @@ object DeclarationFormats extends ObligationGuaranteeFormats {
   implicit val currencyExchangeFormats = Json.format[CurrencyExchange]
   implicit val borderTransportMeansFormats = Json.format[BorderTransportMeans]
   implicit val transportMeansFormats = Json.format[TransportMeans]
+  implicit val warehouseFormats = Json.format[Warehouse]
 
   implicit val governmentAgencyGoodsItemFormats = Jsonx.formatCaseClass[GovernmentAgencyGoodsItem]
 }

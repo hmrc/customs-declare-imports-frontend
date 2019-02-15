@@ -29,9 +29,12 @@ import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.RoleBasedParty
 import views.html.role_based_party
 
-class DomesticDutyTaxPartyController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                              (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+import scala.concurrent.ExecutionContext
+
+class DomesticDutyTaxPartyController @Inject()
+  (actions: Actions, cache: CustomsCacheService)
+  (implicit override val messagesApi: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
+extends CustomsController {
 
   val form = Form(roleBasedPartyMapping)
 

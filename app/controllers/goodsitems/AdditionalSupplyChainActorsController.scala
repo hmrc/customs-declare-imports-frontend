@@ -30,9 +30,11 @@ import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, RoleBasedParty}
 import views.html.role_based_party
 
+import scala.concurrent.ExecutionContext
+
 @Singleton
 class AdditionalSupplyChainActorsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi)
+  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi, ec: ExecutionContext)
   extends CustomsController {
 
   val roleBasedPartiesForm: Form[RoleBasedParty] = Form(roleBasedPartyMapping)

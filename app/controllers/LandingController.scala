@@ -19,18 +19,22 @@ package controllers
 import config.AppConfig
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import models.Declaration._
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import repositories.declaration.SubmissionRepository
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import services.CustomsDeclarationsConnector
+
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class LandingController @Inject()(submissionRepository: SubmissionRepository, actions: Actions)
-                                 (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+class LandingController @Inject()
+  (customsDeclarationsConnector: CustomsDeclarationsConnector, actions: Actions)
+  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi, ec: ExecutionContext)
+extends CustomsController {
 
   def displayLandingPage: Action[AnyContent] = (actions.switch(Feature.landing) andThen actions.auth).async { implicit req =>
-    submissionRepository.findByEori(req.user.requiredEori).map { submissions =>
-      Ok(views.html.landing(submissions.sortBy(_.submittedTimestamp)))
+    customsDeclarationsConnector.getDeclarations.map { declarations =>
+      Ok(views.html.landing(declarations.sortBy(_.submittedDateTime)))
     }
   }
 

@@ -26,11 +26,12 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.summary_of_goods
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class SummaryOfGoodsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                        (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+class SummaryOfGoodsController @Inject()
+  (actions: Actions, cache: CustomsCacheService)
+  (implicit override val messagesApi: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
+extends CustomsController {
 
   val form = Form(summaryOfGoodsMapping)
 

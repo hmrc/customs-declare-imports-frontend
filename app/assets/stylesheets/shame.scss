@@ -10,3 +10,41 @@
   height: 10px;
   background-color: #005ea5;
 }
+
+.wide-table {
+	th,
+	td {
+		vertical-align: top;
+
+		.long-input {
+			display: block;
+			width: 100px;
+			word-break: break-word;
+		}
+	}
+}
+
+.declaration-data {
+  th:first-child,
+  td:first-child {
+    width: 66.66%;
+  }
+  th,
+  td {
+    vertical-align: top;
+  }
+}
+
+.declaration-listing {
+  margin-bottom: 60px;
+  .heading-large {
+    margin-bottom: 0;
+  }
+  .heading-medium {
+    margin-top: 15px;
+  }
+}
+
+caption.heading-small {
+  display: table-caption;
+}

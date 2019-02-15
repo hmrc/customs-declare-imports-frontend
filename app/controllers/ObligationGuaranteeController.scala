@@ -29,11 +29,13 @@ import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import uk.gov.hmrc.wco.dec.ObligationGuarantee
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ObligationGuaranteeController @Inject()(actions: Actions, cache: CustomsCacheService)
-  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+class ObligationGuaranteeController @Inject()
+  (actions: Actions, cache: CustomsCacheService)
+  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi, ec: ExecutionContext)
+extends CustomsController {
 
   val obligationGuaranteesForm: Form[ObligationGuarantee] = Form(obligationGauranteeMapping)
 

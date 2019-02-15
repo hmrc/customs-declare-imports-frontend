@@ -28,9 +28,11 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, GovernmentProcedure}
 
+import scala.concurrent.ExecutionContext
+
 @Singleton
 class GovernmentProceduresController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi)
+  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi, ec: ExecutionContext)
   extends CustomsController {
 
   def governmentProcedureForm: Form[GovernmentProcedure] = Form(governmentProcedureMapping)

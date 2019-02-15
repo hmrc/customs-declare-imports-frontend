@@ -81,4 +81,6 @@ object CacheKey {
   val govAgencyGoodsItemsList = CacheKey("GovAgencyGoodsItemsList", GovAgencyGoodsItemsListId)
   val goodsItem = CacheKey("GovAgencyGoodsItem", GovAgencyGoodsItemId)
   val govAgencyGoodsItemReference = CacheKey("GovAgencyGoodsItemReference", GovAgencyGoodsItemReferenceId)
+
+  val warehouseAndCustoms = CacheKey("WarehouseAndCustoms", WarehouseAndCustomsId)
 }

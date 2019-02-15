@@ -35,7 +35,7 @@ class MetaDataMappingSpec extends WordSpec
   with Lenses {
 
   override implicit val arbitraryCacheMap: Arbitrary[CacheMap] = Arbitrary {
-    def list[A]: Gen[A] => Gen[List[A]] = varListOf[A](10)
+    def list[A]: Gen[A] => Gen[List[A]] = varListOf[A](5)
 
     List(
       CacheMapLens.declarantDetails.set(arbitrary[ImportExportParty]),
@@ -356,6 +356,20 @@ class MetaDataMappingSpec extends WordSpec
           .declaration
           .flatMap(_.goodsShipment)
           .map(_.governmentAgencyGoodsItems) mustBe data
+      }
+    }
+
+    "convert using WarehouseAndCustomsId" in {
+
+      forAll { cacheMap: CacheMap =>
+
+        val data = cacheMap.getEntry[WarehouseAndCustoms](CacheKey.warehouseAndCustoms.key)
+
+        val dec = MetaDataMapping.produce(cacheMap).declaration
+
+        dec.flatMap(_.goodsShipment).flatMap(_.warehouse) mustBe data.flatMap(_.warehouse)
+        dec.flatMap(_.presentationOffice) mustBe data.flatMap(_.presentationOffice)
+        dec.flatMap(_.supervisingOffice) mustBe data.flatMap(_.supervisingOffice)
       }
     }
   }
