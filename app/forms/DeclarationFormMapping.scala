@@ -177,10 +177,16 @@ object DeclarationFormMapping {
     "ucr" -> optional(ucrMapping),
     "exportCountry" -> optional(exportCountryMapping),
     "valuationAdjustment" -> optional(valuationAdjustmentMapping)) {
-      (a,b,c,d,e,f,g,h) =>
-        GovernmentAgencyGoodsItem.apply(
-          a, b, c, d, Seq.empty, Seq.empty, Seq.empty, None, None, None, None, None, e,
-          Seq.empty, g, Seq.empty, Seq.empty, Seq.empty, Seq.empty, Seq.empty, Seq.empty, None, f, h)
+      (a, b, c, d, e, f, g, h) =>
+        GovernmentAgencyGoodsItem(
+          customsValueAmount = a,
+          sequenceNumeric = b,
+          statisticalValueAmount = c,
+          transactionNatureCode = d,
+          destination = e,
+          ucr = f,
+          exportCountry = g,
+          valuationAdjustment = h)
     } { g =>
       Some((g.customsValueAmount, g.sequenceNumeric, g.statisticalValueAmount, g.transactionNatureCode,
         g.destination, g.ucr, g.exportCountry, g.valuationAdjustment))
