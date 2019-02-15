@@ -35,7 +35,7 @@ class MetaDataMappingSpec extends WordSpec
   with Lenses {
 
   override implicit val arbitraryCacheMap: Arbitrary[CacheMap] = Arbitrary {
-    def list[A]: Gen[A] => Gen[List[A]] = varListOf[A](5)
+    def list[A]: Gen[A] => Gen[List[A]] = varListOf[A](3)
 
     List(
       CacheMapLens.declarantDetails.set(arbitrary[ImportExportParty]),
