@@ -331,8 +331,8 @@ object DeclarationFormMapping {
         .verifying("Additional declaration type must contains only A-Z characters", isAlpha)),
     "traderAssignedReferenceId" -> optional(
       text.verifying("Reference Number/UCR must be 35 characters or less", _.length <= 35)),
-    "functionalReferenceId" -> optional(
-      text.verifying("LRN must be 22 characters or less", _.length <= 22)),
+    "functionalReferenceId" ->
+      text.verifying("LRN must be 22 characters or less", _.length <= 22),
     "transactionNatureCode" -> optional(
       number.verifying("Nature of transaction must be contain 2 digits or less", _.toString.length <= 2))
   )(References.apply)(References.unapply)

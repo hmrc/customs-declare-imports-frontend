@@ -43,7 +43,7 @@ object MetaDataMapping {
       val refData = cache.getEntry[References](references.key)
       MetaData(declaration = Some(Declaration(
         typeCode = refData.flatMap(r => r.typeCode.flatMap(a => r.typerCode.map(b => a + b))),
-        functionalReferenceId = refData.flatMap(_.functionalReferenceId),
+        functionalReferenceId = refData.map(_.functionalReferenceId),
         goodsShipment = Some(GoodsShipment(
           transactionNatureCode = refData.flatMap(_.transactionNatureCode),
           ucr = Some(Ucr(traderAssignedReferenceId = refData.flatMap(_.traderAssignedReferenceId)))

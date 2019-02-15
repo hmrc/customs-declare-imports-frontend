@@ -424,7 +424,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       typeCode   <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
       typerCode  <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(1)))
       traderId   <- option(nonEmptyString.map(_.take(35)))
-      funcRefId  <- option(nonEmptyString.map(_.take(22)))
+      funcRefId  <- arbitrary[String].map(_.take(22))
       natureCode <- option(choose[Int](-9, 99))
     } yield {
       References(typeCode, typerCode, traderId, funcRefId, natureCode)

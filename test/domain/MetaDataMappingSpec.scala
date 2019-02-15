@@ -86,7 +86,7 @@ class MetaDataMappingSpec extends WordSpec
         val dec = MetaDataMapping.produce(cacheMap).declaration
 
         dec.flatMap(_.typeCode) mustBe data.flatMap(d => d.typeCode.flatMap(a => d.typerCode.map(b => a + b)))
-        dec.flatMap(_.functionalReferenceId) mustBe data.flatMap(_.functionalReferenceId)
+        dec.flatMap(_.functionalReferenceId) mustBe data.map(_.functionalReferenceId)
         dec.flatMap(_.goodsShipment.flatMap(_.transactionNatureCode)) mustBe data.flatMap(_.transactionNatureCode)
         dec.flatMap(_.goodsShipment.flatMap(_.ucr.flatMap(_.traderAssignedReferenceId))) mustBe
           data.flatMap(_.traderAssignedReferenceId)
