@@ -17,7 +17,6 @@
 package controllers.goodsitems
 
 import controllers.FakeActions
-import domain.GovernmentAgencyGoodsItem
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
 import generators.Generators
@@ -32,7 +31,7 @@ import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.{Origin, Packaging}
+import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, Origin, Packaging}
 import views.html.goods_items_origins
 
 class OrignControllerSpec extends CustomsSpec

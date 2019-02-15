@@ -87,7 +87,7 @@ class AddGuaranteeReferencesControllerSpec extends CustomsSpec
       forAll(arbitrary[SignedInUser], guaranteeReferencesGen) {
         case (user, data) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.guaranteeReference, data) {
+          withCleanCache(EORI(user.eori.value), CacheKey.guaranteeReferences, data) {
 
             val result = controller(Some(user)).onPageLoad(fakeRequest)
 
@@ -144,7 +144,7 @@ class AddGuaranteeReferencesControllerSpec extends CustomsSpec
         forAll(arbitrary[SignedInUser], badData, guaranteeReferencesGen) {
           case (user, data, existingData) =>
 
-            withCleanCache(EORI(user.eori.value), CacheKey.guaranteeReference, existingData){
+            withCleanCache(EORI(user.eori.value), CacheKey.guaranteeReferences, existingData){
 
               val request = fakeRequest.withFormUrlEncodedBody(asFormParams(data): _*)
               val badForm = form.fillAndValidate(data)
@@ -167,7 +167,7 @@ class AddGuaranteeReferencesControllerSpec extends CustomsSpec
           await(controller(Some(user)).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce)
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.guaranteeReference))(any(), any())(any(), any(), any(), any())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.guaranteeReferences))(any(), any())(any(), any(), any(), any())
         }
       }
     }

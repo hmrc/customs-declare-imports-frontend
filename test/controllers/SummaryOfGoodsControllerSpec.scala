@@ -139,7 +139,7 @@ class SummaryOfGoodsControllerSpec extends CustomsSpec
 
       "bad data is posted" in {
 
-        val badData = SummaryOfGoods.totalPackageQuantity.setArbitrary(some(intLessThan(0)))
+        val badData = SummaryOfGoodsLens.totalPackageQuantity.setArbitrary(some(intLessThan(0)))
 
         forAll(arbitrary[SignedInUser], badData) {
           (user, formData) =>

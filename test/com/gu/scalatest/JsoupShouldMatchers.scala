@@ -22,6 +22,8 @@ import org.scalatest.MustMatchers
 import org.scalatest.exceptions.TestFailedException
 import org.scalatest.words.{IncludeWord, NotWord}
 
+import scala.language.implicitConversions
+
 trait JsoupShouldMatchers extends MustMatchers with ElementSelectorBuilders with ElementWords {
 
   import org.jsoup.Jsoup.parseBodyFragment

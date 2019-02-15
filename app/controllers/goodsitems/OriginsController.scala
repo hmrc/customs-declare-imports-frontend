@@ -19,7 +19,6 @@ package controllers.goodsitems
 import config.AppConfig
 import controllers.{Actions, CustomsController}
 import domain.DeclarationFormats._
-import domain.GovernmentAgencyGoodsItem
 import forms.DeclarationFormMapping._
 import javax.inject.{Inject, Singleton}
 import play.api.data.Form
@@ -27,12 +26,14 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.wco.dec.Origin
+import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, Origin}
+
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class OriginsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi)
-  extends CustomsController {
+  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi, ec: ExecutionContext)
+extends CustomsController {
 
   val originForm: Form[Origin] = Form(originMapping)
 
@@ -53,7 +54,7 @@ class OriginsController @Inject()(actions: Actions, cacheService: CustomsCacheSe
           cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(origins = goodsItem.origins :+ form)
-              case None => GovernmentAgencyGoodsItem(origins = Seq(form))
+              case None => GovernmentAgencyGoodsItem(origins = Seq(form), sequenceNumeric = 0)
             }
             cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
               Redirect(routes.OriginsController.onPageLoad())

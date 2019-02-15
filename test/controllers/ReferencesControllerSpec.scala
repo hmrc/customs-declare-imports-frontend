@@ -103,16 +103,17 @@ class ReferencesControllerSpec extends CustomsSpec
 
   "onSubmit" should {
 
-    behave like redirectedEndpoint(uri, "/submit-declaration/exporter-details", POST)
+    behave like badRequestEndpoint(uri, POST)
     behave like authenticatedEndpoint(uri, POST)
 
     "return SEE_OTHER" when {
 
       "user is signed in" in {
 
-        forAll { user: SignedInUser =>
+        forAll { (user: SignedInUser, ref: References) =>
 
-          val result = controller(user).onSubmit(fakeRequest)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(ref): _*)
+          val result  = controller(user).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(routes.ExporterDetailsController.onPageLoad().url)

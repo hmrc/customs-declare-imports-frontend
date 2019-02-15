@@ -20,6 +20,8 @@ import models.DeclarationActionType.DeclarationActionType
 import org.joda.time.DateTime
 import play.api.libs.json.{Json, Reads}
 
+import scala.language.implicitConversions
+
 object DeclarationActionType extends Enumeration {
   type DeclarationActionType = Value
 

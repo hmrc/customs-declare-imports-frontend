@@ -18,14 +18,14 @@ package controllers
 
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UnauthorisedController @Inject()(implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+class UnauthorisedController @Inject()
+  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi, ec: ExecutionContext) extends CustomsController {
 
   def enrol: Action[AnyContent] = Action.async { implicit req =>
     Future.successful(Ok(views.html.enrol()))

@@ -17,7 +17,6 @@
 package controllers.goodsitems
 
 import controllers.FakeActions
-import domain.GovernmentAgencyGoodsItem
 import domain.auth.{EORI, SignedInUser}
 import forms.DeclarationFormMapping._
 import generators.Generators
@@ -33,7 +32,7 @@ import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.wco.dec.GovernmentProcedure
+import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, GovernmentProcedure}
 import views.html.goods_items_government_procedures
 
 import scala.concurrent.Future

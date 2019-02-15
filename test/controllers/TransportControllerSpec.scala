@@ -137,7 +137,7 @@ class TransportControllerSpec extends CustomsSpec
       "invalid data is posted" in {
 
         val badData =
-          Transport.containerCode.setArbitrary(some(intGreaterThan(10)))
+          TransportLens.containerCode.setArbitrary(some(intGreaterThan(10)))
 
         forAll(arbitrary[SignedInUser], badData) {
           (user, formData) =>
