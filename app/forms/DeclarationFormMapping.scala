@@ -204,8 +204,8 @@ object DeclarationFormMapping {
   )(Address.apply)(Address.unapply)
 
   val namedEntityWithAddressMapping = mapping(
-    "name" -> optional(text.verifying("name should be less than or equal to 70 characters", _.length <= 70)), //: Option[String] = None, // max 70 chars
-    "id" -> optional(text.verifying("id  should be less than or equal to 17 characters", _.length <= 17)), // max 17 chars
+    "name" -> optional(text.verifying("Name should be less than or equal to 70 characters", _.length <= 70)), //: Option[String] = None, // max 70 chars
+    "id" -> optional(text.verifying("ID  should be less than or equal to 17 characters", _.length <= 17)), // max 17 chars
     "address" -> optional(addressMapping)
   )(NamedEntityWithAddress.apply)(NamedEntityWithAddress.unapply)
 
