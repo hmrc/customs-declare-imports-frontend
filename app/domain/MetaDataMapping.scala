@@ -19,9 +19,9 @@ package domain
 import domain.DeclarationFormats._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.wco.dec._
-import services.cachekeys.TypedIdentifier
-import services.cachekeys.TypedIdentifier._
+import services.cachekeys._
 import services.cachekeys.CacheKey._
+import services.cachekeys.TypedIdentifier._
 import typeclasses.Monoid
 
 object MetaDataMapping {
@@ -34,7 +34,7 @@ object MetaDataMapping {
     TypedIdentifier.values.foldLeft(Monoid.empty[MetaData])((z, a) => z |+| applied(a))
   }
 
-  private def asMetaData(cache: CacheMap): TypedIdentifier[_] => MetaData = {
+  def asMetaData(cache: CacheMap): TypedIdentifier[_] => MetaData = {
 
     case DeclarantDetailsId =>
       MetaData(declaration = Some(Declaration(declarant = cache.getEntry[ImportExportParty](declarantDetails.key))))
@@ -164,9 +164,7 @@ object MetaDataMapping {
         ))
       )))
 
-    case WarehouseAndCustomsId =>
-      MetaData()
-
+    case WarehouseAndCustomsId         => MetaData()
     case GovAgencyGoodsItemId          => MetaData()
     case GovAgencyGoodsItemReferenceId => MetaData()
   }
