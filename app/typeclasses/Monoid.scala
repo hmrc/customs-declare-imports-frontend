@@ -42,7 +42,7 @@ object Monoid extends MonoidInstances {
   }
 }
 
-trait MonoidInstances extends ProductTypeClassCompanion[Monoid] {
+trait MonoidInstances extends ProductTypeClassCompanion[Monoid] with LowPriorityMonoidImplicits {
 
   import Monoid.ops._
 
@@ -71,29 +71,10 @@ trait MonoidInstances extends ProductTypeClassCompanion[Monoid] {
         else CacheMap(r.id, l.data ++ r.data)
     }
 
-  private def rightBiasedMonoid[A]: Monoid[Option[A]] = new Monoid[Option[A]] {
-    override def empty: Option[A] = None
-
-    override def append(l: Option[A], r: Option[A]): Option[A] =
-      r.fold(l)(_ => r)
-  }
-
-  implicit val dateTimeElementMonoid: Monoid[Option[DateTimeElement]] = rightBiasedMonoid
-  implicit val intMonoid: Monoid[Option[Int]] = rightBiasedMonoid
-  implicit val stringMonoid: Monoid[Option[String]] = rightBiasedMonoid
-  implicit val bigDecimalMonoid: Monoid[Option[BigDecimal]] = rightBiasedMonoid
-  implicit val itineraryMonoid: Monoid[Option[Itinerary]] = rightBiasedMonoid
-  implicit val goodsLocationMonoid: Monoid[Option[GoodsLocation]] = rightBiasedMonoid
-  implicit val sealMonoid: Monoid[Option[Seal]] = rightBiasedMonoid
-  implicit val transportEquipmentMonoid: Monoid[Option[TransportEquipment]] = rightBiasedMonoid
-  implicit val exportCountryMonoid: Monoid[Option[ExportCountry]] = rightBiasedMonoid
-  implicit val warehouseMonoid: Monoid[Option[Warehouse]] = rightBiasedMonoid
-
   implicit val declarationMonoid = new Monoid[Declaration] {
     override def empty: Declaration = Declaration()
 
     override def append(l: Declaration, r: Declaration): Declaration = {
-      def f[A](l: A, r: A)(implicit ev: Monoid[A]): A = l |+| r
 
       Declaration(
         l.acceptanceDateTime |+| r.acceptanceDateTime,
@@ -154,5 +135,15 @@ trait MonoidInstances extends ProductTypeClassCompanion[Monoid] {
         override def append(l: F, r: F): F =
           from(instance.append(to(l), to(r)))
       }
+  }
+}
+
+trait LowPriorityMonoidImplicits {
+
+  implicit def rightBiasedMonoid[A]: Monoid[Option[A]] = new Monoid[Option[A]] {
+    override def empty: Option[A] = None
+
+    override def append(l: Option[A], r: Option[A]): Option[A] =
+      r.fold(l)(_ => r)
   }
 }
