@@ -80,14 +80,6 @@
                 </tr>
                 <tr>
                 <tr>
-                    <th scope="row">@messages("governmentAgencyGoodsItem.manufacturers")</th>
-                    <td>@goodsItem.map(_.manufacturers.size)</td>
-                    <td>
-                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties().url" name="add" class="button" id="AddManufacturers">@messages("governmentAgencyGoodsItem.add")
-                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.manufacturers")</span></a>
-                    </td>
-                </tr>
-                <tr>
                     <th scope="row">@messages("packaging.title")</th>
                     <td>@goodsItem.map(_.packagings.size)</td>
                     <td>
@@ -104,11 +96,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">@messages("governmentAgencyGoodsItem.refundRecipientParties")</th>
-                    <td>@goodsItem.map(_.refundRecipientParties.size)</td>
+                    <th scope="row">@messages("governmentAgencyGoodsItem.commodityTaxes")</th>
+                    <td>@goodsItem.flatMap(_.commodity.map(_.dutyTaxFees.size))</td>
                     <td>
-                        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties().url" name="add" class="button" id="AddRefundRecipientParties">@messages("governmentAgencyGoodsItem.add")
-                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.refundRecipientParties")</span></a>
+                        <a href="@controllers.goodsitems.routes.DutyTaxFeeController.onPageLoad().url" name="add" class="button" id="AddCommodityTaxes">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.commodityTaxes")</span></a>
                     </td>
                 </tr>
             </tbody>

@@ -493,6 +493,30 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     }
   }
 
+  implicit val arbitraryPayment :Arbitrary[Payment] = Arbitrary{
+    for{
+      methodCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(1)))
+      taxableAmount <- arbitrary[Amount]
+      paymentAmount <-  arbitrary[Amount]
+    } yield Payment(methodCode, taxableAmount.currencyId.map(_ => taxableAmount), paymentAmount.currencyId.map(_ => paymentAmount))
+  }
+
+  implicit val arbitraryDutyTaxFee :Arbitrary[DutyTaxFee] = Arbitrary{
+    for{
+      specificTaxBaseQuantity <- arbitrary[Measure]
+      taxRateNumeric <- posDecimal(16, 2)
+      typeCode <- option(nonEmptyString.map(_.take(3)))
+      payment <- arbitraryPayment.arbitrary
+      if(typeCode.exists(_.length ==3))
+    } yield DutyTaxFee(None,None,None,Some(specificTaxBaseQuantity), Some(taxRateNumeric),typeCode, None,Some(payment))
+  }
+
+  implicit val arbitraryCommodity: Arbitrary[Commodity] = Arbitrary{
+    for {
+      dutyTaxFees <- Gen.listOfN(1, arbitrary[DutyTaxFee])
+    } yield Commodity(dutyTaxFees = dutyTaxFees)
+  }
+
   def intGreaterThan(min: Int): Gen[Int] =
     choose(min + 1, Int.MaxValue)
 
@@ -541,4 +565,6 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   val nonAlphaNumString: Gen[String] = listOf(nonAlphaNumericChar).map(_.mkString)
 
   val nonAlphaString: Gen[String] = listOf(nonAlphaChar).map(_.mkString)
+
+
 }

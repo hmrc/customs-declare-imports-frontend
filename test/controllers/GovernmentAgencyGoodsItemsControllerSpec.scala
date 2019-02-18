@@ -42,7 +42,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
   val goodsItemsPageUri = uriWithContextPath("/submit-declaration-goods/goods-item-value")
   val goodsItemsUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-item")
   val navigateToSelectedGoodsItemPageUri = uriWithContextPath("/submit-declaration-goods/add-gov-agency-goods-items")
-  val addManufacturersPageUri = uriWithContextPath("/submit-declaration-goods/add-manufacturers")
   val get = "GET"
   val postMethod = "POST"
 
@@ -121,7 +120,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
           stringResult must include("customs Value Amount must not be negative")
           stringResult must include("id=\"error-message-sequenceNumeric-input\">This field is required")
           stringResult must include("Real number value expected")
-          stringResult must include("id=\"error-message-statisticalValueAmount_currencyId-input\">Currency ID is not a valid currency")
+          stringResult must include("id=\"error-message-statisticalValueAmount_currencyId-input\">Currency is not valid")
           stringResult must include("valuationAdjustment should be less than or equal to 4 characters")
           stringResult must include("export Country code should be less than or equal to 2 characters")
           stringResult must include("country code is only 3 characters")
@@ -189,53 +188,9 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
         content should include element withAttrValue("id", "AddDomesticDutyTaxParties")
         content should include element withAttrValue("id", "AddGovernmentProcedures")
         content should include element withAttrValue("id", "AddOrigins")
-        content should include element withAttrValue("id", "AddManufacturers")
         content should include element withAttrValue("id", "AddPackagings")
         content should include element withAttrValue("id", "AddPreviousDocuments")
-        content should include element withAttrValue("id", "AddRefundRecipientParties")
         content should include element withAttrValue("id", "SaveGoodsItem")
-      }
-    }
-  }
-
-
-  "show addManufacturersPage fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-      withCaching(None)
-      withRequest(get, addManufacturersPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("No Manufacturers available")
-        content should include element withAttrValue("name", "id")
-        content should include element withAttrValue("name", "name")
-        content should include element withAttrValue("name", "address.cityName")
-        content should include element withAttrValue("name", "address.countryCode")
-        content should include element withAttrValue("name", "address.countrySubDivisionCode")
-        content should include element withAttrValue("name", "address.countrySubDivisionName")
-        content should include element withAttrValue("name", "address.line")
-        content should include element withAttrValue("name", "address.postcodeId")
-      }
-    }
-  }
-
-  "pre-populate addManufacturersPage that are added/cached on user navigating to the screen" in withFeatures((enabled(Feature.submit))) {
-    withSignedInUser() { (headers, session, tags) =>
-
-      val goodsItemGen = arbitrary[NamedEntityWithAddress].map { e =>
-        GovernmentAgencyGoodsItem(manufacturers = List(e))
-      }
-
-      withCaching(sampleGen(goodsItemGen))
-      withRequest(get, addManufacturersPageUri, headers, session, tags) { resp =>
-        val content = contentAsHtml(resp)
-        contentAsString(resp) must include("1 Manufacturers added")
-        content should include element withAttrValue("name", "id")
-        content should include element withAttrValue("name", "name")
-        content should include element withAttrValue("name", "address.cityName")
-        content should include element withAttrValue("name", "address.countryCode")
-        content should include element withAttrValue("name", "address.countrySubDivisionCode")
-        content should include element withAttrValue("name", "address.countrySubDivisionName")
-        content should include element withAttrValue("name", "address.line")
-        content should include element withAttrValue("name", "address.postcodeId")
       }
     }
   }
