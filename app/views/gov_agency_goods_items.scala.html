@@ -97,7 +97,7 @@
                 </tr>
                 <tr>
                     <th scope="row">@messages("governmentAgencyGoodsItem.commodityTaxes")</th>
-                    <td>@goodsItem.flatMap(_.commodity.map(_.dutyTaxFees.size))</td>
+                    <td>@goodsItem.map(_.commodity.fold(0)(_.dutyTaxFees.size))</td>
                     <td>
                         <a href="@controllers.goodsitems.routes.DutyTaxFeeController.onPageLoad().url" name="add" class="button" id="AddCommodityTaxes">@messages("governmentAgencyGoodsItem.add")
                             <span class="visually-hidden">@messages("governmentAgencyGoodsItem.commodityTaxes")</span></a>

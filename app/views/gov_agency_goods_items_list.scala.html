@@ -55,7 +55,7 @@
                         <td>@goodsItem.origins.size</td>
                         <td>@goodsItem.packagings.size</td>
                         <td>@goodsItem.previousDocuments.size</td>
-                        <td>@goodsItem.commodity.map(_.dutyTaxFees.size)</td>
+                        <td>@goodsItem.commodity.fold(0)(_.dutyTaxFees.size)</td>
                     </tr>
                 }
                 </tbody>
