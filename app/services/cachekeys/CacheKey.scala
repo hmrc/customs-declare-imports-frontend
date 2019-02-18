@@ -14,60 +14,73 @@
  * limitations under the License.
  */
 
+/*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+
 package services.cachekeys
 
-import domain.{GovernmentAgencyGoodsItem, InvoiceAndCurrency, References, SummaryOfGoods, _}
-import uk.gov.hmrc.wco.dec._
+import services.cachekeys.TypedIdentifier._
 
-trait Identifier[A]
-
-case class CacheKey[A](key: String, identifier: Identifier[A])
+final case class CacheKey[A](key: String, identifier: TypedIdentifier[A])
 
 object CacheKey {
 
-  val declarantDetails = CacheKey("DeclarantDetails", new Identifier[ImportExportParty] {})
+  val declarantDetails = CacheKey("DeclarantDetails", DeclarantDetailsId)
 
-  val references = CacheKey("References", new Identifier[References] {})
+  val references = CacheKey("References", ReferencesId)
 
-  val exporter = CacheKey("Exporter", new Identifier[ImportExportParty] {})
+  val exporter = CacheKey("Exporter", ExporterId)
 
-  val representative = CacheKey("Representative", new Identifier[Agent] {})
+  val representative = CacheKey("Representative", RepresentativeId)
 
-  val importer = CacheKey("Importer", new Identifier[ImportExportParty] {})
+  val importer = CacheKey("Importer", ImporterId)
 
-  val tradeTerms = CacheKey("TradeTerms", new Identifier[TradeTerms] {})
+  val tradeTerms = CacheKey("TradeTerms", TradeTermsId)
 
-  val invoiceAndCurrency = CacheKey("InvoiceAndCurrency", new Identifier[InvoiceAndCurrency] {})
+  val invoiceAndCurrency = CacheKey("InvoiceAndCurrency", InvoiceAndCurrencyId)
 
-  val seller = CacheKey("Seller", new Identifier[ImportExportParty] {})
+  val seller = CacheKey("Seller", SellerId)
 
-  val buyer = CacheKey("Buyer", new Identifier[ImportExportParty] {})
+  val buyer = CacheKey("Buyer", BuyerId)
 
-  val summaryOfGoods = CacheKey("SummaryOfGoods", new Identifier[SummaryOfGoods] {})
+  val summaryOfGoods = CacheKey("SummaryOfGoods", SummaryOfGoodsId)
 
-  val transport = CacheKey("Transport", new Identifier[Transport] {})
+  val transport = CacheKey("Transport", TransportId)
 
-  val authorisationHolders = CacheKey("AuthorisationHolders", new Identifier[Seq[AuthorisationHolder]] {})
+  val authorisationHolders = CacheKey("AuthorisationHolders", AuthorisationHoldersId)
 
-  val guaranteeReference = CacheKey("GuaranteeReferences", new Identifier[Seq[ObligationGuarantee]] {})
+  val guaranteeReferences = CacheKey("GuaranteeReferences", GuaranteeReferencesId)
 
-  val previousDocuments = CacheKey("PreviousDocuments", new Identifier[Seq[PreviousDocument]] {})
+  val previousDocuments = CacheKey("PreviousDocuments", PreviousDocumentsId)
 
-  val additionalDocuments = CacheKey("AdditionalDocuments", new Identifier[Seq[AdditionalDocument]] {})
+  val additionalDocuments = CacheKey("AdditionalDocuments", AdditionalDocumentsId)
 
-  val additionalSupplyChainActors = CacheKey("AdditionalSupplyChainActors", new Identifier[Seq[RoleBasedParty]] {})
-  val domesticDutyTaxParty = CacheKey("DomesticDutyTaxParty", new Identifier[Seq[RoleBasedParty]] {})
+  val additionalSupplyChainActors = CacheKey("AdditionalSupplyChainActors", AdditionalSupplyChainActorsId)
 
-  val additionsAndDeductions = CacheKey("AdditionsAndDeductions", new Identifier[Seq[ChargeDeduction]] {})
+  val domesticDutyTaxParty = CacheKey("DomesticDutyTaxParty", DomesticDutyTaxPartyId)
 
-  val containerIdNos = CacheKey("ContainerIdNos", new Identifier[Seq[TransportEquipment]] {})
+  val additionsAndDeductions = CacheKey("AdditionsAndDeductions", AdditionsAndDeductionsId)
 
-  val guaranteeType = CacheKey("GuaranteeType", new Identifier[Seq[ObligationGuarantee]] {})
+  val containerIdNos = CacheKey("ContainerIdNos", ContainerIdNosId)
 
-  val govAgencyGoodsItemsList = CacheKey("GovAgencyGoodsItemsList", new Identifier[Seq[GovernmentAgencyGoodsItem]] {})
-  val goodsItem = CacheKey("GovAgencyGoodsItem", new Identifier[GovernmentAgencyGoodsItem] {})
-  val govAgencyGoodsItemReference = CacheKey("GovAgencyGoodsItemReference", new Identifier[GovernmentAgencyGoodsItem] {})
+  val guaranteeTypes = CacheKey("GuaranteeTypes", GuaranteeTypeId)
 
-  val warehouseAndCustoms = CacheKey("WarehouseAndCustoms", new Identifier[WarehouseAndCustoms] {})
+  val govAgencyGoodsItemsList = CacheKey("GovAgencyGoodsItemsList", GovAgencyGoodsItemsListId)
+  val goodsItem = CacheKey("GovAgencyGoodsItem", GovAgencyGoodsItemId)
+  val govAgencyGoodsItemReference = CacheKey("GovAgencyGoodsItemReference", GovAgencyGoodsItemReferenceId)
 
+  val warehouseAndCustoms = CacheKey("WarehouseAndCustoms", WarehouseAndCustomsId)
 }

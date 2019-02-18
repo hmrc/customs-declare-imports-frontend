@@ -27,11 +27,12 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.add_previous_documents
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class PreviousDocumentsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-                                           (implicit appConfig: AppConfig, override val messagesApi: MessagesApi)
-  extends CustomsController {
+class PreviousDocumentsController @Inject()
+  (actions: Actions, cacheService: CustomsCacheService)
+  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi, ec: ExecutionContext)
+extends CustomsController {
 
   def form = Form(previousDocumentMapping)
 

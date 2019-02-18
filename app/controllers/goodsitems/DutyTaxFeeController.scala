@@ -19,7 +19,6 @@ package controllers.goodsitems
 import config.AppConfig
 import controllers.{Actions, CustomsController}
 import domain.DeclarationFormats._
-import domain.GovernmentAgencyGoodsItem
 import forms.DeclarationFormMapping._
 import javax.inject.{Inject, Singleton}
 import play.api.data.Form
@@ -27,11 +26,12 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.wco.dec.{Commodity, DutyTaxFee}
+import uk.gov.hmrc.wco.dec.{Commodity, DutyTaxFee, GovernmentAgencyGoodsItem}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class DutyTaxFeeController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi)
+  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi, ec: ExecutionContext)
   extends CustomsController {
 
   val dutyTaxFeeForm: Form[DutyTaxFee] = Form(dutyTaxFeeMapping)
@@ -54,7 +54,7 @@ class DutyTaxFeeController @Inject()(actions: Actions, cacheService: CustomsCach
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(commodity =
                 goodsItem.commodity.fold(Some(Commodity(dutyTaxFees = Seq(form))))(com => Some(com.copy(dutyTaxFees = com.dutyTaxFees :+ form))))
-              case None => GovernmentAgencyGoodsItem(commodity = Some(Commodity(dutyTaxFees = Seq(form))))
+              case None => GovernmentAgencyGoodsItem(sequenceNumeric = 0, commodity = Some(Commodity(dutyTaxFees = Seq(form))))
             }
             cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
               Redirect(routes.DutyTaxFeeController.onPageLoad())

@@ -55,7 +55,7 @@ class TransportMeansMappingSpec extends WordSpec
       "modeCode is not a valid value" in {
 
         val badData =
-          TransportMeans.modeCode.setArbitrary(some(intOutsideRange(1, 9)))
+          TransportMeansLens.modeCode.setArbitrary(some(intOutsideRange(1, 9)))
 
         forAll(badData) { means =>
 
@@ -70,7 +70,7 @@ class TransportMeansMappingSpec extends WordSpec
 
         val options = config.Options.transportMeansIdentificationTypes.map(_._1).toSet
         val badData =
-          TransportMeans.identificationTypeCode.setArbitrary(some(stringsExceptSpecificValues(options)))
+          TransportMeansLens.identificationTypeCode.setArbitrary(some(stringsExceptSpecificValues(options)))
 
         forAll(badData) { means =>
 
@@ -84,7 +84,7 @@ class TransportMeansMappingSpec extends WordSpec
       "id is longer than 35 characters" in {
 
         val badData =
-          TransportMeans.id.setArbitrary(some(minStringLength(36)))
+          TransportMeansLens.id.setArbitrary(some(minStringLength(36)))
 
         forAll(badData) { means =>
 

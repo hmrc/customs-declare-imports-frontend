@@ -27,9 +27,12 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.deferred_payments
 
+import scala.concurrent.ExecutionContext
+
 class DeferredPaymentsController @Inject()
-(actions: Actions, cacheService: CustomsCacheService)
-(implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+  (actions: Actions, cacheService: CustomsCacheService)
+  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi, ec: ExecutionContext)
+extends CustomsController {
 
   def form = Form(additionalDocumentMapping)
 

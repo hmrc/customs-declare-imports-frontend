@@ -27,11 +27,12 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.delivery_terms
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class DeliveryTermsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                       (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+class DeliveryTermsController @Inject()
+  (actions: Actions, cache: CustomsCacheService)
+  (implicit override val messagesApi: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
+extends CustomsController {
 
   val form = Form(tradeTermsMapping)
 

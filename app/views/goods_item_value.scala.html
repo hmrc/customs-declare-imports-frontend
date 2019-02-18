@@ -17,9 +17,9 @@
 @import config.AppConfig
 @import uk.gov.hmrc.play.views.html._
 @import controllers.routes._
-@import domain.GoodsItemValueInformation
+@import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItem
 
-@(form: Form[GoodsItemValueInformation])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
+@(form: Form[GovernmentAgencyGoodsItem])(implicit request: Request[_], messages: Messages,appConfig:AppConfig)
 
 @main_template(
   title = messages("governmentAgencyGoodsItemValue.title"),

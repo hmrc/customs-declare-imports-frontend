@@ -1014,7 +1014,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll(arbitrary[References], minStringLength(23)) {
           (references, refId) =>
 
-            val data = references.copy(functionalReferenceId = Some(refId))
+            val data = references.copy(functionalReferenceId = refId)
             Form(referencesMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("LRN must be 22 characters or less"),
               _ => fail("form should not succeed")

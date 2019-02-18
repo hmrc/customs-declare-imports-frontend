@@ -22,7 +22,7 @@ case class References(
   typeCode: Option[String],
   typerCode: Option[String],
   traderAssignedReferenceId: Option[String],
-  functionalReferenceId: Option[String],
+  functionalReferenceId: String,
   transactionNatureCode: Option[Int])
 
 object References {

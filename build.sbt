@@ -13,6 +13,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test(),
     evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
+    scalacOptions ++= Seq("-feature", "-Xfatal-warnings"),
     majorVersion := 0
   )
   .settings(
@@ -36,9 +37,9 @@ lazy val scoverageSettings: Seq[Setting[_]] = Seq(
   coverageExcludedPackages := List(
     "<empty>"
     ,"Reverse.*"
-    ,"domain\\..*"
-    ,"forms\\..*"
-    ,"views\\..*"
+      ,"domain\\..*"
+      ,"forms\\..*"
+      ,"views\\..*"
     ,".*(BuildInfo|Routes|Options|FeatureSwitchController|TestingUtilitiesController).*"
   ).mkString(";"),
   coverageMinimum := 70,

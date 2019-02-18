@@ -18,7 +18,6 @@ package controllers
 
 import config.AppConfig
 import domain.DeclarationFormats._
-import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
 import forms.DeclarationFormMapping._
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
@@ -29,14 +28,16 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.{NamedEntityWithAddress, _}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+class GovernmentAgencyGoodsItemsController @Inject()
+  (actions: Actions, cacheService: CustomsCacheService)
+  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi, ec: ExecutionContext)
+extends CustomsController {
 
-  val goodsItemValueInformationForm: Form[GoodsItemValueInformation] = Form(goodsItemValueInformationMapping)
+  val governmentAgencyGoodsItemForm: Form[GovernmentAgencyGoodsItem] = Form(goodsItemValueInformationMapping)
   val namedEntityWithAddressForm: Form[NamedEntityWithAddress] = Form(namedEntityWithAddressMapping)
 
   val goodsItemValueInformationKey = "goodsItemValueInformation"
@@ -44,23 +45,22 @@ class GovernmentAgencyGoodsItemsController @Inject()(actions: Actions, cacheServ
 
   def showGoodsItemValuePage(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit req =>
-      cacheService.fetchAndGetEntry[GoodsItemValueInformation](req.eori.value,
+      cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](req.eori.value,
         goodsItemValueInformationKey).map {
-        case Some(form) => Ok(views.html.goods_item_value(goodsItemValueInformationForm.fill(form)))
-        case _ => Ok(views.html.goods_item_value(goodsItemValueInformationForm))
+        case Some(form) => Ok(views.html.goods_item_value(governmentAgencyGoodsItemForm.fill(form)))
+        case _ => Ok(views.html.goods_item_value(governmentAgencyGoodsItemForm))
       }
   }
 
   def submitGoodsItemValueSection(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>
-      goodsItemValueInformationForm.bindFromRequest().fold(
-        (formWithErrors: Form[GoodsItemValueInformation]) =>
-          Future.successful(BadRequest((views.html.goods_item_value(formWithErrors)))),
+      governmentAgencyGoodsItemForm.bindFromRequest().fold(
+        formWithErrors =>
+          Future.successful(BadRequest(views.html.goods_item_value(formWithErrors))),
         form => {
           Logger.info("goodsItemValue form --->" + form)
-          val updatedGoodsItem = GovernmentAgencyGoodsItem(goodsItemValue = Some(form))
 
-          cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map {
+          cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, form).map {
             _ => Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
           }
         })

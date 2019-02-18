@@ -27,9 +27,12 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.container_identification_number
 
-class ContainerIdentificationNumberController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                                       (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+import scala.concurrent.ExecutionContext
+
+class ContainerIdentificationNumberController @Inject()
+  (actions: Actions, cache: CustomsCacheService)
+  (implicit override val messagesApi: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
+extends CustomsController {
 
   val form = Form(transportEquipmentMapping)
 

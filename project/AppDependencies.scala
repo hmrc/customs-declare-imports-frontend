@@ -5,14 +5,17 @@ import sbt._
 object AppDependencies {
 
   val compile = Seq(
-    "uk.gov.hmrc" %% "govuk-template" % "5.22.0",
-    "uk.gov.hmrc" %% "play-ui" % "7.32.0-play-25",
     ws,
-    "uk.gov.hmrc" %% "bootstrap-play-25" % "4.8.0",
-    "uk.gov.hmrc" %% "auth-client" % "2.19.0-play-25",
-    "uk.gov.hmrc" %% "http-caching-client" % "8.0.0",
-    "uk.gov.hmrc" %% "simple-reactivemongo" % "7.12.0-play-25",
-    "uk.gov.hmrc" %% "wco-dec" % "0.18.0"
+    "uk.gov.hmrc"  %% "govuk-template" % "5.22.0",
+    "uk.gov.hmrc"  %% "play-ui" % "7.32.0-play-25",
+    "uk.gov.hmrc"  %% "bootstrap-play-25" % "4.8.0",
+    "uk.gov.hmrc"  %% "auth-client" % "2.19.0-play-25",
+    "uk.gov.hmrc"  %% "http-caching-client" % "8.0.0",
+    "uk.gov.hmrc"  %% "simple-reactivemongo" % "7.12.0-play-25",
+    "uk.gov.hmrc"  %% "wco-dec" % "0.18.0",
+    "com.chuusai"  %% "shapeless" % "2.3.3",
+    "com.beachape" %% "enumeratum" % "1.5.13",
+    "ai.x"         %% "play-json-extensions" % "0.9.0"
   )
 
   def test(scope: String = "test") = Seq(

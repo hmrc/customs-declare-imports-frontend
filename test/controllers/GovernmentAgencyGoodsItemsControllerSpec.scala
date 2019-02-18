@@ -16,7 +16,6 @@
 
 package controllers
 
-import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
 import domain.features.Feature
 import generators.Generators
 import org.scalacheck.Arbitrary._
@@ -160,7 +159,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withSignedInUser() { (headers, session, tags) =>
 
 
-        sampleGen(arbitrary[GoodsItemValueInformation]).foreach { sampleData =>
+        sampleGen(arbitrary[GovernmentAgencyGoodsItem]).foreach { sampleData =>
 
           withCaching(Some(sampleData))
           withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>

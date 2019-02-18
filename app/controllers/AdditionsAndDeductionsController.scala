@@ -27,9 +27,12 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.add_additions_and_deductions
 
-class AdditionsAndDeductionsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                                (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+import scala.concurrent.ExecutionContext
+
+class AdditionsAndDeductionsController @Inject()
+  (actions: Actions, cache: CustomsCacheService)
+  (implicit override val messagesApi: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
+extends CustomsController {
 
   val form = Form(chargeDeductionMapping)
 
