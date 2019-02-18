@@ -34,28 +34,28 @@
             <h1 class="heading-large">@messages("locationOfGoods.heading")</h1>
          </legend>
 
-        @components.input_text(form("locationOfGoods.goodsLocation.name"), messages("locationOfGoods.goodsLocation.name"))
-        @components.input_text(form("locationOfGoods.goodsLocation.id"), messages("locationOfGoods.goodsLocation.id"))
-        @components.input_select(form("locationOfGoods.goodsLocation.typeCode"),
+        @components.input_text(form("goodsLocation.name"), messages("locationOfGoods.goodsLocation.name"))
+        @components.input_text(form("goodsLocation.id"), messages("locationOfGoods.goodsLocation.id"))
+        @components.input_select(form("goodsLocation.typeCode"),
                                  messages("locationOfGoods.goodsLocation.typeCode"),
                                  config.Options.goodsLocationTypeCode)
-        @components.input_text(form("locationOfGoods.goodsLocationAddress.line"), messages("locationOfGoods.goodsLocationAddress.line"))
-        @components.input_text(form("locationOfGoods.goodsLocationAddress.postcodeId"), messages("locationOfGoods.goodsLocationAddress.postcodeId"))
-        @components.input_text(form("locationOfGoods.goodsLocationAddress.cityName"), messages("locationOfGoods.goodsLocationAddress.cityName"))
-           @components.input_select(form("locationOfGoods.goodsLocationAddress.countryCode"),
+        @components.input_text(form("goodsLocationAddress.line"), messages("locationOfGoods.goodsLocationAddress.line"))
+        @components.input_text(form("goodsLocationAddress.postcodeId"), messages("locationOfGoods.goodsLocationAddress.postcodeId"))
+        @components.input_text(form("goodsLocationAddress.cityName"), messages("locationOfGoods.goodsLocationAddress.cityName"))
+           @components.input_select(form("goodsLocationAddress.countryCode"),
            messages("locationOfGoods.goodsLocationAddress.countryCode"),
            config.Options.countryOptions)
-        @components.input_select(form("locationOfGoods.goodsLocationAddress.typeCode"),
+        @components.input_select(form("goodsLocationAddress.typeCode"),
            messages("locationOfGoods.goodsLocationAddress.typeCode"),
            config.Options.goodsLocationTypeCode)
 
-        @components.input_select(form("locationOfGoods.destination.countryCode"),
+        @components.input_select(form("destination.countryCode"),
            messages("locationOfGoods.destination.countryCode"),
            config.Options.countryOptions)
-        @components.input_select(form("locationOfGoods.exportCountry.id"),
+        @components.input_select(form("exportCountry.id"),
            messages("locationOfGoods.exportCountry.id"),
            config.Options.countryTypes)
-        @components.input_text(form("locationOfGoods.loadingLocation.id"), messages("locationOfGoods.loadingLocation.id"))
+        @components.input_text(form("loadingLocation.id"), messages("locationOfGoods.loadingLocation.id"))
 
        </fieldset>
 
