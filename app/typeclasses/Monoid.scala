@@ -18,6 +18,7 @@ package typeclasses
 
 import shapeless._
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.wco.dec._
 
 trait Monoid[T] {
 
@@ -41,8 +42,7 @@ object Monoid extends MonoidInstances {
   }
 }
 
-trait MonoidInstances extends ProductTypeClassCompanion[Monoid]
-  with LowPriorityImplicitsMonoidInstances {
+trait MonoidInstances extends ProductTypeClassCompanion[Monoid] with LowPriorityMonoidImplicits {
 
   import Monoid.ops._
 
@@ -62,7 +62,7 @@ trait MonoidInstances extends ProductTypeClassCompanion[Monoid]
         l ++ r
     }
 
-  implicit def cacheMapMonoid: Monoid[CacheMap] =
+  implicit val cacheMapMonoid: Monoid[CacheMap] =
     new Monoid[CacheMap] {
       override def empty: CacheMap = CacheMap("", Map())
 
@@ -71,6 +71,45 @@ trait MonoidInstances extends ProductTypeClassCompanion[Monoid]
         else CacheMap(r.id, l.data ++ r.data)
     }
 
+  implicit val declarationMonoid = new Monoid[Declaration] {
+    override def empty: Declaration = Declaration()
+
+    override def append(l: Declaration, r: Declaration): Declaration = {
+
+      Declaration(
+        l.acceptanceDateTime |+| r.acceptanceDateTime,
+        l.functionCode |+| r.functionCode,
+        l.functionalReferenceId |+| r.functionalReferenceId,
+        l.id |+| r.id,
+        l.issueDateTime |+| r.issueDateTime,
+        l.issueLocationId |+| r.issueLocationId,
+        l.typeCode |+| r.typeCode,
+        l.goodsItemQuantity |+| r.goodsItemQuantity,
+        l.declarationOfficeId |+| r.declarationOfficeId,
+        l.invoiceAmount |+| r.invoiceAmount,
+        l.loadingListQuantity |+| r.loadingListQuantity,
+        l.totalGrossMassMeasure |+| r.totalGrossMassMeasure,
+        l.totalPackageQuantity |+| r.totalPackageQuantity,
+        l.specificCircumstancesCode |+| r.specificCircumstancesCode,
+        l.authentication |+| r.authentication,
+        l.submitter |+| r.submitter,
+        l.additionalDocuments |+| r.additionalDocuments,
+        l.additionalInformations |+| r.additionalInformations,
+        l.agent |+| r.agent,
+        l.amendments |+| r.amendments,
+        l.authorisationHolders |+| r.authorisationHolders,
+        l.borderTransportMeans |+| r.borderTransportMeans,
+        l.currencyExchanges |+| r.currencyExchanges,
+        l.declarant |+| r.declarant,
+        l.exitOffice |+| r.exitOffice,
+        l.exporter |+| r.exporter,
+        l.goodsShipment |+| r.goodsShipment,
+        l.obligationGuarantees |+| r.obligationGuarantees,
+        l.presentationOffice |+| r.presentationOffice,
+        l.supervisingOffice |+| r.supervisingOffice
+      )
+    }
+  }
 
   object typeClass extends ProductTypeClass[Monoid] {
 
@@ -99,13 +138,12 @@ trait MonoidInstances extends ProductTypeClassCompanion[Monoid]
   }
 }
 
-trait LowPriorityImplicitsMonoidInstances {
+trait LowPriorityMonoidImplicits {
 
-  implicit def rightBiasedOptionMonoid[A]: Monoid[Option[A]] =
-    new Monoid[Option[A]] {
-      override def empty: Option[A] = None
+  implicit def rightBiasedMonoid[A]: Monoid[Option[A]] = new Monoid[Option[A]] {
+    override def empty: Option[A] = None
 
-      override def append(l: Option[A], r: Option[A]): Option[A] =
-        r.fold(l)(Some(_))
-    }
+    override def append(l: Option[A], r: Option[A]): Option[A] =
+      r.fold(l)(_ => r)
+  }
 }
