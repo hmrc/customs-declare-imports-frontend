@@ -21,7 +21,7 @@
 
 @(mrn: String, form: Form[Cancel])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@main_template(title = messages("cancelpage.titleAndHeader")) {
+@main_template(title = s"${messages("cancelpage.titleAndHeader")} $mrn") {
     @helpers.form(routes.DeclarationController.handleCancelForm(mrn)) {
 
         @components.back_link()
