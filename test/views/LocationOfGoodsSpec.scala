@@ -104,7 +104,8 @@ class LocationOfGoodsSpec extends ViewBehaviours
 
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
-        val input = input_text(popForm("goodsLocation.address.cityName"), messages(s"$messagePrefix.goodsLocationAddress.cityName"))
+        val input = input_text(popForm("goodsLocation.address.cityName"),
+          messages(s"$messagePrefix.goodsLocationAddress.cityName"))
 
         view(popForm) must include(input)
       }
