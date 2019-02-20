@@ -532,9 +532,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       specificTaxBaseQuantity <- arbitrary[Measure]
       taxRateNumeric <- posDecimal(16, 2)
       typeCode <- option(nonEmptyString.map(_.take(3)))
+      quataOrderNo <- option(nonEmptyString.map(_.take(6)))
       payment <- arbitraryPayment.arbitrary
-      if(typeCode.exists(_.length ==3))
-    } yield DutyTaxFee(None,None,None,Some(specificTaxBaseQuantity), Some(taxRateNumeric),typeCode, None,Some(payment))
+      if(typeCode.exists(_.length ==3) && quataOrderNo.exists(_.length == 6))
+    } yield DutyTaxFee(None,None,None,Some(specificTaxBaseQuantity), Some(taxRateNumeric),typeCode, quataOrderNo,Some(payment))
   }
 
   implicit val arbitraryCommodity: Arbitrary[Commodity] = Arbitrary{

@@ -48,6 +48,7 @@
                 messages("dutytaxefee.rate"),
                 messages("dutytaxefee.payabletaxcurrency"),
                 messages("dutytaxefee.payabletaxamount"),
+                messages("dutytaxefee.quotaorder"),
                 messages("dutytaxefee.totalcurrency"),
                 messages("dutytaxefee.total"),
                 messages("dutytaxefee.paymentmethod")
@@ -58,6 +59,7 @@
                     d.taxRateNumeric.getOrElse(""),
                     d.payment.flatMap(_.paymentAmount.flatMap(_.currencyId)).getOrElse(""),
                     d.payment.flatMap(_.paymentAmount.flatMap(_.value)).getOrElse(""),
+                    d.quotaOrderId.getOrElse(""),
                     d.payment.flatMap(_.taxAssessedAmount.flatMap(_.currencyId)).getOrElse(""),
                     d.payment.flatMap(_.taxAssessedAmount.flatMap(_.value)).getOrElse(""),
                     d.payment.flatMap(_.methodCode).getOrElse(""))
@@ -71,6 +73,7 @@
         @components.input_text(field = form("taxRateNumeric"),label = messages("dutytaxefee.rate"))
         @components.input_text(field = form("payment.paymentAmount.currencyId"),label = messages("dutytaxefee.payabletaxcurrency"))
         @components.input_text(field = form("payment.paymentAmount.value"),label = messages("dutytaxefee.payabletaxamount"))
+        @components.input_text(field = form("quotaOrderId"),label =  messages("dutytaxefee.quotaorder"))
         @components.input_text(field = form("payment.taxAssessedAmount.currencyId"),label = messages("dutytaxefee.totalcurrency"))
         @components.input_text(field = form("payment.taxAssessedAmount.value"),label = messages("dutytaxefee.total"))
         @components.input_text(field = form("payment.methodCode"),label = messages("dutytaxefee.paymentmethod"))

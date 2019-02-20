@@ -653,4 +653,5 @@ dutytaxefee.payabletaxcurrency=Payable tax amount - currency
 dutytaxefee.total=Total
 dutytaxefee.totalcurrency=Total - currency
 dutytaxefee.paymentmethod=Method of payment
+dutytaxefee.quotaorder=Quota order number
 

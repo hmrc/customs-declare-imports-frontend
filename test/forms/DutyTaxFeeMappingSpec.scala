@@ -113,6 +113,29 @@ class DutyTaxFeeMappingSpec extends WordSpec
             )
         }
       }
+      "Quota order number is less than 6 chars" in {
+
+        forAll(arbitrary[DutyTaxFee], stringsWithMaxLength(4)) {
+          (taxFee, orderId) =>
+            val data = taxFee.copy(quotaOrderId = Some(orderId))
+            Form(dutyTaxFeeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Quota order number should be 6 characters"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+      "Quota order number is larger than 6 chars" in {
+
+        forAll(arbitrary[DutyTaxFee], minStringLength(7)) {
+          (taxFee, orderId) =>
+            val data = taxFee.copy(quotaOrderId = Some(orderId))
+            Form(dutyTaxFeeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Quota order number should be 6 characters"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
     }
   }
 }

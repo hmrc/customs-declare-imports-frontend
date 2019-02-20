@@ -422,7 +422,7 @@ object DeclarationFormMapping {
       .verifying("Tax Rate cannot have more than 3 decimal places", _.scale <= 3)
       .verifying("Tax Rate must not be negative", _ >= 0)),
     "typeCode" -> optional(text.verifying("Tax Type should be 3 characters", _.length == 3)),
-    "quotaOrderId" -> ignored[Option[String]](None),
+    "quotaOrderId" -> optional(text.verifying("Quota order number should be 6 characters", _.length == 6)),
     "payment" -> optional(paymentMapping)
   )(DutyTaxFee.apply)(DutyTaxFee.unapply)
     .verifying("One of Tax type, Tax base, Tax rate, Payable tax amount Total and Method of payment is required to add commodity duty tax", require1Field[DutyTaxFee](_.specificTaxBaseQuantity, _.taxRateNumeric, _.payment, _.typeCode))
