@@ -39,13 +39,13 @@
         @components.input_select(form("goodsLocation.typeCode"),
                                  messages("locationOfGoods.goodsLocation.typeCode"),
                                  config.Options.goodsLocationTypeCode)
-        @components.input_text(form("goodsLocationAddress.line"), messages("locationOfGoods.goodsLocationAddress.line"))
-        @components.input_text(form("goodsLocationAddress.postcodeId"), messages("locationOfGoods.goodsLocationAddress.postcodeId"))
-        @components.input_text(form("goodsLocationAddress.cityName"), messages("locationOfGoods.goodsLocationAddress.cityName"))
-           @components.input_select(form("goodsLocationAddress.countryCode"),
+        @components.input_text(form("goodsLocation.address.line"), messages("locationOfGoods.goodsLocationAddress.line"))
+        @components.input_text(form("goodsLocation.address.postcodeId"), messages("locationOfGoods.goodsLocationAddress.postcodeId"))
+        @components.input_text(form("goodsLocation.address.cityName"), messages("locationOfGoods.goodsLocationAddress.cityName"))
+        @components.input_select(form("goodsLocation.address.countryCode"),
            messages("locationOfGoods.goodsLocationAddress.countryCode"),
            config.Options.countryOptions)
-        @components.input_select(form("goodsLocationAddress.typeCode"),
+        @components.input_select(form("goodsLocation.address.typeCode"),
            messages("locationOfGoods.goodsLocationAddress.typeCode"),
            config.Options.goodsLocationTypeCode)
 
