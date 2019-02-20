@@ -410,7 +410,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       typeCode <- option(arbitrary[String].map(_.take(2)))
       amount <- arbitrary[Amount]
-      if typeCode.exists(_.nonEmpty) || amount.currencyId.nonEmpty
+      if typeCode.exists(_.length == 2) || amount.currencyId.nonEmpty
     } yield {
       ChargeDeduction(typeCode, amount.currencyId.map(_ => amount))
     }
@@ -583,6 +583,12 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       dutyTaxFees <- Gen.listOfN(1, arbitrary[DutyTaxFee])
     } yield Commodity(dutyTaxFees = dutyTaxFees)
+  }
+
+  implicit val arbitraryCustomsValuation: Arbitrary[CustomsValuation] = Arbitrary{
+    for {
+      chargeDeductions <- Gen.listOfN(1, arbitrary[ChargeDeduction])
+    } yield CustomsValuation(chargeDeductions = chargeDeductions)
   }
 
   def intGreaterThan(min: Int): Gen[Int] =

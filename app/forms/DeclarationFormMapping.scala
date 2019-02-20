@@ -266,14 +266,20 @@ object DeclarationFormMapping {
 
   val chargeDeductionMapping = mapping(
     "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 2 characters", _.length <= 2)),
-    "otherChargeDeductionAmount" -> optional(amountMapping) // Option[Amount] = None
+    "otherChargeDeductionAmount" -> optional(amountMapping("Value","Currency")) // Option[Amount] = None
   )(ChargeDeduction.apply)(ChargeDeduction.unapply)
     .verifying("Charges code, currency id or amount are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
+
+  val goodsChargeDeductionMapping = mapping(
+    "chargesTypeCode" -> optional(text.verifying("Type should be 2 characters", _.length == 2)),
+    "otherChargeDeductionAmount" -> optional(amountMapping("Value","Currency")) // Option[Amount] = None
+  )(ChargeDeduction.apply)(ChargeDeduction.unapply)
+    .verifying("Type or Currency and Value are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
 
 
   val customsValuationMapping = mapping("methodCode" -> optional(text.verifying(" Charges code should be less than or equal to 3 characters", _.length <= 3)), // max 3 chars; not valid outside GovernmentAgencyGoodsItem
     "freightChargeAmount" -> optional(bigDecimal), // default(bigDecimal, None),
-    "chargeDeductions" -> seq(chargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
+    "chargeDeductions" -> seq(goodsChargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
 
 
   val officeMapping = mapping("id" -> optional(text
