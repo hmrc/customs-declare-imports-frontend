@@ -531,6 +531,17 @@ addDeferredPayment.table.multiple.heading=Deferred Payments added
 addDeferredPayment.table.empty.heading=No Deferred Payments available
 addDeferredPayment.addDeferredPaymentButton=Add Deferred Payment
 
+## Goods item exporter details
+
+governmentAgencyGoodsItem.exporterDetails.title=Exporter'’s details
+governmentAgencyGoodsItem.exporterDetails.heading=Exporter'’s details
+governmentAgencyGoodsItem.exporterDetails.name=Name
+governmentAgencyGoodsItem.exporterDetails.address.line=Street and number
+governmentAgencyGoodsItem.exporterDetails.address.cityName=City
+governmentAgencyGoodsItem.exporterDetails.address.country=Country
+governmentAgencyGoodsItem.exporterDetails.address.postcode=Postcode
+governmentAgencyGoodsItem.exporterDetails.id=Exporter identification no.
+
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Government agency goods item
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available

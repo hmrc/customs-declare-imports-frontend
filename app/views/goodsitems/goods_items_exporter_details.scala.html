@@ -1,0 +1,51 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.{AppConfig, ValidationError}
+@import config.Fields._
+@import controllers.routes._
+@import uk.gov.hmrc.play.views.html._
+
+@(form: Form[_])(implicit req: Request[_], messages: Messages, cfg: AppConfig)
+
+@main_template(messages("governmentAgencyGoodsItem.exporterDetails.title")) {
+
+@helpers.form(action = WarehouseAndCustomsController.onSubmit()) {
+
+
+        @components.back_link()
+
+        @components.error_summary(form.errors)
+
+        <fieldset>
+            <legend>
+                <h1 class="heading-large">@messages("governmentAgencyGoodsItem.exporterDetails.heading")</h1>
+            </legend>
+
+                <h2 class="heading-medium">@messages("pages.warehouseAndCustomsOffices.h2.warehouseDetails")</h2>
+
+                @components.input_text(form("name"), messages("governmentAgencyGoodsItem.exporterDetails.name"))
+
+<!--                @components.input_select(form("warehouse.typeCode"),
+                                         messages("warehouseAndCustomsOffices.warehouse.typeCode"),
+                                         config.Options.customsWareHouseTypes)-->
+        </fieldset>
+
+        <button id="Add" name="submit">
+            @messages("common.button.continue")
+        </button>
+    }
+}

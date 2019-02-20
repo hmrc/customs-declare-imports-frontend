@@ -16,7 +16,6 @@
 
 package forms
 
-import domain.WarehouseAndCustoms
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalacheck.Arbitrary._
@@ -24,7 +23,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
-import uk.gov.hmrc.wco.dec.{NamedEntityWithAddress, Warehouse}
+import uk.gov.hmrc.wco.dec.{Address, NamedEntityWithAddress}
 
 class NamedEntityWithAddressMappingSpec extends WordSpec
   with MustMatchers
@@ -49,7 +48,46 @@ class NamedEntityWithAddressMappingSpec extends WordSpec
     }
 
     "fail" when {
-      
+
+      "name length is greater than 70 characters" in {
+
+        forAll(arbitrary[NamedEntityWithAddress], minStringLength(71)) {
+          (entity, invalidName) =>
+
+            Form(namedEntityWithAddressMapping).fillAndValidate(entity.copy(name = Some(invalidName))).fold(
+              _ must haveErrorMessage("Name should be less than or equal to 70 characters"),
+              e => fail("form should not succeed")
+            )
+        }
+      }
+
+      "id length is greater than 17 characters" in {
+
+        forAll(arbitrary[NamedEntityWithAddress], minStringLength(18)) {
+          (entity, invalidId) =>
+
+            Form(namedEntityWithAddressMapping).fillAndValidate(entity.copy(id = Some(invalidId))).fold(
+              _ must haveErrorMessage("ID  should be less than or equal to 17 characters"),
+              e => fail("form should not succeed")
+            )
+        }
+      }
+
+      "invalid address is passed" in {
+
+        forAll(arbitrary[NamedEntityWithAddress], arbitrary[Address], minStringLength(36)) {
+
+          (entity, address, invalidCityName) =>
+
+            val invalidAddress = address.copy(cityName = Some(invalidCityName))
+            val badData = entity.copy(address = Some(invalidAddress))
+
+            Form(namedEntityWithAddressMapping).fillAndValidate(badData).fold(
+              _ must haveErrorMessage("City name should be 35 characters or less"),
+              e => fail("form should not succeed")
+            )
+        }
+      }
     }
   }
 }
