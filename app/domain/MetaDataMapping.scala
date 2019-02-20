@@ -107,10 +107,6 @@ object MetaDataMapping {
       )))
     }
 
-    case LocationOfGoodsId =>{
-      MetaData()
-    }
-
     case AuthorisationHoldersId =>
       MetaData(declaration = Some(Declaration(
         authorisationHolders = cache.getEntry[Seq[AuthorisationHolder]](authorisationHolders.key).getOrElse(Seq.empty)
@@ -184,6 +180,20 @@ object MetaDataMapping {
         presentationOffice = data.flatMap(_.presentationOffice),
         supervisingOffice = data.flatMap(_.supervisingOffice)
       )))
+    }
+
+    case LocationOfGoodsId => {
+      val data = cache.getEntry[LocationOfGoods](locationOfGoods.key)
+      MetaData(declaration = Some(Declaration(
+        goodsShipment = Some(GoodsShipment(
+          consignment = Some(Consignment(
+            goodsLocation = data.flatMap(_.goodsLocation),
+            loadingLocation = data.flatMap(_.loadingLocation)
+          )),
+          destination = data.flatMap(_.destination),
+          exportCountry = data.flatMap(_.exportCountry)
+        )))
+      ))
     }
 
     case GovAgencyGoodsItemId          => MetaData()
