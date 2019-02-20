@@ -19,9 +19,9 @@ package domain
 import domain.DeclarationFormats._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.wco.dec._
-import services.cachekeys.TypedIdentifier
-import services.cachekeys.TypedIdentifier._
+import services.cachekeys._
 import services.cachekeys.CacheKey._
+import services.cachekeys.TypedIdentifier._
 import typeclasses.Monoid
 
 object MetaDataMapping {
@@ -34,7 +34,7 @@ object MetaDataMapping {
     TypedIdentifier.values.foldLeft(Monoid.empty[MetaData])((z, a) => z |+| applied(a))
   }
 
-  private def asMetaData(cache: CacheMap): TypedIdentifier[_] => MetaData = {
+  def asMetaData(cache: CacheMap): TypedIdentifier[_] => MetaData = {
 
     case DeclarantDetailsId =>
       MetaData(declaration = Some(Declaration(declarant = cache.getEntry[ImportExportParty](declarantDetails.key))))
@@ -58,10 +58,14 @@ object MetaDataMapping {
       MetaData(declaration = Some(Declaration(agent = cache.getEntry[Agent](representative.key))))
 
     case ImporterId =>
-      MetaData(declaration = Some(Declaration(goodsShipment = Some(GoodsShipment(importer = cache.getEntry[ImportExportParty](importer.key))))))
+      MetaData(declaration = Some(Declaration(
+        goodsShipment = Some(GoodsShipment(importer = cache.getEntry[ImportExportParty](importer.key))))
+      ))
 
     case TradeTermsId =>
-      MetaData(declaration = Some(Declaration(goodsShipment = Some(GoodsShipment(tradeTerms = cache.getEntry[TradeTerms](tradeTerms.key))))))
+      MetaData(declaration = Some(Declaration(
+        goodsShipment = Some(GoodsShipment(tradeTerms = cache.getEntry[TradeTerms](tradeTerms.key)))
+      )))
 
     case InvoiceAndCurrencyId => {
       val data = cache.getEntry[InvoiceAndCurrency](invoiceAndCurrency.key)
@@ -73,10 +77,14 @@ object MetaDataMapping {
     }
 
     case SellerId =>
-      MetaData(declaration = Some(Declaration(goodsShipment = Some(GoodsShipment(seller = cache.getEntry[ImportExportParty](seller.key))))))
+      MetaData(declaration = Some(Declaration(
+        goodsShipment = Some(GoodsShipment(seller = cache.getEntry[ImportExportParty](seller.key)))
+      )))
 
     case BuyerId =>
-      MetaData(declaration = Some(Declaration(goodsShipment = Some(GoodsShipment(buyer = cache.getEntry[ImportExportParty](buyer.key))))))
+      MetaData(declaration = Some(Declaration(
+        goodsShipment = Some(GoodsShipment(buyer = cache.getEntry[ImportExportParty](buyer.key)))
+      )))
 
     case SummaryOfGoodsId => {
       val data = cache.getEntry[SummaryOfGoods](summaryOfGoods.key)
@@ -164,8 +172,15 @@ object MetaDataMapping {
         ))
       )))
 
-    case WarehouseAndCustomsId =>
-      MetaData()
+    case WarehouseAndCustomsId => {
+      val data = cache.getEntry[WarehouseAndCustoms](warehouseAndCustoms.key)
+
+      MetaData(declaration = Some(Declaration(
+        goodsShipment = Some(GoodsShipment(warehouse = data.flatMap(_.warehouse))),
+        presentationOffice = data.flatMap(_.presentationOffice),
+        supervisingOffice = data.flatMap(_.supervisingOffice)
+      )))
+    }
 
     case GovAgencyGoodsItemId          => MetaData()
     case GovAgencyGoodsItemReferenceId => MetaData()
