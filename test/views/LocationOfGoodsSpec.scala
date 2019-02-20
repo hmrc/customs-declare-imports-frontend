@@ -84,7 +84,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
 
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
-        val input = input_text(popForm("goodsLocationAddress.line"), messages(s"$messagePrefix.goodsLocationAddress.line"))
+        val input = input_text(popForm("goodsLocation.address.line"), messages(s"$messagePrefix.goodsLocationAddress.line"))
 
         view(popForm) must include(input)
       }
@@ -94,7 +94,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
 
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
-        val input = input_text(popForm("goodsLocationAddress.postcodeId"), messages(s"$messagePrefix.goodsLocationAddress.postcodeId"))
+        val input = input_text(popForm("goodsLocation.address.postcodeId"), messages(s"$messagePrefix.goodsLocationAddress.postcodeId"))
 
         view(popForm) must include(input)
       }
@@ -104,7 +104,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
 
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
-        val input = input_text(popForm("goodsLocationAddress.cityName"), messages(s"$messagePrefix.goodsLocationAddress.cityName"))
+        val input = input_text(popForm("goodsLocation.address.cityName"), messages(s"$messagePrefix.goodsLocationAddress.cityName"))
 
         view(popForm) must include(input)
       }
@@ -115,7 +115,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
         val input = input_select(
-          popForm("goodsLocationAddress.countryCode"),
+          popForm("goodsLocation.address.countryCode"),
           messages(s"$messagePrefix.goodsLocationAddress.countryCode"),
           config.Options.countryOptions)
 
@@ -128,7 +128,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
         val input = input_select(
-          popForm("goodsLocationAddress.typeCode"),
+          popForm("goodsLocation.address.typeCode"),
           messages(s"$messagePrefix.goodsLocationAddress.typeCode"),
           config.Options.goodsLocationTypeCode)
 
