@@ -49,18 +49,19 @@ object DeclarationFormMapping {
     "roleCode" -> optional(text.verifying("roleCode is only 3 characters", _.length <= 3))
   )(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.apply)(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.unapply)
 
-  val amountMapping: Mapping[Amount] = mapping(
+  val amountMapping: Mapping[Amount] = amountMapping()
+  private def amountMapping(valueKey:String = "Amount", currencyKey:String = "Currency"): Mapping[Amount] = mapping(
     "currencyId" -> optional(
       text
-        .verifying("Currency ID is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
+        .verifying(s"$currencyKey is not valid", x => config.Options.currencyTypes.exists(_._1 == x))),
     "value" -> optional(
       bigDecimal
-        .verifying("Amount cannot be greater than 99999999999999.99", _.precision <= 16)
-        .verifying("Amount cannot have more than 2 decimal places", _.scale <= 2)
-        .verifying("Amount must not be negative", _ >= 0))
+        .verifying(s"$valueKey cannot be greater than 99999999999999.99", _.precision <= 16)
+        .verifying(s"$valueKey cannot have more than 2 decimal places", _.scale <= 2)
+        .verifying(s"$valueKey must not be negative", _ >= 0))
   )(Amount.apply)(Amount.unapply)
-    .verifying("Amount is required when currency is provided", requireAllDependantFields[Amount](_.currencyId)(_.value))
-    .verifying("Currency is required when amount is provided", requireAllDependantFields[Amount](_.value)(_.currencyId))
+    .verifying(s"$valueKey is required when $currencyKey is provided", requireAllDependantFields[Amount](_.currencyId)(_.value))
+    .verifying(s"$currencyKey is required when $valueKey is provided", requireAllDependantFields[Amount](_.value)(_.currencyId))
 
   val currencyExchangeMapping: Mapping[CurrencyExchange] = mapping(
     "currencyTypeCode" -> optional(
@@ -433,6 +434,29 @@ object DeclarationFormMapping {
     "exportCountry" -> optional(exportCountryMapping),
     "loadingLocation" -> optional(loadingLocationMapping)
   )(LocationOfGoods.apply)(LocationOfGoods.unapply)
+
+  val paymentMapping  = mapping(
+    "methodCode" -> optional(text.verifying("Method of Payment must be a single character or less", _.length < 2)
+                        .verifying("Method of Payment must contains only A-Z characters", isAlpha)), // alpha max 1 in tariff
+    "taxAssessedAmount" -> optional(amountMapping("Total","Total - Currency")),
+    "paymentAmount" -> optional(amountMapping("Payable Tax Amount", "Currency"))
+  )(Payment.apply)(Payment.unapply)
+
+  val dutyTaxFeeMapping = mapping (
+    "adValoremTaxBaseAmount" -> ignored[Option[Amount]](None),
+    "deductAmount" -> ignored[Option[Amount]](None),
+    "dutyRegimeCode" -> ignored[Option[String]](None),
+    "specificTaxBaseQuantity" -> optional(measureMapping),
+    "taxRateNumeric" -> optional(bigDecimal
+      .verifying("Tax Rate cannot be greater than 99999999999999.999", _.precision <= 17)
+      .verifying("Tax Rate cannot have more than 3 decimal places", _.scale <= 3)
+      .verifying("Tax Rate must not be negative", _ >= 0)),
+    "typeCode" -> optional(text.verifying("Tax Type should be 3 characters", _.length == 3)),
+    "quotaOrderId" -> optional(text.verifying("Quota order number should be 6 characters", _.length == 6)),
+    "payment" -> optional(paymentMapping)
+  )(DutyTaxFee.apply)(DutyTaxFee.unapply)
+    .verifying("One of Tax type, Tax base, Tax rate, Payable tax amount Total and Method of payment is required to add commodity duty tax", require1Field[DutyTaxFee](_.specificTaxBaseQuantity, _.taxRateNumeric, _.payment, _.typeCode))
+
 }
 
 case class ObligationGuaranteeForm(guarantees: Seq[ObligationGuarantee] = Seq.empty)

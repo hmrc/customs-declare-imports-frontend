@@ -88,8 +88,5 @@ POST       /submit-declaration-goods/goods-item-value        controllers.Governm
 
 POST       /submit-declaration-goods/add-gov-agency-goods-item        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
 
-GET       /submit-declaration-goods/add-manufacturers       controllers.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()
-POST       /submit-declaration-goods/add-manufacturers      controllers.GovernmentAgencyGoodsItemsController.handleNamedEntityPartiesSubmit()
-
 GET       /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.display()
 POST      /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()
