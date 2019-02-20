@@ -51,7 +51,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
 
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
-        val input = input_text(popForm("locationOfGoods.goodsLocation.name"), messages(s"$messagePrefix.goodsLocation.name"))
+        val input = input_text(popForm("goodsLocation.name"), messages(s"$messagePrefix.goodsLocation.name"))
 
         view(popForm) must include(input)
       }
@@ -61,7 +61,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
 
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
-        val input = input_text(popForm("locationOfGoods.goodsLocation.id"), messages(s"$messagePrefix.goodsLocation.id"))
+        val input = input_text(popForm("goodsLocation.id"), messages(s"$messagePrefix.goodsLocation.id"))
 
         view(popForm) must include(input)
       }
@@ -72,7 +72,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
         val input = input_select(
-          popForm("locationOfGoods.goodsLocation.typeCode"),
+          popForm("goodsLocation.typeCode"),
           messages(s"$messagePrefix.goodsLocation.typeCode"),
           config.Options.goodsLocationTypeCode)
 
@@ -84,7 +84,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
 
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
-        val input = input_text(popForm("locationOfGoods.goodsLocationAddress.line"), messages(s"$messagePrefix.goodsLocationAddress.line"))
+        val input = input_text(popForm("goodsLocationAddress.line"), messages(s"$messagePrefix.goodsLocationAddress.line"))
 
         view(popForm) must include(input)
       }
@@ -94,7 +94,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
 
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
-        val input = input_text(popForm("locationOfGoods.goodsLocationAddress.postcodeId"), messages(s"$messagePrefix.goodsLocationAddress.postcodeId"))
+        val input = input_text(popForm("goodsLocationAddress.postcodeId"), messages(s"$messagePrefix.goodsLocationAddress.postcodeId"))
 
         view(popForm) must include(input)
       }
@@ -104,7 +104,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
 
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
-        val input = input_text(popForm("locationOfGoods.goodsLocationAddress.cityName"), messages(s"$messagePrefix.goodsLocationAddress.cityName"))
+        val input = input_text(popForm("goodsLocationAddress.cityName"), messages(s"$messagePrefix.goodsLocationAddress.cityName"))
 
         view(popForm) must include(input)
       }
@@ -115,7 +115,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
         val input = input_select(
-          popForm("locationOfGoods.goodsLocationAddress.countryCode"),
+          popForm("goodsLocationAddress.countryCode"),
           messages(s"$messagePrefix.goodsLocationAddress.countryCode"),
           config.Options.countryOptions)
 
@@ -128,7 +128,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
         val input = input_select(
-          popForm("locationOfGoods.goodsLocationAddress.typeCode"),
+          popForm("goodsLocationAddress.typeCode"),
           messages(s"$messagePrefix.goodsLocationAddress.typeCode"),
           config.Options.goodsLocationTypeCode)
 
@@ -141,7 +141,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
         val input = input_select(
-          popForm("locationOfGoods.destination.countryCode"),
+          popForm("destination.countryCode"),
           messages(s"$messagePrefix.destination.countryCode"),
           config.Options.countryOptions)
 
@@ -154,7 +154,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
         val input = input_select(
-          popForm("locationOfGoods.exportCountry.id"),
+          popForm("exportCountry.id"),
           messages(s"$messagePrefix.exportCountry.id"),
           config.Options.countryTypes)
 
@@ -166,7 +166,7 @@ class LocationOfGoodsSpec extends ViewBehaviours
 
       forAll { locationOfGoods: LocationOfGoods =>
         val popForm = form.fillAndValidate(locationOfGoods)
-        val input = input_text(popForm("locationOfGoods.loadingLocation.id"), messages(s"$messagePrefix.loadingLocation.id"))
+        val input = input_text(popForm("loadingLocation.id"), messages(s"$messagePrefix.loadingLocation.id"))
 
         view(popForm) must include(input)
       }

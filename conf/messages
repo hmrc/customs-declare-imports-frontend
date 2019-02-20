@@ -344,7 +344,7 @@ exporterDetails.id=EORI number
 representativeDetails.title=Representative'’s details
 representativeDetails.heading=Representative'’s details
 representativeDetails.name=Name
-representativeDetails.address.line=Street and Number
+representativeDetails.address.line=Street and number
 representativeDetails.address.cityName=City
 representativeDetails.address.country=Country
 representativeDetails.address.postcode=Postcode
@@ -379,20 +379,20 @@ warehouseAndCustomsOffices.h2.warehouseDetails=Details of warehouse goods are be
 warehouseAndCustomsOffices.h2.customsOfficeDetails=Details of customs office
 
 ## Importer details
-importerDetails.title=Importer
-importerDetails.heading=Importer
-importerDetails.name=Importer’s Name
-importerDetails.address.line=First Line of Address
+importerDetails.title=Importer’s details
+importerDetails.heading=Importer’s details
+importerDetails.name=Importer’s name
+importerDetails.address.line=First line of address
 importerDetails.address.city=City
 importerDetails.address.country=Country
 importerDetails.address.postcode=Postcode
 importerDetails.id=EORI number
 
 ## Seller details
-sellerDetails.title=Seller
-sellerDetails.heading=Seller
-sellerDetails.name=Seller’s Name
-sellerDetails.address.line=First Line of Address
+sellerDetails.title=Seller’s details
+sellerDetails.heading=Seller’s details
+sellerDetails.name=Seller’s name
+sellerDetails.address.line=First line of address
 sellerDetails.address.city=City
 sellerDetails.address.country=Country
 sellerDetails.address.postcode=Postcode
@@ -400,10 +400,10 @@ sellerDetails.communication.id=Phone number
 sellerDetails.id=EORI number
 
 ## Buyer details
-buyerDetails.title=Buyer
-buyerDetails.heading=Buyer
-buyerDetails.name=Buyer’s Name
-buyerDetails.address.line=First Line of Address
+buyerDetails.title=Buyer’s details
+buyerDetails.heading=Buyer’s details
+buyerDetails.name=Buyer’s name
+buyerDetails.address.line=First line of address
 buyerDetails.address.city=City
 buyerDetails.address.country=Country
 buyerDetails.address.postcode=Postcode
@@ -435,7 +435,7 @@ summaryOfGoods.grossMass.value=Gross mass
 transport.title=Transport
 transport.heading=Transport
 transport.containerCode=Container
-transport.borderTransportMeans.modeCode=Mode of Transport at border
+transport.borderTransportMeans.modeCode=Mode of transport at border
 transport.arrivalTransportMeans.modeCode=Inland mode of transport
 transport.arrivalTransportMeans.identificationTypeCode=Identity of means of transport on arrival - Type of Identification
 transport.arrivalTransportMeans.id=Identity of means of transport on arrival - Identification Number

@@ -16,7 +16,6 @@
 
 package controllers.goodsitems
 
-import domain.GovernmentAgencyGoodsItem
 import generators.Generators
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
@@ -25,6 +24,7 @@ import org.scalatest.prop.PropertyChecks
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
+import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItem
 import views.html.gov_agency_goods_items_list
 
 class GoodsItemsListControllerSpec extends CustomsSpec

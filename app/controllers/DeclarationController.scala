@@ -134,12 +134,12 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
 
   private def updateMetaData(metaData: MetaData)(implicit req: AuthenticatedRequest[AnyContent], hc: HeaderCarrier) = {
     cache.fetchAndGetEntry[ObligationGuaranteeForm](req.user.eori.get,"ObligationGuarantees").flatMap( obligationGuaranteeForm =>
-    cache.fetchAndGetEntry[List[domain.GovernmentAgencyGoodsItem]](req.user.eori.get, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY).map(_.map { items =>
+    cache.fetchAndGetEntry[List[GovernmentAgencyGoodsItem]](req.user.eori.get, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY).map(_.map { items =>
       val decGoodsItems: Seq[GovernmentAgencyGoodsItem] =
-        items.map(rec => GovernmentAgencyGoodsItem(customsValueAmount = rec.goodsItemValue.get.customsValueAmount,
-        sequenceNumeric = rec.goodsItemValue.get.sequenceNumeric,
-        statisticalValueAmount = rec.goodsItemValue.get.statisticalValueAmount,
-        transactionNatureCode = rec.goodsItemValue.get.transactionNatureCode,
+        items.map(rec => GovernmentAgencyGoodsItem(customsValueAmount = rec.customsValueAmount,
+        sequenceNumeric = rec.sequenceNumeric,
+        statisticalValueAmount = rec.statisticalValueAmount,
+        transactionNatureCode = rec.transactionNatureCode,
         additionalDocuments = rec.additionalDocuments,
         additionalInformations= rec.additionalInformations,
         aeoMutualRecognitionParties = rec.aeoMutualRecognitionParties,
@@ -148,9 +148,9 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
         consignee = rec.consignee,
           consignor = rec.consignor,
           customsValuation = rec.customsValuation,
-          destination = rec.goodsItemValue.get.destination,
+          destination = rec.destination,
           domesticDutyTaxParties = rec.domesticDutyTaxParties,
-          exportCountry = rec.goodsItemValue.get.exportCountry,
+          exportCountry = rec.exportCountry,
           governmentProcedures = rec.governmentProcedures,
           manufacturers = rec.manufacturers,
           origins = rec.origins,
@@ -158,8 +158,8 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
           previousDocuments = rec.previousDocuments,
           refundRecipientParties = rec.refundRecipientParties,
           seller = rec.seller,
-          ucr = rec.goodsItemValue.get.ucr,
-          valuationAdjustment = rec.goodsItemValue.get.valuationAdjustment))
+          ucr = rec.ucr,
+          valuationAdjustment = rec.valuationAdjustment))
 
       val goodsShipmentNew = metaData
         .declaration

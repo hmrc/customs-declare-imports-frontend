@@ -17,63 +17,12 @@
 package domain
 
 
+import ai.x.play.json.Jsonx
 import forms.ObligationGuaranteeForm
-import play.api.libs.json.Json
-import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItemAdditionalDocumentSubmitter, GovernmentProcedure, NamedEntityWithAddress, _}
-
-
-case class GoodsItemValueInformation(
-  customsValueAmount: Option[BigDecimal] = None, // scale 16 precision 3
-
-  sequenceNumeric: Int, // unsigned max 99999
-
-  statisticalValueAmount: Option[Amount] = None,
-
-  transactionNatureCode: Option[Int] = None, // unsigned max 99
-
-  destination: Option[Destination] = None,
-
-  ucr: Option[Ucr] = None,
-
-  exportCountry: Option[ExportCountry] = None,
-
-  valuationAdjustment: Option[ValuationAdjustment] = None
-)
-
-case class GovernmentAgencyGoodsItem(
-  goodsItemValue: Option[GoodsItemValueInformation] = None,
-
-  additionalDocuments: Seq[GovernmentAgencyGoodsItemAdditionalDocument] = Seq.empty,
-
-  additionalInformations: Seq[AdditionalInformation] = Seq.empty,
-
-  aeoMutualRecognitionParties: Seq[RoleBasedParty] = Seq.empty,
-
-  domesticDutyTaxParties: Seq[RoleBasedParty] = Seq.empty,
-
-  governmentProcedures: Seq[GovernmentProcedure] = Seq.empty,
-
-  manufacturers: Seq[NamedEntityWithAddress] = Seq.empty,
-
-  origins: Seq[Origin] = Seq.empty,
-
-  packagings: Seq[Packaging] = Seq.empty,
-
-  previousDocuments: Seq[PreviousDocument] = Seq.empty,
-
-  refundRecipientParties: Seq[NamedEntityWithAddress] = Seq.empty,
-
-  buyer: Option[ImportExportParty] = None,
-
-  commodity: Option[Commodity] = None,
-
-  consignee: Option[NamedEntityWithAddress] = None,
-
-  consignor: Option[NamedEntityWithAddress] = None,
-
-  customsValuation: Option[CustomsValuation] = None,
-
-  seller: Option[ImportExportParty] = None)
+import uk.gov.hmrc.wco.dec._
+import play.api.libs.json._
+import play.api.libs.json.Reads._
+import play.api.libs.functional.syntax._
 
 object DeclarationFormats extends ObligationGuaranteeFormats {
 
@@ -104,8 +53,7 @@ object DeclarationFormats extends ObligationGuaranteeFormats {
   implicit val chargeDeductionFormats = Json.format[ChargeDeduction]
   implicit val customsValuationFormats = Json.format[CustomsValuation]
   implicit val destinationFormats = Json.format[Destination]
-  implicit val ExportCountryFormats = Json.format[ExportCountry]
-
+  implicit val exportCountryFormats = Json.format[ExportCountry]
   implicit val governmentProcedureFormats = Json.format[GovernmentProcedure]
   implicit val originFormats = Json.format[Origin]
   implicit val packagingFormats = Json.format[Packaging]
@@ -113,16 +61,9 @@ object DeclarationFormats extends ObligationGuaranteeFormats {
   implicit val previousDocumentFormats = Json.format[PreviousDocument]
   implicit val ucrFormats = Json.format[Ucr]
   implicit val valuationAdjustmentFormats = Json.format[ValuationAdjustment]
-  implicit val goodsItemValueFormats = Json.format[GoodsItemValueInformation]
-
-  implicit val governmentAgencyGoodsItemFormats = Json.format[GovernmentAgencyGoodsItem]
-
   implicit val authorisationHolderFormats = Json.format[AuthorisationHolder]
-
   implicit val additionalDocumentFormats = Json.format[AdditionalDocument]
-
   implicit val agentsFormats = Json.format[Agent]
-
   implicit val currencyExchangeFormats = Json.format[CurrencyExchange]
   implicit val borderTransportMeansFormats = Json.format[BorderTransportMeans]
   implicit val transportMeansFormats = Json.format[TransportMeans]
@@ -132,11 +73,13 @@ object DeclarationFormats extends ObligationGuaranteeFormats {
   implicit val loadingLocationFormats = Json.format[LoadingLocation]
 
   implicit val warehouseFormats = Json.format[Warehouse]
+
+  implicit val governmentAgencyGoodsItemFormats = Jsonx.formatCaseClass[GovernmentAgencyGoodsItem]
 }
 
 trait ObligationGuaranteeFormats {
+
   implicit val officeFormats = Json.format[Office]
   implicit val guaranteeFormats = Json.format[ObligationGuarantee]
   implicit val guaranteeFormFormats = Json.format[ObligationGuaranteeForm]
-
 }

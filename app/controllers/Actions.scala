@@ -25,7 +25,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc.Results._
 import play.api.mvc._
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -63,7 +63,11 @@ class ActionsImpl @Inject()(authConnector: AuthConnector, errorHandler: ErrorHan
   }
 }
 
-class AuthAction(auth: AuthConnector)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] with AuthorisedFunctions with AuthRedirects {
+class AuthAction(auth: AuthConnector)(implicit val appConfig: AppConfig, ec: ExecutionContext)
+  extends ActionBuilder[AuthenticatedRequest]
+    with ActionRefiner[Request, AuthenticatedRequest]
+    with AuthorisedFunctions
+    with AuthRedirects {
 
   override def authConnector: AuthConnector = auth
 
@@ -75,7 +79,7 @@ class AuthAction(auth: AuthConnector)(implicit val appConfig: AppConfig, ec: Exe
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
     authorised(SignedInUser.authorisationPredicate)
       .retrieve(credentials and name and email and affinityGroup and internalId and allEnrolments) {
-        case credentials ~ name ~ email ~ affinityGroup ~ internalId ~ allEnrolments => Future.successful(Right(AuthenticatedRequest(
+        case Some(credentials) ~ Some(name) ~ email ~ affinityGroup ~ internalId ~ allEnrolments => Future.successful(Right(AuthenticatedRequest(
           request, SignedInUser(credentials, name, email, affinityGroup, internalId, allEnrolments)
         )))
       }

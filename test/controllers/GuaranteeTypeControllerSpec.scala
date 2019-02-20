@@ -89,7 +89,7 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
       forAll(arbitrary[SignedInUser], listGen) {
         (user, data) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.guaranteeType, data) {
+          withCleanCache(EORI(user.eori.value), CacheKey.guaranteeTypes, data) {
 
             val result = controller(user).onPageLoad(fakeRequest)
 
@@ -145,7 +145,7 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
         forAll(arbitrary[SignedInUser], badData, listGen) {
           (user, formData, cacheData) =>
 
-            withCleanCache(EORI(user.eori.value), CacheKey.guaranteeType, cacheData) {
+            withCleanCache(EORI(user.eori.value), CacheKey.guaranteeTypes, cacheData) {
 
               val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
               val popForm = form.fillAndValidate(formData)
@@ -169,7 +169,7 @@ class GuaranteeTypeControllerSpec extends CustomsSpec
           await(controller(user).onSubmit(request))
 
           verify(mockCustomsCacheService, atLeastOnce)
-            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.guaranteeType))(any(), any())(any(), any(), any(), any())
+            .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.guaranteeTypes))(any(), any())(any(), any(), any(), any())
         }
       }
     }

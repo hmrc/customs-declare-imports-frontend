@@ -27,9 +27,12 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.authorisation_holder
 
+import scala.concurrent.ExecutionContext
+
 class AuthorisationHoldersController @Inject()
   (actions: Actions, cacheService: CustomsCacheService)
-  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi, ec: ExecutionContext)
+extends CustomsController {
 
   def form = Form(authorisationHolderMapping)
 

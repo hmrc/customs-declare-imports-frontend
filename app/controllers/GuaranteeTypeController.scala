@@ -28,15 +28,18 @@ import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.ObligationGuarantee
 import views.html.guarantee_type
 
-class GuaranteeTypeController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                       (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+import scala.concurrent.ExecutionContext
+
+class GuaranteeTypeController @Inject()
+  (actions: Actions, cache: CustomsCacheService)
+  (implicit override val messagesApi: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
+extends CustomsController {
 
   val form = Form(guaranteeTypeMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
-    cache.getByKey(req.eori, CacheKey.guaranteeType).map { types =>
+    cache.getByKey(req.eori, CacheKey.guaranteeTypes).map { types =>
 
       Ok(guarantee_type(form, types.getOrElse(Seq.empty), showForm(types)))
     }
@@ -46,14 +49,14 @@ class GuaranteeTypeController @Inject()(actions: Actions, cache: CustomsCacheSer
 
     form.bindFromRequest().fold(
       errors =>
-        cache.getByKey(req.eori, CacheKey.guaranteeType).map { types =>
+        cache.getByKey(req.eori, CacheKey.guaranteeTypes).map { types =>
 
           BadRequest(guarantee_type(errors, types.getOrElse(Seq.empty), showForm(types)))
         },
 
       guarantee =>
         cache
-          .upsert(req.eori, CacheKey.guaranteeType)
+          .upsert(req.eori, CacheKey.guaranteeTypes)
                  (() => Seq(guarantee), guarantee +: _)
           .map(_ => Redirect(routes.GuaranteeTypeController.onPageLoad()))
     )

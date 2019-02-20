@@ -26,11 +26,12 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.references
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class ReferencesController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                    (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
-  extends CustomsController {
+class ReferencesController @Inject()
+  (actions: Actions, cache: CustomsCacheService)
+  (implicit override val messagesApi: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
+extends CustomsController {
 
   val form = Form(referencesMapping)
 

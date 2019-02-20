@@ -64,7 +64,7 @@ class PackagingFormSpec extends WordSpec
 
       "Quantity is larger than 999999999" in {
 
-        forAll(arbitrary[Packaging], intsAboveValue(999999999)) {
+        forAll(arbitrary[Packaging], intGreaterThan(999999999)) {
           (packaging, quantity) =>
 
             val data = packaging.copy(quantity = Some(quantity))
@@ -77,7 +77,7 @@ class PackagingFormSpec extends WordSpec
 
       "Quantity is less than or equal to 0" in {
 
-        forAll(arbitrary[Packaging], intsBelowValue(1)) {
+        forAll(arbitrary[Packaging], intLessThan(1)) {
           (packaging, quantity) =>
 
             val data = packaging.copy(quantity = Some(quantity))

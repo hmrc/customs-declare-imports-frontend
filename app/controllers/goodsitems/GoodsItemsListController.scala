@@ -25,12 +25,13 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import javax.inject.{Inject, Singleton}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class GoodsItemsListController @Inject()
-(actions: Actions, cacheService: CustomsCacheService)
-  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+  (actions: Actions, cacheService: CustomsCacheService)
+  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi, ec: ExecutionContext)
+extends CustomsController {
 
   def onPageLoad(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit req =>

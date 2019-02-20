@@ -19,6 +19,7 @@ package services
 import java.net.ConnectException
 import java.util.concurrent.TimeoutException
 
+import akka.actor.ActorSystem
 import domain.auth.SignedInUser
 import org.scalatest.OptionValues
 import play.api.Configuration
@@ -216,7 +217,8 @@ case class HttpExpectation(req: HttpRequest, resp: HttpResponse)
 
 case class HttpRequest(url: String, body: String, headers: Map[String, String])
 
-class MockHttpClient(throwOrRespond: Either[Exception, HttpExpectation], config: Configuration, auditConnector: AuditConnector, wsClient: WSClient) extends DefaultHttpClient(config, auditConnector, wsClient) {
+class MockHttpClient(throwOrRespond: Either[Exception, HttpExpectation], config: Configuration, auditConnector: AuditConnector, wsClient: WSClient)
+  extends DefaultHttpClient(config, auditConnector, wsClient, ActorSystem("testActorSystem")) {
 
   val requests: mutable.Buffer[services.HttpRequest] = mutable.Buffer.empty
 

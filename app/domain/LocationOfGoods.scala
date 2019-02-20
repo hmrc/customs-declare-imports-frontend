@@ -21,7 +21,6 @@ import uk.gov.hmrc.wco.dec._
 import domain.DeclarationFormats._
 
 case class LocationOfGoods(goodsLocation: Option[GoodsLocation],
-                           goodsLocationAddress: Option[GoodsLocationAddress],
                            destination: Option[Destination],
                            exportCountry: Option[ExportCountry],
                            loadingLocation: Option[LoadingLocation])

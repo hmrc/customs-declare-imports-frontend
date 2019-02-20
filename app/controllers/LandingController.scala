@@ -24,9 +24,13 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsDeclarationsConnector
 
+import scala.concurrent.ExecutionContext
+
 @Singleton
-class LandingController @Inject()(customsDeclarationsConnector: CustomsDeclarationsConnector, actions: Actions)
-                                 (implicit val appConfig: AppConfig, val messagesApi: MessagesApi) extends CustomsController {
+class LandingController @Inject()
+  (customsDeclarationsConnector: CustomsDeclarationsConnector, actions: Actions)
+  (implicit val appConfig: AppConfig, val messagesApi: MessagesApi, ec: ExecutionContext)
+extends CustomsController {
 
   def displayLandingPage: Action[AnyContent] = (actions.switch(Feature.landing) andThen actions.auth).async { implicit req =>
     customsDeclarationsConnector.getDeclarations.map { declarations =>

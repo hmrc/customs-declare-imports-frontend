@@ -55,7 +55,7 @@ class TransportMappingSpec extends WordSpec
       "containerCode is longer than 1 digit" in {
 
         val badData =
-          Transport.containerCode.setArbitrary(some(intOutsideRange(0, 9)))
+          TransportLens.containerCode.setArbitrary(some(intOutsideRange(0, 9)))
 
         forAll(badData) { transport =>
 

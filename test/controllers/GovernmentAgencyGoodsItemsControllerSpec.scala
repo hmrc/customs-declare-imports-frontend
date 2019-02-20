@@ -16,7 +16,6 @@
 
 package controllers
 
-import domain.{GoodsItemValueInformation, GovernmentAgencyGoodsItem}
 import domain.features.Feature
 import generators.Generators
 import org.scalacheck.Arbitrary._
@@ -160,7 +159,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       withSignedInUser() { (headers, session, tags) =>
 
 
-        sampleGen(arbitrary[GoodsItemValueInformation]).foreach { sampleData =>
+        sampleGen(arbitrary[GovernmentAgencyGoodsItem]).foreach { sampleData =>
 
           withCaching(Some(sampleData))
           withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>
@@ -197,7 +196,6 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     }
   }
 
-
   "show addManufacturersPage fields on navigating to the screen" in withFeatures((enabled(Feature.submit))) {
     withSignedInUser() { (headers, session, tags) =>
       withCaching(None)
@@ -220,7 +218,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
     withSignedInUser() { (headers, session, tags) =>
 
       val goodsItemGen = arbitrary[NamedEntityWithAddress].map { e =>
-        GovernmentAgencyGoodsItem(manufacturers = List(e))
+        GovernmentAgencyGoodsItem(manufacturers = List(e), sequenceNumeric = 0)
       }
 
       withCaching(sampleGen(goodsItemGen))
@@ -238,5 +236,4 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       }
     }
   }
-
 }

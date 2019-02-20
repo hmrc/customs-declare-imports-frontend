@@ -18,7 +18,7 @@ package forms
 
 import java.text.DecimalFormat
 
-import domain.{GoodsItemValueInformation, InvoiceAndCurrency, References, WarehouseAndCustoms}
+import domain.{InvoiceAndCurrency, References, WarehouseAndCustoms}
 import config.Options
 import domain._
 import org.joda.time.DateTime
@@ -185,7 +185,21 @@ object DeclarationFormMapping {
     "destination" -> optional(destinationMapping),
     "ucr" -> optional(ucrMapping),
     "exportCountry" -> optional(exportCountryMapping),
-    "valuationAdjustment" -> optional(valuationAdjustmentMapping))(GoodsItemValueInformation.apply)(GoodsItemValueInformation.unapply)
+    "valuationAdjustment" -> optional(valuationAdjustmentMapping)) {
+      (a, b, c, d, e, f, g, h) =>
+        GovernmentAgencyGoodsItem(
+          customsValueAmount = a,
+          sequenceNumeric = b,
+          statisticalValueAmount = c,
+          transactionNatureCode = d,
+          destination = e,
+          ucr = f,
+          exportCountry = g,
+          valuationAdjustment = h)
+    } { g =>
+      Some((g.customsValueAmount, g.sequenceNumeric, g.statisticalValueAmount, g.transactionNatureCode,
+        g.destination, g.ucr, g.exportCountry, g.valuationAdjustment))
+    }
 
 
   val addressMapping = mapping(
@@ -342,8 +356,8 @@ object DeclarationFormMapping {
         .verifying("Additional declaration type must contains only A-Z characters", isAlpha)),
     "traderAssignedReferenceId" -> optional(
       text.verifying("Reference Number/UCR must be 35 characters or less", _.length <= 35)),
-    "functionalReferenceId" -> optional(
-      text.verifying("LRN must be 22 characters or less", _.length <= 22)),
+    "functionalReferenceId" ->
+      text.verifying("LRN must be 22 characters or less", _.length <= 22),
     "transactionNatureCode" -> optional(
       number.verifying("Nature of transaction must be contain 2 digits or less", _.toString.length <= 2))
   )(References.apply)(References.unapply)
@@ -415,7 +429,6 @@ object DeclarationFormMapping {
 
   val locationOfGoodsMapping = mapping(
     "goodsLocation" -> optional(goodsLocationMapping),
-    "goodsLocationAddress" -> optional(goodsLocationAddressMapping),
     "destination" -> optional(destinationMapping),
     "exportCountry" -> optional(exportCountryMapping),
     "loadingLocation" -> optional(loadingLocationMapping)

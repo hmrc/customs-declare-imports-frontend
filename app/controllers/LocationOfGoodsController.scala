@@ -26,10 +26,10 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import views.html.location_of_goods
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class LocationOfGoodsController @Inject()(actions: Actions, cache: CustomsCacheService)
-                                         (implicit override val messagesApi: MessagesApi, appConfig: AppConfig)
+                                         (implicit override val messagesApi: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
   extends CustomsController{
 
   val form = Form(locationOfGoodsMapping)
