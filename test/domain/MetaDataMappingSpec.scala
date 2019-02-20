@@ -59,7 +59,8 @@ class MetaDataMappingSpec extends WordSpec
       CacheMapLens.containerIdNos.set(list(arbitrary[TransportEquipment])),
       CacheMapLens.guaranteeTypes.set(list(arbitrary[ObligationGuarantee])),
       CacheMapLens.govAgencyGoodsItemsList.set(list(arbitrary[GovernmentAgencyGoodsItem])),
-      CacheMapLens.warehouseAndCustsoms.set(arbitrary[WarehouseAndCustoms])
+      CacheMapLens.warehouseAndCustsoms.set(arbitrary[WarehouseAndCustoms]),
+      CacheMapLens.locationOfGoods.set(arbitrary[LocationOfGoods])
     ).foldLeft(const(Monoid.empty[CacheMap])) { case (acc, f) => f(acc) }
   }
 
@@ -371,6 +372,21 @@ class MetaDataMappingSpec extends WordSpec
         dec.flatMap(_.goodsShipment).flatMap(_.warehouse) mustBe data.flatMap(_.warehouse)
         dec.flatMap(_.presentationOffice) mustBe data.flatMap(_.presentationOffice)
         dec.flatMap(_.supervisingOffice) mustBe data.flatMap(_.supervisingOffice)
+      }
+    }
+
+    "convert using LocationOfGoodsId" in {
+
+      forAll { cacheMap: CacheMap =>
+
+        val data = cacheMap.getEntry[LocationOfGoods](CacheKey.locationOfGoods.key)
+
+        val dec = MetaDataMapping.produce(cacheMap).declaration
+
+        dec.flatMap(_.goodsShipment).flatMap(_.consignment).flatMap(_.goodsLocation) mustBe data.flatMap(_.goodsLocation)
+        dec.flatMap(_.goodsShipment).flatMap(_.consignment).flatMap(_.loadingLocation) mustBe data.flatMap(_.loadingLocation)
+        dec.flatMap(_.goodsShipment).flatMap(_.exportCountry) mustBe data.flatMap(_.exportCountry)
+        dec.flatMap(_.goodsShipment).flatMap(_.destination) mustBe data.flatMap(_.destination)
       }
     }
   }

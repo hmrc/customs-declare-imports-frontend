@@ -35,6 +35,7 @@ object TypedIdentifier extends Enum[TypedIdentifier[_]] {
   final case object BuyerId                       extends TypedIdentifier[ImportExportParty]
   final case object SummaryOfGoodsId              extends TypedIdentifier[SummaryOfGoods]
   final case object TransportId                   extends TypedIdentifier[Transport]
+  final case object LocationOfGoodsId             extends TypedIdentifier[LocationOfGoods]
   final case object AuthorisationHoldersId        extends TypedIdentifier[Seq[AuthorisationHolder]]
   final case object GuaranteeReferencesId         extends TypedIdentifier[Seq[ObligationGuarantee]]
   final case object PreviousDocumentsId           extends TypedIdentifier[Seq[PreviousDocument]]
