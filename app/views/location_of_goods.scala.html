@@ -14,23 +14,53 @@
  * limitations under the License.
  *@
 
-@import config.{AppConfig, ValidationError}
 @import config.Fields._
+@import config.AppConfig
+@import controllers.routes._
+@import uk.gov.hmrc.play.views.html._
 
-@(data: Map[String, String])(implicit req: Request[_], messages: Messages, cfg: AppConfig, errors: Map[String, Seq[ValidationError]])
+@(form: Form[_])(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
-@main_template(messages("pages.locationOfGoods.title")) {
+@main_template(messages("locationOfGoods.title")) {
 
-    @helpers.form("location-of-goods", "pages.locationOfGoods.form.legend", data) {
-        @helpers.textInput(locationOfGoodsIdentificationOfLocation, data)
-        @helpers.textInput(locationOfGoodsAdditionalIdentifier, data)
-        @helpers.selectInput(locationOfGoodsTypeOfLocation, data)
-        @helpers.textInput(locationOfGoodsStreetAndNumber, data)
-        @helpers.textInput(locationOfGoodsPostcode, data)
-        @helpers.textInput(locationOfGoodsCity, data)
-        @helpers.selectInput(locationOfGoodsCountry, data)
-        @helpers.selectInput(locationOfGoodsQualifierOfTheIdentification, data)
-        @helpers.nextButton()
+    @helpers.form(action = LocationOfGoodsController.onSubmit()) {
+
+        @components.back_link()
+
+        @components.error_summary(form.errors)
+
+       <fieldset>
+         <legend>
+            <h1 class="heading-large">@messages("locationOfGoods.heading")</h1>
+         </legend>
+
+        @components.input_text(form("goodsLocation.name"), messages("locationOfGoods.goodsLocation.name"))
+        @components.input_text(form("goodsLocation.id"), messages("locationOfGoods.goodsLocation.id"))
+        @components.input_select(form("goodsLocation.typeCode"),
+                                 messages("locationOfGoods.goodsLocation.typeCode"),
+                                 config.Options.goodsLocationTypeCode)
+        @components.input_text(form("goodsLocation.address.line"), messages("locationOfGoods.goodsLocationAddress.line"))
+        @components.input_text(form("goodsLocation.address.postcodeId"), messages("locationOfGoods.goodsLocationAddress.postcodeId"))
+        @components.input_text(form("goodsLocation.address.cityName"), messages("locationOfGoods.goodsLocationAddress.cityName"))
+        @components.input_select(form("goodsLocation.address.countryCode"),
+           messages("locationOfGoods.goodsLocationAddress.countryCode"),
+           config.Options.countryOptions)
+        @components.input_select(form("goodsLocation.address.typeCode"),
+           messages("locationOfGoods.goodsLocationAddress.typeCode"),
+           config.Options.goodsLocationTypeCode)
+
+        @components.input_select(form("destination.countryCode"),
+           messages("locationOfGoods.destination.countryCode"),
+           config.Options.countryOptions)
+        @components.input_select(form("exportCountry.id"),
+           messages("locationOfGoods.exportCountry.id"),
+           config.Options.countryTypes)
+        @components.input_text(form("loadingLocation.id"), messages("locationOfGoods.loadingLocation.id"))
+
+       </fieldset>
+
+       <button id="Add" name="submit">
+           @messages("common.button.continue")
+       </button>
     }
-
 }

@@ -26,16 +26,6 @@ class SubmissionJourneySpec extends WordSpec with MustMatchers {
     "return starting point given first screen" in {
       journey.prev(journey.screens.head).left.get must be(journey.start)
     }
-
-    "return preceding item" in {
-      val str = journey.screens(1)
-      val value = journey.prev(str)
-      value.right.get must be(journey.screens.head)
-    }
-
-    "return preceding item for last screen" in {
-      journey.prev(journey.screens.last).right.get must be(journey.screens(journey.screens.size - 2))
-    }
   }
 
   "next" should {
@@ -43,17 +33,8 @@ class SubmissionJourneySpec extends WordSpec with MustMatchers {
       journey.next(journey.screens.last).left.get must be(journey.end)
     }
 
-    "return following item" in {
-      journey.next(journey.screens.head).right.get must be(journey.screens(1))
-    }
-
-    "return last item given forced override" in {
-      journey.next(journey.screens.head, true).right.get must be(journey.screens.last)
-    }
-
     "return end point given final screen and forced override" in {
       journey.next(journey.screens.last, true).left.get must be(journey.end)
     }
   }
-
 }

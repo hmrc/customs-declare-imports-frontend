@@ -121,8 +121,8 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
           stringResult must include("Real number value expected")
           stringResult must include("id=\"error-message-statisticalValueAmount_currencyId-input\">Currency is not valid")
           stringResult must include("valuationAdjustment should be less than or equal to 4 characters")
-          stringResult must include("export Country code should be less than or equal to 2 characters")
-          stringResult must include("country code is only 3 characters")
+          stringResult must include("ID is not a valid ID")
+          stringResult must include("countryCode is not a valid countryCode")
           stringResult must include("id=\"error-message-transactionNatureCode-input\">Numeric value expected")
         }
       }
@@ -134,8 +134,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
       "statisticalValueAmount.currencyId" -> "GBP",
       "statisticalValueAmount.value" -> "3345",
       "transactionNatureCode" -> "123",
-      "destination.countryCode" -> "UK",
-      "destination.regionId" -> "UK",
+      "destination.countryCode" -> "GB",
       "ucr.id" -> "ID1",
       "ucr.traderAssignedReferenceId" -> "TRADER_REF-1",
       "exportCountry.id" -> "PL",

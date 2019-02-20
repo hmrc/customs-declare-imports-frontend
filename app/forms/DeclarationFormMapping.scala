@@ -157,14 +157,22 @@ object DeclarationFormMapping {
   )(AdditionalInformation.apply)(AdditionalInformation.unapply)
     .verifying("You must provide Code or Description", require1Field[AdditionalInformation](_.statementCode, _.statementDescription))
 
-  val destinationMapping = mapping("countryCode" -> optional(text.verifying("country code is only 3 characters", _.length <= 3)),
-    "regionId" -> optional(text.verifying("regionId code is only 9 characters", _.length <= 9)))(Destination.apply)(Destination.unapply)
+  val destinationMapping = mapping(
+    "countryCode" -> optional(text.verifying("countryCode is not a valid countryCode", isInList(Options.countryOptions))),
+    "regionId" -> ignored[Option[String]](None)
+  )(Destination.apply)(Destination.unapply)
 
   val ucrMapping = mapping("id" -> optional(text.verifying("id should be less than or equal to 35 characters", _.length <= 35)),
     "traderAssignedReferenceId" -> optional(text.verifying("traderAssignedReferenceId should be less than or equal to 35 characters", _.length <= 35)))(Ucr.apply)(Ucr.unapply)
 
-  val exportCountryMapping = mapping("id" -> text.verifying("export Country code should be less than or equal to 2 characters",
-    _.length <= 2))(ExportCountry.apply)(ExportCountry.unapply)
+  val exportCountryMapping = mapping(
+    "id" -> text.verifying("ID is not a valid ID", isInList(Options.countryTypes))
+  )(ExportCountry.apply)(ExportCountry.unapply)
+
+  val loadingLocationMapping = mapping(
+    "name" -> ignored[Option[String]](None),
+    "id" -> optional(text.verifying("id should be less than or equal to 17 characters", _.length <= 17))
+  )(LoadingLocation.apply)(LoadingLocation.unapply)
 
   val valuationAdjustmentMapping = mapping("additionCode" -> optional(
     text.verifying("valuationAdjustment should be less than or equal to 4 characters",
@@ -405,6 +413,28 @@ object DeclarationFormMapping {
     "arrivalTransportMeans" -> optional(transportMeansMapping)
   )(Transport.apply)(Transport.unapply)
 
+  val goodsLocationAddressMapping = mapping(
+    "typeCode" -> optional(text.verifying("typeCode is not a valid typeCode", isInList(Options.goodsLocationTypeCode))),
+    "cityName" -> optional(text.verifying("cityName should be less than or equal to 35 characters", _.length <= 35)),
+    "countryCode" -> optional(text.verifying("countryCode is not a valid countryCode", isInList(Options.countryOptions))),
+    "line" -> optional(text.verifying("Line should be less than or equal to 70 characters", _.length <= 70)),
+    "postcodeId" -> optional(text.verifying("postcodeId should be less than or equal to 9 characters", _.length <= 9))
+  )(GoodsLocationAddress.apply)(GoodsLocationAddress.unapply)
+
+  val goodsLocationMapping = mapping(
+    "name" -> optional(text.verifying("Name should be less than or equal to 35 characters", _.length <= 35)),
+    "id" -> text.verifying("ID should be less than or equal to 3 characters", _.length <= 3),
+    "typeCode" -> optional(text.verifying("typeCode is not a valid typeCode", isInList(Options.goodsLocationTypeCode))),
+    "address" -> optional(goodsLocationAddressMapping)
+  )(GoodsLocation.apply)(GoodsLocation.unapply)
+
+  val locationOfGoodsMapping = mapping(
+    "goodsLocation" -> optional(goodsLocationMapping),
+    "destination" -> optional(destinationMapping),
+    "exportCountry" -> optional(exportCountryMapping),
+    "loadingLocation" -> optional(loadingLocationMapping)
+  )(LocationOfGoods.apply)(LocationOfGoods.unapply)
+
   val paymentMapping  = mapping(
     "methodCode" -> optional(text.verifying("Method of Payment must be a single character or less", _.length < 2)
                         .verifying("Method of Payment must contains only A-Z characters", isAlpha)), // alpha max 1 in tariff
@@ -430,6 +460,5 @@ object DeclarationFormMapping {
 }
 
 case class ObligationGuaranteeForm(guarantees: Seq[ObligationGuarantee] = Seq.empty)
-
 
 
