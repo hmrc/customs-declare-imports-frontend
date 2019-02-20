@@ -16,20 +16,31 @@
 
 package models
 
-import models.ChangeReasonCode.ChangeReasonCode
-import play.api.libs.json.{Format, Json, Reads, Writes}
+import enumeratum._
+import enumeratum.EnumEntry.UpperSnakecase
+import play.api.libs.json._
 
-object ChangeReasonCode extends Enumeration(1) {
-  type ChangeReasonCode = Value
+sealed abstract class ChangeReasonCode(val displayName: String) extends EnumEntry with UpperSnakecase
 
-  protected case class Val(displayName: String) extends super.Val
-  implicit def valueToChangeReasonCode(v: Value): Val = v.asInstanceOf[Val]
+object ChangeReasonCode extends Enum[ChangeReasonCode]{
+  val values = findValues
 
-  val NO_LONGER_REQUIRED = Val("Declaration is no longer required")
-  val DUPLICATE = Val("Duplicate declaration")
-  val OTHER = Val("Other")
+  case object NoLongerRequired extends ChangeReasonCode("Declaration is no longer required")
+  case object Duplicate        extends ChangeReasonCode("Duplicate declaration")
+  case object Other            extends ChangeReasonCode("Other")
 
-  implicit val format = Format(Reads.enumNameReads(ChangeReasonCode), Writes.enumNameWrites)
+  implicit val formats = Format(reads, writes)
+
+  private def writes = new Writes[ChangeReasonCode] {
+    def writes(v: ChangeReasonCode) = JsString(v.entryName)
+  }
+
+  private def reads: Reads[ChangeReasonCode] = new Reads[ChangeReasonCode] {
+    def reads(json: JsValue): JsResult[ChangeReasonCode] = json match {
+      case JsString(s) => ChangeReasonCode.withNameOption(s).fold[JsResult[ChangeReasonCode]](JsError("error.expected.validenumvalue"))(JsSuccess(_))
+      case _ => JsError("error.expected.enumstring")
+    }
+  }
 }
 
 case class Cancellation(mrn: String, changeReasonCode: ChangeReasonCode, description: String)

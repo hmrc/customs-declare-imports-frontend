@@ -86,6 +86,8 @@ trait CustomsSpec extends PlaySpec
   }
 
   def withImportsBackend[T](): OngoingStubbing[Future[Seq[Declaration]]] = {
+    reset(mockCustomsDeclarationsConnector)
+
     val decSeq = Seq(Declaration(DateTime.now, Some("LocalReferenceNumber"), Some("Mrn"),
       Seq(DeclarationAction(DateTime.now(), DeclarationActionType.SUBMISSION, Seq(DeclarationNotification(11, "conversationId", DateTime.now()))))))
 

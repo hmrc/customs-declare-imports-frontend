@@ -20,6 +20,8 @@ import config.Options
 import domain._
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
+import models.ChangeReasonCode
+import models.ChangeReasonCode
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
 import org.scalacheck.{Arbitrary, Gen, Shrink}
@@ -589,6 +591,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       chargeDeductions <- Gen.listOfN(1, arbitrary[ChargeDeduction])
     } yield CustomsValuation(chargeDeductions = chargeDeductions)
+  }
+
+  implicit val arbitraryChangeReasonCode: Arbitrary[ChangeReasonCode] = Arbitrary(Gen.oneOf(ChangeReasonCode.values.toSeq))
+
+  implicit val arbitraryCancel: Arbitrary[Cancel] = Arbitrary {
+    for {
+      changeReasonCode <- arbitrary[ChangeReasonCode]
+      description <- stringsWithMaxLength(512)
+    } yield Cancel(changeReasonCode, description)
   }
 
   def intGreaterThan(min: Int): Gen[Int] =

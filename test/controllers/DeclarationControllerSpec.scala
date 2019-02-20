@@ -17,29 +17,45 @@
 package controllers
 
 import config.SubmissionJourney
+import domain.Cancel
+import domain.auth.SignedInUser
 import domain.features.Feature
+import forms.DeclarationFormMapping._
+import generators.Generators
+import models.Cancellation
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.verify
-import models.{Cancellation, ChangeReasonCode}
+import org.mockito.Mockito.{never, verify}
+import org.scalacheck.Arbitrary._
+import org.scalatest.prop.PropertyChecks
+import play.api.data.Form
+import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
-import uk.gov.hmrc.http.HeaderCarrier
+import views.html.cancel_form
 
 class DeclarationControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
   with FeatureBehaviours
   with RequestHandlerBehaviours
-  with CustomsDeclarationsApiBehaviours
   with HttpAssertions
-  with HtmlAssertions {
+  with HtmlAssertions
+  with PropertyChecks
+  with Generators
+  with EndpointBehaviours {
 
   val mrn = randomString(16)
   val get = "GET"
   val post = "POST"
   val submitUri = journeyUri(SubmissionJourney.screens.head)
-  val cancelUri = uriWithContextPath(s"/cancel-declaration/$mrn")
+  val cancelUri = s"/cancel-declaration/$mrn"
+  val form = Form[Cancel](cancelMapping)
 
   def journeyUri(screen: String): String = uriWithContextPath(s"/submit-declaration/$screen")
+
+  def controller(user: SignedInUser): DeclarationController =
+    new DeclarationController(new FakeActions(Some(user)), mockCustomsDeclarationsConnector, mockCustomsCacheService)
+
+  def view(form: Form[Cancel] = form): String = cancel_form(mrn, form)(fakeRequest, messages, appConfig).body
 
   s"$get $submitUri" should {
 
@@ -77,84 +93,93 @@ class DeclarationControllerSpec extends CustomsSpec
     }
   }
 
-  s"$post $cancelUri" should {
-    val payload = Map(
-      "changeReasonCode" -> ChangeReasonCode.DUPLICATE.toString,
-      "description" -> "a description")
-    implicit val hc = HeaderCarrier()
+  "handleCancelForm" should {
 
-    "return 200 when the form is valid" in withFeatures(enabled(Feature.cancel)) {
-      withSignedInUser() { (headers, session, tags) =>
+    behave like authenticatedEndpoint(cancelUri, POST)
+
+    "cancel the declaration and return 200 OK" when {
+
+      "valid data is posted" in {
         withImportsBackend
-        withRequestAndFormBody(post, cancelUri, headers, session, tags, payload) { resp =>
-          wasHtml(resp)
-          wasOk(resp)
 
-          verify(mockCustomsDeclarationsConnector).cancelDeclaration(meq(Cancellation(mrn, ChangeReasonCode.withName(payload("changeReasonCode")), payload("description"))))(any(), any())
+        forAll(arbitrary[SignedInUser], arbitrary[Cancel]) { (user, formData) =>
+
+          val cancellation = Cancellation(mrn, formData.changeReasonCode, formData.description)
+          val params       = Seq("changeReasonCode" -> formData.changeReasonCode.entryName, "description" -> formData.description)
+          val request      = fakeRequest.withFormUrlEncodedBody(params: _*)
+          val result       = controller(user).handleCancelForm(mrn)(request)
+
+          status(result) mustBe OK
+          verify(mockCustomsDeclarationsConnector).cancelDeclaration(meq(cancellation))(any(), any())
         }
       }
     }
 
-    val errorsPayload: Map[String, String] = Map.empty
+    "return UNAUTHORIZED" when {
 
-    "return to same page with errors" in withFeatures(enabled(Feature.cancel)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withRequestAndFormBody(post, cancelUri, headers, session, tags, errorsPayload) { resp =>
-          wasBadRequest(resp)
-          includesHtmlLink(resp, "#description")
-          includesHtmlLink(resp, "#reasonCode")
+      "user doesn't have an eori" in {
+
+        forAll { user: UnauthenticatedUser =>
+
+          val result = controller(user.user).handleCancelForm(mrn)(fakeRequest)
+
+          status(result) mustBe UNAUTHORIZED
         }
       }
     }
 
-    "be behind a feature switch" in withFeatures(disabled(Feature.cancel)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withRequest(post, cancelUri, headers, session, tags) {
-          wasNotFound
-        }
-      }
-    }
+    "return BAD_REQUEST" when {
 
-    "require authentication" in withFeatures(enabled(Feature.cancel)) {
-      withoutSignedInUser() { (_, _) =>
-        withRequest(post, cancelUri) { resp =>
-          wasRedirected(ggLoginRedirectUri(cancelUri), resp)
+      "bad data is posted" in {
+        withImportsBackend
+
+        val badData = for {
+          changeReasonCode <- arbitrary[String]
+          description      <- minStringLength(513)
+        } yield Map("changeReasonCode" -> changeReasonCode, "description" -> description)
+
+        forAll(arbitrary[SignedInUser], badData) { (user, formData) =>
+
+          val request = fakeRequest.withFormUrlEncodedBody(formData.toSeq: _*)
+          val popForm = form.bind(formData)
+          val result  = controller(user).handleCancelForm(mrn)(request)
+
+          status(result) mustBe BAD_REQUEST
+          contentAsString(result) mustBe view(popForm)
+          verify(mockCustomsDeclarationsConnector, never).cancelDeclaration(any())(any(), any())
         }
       }
     }
 
   }
 
-  s"$get $cancelUri" should {
+  "displayCancelForm" should {
 
-    "return 200" in withFeatures(enabled(Feature.cancel)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withRequest(get, cancelUri, headers, session, tags) {
-          wasOk
+    behave like okEndpoint(cancelUri, "GET")
+    behave like authenticatedEndpoint(cancelUri)
+
+    "return OK" when {
+
+      "user is signed in " in {
+
+        forAll { user: SignedInUser =>
+
+          val result = controller(user).displayCancelForm(mrn)(fakeRequest)
+
+          status(result) mustBe OK
+          contentAsString(result) mustBe view()
         }
       }
     }
 
-    "return HTML" in withFeatures(enabled(Feature.cancel)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withRequest(get, cancelUri, headers, session, tags) {
-          wasHtml
-        }
-      }
-    }
+    "return UNAUTHORIZED" when {
 
-    "require authentication" in withFeatures(enabled(Feature.cancel)) {
-      withoutSignedInUser() { (_, _) =>
-        withRequest(get, cancelUri) { resp =>
-          wasRedirected(ggLoginRedirectUri(cancelUri), resp)
-        }
-      }
-    }
+      "user doesn't have an eori" in {
+        forAll { unauthenticatedUser: UnauthenticatedUser =>
 
-    "be behind a feature switch" in withFeatures(disabled(Feature.cancel)) {
-      withSignedInUser() { (headers, session, tags) =>
-        withRequest(get, cancelUri, headers, session, tags) {
-          wasNotFound
+          val result = controller(unauthenticatedUser.user).displayCancelForm(mrn)(fakeRequest)
+
+          status(result) mustBe UNAUTHORIZED
         }
       }
     }

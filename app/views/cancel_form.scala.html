@@ -15,11 +15,11 @@
  *@
 
 @import config.AppConfig
-@import controllers.{Cancel, routes}
-@import domain.auth.AuthenticatedRequest
+@import controllers.routes
+@import domain.Cancel
 @import uk.gov.hmrc.play.views.html.helpers
 
-@(mrn: String, form: Form[CancelForm])(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
+@(mrn: String, form: Form[Cancel])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(title = messages("cancelpage.titleAndHeader")) {
     @helpers.form(routes.DeclarationController.handleCancelForm(mrn)) {

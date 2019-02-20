@@ -17,15 +17,17 @@
 package controllers
 
 import config._
+import domain.Cancel
+import domain.DeclarationFormats._
 import domain.auth.{AuthenticatedRequest, SignedInUser}
 import domain.features.Feature
+import forms.DeclarationFormMapping._
+import forms.ObligationGuaranteeForm
 import javax.inject.{Inject, Singleton}
-import models.Cancellation
-import models.ChangeReasonCode
+import models.{Cancellation, Declaration}
 import org.joda.time.DateTime
 import play.api.Logger
-import play.api.data.{Form, FormError, Forms}
-import play.api.data.Forms._
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{CustomsCacheService, CustomsDeclarationsConnector}
@@ -33,14 +35,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, MetaData}
-import forms.ObligationGuaranteeForm
-import domain.DeclarationFormats._
-import models.ChangeReasonCode.ChangeReasonCode
-import models.Declaration
-import play.api.data.format.Formatter
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 @Singleton
 class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarationsConnector, cache: CustomsCacheService)(implicit val messagesApi: MessagesApi, val appConfig: AppConfig,
@@ -56,6 +52,8 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     "declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].additionalProcedure",
     "declaration.typeCode.additional"
   )
+
+  val cancelForm: Form[Cancel] = Form(cancelMapping)
 
   def displaySubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
     cache.get(appConfig.submissionCacheId, req.user.eori.get).map { data =>
@@ -111,13 +109,13 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     } else { invalid(data("last-page"), data) }
   }
 
-  def displayCancelForm(mrn: String): Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth) { implicit req =>
-    Ok(views.html.cancel_form(mrn, Cancel.form))
+  def displayCancelForm(mrn: String): Action[AnyContent] = (actions.auth andThen actions.eori) { implicit req =>
+    Ok(views.html.cancel_form(mrn, cancelForm))
   }
 
-  def handleCancelForm(mrn: String): Action[AnyContent] = (actions.switch(Feature.cancel) andThen actions.auth).async { implicit req =>
-    Cancel.form.bindFromRequest().fold(
-      errors => Future.successful(BadRequest(views.html.cancel_form(mrn, errors))),
+  def handleCancelForm(mrn: String): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+    cancelForm.bindFromRequest().fold(
+      errors => Future.successful(BadRequest(views.html.cancel_form(mrn, errors))), 
       success => client.cancelDeclaration(Cancellation(mrn, success.changeReasonCode, success.description)).map(_ => Ok(views.html.cancel_confirmation())))
   }
 
@@ -187,26 +185,3 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
   }
 
 }
-
-// cancel declaration form objects
-
-object Cancel {
-  val form: Form[CancelForm] = Form[CancelForm](mapping(
-    "changeReasonCode" -> Forms.of[ChangeReasonCode],
-    "description" -> nonEmptyText(maxLength = 512)
-  )(CancelForm.apply)(CancelForm.unapply))
-
-  implicit def changeRequestCodeFormat: Formatter[ChangeReasonCode] = new Formatter[ChangeReasonCode] {
-    override def bind(key: String, data: Map[String, String]) =
-      data.get(key)
-        .flatMap(name => Try(ChangeReasonCode.withName(name)).toOption)
-        .toRight(Seq(FormError(key, "error.required", Nil)))
-
-    override def unbind(key: String, value: ChangeReasonCode) = Map(key -> value.toString)
-  }
-
-  def changeReasonCodes: Seq[(String, String)] = ChangeReasonCode.values.foldLeft(Map.empty: Map[String, String]) { (m, crc) => m + (crc.toString -> crc.displayName) }.toSeq
-
-}
-
-case class CancelForm(changeReasonCode: ChangeReasonCode, description: String)

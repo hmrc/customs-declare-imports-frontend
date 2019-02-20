@@ -21,6 +21,8 @@ import java.text.DecimalFormat
 import domain.{InvoiceAndCurrency, References, WarehouseAndCustoms}
 import config.Options
 import domain._
+import domain.Cancel._
+import models.ChangeReasonCode
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.data.Forms._
@@ -465,6 +467,10 @@ object DeclarationFormMapping {
   )(DutyTaxFee.apply)(DutyTaxFee.unapply)
     .verifying("One of Tax type, Tax base, Tax rate, Payable tax amount Total and Method of payment is required to add commodity duty tax", require1Field[DutyTaxFee](_.specificTaxBaseQuantity, _.taxRateNumeric, _.payment, _.typeCode))
 
+  val cancelMapping = mapping(
+    "changeReasonCode" -> of[ChangeReasonCode],
+    "description" -> nonEmptyText.verifying("Description cannot be longer than 512 characters", _.length <= 512)
+  )(Cancel.apply)(Cancel.unapply)
 }
 
 case class ObligationGuaranteeForm(guarantees: Seq[ObligationGuarantee] = Seq.empty)

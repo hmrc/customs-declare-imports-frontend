@@ -16,10 +16,9 @@
 
 @import config.AppConfig
 @import controllers.routes
-@import domain.auth.AuthenticatedRequest
 @import uk.gov.hmrc.play.views.html.helpers
 
-@()(implicit request: AuthenticatedRequest[_], messages: Messages, appConfig: AppConfig)
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
     @main_template(title = messages("cancelconfirmpage.titleAndHeading"), bodyClasses = None) {
         <h1 class="heading-xlarge">@messages("cancelconfirmpage.titleAndHeading")</h1>
