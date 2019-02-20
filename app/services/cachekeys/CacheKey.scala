@@ -56,6 +56,8 @@ object CacheKey {
 
   val buyer = CacheKey("Buyer", BuyerId)
 
+  val locationOfGoods = CacheKey("LocationOfGoods", LocationOfGoodsId)
+
   val summaryOfGoods = CacheKey("SummaryOfGoods", SummaryOfGoodsId)
 
   val transport = CacheKey("Transport", TransportId)

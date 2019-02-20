@@ -26,3 +26,6 @@ POST  /add-origins    controllers.goodsitems.OriginsController.onSubmit()
 
 GET   /add-fiscal-references      controllers.goodsitems.AdditionalFiscalReferencesController.onPageLoad()
 POST  /add-fiscal-references      controllers.goodsitems.AdditionalFiscalReferencesController.onSubmit()
+
+GET   /add-commodity-taxes    controllers.goodsitems.DutyTaxFeeController.onPageLoad()
+POST  /add-commodity-taxes    controllers.goodsitems.DutyTaxFeeController.onSubmit()

@@ -39,10 +39,9 @@
                         <th scope="col">@messages("governmentAgencyGoodsItem.domesticDutyParties")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItem.governmentProcedures")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItem.originOfGoods")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.manufacturers")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItem.packagings")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItem.previousDocuments")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.refundRecipientParties")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.dutyTaxFees")</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,10 +53,9 @@
                         <td>@goodsItem.domesticDutyTaxParties.size</td>
                         <td>@goodsItem.governmentProcedures.size</td>
                         <td>@goodsItem.origins.size</td>
-                        <td>@goodsItem.manufacturers.size</td>
                         <td>@goodsItem.packagings.size</td>
                         <td>@goodsItem.previousDocuments.size</td>
-                        <td>@goodsItem.refundRecipientParties.size</td>
+                        <td>@goodsItem.commodity.fold(0)(_.dutyTaxFees.size)</td>
                     </tr>
                 }
                 </tbody>

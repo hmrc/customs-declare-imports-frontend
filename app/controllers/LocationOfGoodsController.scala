@@ -24,23 +24,22 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import views.html.transport
+import views.html.location_of_goods
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class TransportController @Inject()
-  (actions: Actions, cache: CustomsCacheService)
-  (implicit override val messagesApi: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
-extends CustomsController {
+class LocationOfGoodsController @Inject()(actions: Actions, cache: CustomsCacheService)
+                                         (implicit override val messagesApi: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
+  extends CustomsController{
 
-  val form = Form(transportMapping)
+  val form = Form(locationOfGoodsMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
 
-    cache.getByKey(req.eori, CacheKey.transport).map { data =>
+    cache.getByKey(req.eori, CacheKey.locationOfGoods).map { locationOfGoods =>
 
-      val popForm = data.fold(form)(form.fill)
-      Ok(transport(popForm))
+      val popForm = locationOfGoods.fold(form)(form.fill)
+      Ok(location_of_goods(popForm))
     }
   }
 
@@ -48,12 +47,11 @@ extends CustomsController {
 
     form.bindFromRequest().fold(
       errors =>
-        Future.successful(BadRequest(transport(errors))),
+        Future.successful(BadRequest(location_of_goods(errors))),
 
-      transport =>
-        cache
-        .insert(req.eori, CacheKey.transport, transport)
-        .map(_ => Redirect(routes.LocationOfGoodsController.onPageLoad()))
+      locationOfGoods =>
+        cache.insert(req.eori, CacheKey.locationOfGoods, locationOfGoods)
+          .map(_ => Redirect(routes.WarehouseAndCustomsController.onPageLoad()))
     )
   }
 }
