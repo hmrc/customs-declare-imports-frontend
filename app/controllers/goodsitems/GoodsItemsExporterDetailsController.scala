@@ -52,7 +52,7 @@ class GoodsItemsExporterDetailsController @Inject()(actions: Actions, cacheServi
           val updatedGoodsItem = request.goodsItem.copy(consignor = Some(exporterDetails))
 
           cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
-            Redirect(routes.PreviousDocumentsController.onPageLoad())
+            Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
           }
         })
   }
