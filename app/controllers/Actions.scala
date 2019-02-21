@@ -18,13 +18,15 @@ package controllers
 
 import com.google.inject.ImplementedBy
 import config.{AppConfig, ErrorHandler}
-import domain.auth.{AuthenticatedRequest, EORI, EORIRequest, SignedInUser}
+import domain.auth._
 import domain.features.Feature.Feature
 import domain.features.FeatureStatus
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.Results._
 import play.api.mvc._
 import play.api.{Configuration, Environment}
+import services.CustomsCacheService
+import services.cachekeys.CacheKey
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
@@ -41,15 +43,20 @@ trait Actions {
 
   def eori: ActionRefiner[AuthenticatedRequest, EORIRequest]
 
+  def lrn: ActionRefiner[EORIRequest, LRNRequest]
+
   def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request]
 }
 
 @Singleton
-class ActionsImpl @Inject()(authConnector: AuthConnector, errorHandler: ErrorHandler)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends Actions {
+class ActionsImpl @Inject()(authConnector: AuthConnector, errorHandler: ErrorHandler, cache: CustomsCacheService)
+                           (implicit val appConfig: AppConfig, ec: ExecutionContext) extends Actions {
 
   def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] = new AuthAction(authConnector)
 
   def eori: ActionRefiner[AuthenticatedRequest, EORIRequest] = new EORIAction(errorHandler)
+
+  def lrn: ActionRefiner[EORIRequest, LRNRequest] = new LRNAction(errorHandler, cache)
 
   def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request] = new ActionBuilder[Request] with ActionFilter[Request] {
 
@@ -94,4 +101,17 @@ class EORIAction(errorHandler: ErrorHandler) extends ActionRefiner[Authenticated
       request.user.eori
         .map(e => EORIRequest(request, EORI(e)))
         .toRight(Unauthorized(errorHandler.notFoundTemplate(request))))
+}
+
+class LRNAction(errorHandler: ErrorHandler, cache: CustomsCacheService)(implicit ec: ExecutionContext)
+  extends ActionRefiner[EORIRequest, LRNRequest] {
+
+  override protected def refine[A](request: EORIRequest[A]): Future[Either[Result, LRNRequest[A]]] = {
+    val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
+
+    cache.getByKey(request.eori, CacheKey.references)(hc, implicitly, implicitly).map {
+      _.map(e => LRNRequest(request, e.functionalReferenceId))
+        .toRight(BadRequest(errorHandler.badRequestTemplate(request)))
+    }
+  }
 }

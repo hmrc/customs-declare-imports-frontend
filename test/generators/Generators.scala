@@ -24,10 +24,11 @@ import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen.{zip, _}
 import org.scalacheck.{Arbitrary, Gen, Shrink}
 import play.api.libs.json.{JsString, JsValue}
+import typeclasses.Monoid
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.wco.dec._
 
-trait Generators extends SignedInUserGen with ViewModelGenerators {
+trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val dontShrinkStrings: Shrink[String] = Shrink.shrinkAny
   implicit val dontShrinkDecimals: Shrink[BigDecimal] = Shrink.shrinkAny
@@ -239,16 +240,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryOrigin: Arbitrary[Origin] = Arbitrary {
     for {
       countryCode <- countryGen
-      typeCode <- option(choose[Int](1, 9))
-      if(typeCode.nonEmpty)
+      typeCode <- some(choose[Int](1, 9))
     } yield Origin(Some(countryCode), None)
   }
 
   implicit val arbitraryRoleBasedParty: Arbitrary[RoleBasedParty] = Arbitrary {
     for {
-      id <- option(arbitrary[String].map(_.take(17)))
-      roleCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(3)))
-      if id.exists(_.nonEmpty) || roleCode.exists(_.nonEmpty)
+      id <- option(nonEmptyString.map(_.take(17)))
+      roleCode <- option(alphaStr.map(_.take(3))).map(_.find(_.nonEmpty))
+      if id.nonEmpty || roleCode.nonEmpty
     } yield RoleBasedParty(id, roleCode)
   }
 
@@ -261,9 +261,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryGovernmentProcedure: Arbitrary[GovernmentProcedure] = Arbitrary {
     for {
-      currentCode <- option(arbitrary[String].map(_.take(2)))
-      previousCode <- option(arbitrary[String].map(_.take(2)))
-      if currentCode.exists(_.nonEmpty) || previousCode.exists(_.nonEmpty)
+      currentCode <- option(nonEmptyString.map(_.take(2)))
+      previousCode <- option(nonEmptyString.map(_.take(2)))
+      if currentCode.nonEmpty || previousCode.nonEmpty
     } yield GovernmentProcedure(currentCode, previousCode)
   }
 
@@ -307,8 +307,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       marksNumbersId <- option(nonEmptyString.map(_.take(500)))
       quantity <- option(choose[Int](1, 999))
-      typeCode <- option(nonEmptyString.map(_.take(2)))
-      if (typeCode.exists(_.size == 2))
+      typeCode <- option(listOfN(2, arbitrary[Char]).map(_.mkString))
     } yield Packaging(None, marksNumbersId, quantity, typeCode, None,
       None, None, None, None)
   }
@@ -515,8 +514,36 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       case (k, v) => Map[String, JsValue](k -> JsString(v))
     }).map(_.fold(Map())(_ ++ _))
 
-  implicit val arbitraryCacheMap = Arbitrary {
-    Gen.zip(arbitrary[String], mapGen).map { case (k, m) => CacheMap(k, m) }
+  implicit val arbitraryCacheMap: Arbitrary[CacheMap] = Arbitrary {
+
+    import CacheMapLens._
+
+    def list[A]: Gen[A] => Gen[List[A]] = varListOf[A](5)
+
+    List(
+      declarantDetails.set(arbitrary[ImportExportParty]),
+      references.set(arbitrary[References]),
+      exporter.set(arbitrary[ImportExportParty]),
+      representative.set(arbitrary[Agent]),
+      importer.set(arbitrary[ImportExportParty]),
+      tradeTerms.set(arbitrary[TradeTerms]),
+      invoiceAndCurrency.set(arbitrary[InvoiceAndCurrency]),
+      seller.set(arbitrary[ImportExportParty]),
+      buyer.set(arbitrary[ImportExportParty]),
+      summaryOfGoods.set(arbitrary[SummaryOfGoods]),
+      transport.set(arbitrary[Transport]),
+      authorisationHolders.set(list(arbitrary[AuthorisationHolder])),
+      guaranteeReferences.set(list(arbitrary[ObligationGuarantee])),
+      previousDocuments.set(list(arbitrary[PreviousDocument])),
+      additionalDocuments.set(list(arbitrary[AdditionalDocument])),
+      additionalSupplyChainActors.set(list(arbitrary[RoleBasedParty])),
+      domesticDutyTaxParty.set(list(arbitrary[RoleBasedParty])),
+      additionsAndDeductions.set(list(arbitrary[ChargeDeduction])),
+      containerIdNos.set(list(arbitrary[TransportEquipment])),
+      guaranteeTypes.set(list(arbitrary[ObligationGuarantee])),
+      govAgencyGoodsItemsList.set(list(arbitrary[GovernmentAgencyGoodsItem])),
+      warehouseAndCustsoms.set(arbitrary[WarehouseAndCustoms])
+    ).foldLeft(const(Monoid.empty[CacheMap])) { case (acc, f) => f(acc) }
   }
 
   def intGreaterThan(min: Int): Gen[Int] =

@@ -68,11 +68,13 @@ POST        /submit-declaration/add-additions-and-deductions   controllers.Addit
 GET         /submit-declaration/add-container-identification-number   controllers.ContainerIdentificationNumberController.onPageLoad()
 POST        /submit-declaration/add-container-identification-number   controllers.ContainerIdentificationNumberController.onSubmit()
 
-GET         /submit-declaration/guarantee-type                  controllers.GuaranteeTypeController.onPageLoad()
+GET         /submit-declaration/guarantee-type                 controllers.GuaranteeTypeController.onPageLoad()
 GET         /submit-declaration/add-guarantee-type             controllers.GuaranteeTypeController.onPageLoad()
 POST        /submit-declaration/add-guarantee-type             controllers.GuaranteeTypeController.onSubmit()
 
-POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
+GET         /submit-declaration/submit                         controllers.SubmitController.onSubmit
+GET         /submit-declaration/failed                         controllers.SubmitController.onFailure
+
 POST        /submit-declaration/another                        controllers.DeclarationController.onSubmitComplete
 
 GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)

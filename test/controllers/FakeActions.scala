@@ -16,15 +16,28 @@
 
 package controllers
 import config.{AppConfig, ErrorHandler}
-import domain.auth.{AuthenticatedRequest, EORIRequest, SignedInUser}
+import domain.References
+import domain.auth.{AuthenticatedRequest, EORIRequest, LRNRequest, SignedInUser}
 import domain.features.Feature.Feature
+import org.mockito.ArgumentMatchers.{eq => eqTo, _}
+import org.mockito.Mockito._
+import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import play.api.mvc.Results._
+import services.CustomsCacheService
+import services.cachekeys.CacheKey
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class FakeActions(signedInUser: Option[SignedInUser])(implicit messages: MessagesApi, appConfig: AppConfig) extends Actions {
+class FakeActions(signedInUser: Option[SignedInUser], localReferenceNumber: Option[String] = None)
+                 (implicit messages: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
+  extends Actions with MockitoSugar {
+
+  private val mockCustomsCache = mock[CustomsCacheService]
+
+  when(mockCustomsCache.getByKey(any(), eqTo(CacheKey.references))(any(), any(), any()))
+    .thenReturn(Future.successful(localReferenceNumber.map(References(None, None, None, _, None))))
 
   override def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] =
     new ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] {
@@ -34,6 +47,9 @@ class FakeActions(signedInUser: Option[SignedInUser])(implicit messages: Message
 
   override def eori: ActionRefiner[AuthenticatedRequest, EORIRequest] =
     new EORIAction(new ErrorHandler())
+
+  override def lrn: ActionRefiner[EORIRequest, LRNRequest] =
+    new LRNAction(new ErrorHandler(), mockCustomsCache)
 
   override def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request] = ???
 }
