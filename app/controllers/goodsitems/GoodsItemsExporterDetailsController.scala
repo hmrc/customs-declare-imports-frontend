@@ -20,13 +20,13 @@ import config.AppConfig
 import controllers.{Actions, CustomsController}
 import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, NamedEntityWithAddress, PreviousDocument}
+import uk.gov.hmrc.wco.dec.NamedEntityWithAddress
 import views.html.goodsitems.goods_items_exporter_details
 
 import scala.concurrent.{ExecutionContext, Future}
