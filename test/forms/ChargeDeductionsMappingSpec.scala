@@ -68,12 +68,14 @@ class ChargeDeductionsMappingSpec extends WordSpec
 
         forAll(arbitrary[ChargeDeduction], nonAlphaString) {
           (charge, typeCode) =>
-
+          whenever(typeCode.nonEmpty) {
             val data = charge.copy(chargesTypeCode = Some(typeCode))
             Form(goodsChargeDeductionMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("Type must contain only A-Z characters"),
               _ => fail("form should not succeed")
             )
+          }
+
         }
       }
 
