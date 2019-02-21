@@ -246,7 +246,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryRoleBasedParty: Arbitrary[RoleBasedParty] = Arbitrary {
     for {
-      id <- option(arbitrary[String].map(_.take(17)))
+      id <- option(nonEmptyString.map(_.take(17)))
       roleCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(3)))
       if id.exists(_.nonEmpty) || roleCode.exists(_.nonEmpty)
     } yield RoleBasedParty(id, roleCode)
