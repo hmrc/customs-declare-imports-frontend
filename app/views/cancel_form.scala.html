@@ -33,7 +33,7 @@
             </legend>
 
             @components.input_select(form("changeReasonCode"), messages("cancelpage.cancellationCode"), Cancel.changeReasonCodes)
-            @components.input_textarea(form("description"), messages("cancelpage.tellUsWhy"), hint = Some(messages("cancelpage.tellUsWhyHint")))
+            @components.input_textarea(form("description"), messages("cancelpage.tellUsWhy"), hint = Some(messages("cancelpage.tellUsWhyHint")), inputClass = Some("form-control-3-4"), charLimit = Some(512))
         </fieldset>
 
         <button class="button" type="submit">@messages("cancelpage.button.cancel")</button>

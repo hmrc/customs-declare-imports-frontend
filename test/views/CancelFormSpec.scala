@@ -78,7 +78,7 @@ class CancelFormSpec extends ViewBehaviours
         forAll { cancel: Cancel =>
 
           val popForm = form.fillAndValidate(cancel)
-          val textarea = input_textarea(popForm("description"), messages(s"$messagePrefix.tellUsWhy"), hint = Some(messages(s"$messagePrefix.tellUsWhyHint")))
+          val textarea = input_textarea(popForm("description"), messages(s"$messagePrefix.tellUsWhy"), hint = Some(messages(s"$messagePrefix.tellUsWhyHint")), inputClass = Some("form-control-3-4"), charLimit = Some(512))
           val html = view(popForm)
 
           html must include(textarea)
