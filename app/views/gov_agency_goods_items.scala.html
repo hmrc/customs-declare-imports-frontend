@@ -103,6 +103,14 @@
                             <span class="visually-hidden">@messages("governmentAgencyGoodsItem.commodityTaxes")</span></a>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">@messages("governmentAgencyGoodsItem.chargeDeductions")</th>
+                    <td>@goodsItem.map(_.customsValuation.fold(0)(_.chargeDeductions.size))</td>
+                    <td>
+                        <a href="@controllers.goodsitems.routes.AdditionsAndDeductionsController.onPageLoad().url" name="add" class="button" id="AddChargeDuductions">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.commodityTaxes")</span></a>
+                    </td>
+                </tr>
             </tbody>
         </table>
 

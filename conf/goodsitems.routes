@@ -29,3 +29,6 @@ POST  /add-fiscal-references      controllers.goodsitems.AdditionalFiscalReferen
 
 GET   /add-commodity-taxes    controllers.goodsitems.DutyTaxFeeController.onPageLoad()
 POST  /add-commodity-taxes    controllers.goodsitems.DutyTaxFeeController.onSubmit()
+
+GET   /add-charge-deductions    controllers.goodsitems.AdditionsAndDeductionsController.onPageLoad()
+POST  /add-charge-deductions    controllers.goodsitems.AdditionsAndDeductionsController.onSubmit()

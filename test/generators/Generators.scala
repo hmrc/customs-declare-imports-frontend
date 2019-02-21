@@ -21,7 +21,7 @@ import domain._
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen.{zip, _}
+import org.scalacheck.Gen._
 import org.scalacheck.{Arbitrary, Gen, Shrink}
 import play.api.libs.json.{JsString, JsValue}
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -105,14 +105,14 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     alphaStr suchThat (_.length > minLength)
 
   def alphaLessThan(maxLength: Int): Gen[String] =
-    alphaStr suchThat(_.nonEmpty) map(_.take(maxLength))
+    alphaStr suchThat (_.nonEmpty) map (_.take(maxLength))
 
   def numStrLongerThan(minLength: Int): Gen[String] =
     numStr suchThat (_.length > minLength)
 
   def varListOf[A](max: Int)(gen: Gen[A]): Gen[List[A]] =
     for {
-      i  <- choose(0, max)
+      i <- choose(0, max)
       xs <- listOfN(i, gen)
     } yield xs
 
@@ -131,16 +131,16 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryWarehouse: Arbitrary[Warehouse] = Arbitrary {
     for {
-      id       <- option(nonEmptyString.map(_.take(35)))
+      id <- option(nonEmptyString.map(_.take(35)))
       typeCode <- oneOf(config.Options.customsWareHouseTypes.map(_._1))
     } yield Warehouse(id, typeCode)
   }
 
   implicit val arbitraryWarehouseAndCustoms: Arbitrary[WarehouseAndCustoms] = Arbitrary {
     for {
-      warehouse          <- option(arbitrary[Warehouse])
+      warehouse <- option(arbitrary[Warehouse])
       presentationOffice <- arbitrary[Office]
-      supervisingOffice  <- arbitrary[Office]
+      supervisingOffice <- arbitrary[Office]
     } yield WarehouseAndCustoms(
       warehouse,
       presentationOffice.id.map(_ => presentationOffice),
@@ -151,8 +151,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryTradeTerms: Arbitrary[TradeTerms] = Arbitrary {
     for {
       conditionCode <- oneOf(config.Options.incoTermCodes).map(_._1)
-      locationId    <- option(nonEmptyString.map(_.take(17)))
-      locationName  <- option(nonEmptyString.map(_.take(37)))
+      locationId <- option(nonEmptyString.map(_.take(17)))
+      locationName <- option(nonEmptyString.map(_.take(37)))
     } yield TradeTerms(Some(conditionCode), None, None, locationId, locationName)
   }
 
@@ -165,12 +165,12 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryObligationGuarantee: Arbitrary[ObligationGuarantee] = Arbitrary {
     for {
-      amount              <- option(posDecimal(16, 2))
-      id                  <- option(arbitrary[String].map(_.take(35)))
-      referenceId         <- option(arbitrary[String].map(_.take(35)))
+      amount <- option(posDecimal(16, 2))
+      id <- option(arbitrary[String].map(_.take(35)))
+      referenceId <- option(arbitrary[String].map(_.take(35)))
       securityDetailsCode <- option(arbitrary[String].map(_.take(3)))
-      accessCode          <- option(arbitrary[String].map(_.take(4)))
-      office              <- option(arbitrary[Office])
+      accessCode <- option(arbitrary[String].map(_.take(4)))
+      office <- option(arbitrary[Office])
     } yield ObligationGuarantee(amount, id, referenceId, securityDetailsCode, accessCode, office)
   }
 
@@ -199,7 +199,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryMeasure: Arbitrary[Measure] = Arbitrary {
     for {
       unitCode <- option(nonEmptyString.map(_.take(3)))
-      value    <- option(posDecimal(10, 2))
+      value <- option(posDecimal(10, 2))
     } yield Measure(unitCode, value)
   }
 
@@ -240,7 +240,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       countryCode <- countryGen
       typeCode <- option(choose[Int](1, 9))
-      if(typeCode.nonEmpty)
+      if (typeCode.nonEmpty)
     } yield Origin(Some(countryCode), None)
   }
 
@@ -369,7 +369,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       ucr <- option(arbitraryUcr.arbitrary)
       exportCountry <- option(arbitraryExportCountry.arbitrary)
       valuationAdjustment <- option(arbitraryValuationAdjustment.arbitrary)
-      additionalDocuments <- Gen.listOfN(1,arbitraryGovernmentAgencyGoodsItemAdditionalDocument.arbitrary)
+      additionalDocuments <- Gen.listOfN(1, arbitraryGovernmentAgencyGoodsItemAdditionalDocument.arbitrary)
       additionalInformations <- Gen.listOfN(1, arbitraryAdditionalInfo.arbitrary)
       aeoMutualRecognitionParties <- Gen.listOfN(1, arbitraryRoleBasedParty.arbitrary)
       domesticParties <- Gen.listOfN(1, arbitraryRoleBasedParty.arbitrary)
@@ -408,11 +408,11 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryChargeDeduction: Arbitrary[ChargeDeduction] = Arbitrary {
     for {
-      typeCode <- option(arbitrary[String].map(_.take(2)))
+      typeCode <- alphaStr.suchThat(_.nonEmpty).map(_.take(2))
       amount <- arbitrary[Amount]
-      if typeCode.exists(_.nonEmpty) || amount.currencyId.nonEmpty
+      if typeCode.length == 2 || amount.currencyId.nonEmpty
     } yield {
-      ChargeDeduction(typeCode, amount.currencyId.map(_ => amount))
+      ChargeDeduction(Some(typeCode), amount.currencyId.map(_ => amount))
     }
   }
 
@@ -434,10 +434,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryReferences: Arbitrary[References] = Arbitrary {
     for {
-      typeCode   <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
-      typerCode  <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(1)))
-      traderId   <- option(nonEmptyString.map(_.take(35)))
-      funcRefId  <- arbitrary[String].map(_.take(22))
+      typeCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
+      typerCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(1)))
+      traderId <- option(nonEmptyString.map(_.take(35)))
+      funcRefId <- arbitrary[String].map(_.take(22))
       natureCode <- option(choose[Int](-9, 99))
     } yield {
       References(typeCode, typerCode, traderId, funcRefId, natureCode)
@@ -472,7 +472,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryAboutGoods: Arbitrary[SummaryOfGoods] = Arbitrary {
     for {
       quantity <- choose(0, 99999999)
-      measure  <- arbitrary[Measure]
+      measure <- arbitrary[Measure]
       measureOpt = zip(measure.value, measure.unitCode).map(_ => measure)
     } yield {
       SummaryOfGoods(Some(quantity), measureOpt)
@@ -482,7 +482,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryBorderTransportMeans: Arbitrary[BorderTransportMeans] = Arbitrary {
     for {
       modeCode <- option(intBetweenRange(1, 9))
-      regCode  <- option(countryGen)
+      regCode <- option(countryGen)
     } yield {
       BorderTransportMeans(None, None, None, None, regCode, modeCode)
     }
@@ -490,8 +490,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryTransportMeans: Arbitrary[TransportMeans] = Arbitrary {
     for {
-      id       <- option(nonEmptyString.map(_.take(35)))
-      typeId   <- option(oneOf(Options.transportMeansIdentificationTypes.map(_._1)))
+      id <- option(nonEmptyString.map(_.take(35)))
+      typeId <- option(oneOf(Options.transportMeansIdentificationTypes.map(_._1)))
       modeCode <- option(intBetweenRange(1, 9))
     } yield {
       TransportMeans(None, id, typeId, None, modeCode)
@@ -501,8 +501,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryTransport: Arbitrary[Transport] = Arbitrary {
     for {
       container <- option(intBetweenRange(0, 9))
-      border    <- arbitrary[BorderTransportMeans]
-      arrival   <- option(arbitrary[TransportMeans])
+      border <- arbitrary[BorderTransportMeans]
+      arrival <- option(arbitrary[TransportMeans])
       borderOpt = zip(border.registrationNationalityCode, border.modeCode).map(_ => border)
     } yield {
       Transport(container, borderOpt, arrival)
@@ -511,11 +511,11 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryGoodsLocationAddress: Arbitrary[GoodsLocationAddress] = Arbitrary {
     for {
-      line        <- option(nonEmptyString.map(_.take(70)))
-      postcodeId  <- option(nonEmptyString.map(_.take(9)))
-      cityName    <- option(nonEmptyString.map(_.take(35)))
+      line <- option(nonEmptyString.map(_.take(70)))
+      postcodeId <- option(nonEmptyString.map(_.take(9)))
+      cityName <- option(nonEmptyString.map(_.take(35)))
       countryCode <- option(oneOf(config.Options.countryOptions.map(_._1)))
-      typeCode    <- option(oneOf(config.Options.goodsLocationTypeCode.map(_._1)))
+      typeCode <- option(oneOf(config.Options.goodsLocationTypeCode.map(_._1)))
     } yield {
       GoodsLocationAddress(typeCode, cityName, countryCode, line, postcodeId)
     }
@@ -523,10 +523,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryGoodsLocation: Arbitrary[GoodsLocation] = Arbitrary {
     for {
-      name     <- option(nonEmptyString.map(_.take(35)))
-      id       <- nonEmptyString.map(_.take(3))
+      name <- option(nonEmptyString.map(_.take(35)))
+      id <- nonEmptyString.map(_.take(3))
       typeCode <- option(oneOf(config.Options.goodsLocationTypeCode.map(_._1)))
-      address  <- option(arbitrary[GoodsLocationAddress])
+      address <- option(arbitrary[GoodsLocationAddress])
     } yield {
       GoodsLocation(name, id, typeCode, address)
     }
@@ -534,7 +534,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryLoadingLocation: Arbitrary[LoadingLocation] = Arbitrary {
     for {
-      id   <- option(nonEmptyString.map(_.take(17)))
+      id <- option(nonEmptyString.map(_.take(17)))
     } yield {
       LoadingLocation(None, id)
     }
@@ -560,29 +560,35 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     Gen.zip(arbitrary[String], mapGen).map { case (k, m) => CacheMap(k, m) }
   }
 
-  implicit val arbitraryPayment :Arbitrary[Payment] = Arbitrary{
-    for{
+  implicit val arbitraryPayment: Arbitrary[Payment] = Arbitrary {
+    for {
       methodCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(1)))
       taxableAmount <- arbitrary[Amount]
-      paymentAmount <-  arbitrary[Amount]
+      paymentAmount <- arbitrary[Amount]
     } yield Payment(methodCode, taxableAmount.currencyId.map(_ => taxableAmount), paymentAmount.currencyId.map(_ => paymentAmount))
   }
 
-  implicit val arbitraryDutyTaxFee :Arbitrary[DutyTaxFee] = Arbitrary{
-    for{
+  implicit val arbitraryDutyTaxFee: Arbitrary[DutyTaxFee] = Arbitrary {
+    for {
       specificTaxBaseQuantity <- arbitrary[Measure]
       taxRateNumeric <- posDecimal(16, 2)
       typeCode <- option(nonEmptyString.map(_.take(3)))
       quataOrderNo <- option(nonEmptyString.map(_.take(6)))
       payment <- arbitraryPayment.arbitrary
-      if(typeCode.exists(_.length ==3) && quataOrderNo.exists(_.length == 6))
-    } yield DutyTaxFee(None,None,None,Some(specificTaxBaseQuantity), Some(taxRateNumeric),typeCode, quataOrderNo,Some(payment))
+      if (typeCode.exists(_.length == 3) && quataOrderNo.exists(_.length == 6))
+    } yield DutyTaxFee(None, None, None, Some(specificTaxBaseQuantity), Some(taxRateNumeric), typeCode, quataOrderNo, Some(payment))
   }
 
-  implicit val arbitraryCommodity: Arbitrary[Commodity] = Arbitrary{
+  implicit val arbitraryCommodity: Arbitrary[Commodity] = Arbitrary {
     for {
       dutyTaxFees <- Gen.listOfN(1, arbitrary[DutyTaxFee])
     } yield Commodity(dutyTaxFees = dutyTaxFees)
+  }
+
+  implicit val arbitraryCustomsValuation: Arbitrary[CustomsValuation] = Arbitrary {
+    for {
+      chargeDeductions <- Gen.listOfN(1, arbitrary[ChargeDeduction])
+    } yield CustomsValuation(chargeDeductions = chargeDeductions)
   }
 
   def intGreaterThan(min: Int): Gen[Int] =
