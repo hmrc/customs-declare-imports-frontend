@@ -16,7 +16,6 @@
 
 package views.goodsitems
 
-import domain.WarehouseAndCustoms
 import forms.DeclarationFormMapping._
 import generators.Generators
 import org.scalatest.OptionValues
@@ -24,11 +23,10 @@ import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.customs.test.ViewMatchers
-import uk.gov.hmrc.wco.dec.TradeTerms
+import uk.gov.hmrc.wco.dec.NamedEntityWithAddress
 import views.behaviours.ViewBehaviours
 import views.html.components.{input_select, input_text}
 import views.html.goodsitems.goods_items_exporter_details
-import views.html.{delivery_terms, warehouse_and_customs_offices}
 
 class GoodsItemsExporterDetailsSpec extends ViewBehaviours
   with PropertyChecks
@@ -48,5 +46,73 @@ class GoodsItemsExporterDetailsSpec extends ViewBehaviours
 
     behave like normalPage(simpleView, messagePrefix)
     behave like pageWithBackLink(simpleView)
+
+    "display name field" in {
+
+      forAll { entity: NamedEntityWithAddress =>
+
+        val popForm = Form(namedEntityWithAddressMapping).fillAndValidate(entity)
+        val input = input_text(popForm("name"), messages("governmentAgencyGoodsItem.exporterDetails.name"))
+
+        view(popForm) must include(input)
+      }
+    }
+
+    "display id field" in {
+
+      forAll { entity: NamedEntityWithAddress =>
+
+        val popForm = Form(namedEntityWithAddressMapping).fillAndValidate(entity)
+        val input = input_text(popForm("id"), messages("governmentAgencyGoodsItem.exporterDetails.id"))
+
+        view(popForm) must include(input)
+      }
+    }
+
+    "display address line field" in {
+
+      forAll { entity: NamedEntityWithAddress =>
+
+        val popForm = Form(namedEntityWithAddressMapping).fillAndValidate(entity)
+        val input = input_text(popForm("address.line"), messages("governmentAgencyGoodsItem.exporterDetails.address.line"))
+
+        view(popForm) must include(input)
+      }
+    }
+
+    "display city name field" in {
+
+      forAll { entity: NamedEntityWithAddress =>
+
+        val popForm = Form(namedEntityWithAddressMapping).fillAndValidate(entity)
+        val input = input_text(popForm("address.cityName"), messages("governmentAgencyGoodsItem.exporterDetails.address.cityName"))
+
+        view(popForm) must include(input)
+      }
+    }
+
+    "display country type input" in {
+
+      forAll { entity: NamedEntityWithAddress =>
+
+        val popForm = Form(namedEntityWithAddressMapping).fillAndValidate(entity)
+        val input = input_select(popForm("address.countryCode"),
+          messages("governmentAgencyGoodsItem.exporterDetails.address.country"),
+          config.Options.countryOptions)
+
+        view(popForm) must include(input)
+      }
+    }
+
+    "display postcode field" in {
+
+      forAll { entity: NamedEntityWithAddress =>
+
+        val popForm = Form(namedEntityWithAddressMapping).fillAndValidate(entity)
+        val input = input_text(popForm("address.postcodeId"), messages("governmentAgencyGoodsItem.exporterDetails.address.postcode"))
+
+        view(popForm) must include(input)
+      }
+    }
   }
 }

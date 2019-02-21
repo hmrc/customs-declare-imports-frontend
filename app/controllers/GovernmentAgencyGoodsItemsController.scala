@@ -61,7 +61,7 @@ extends CustomsController {
           Logger.info("goodsItemValue form --->" + form)
 
           cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, form).map {
-            _ => Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+            _ => Redirect(controllers.goodsitems.routes.GoodsItemsExporterDetailsController.onSubmit())
           }
         })
   }

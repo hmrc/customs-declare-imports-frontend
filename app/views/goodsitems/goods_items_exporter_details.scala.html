@@ -14,17 +14,18 @@
  * limitations under the License.
  *@
 
-@import config.{AppConfig, ValidationError}
+@import config.AppConfig
 @import config.Fields._
 @import controllers.routes._
 @import uk.gov.hmrc.play.views.html._
+@import controllers.routes._
 
 @(form: Form[_])(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
 @main_template(messages("governmentAgencyGoodsItem.exporterDetails.title")) {
 
-@helpers.form(action = WarehouseAndCustomsController.onSubmit()) {
 
+@helpers.form(action = controllers.goodsitems.routes.GoodsItemsExporterDetailsController.onSubmit()) {
 
         @components.back_link()
 
@@ -35,13 +36,15 @@
                 <h1 class="heading-large">@messages("governmentAgencyGoodsItem.exporterDetails.heading")</h1>
             </legend>
 
-                <h2 class="heading-medium">@messages("pages.warehouseAndCustomsOffices.h2.warehouseDetails")</h2>
-
                 @components.input_text(form("name"), messages("governmentAgencyGoodsItem.exporterDetails.name"))
+                @components.input_text(form("address.line"), messages("governmentAgencyGoodsItem.exporterDetails.address.line"))
+                @components.input_text(form("address.cityName"), messages("governmentAgencyGoodsItem.exporterDetails.address.cityName"))
+                @components.input_select(form("address.countryCode"),
+                                         messages("governmentAgencyGoodsItem.exporterDetails.address.country"),
+                                         config.Options.countryOptions)
+                @components.input_text(form("address.postcodeId"), messages("governmentAgencyGoodsItem.exporterDetails.address.postcode"))
+                @components.input_text(form("id"), messages("governmentAgencyGoodsItem.exporterDetails.id"))
 
-<!--                @components.input_select(form("warehouse.typeCode"),
-                                         messages("warehouseAndCustomsOffices.warehouse.typeCode"),
-                                         config.Options.customsWareHouseTypes)-->
         </fieldset>
 
         <button id="Add" name="submit">

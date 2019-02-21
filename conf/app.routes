@@ -82,11 +82,11 @@ GET         /submit-declaration/success/:conversationId        controllers.Decla
 GET         /submit-declaration/:name                          controllers.DeclarationController.displaySubmitForm(name)
 POST        /submit-declaration/:name                          controllers.DeclarationController.handleSubmitForm(name)
 
-GET       /submit-declaration-goods/add-gov-agency-goods-item        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
-GET       /submit-declaration-goods/goods-item-value        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemValuePage()
-POST       /submit-declaration-goods/goods-item-value        controllers.GovernmentAgencyGoodsItemsController.submitGoodsItemValueSection()
+GET         /submit-declaration-goods/add-gov-agency-goods-item     controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
+GET         /submit-declaration-goods/goods-item-value      controllers.GovernmentAgencyGoodsItemsController.showGoodsItemValuePage()
+POST        /submit-declaration-goods/goods-item-value      controllers.GovernmentAgencyGoodsItemsController.submitGoodsItemValueSection()
 
-POST       /submit-declaration-goods/add-gov-agency-goods-item        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
+POST        /submit-declaration-goods/add-gov-agency-goods-item     controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
 
-GET       /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.display()
-POST      /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()
+GET         /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.display()
+POST        /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()
