@@ -111,15 +111,13 @@ class GoodsItemsExporterDetailsControllerSpec extends CustomsSpec
       "user submits valid data" in {
 
         forAll { (user: SignedInUser, entity: NamedEntityWithAddress, goodsItem: GovernmentAgencyGoodsItem) =>
-          when(mockCustomsCacheService.getByKey(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any(), any()))
-            .thenReturn(Future.successful(Some(goodsItem)))
-          when(mockCustomsCacheService.cache[GovernmentAgencyGoodsItem](any(), any(), any())(any(), any(), any()))
-            .thenReturn(Future.successful(CacheMap("id1", Map.empty)))
+
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(entity): _*)
           val result = controller(Some(user), Some(goodsItem)).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url)        }
+          redirectLocation(result) mustBe Some(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url)
+        }
       }
     }
 
