@@ -20,38 +20,39 @@ import config.AppConfig
 import controllers.{Actions, CustomsController}
 import domain.DeclarationFormats._
 import forms.DeclarationFormMapping._
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, PreviousDocument}
+import uk.gov.hmrc.wco.dec.NamedEntityWithAddress
+import views.html.goodsitems.goods_items_exporter_details
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-class PreviousDocumentsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-                                           (implicit appConfig: AppConfig, override val messagesApi: MessagesApi, ec: ExecutionContext)
-  extends CustomsController {
+class GoodsItemsExporterDetailsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
+                                                   (implicit appConfig: AppConfig, override val messagesApi: MessagesApi, ec: ExecutionContext)
+  extends CustomsController{
 
-  def previousDocumentForm: Form[PreviousDocument] = Form(previousDocumentMapping)
+  val form = Form(namedEntityWithAddressMapping)
 
-  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori andThen actions.goodsItem) {
-    implicit req =>
-      Ok(views.html.goods_items_previousdocs(previousDocumentForm, req.goodsItem.previousDocuments))
+  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori andThen actions.goodsItem) { implicit req =>
+
+    val popForm = req.goodsItem.consignor.fold(form)(form.fill)
+    Ok(goods_items_exporter_details(popForm))
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori andThen actions.goodsItem).async {
     implicit request =>
-      previousDocumentForm.bindFromRequest().fold(
-        (formWithErrors: Form[PreviousDocument]) =>
-          Future.successful(BadRequest(views.html.goods_items_previousdocs(formWithErrors, request.goodsItem.previousDocuments))),
-        form => {
-          val updatedGoodsItem = request.goodsItem.copy(previousDocuments = request.goodsItem.previousDocuments :+ form)
+      form.bindFromRequest().fold(
+        (formWithErrors: Form[NamedEntityWithAddress]) =>
+          Future.successful(BadRequest(goods_items_exporter_details(formWithErrors))),
+        exporterDetails => {
+          val updatedGoodsItem = request.goodsItem.copy(consignor = Some(exporterDetails))
 
           cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
-            Redirect(routes.PreviousDocumentsController.onPageLoad())
+            Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
           }
         })
   }

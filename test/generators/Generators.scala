@@ -298,8 +298,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryNamedEntityWithAddress: Arbitrary[NamedEntityWithAddress] = Arbitrary {
     for {
-      name <- option(arbitrary[String].map(_.take(70)))
-      id <- option(arbitrary[String].map(_.take(17)))
+      name <- option(nonEmptyString.map(_.take(70)))
+      id <- option(nonEmptyString.map(_.take(17)))
       address <- option(arbitrary[Address])
     } yield NamedEntityWithAddress(name, id, address)
   }
