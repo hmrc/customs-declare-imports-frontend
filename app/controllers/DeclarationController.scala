@@ -17,11 +17,17 @@
 package controllers
 
 import config._
+import domain.Cancel
+import domain.DeclarationFormats._
 import domain.auth.{AuthenticatedRequest, SignedInUser}
 import domain.features.Feature
+import forms.DeclarationFormMapping._
+import forms.ObligationGuaranteeForm
 import javax.inject.{Inject, Singleton}
+import models.{Cancellation, Declaration}
 import org.joda.time.DateTime
 import play.api.Logger
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{CustomsCacheService, CustomsDeclarationsConnector}
@@ -29,9 +35,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, MetaData}
-import forms.ObligationGuaranteeForm
-import domain.DeclarationFormats._
-import models.Declaration
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -49,6 +52,8 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     "declaration.goodsShipment.governmentAgencyGoodsItems[0].governmentProcedures[0].additionalProcedure",
     "declaration.typeCode.additional"
   )
+
+  val cancelForm: Form[Cancel] = Form(cancelMapping)
 
   def displaySubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
     cache.get(appConfig.submissionCacheId, req.user.eori.get).map { data =>
@@ -102,6 +107,16 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
 
       }
     } else { invalid(data("last-page"), data) }
+  }
+
+  def displayCancelForm(mrn: String): Action[AnyContent] = (actions.auth andThen actions.eori) { implicit req =>
+    Ok(views.html.cancel_form(mrn, cancelForm))
+  }
+
+  def handleCancelForm(mrn: String): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
+    cancelForm.bindFromRequest().fold(
+      errors => Future.successful(BadRequest(views.html.cancel_form(mrn, errors))), 
+      success => client.cancelDeclaration(Cancellation(mrn, success.changeReasonCode, success.description)).map(_ => Ok(views.html.cancel_confirmation())))
   }
 
   private def invalid(name: String, data: Map[String, String])(implicit req: AuthenticatedRequest[AnyContent], errors: Map[String, Seq[ValidationError]]): Future[Result] = Future.successful(BadRequest(views.html.generic_view(name, data)))

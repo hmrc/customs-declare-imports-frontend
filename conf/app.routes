@@ -90,3 +90,6 @@ POST       /submit-declaration-goods/add-gov-agency-goods-item        controller
 
 GET       /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.display()
 POST      /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()
+
+GET         /cancel-declaration/:mrn                           controllers.DeclarationController.displayCancelForm(mrn)
+POST        /cancel-declaration/:mrn                           controllers.DeclarationController.handleCancelForm(mrn)

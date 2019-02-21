@@ -60,7 +60,7 @@
                                 @declaration.mrn.map { mrn =>
                                     <tfoot>
                                         <td colspan="2"></td>
-                                        <td><a href="#">Cancel<span class="visually-hidden"> declaration @declaration.localReferenceNumber</span></a></td>
+                                        <td><a href="@routes.DeclarationController.displayCancelForm(mrn)">@messages("landingpage.submissions.cancel")<span class="visually-hidden"> declaration @declaration.localReferenceNumber</span></a></td>
                                     </tfoot>
                                 }
                             }
