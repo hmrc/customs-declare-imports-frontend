@@ -408,7 +408,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryChargeDeduction: Arbitrary[ChargeDeduction] = Arbitrary {
     for {
-      typeCode <- arbitrary[String].map(_.take(2))
+      typeCode <- alphaStr.suchThat(_.nonEmpty).map(_.take(2))
       amount <- arbitrary[Amount]
       if typeCode.length == 2 || amount.currencyId.nonEmpty
     } yield {

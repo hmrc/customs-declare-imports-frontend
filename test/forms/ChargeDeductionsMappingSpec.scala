@@ -29,7 +29,6 @@ class ChargeDeductionsMappingSpec extends WordSpec
   with MustMatchers
   with PropertyChecks
   with Generators
-  with Lenses
   with FormMatchers {
 
   val form = Form(goodsChargeDeductionMapping)
@@ -65,7 +64,20 @@ class ChargeDeductionsMappingSpec extends WordSpec
         }
       }
 
-      "type code and amount are missing" in {
+      "Type has alphanumeric characters" in {
+
+        forAll(arbitrary[ChargeDeduction], nonAlphaString) {
+          (charge, typeCode) =>
+
+            val data = charge.copy(chargesTypeCode = Some(typeCode))
+            Form(goodsChargeDeductionMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Type must contain only A-Z characters"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "Type Currency and Value are missing" in {
 
         Form(goodsChargeDeductionMapping).bind(Map[String, String]()).fold(
           _ must haveErrorMessage("Type or Currency and Value are required"),

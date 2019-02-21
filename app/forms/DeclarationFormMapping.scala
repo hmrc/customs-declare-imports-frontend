@@ -265,13 +265,15 @@ object DeclarationFormMapping {
   )(ImportExportParty.apply)(ImportExportParty.unapply)
 
   val chargeDeductionMapping = mapping(
-    "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 2 characters", _.length <= 2)),
+    "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 2 characters", _.length <= 2)
+                                            .verifying("Charges code must contain only A-Z characters", isAlpha)),
     "otherChargeDeductionAmount" -> optional(amountMapping("Value","Currency")) // Option[Amount] = None
   )(ChargeDeduction.apply)(ChargeDeduction.unapply)
     .verifying("Charges code, currency id or amount are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
 
   val goodsChargeDeductionMapping = mapping(
-    "chargesTypeCode" -> optional(text.verifying("Type should be 2 characters", _.length == 2)),
+    "chargesTypeCode" -> optional(text.verifying("Type should be 2 characters", _.length == 2)
+                                            .verifying("Type must contain only A-Z characters", isAlpha)),
     "otherChargeDeductionAmount" -> optional(amountMapping("Value","Currency")) // Option[Amount] = None
   )(ChargeDeduction.apply)(ChargeDeduction.unapply)
     .verifying("Type or Currency and Value are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
