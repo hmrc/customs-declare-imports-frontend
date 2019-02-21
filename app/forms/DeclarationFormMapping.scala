@@ -21,6 +21,8 @@ import java.text.DecimalFormat
 import domain.{InvoiceAndCurrency, References, WarehouseAndCustoms}
 import config.Options
 import domain._
+import domain.Cancel._
+import models.ChangeReasonCode
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.data.Forms._
@@ -265,15 +267,23 @@ object DeclarationFormMapping {
   )(ImportExportParty.apply)(ImportExportParty.unapply)
 
   val chargeDeductionMapping = mapping(
-    "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 2 characters", _.length <= 2)),
-    "otherChargeDeductionAmount" -> optional(amountMapping) // Option[Amount] = None
+    "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 2 characters", _.length <= 2)
+                                            .verifying("Charges code must contain only A-Z characters", isAlpha)),
+    "otherChargeDeductionAmount" -> optional(amountMapping("Value","Currency")) // Option[Amount] = None
   )(ChargeDeduction.apply)(ChargeDeduction.unapply)
     .verifying("Charges code, currency id or amount are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
+
+  val goodsChargeDeductionMapping = mapping(
+    "chargesTypeCode" -> optional(text.verifying("Type should be 2 characters", _.length == 2)
+                                            .verifying("Type must contain only A-Z characters", isAlpha)),
+    "otherChargeDeductionAmount" -> optional(amountMapping("Value","Currency")) // Option[Amount] = None
+  )(ChargeDeduction.apply)(ChargeDeduction.unapply)
+    .verifying("Type or Currency and Value are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
 
 
   val customsValuationMapping = mapping("methodCode" -> optional(text.verifying(" Charges code should be less than or equal to 3 characters", _.length <= 3)), // max 3 chars; not valid outside GovernmentAgencyGoodsItem
     "freightChargeAmount" -> optional(bigDecimal), // default(bigDecimal, None),
-    "chargeDeductions" -> seq(chargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
+    "chargeDeductions" -> seq(goodsChargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
 
 
   val officeMapping = mapping("id" -> optional(text
@@ -457,6 +467,10 @@ object DeclarationFormMapping {
   )(DutyTaxFee.apply)(DutyTaxFee.unapply)
     .verifying("One of Tax type, Tax base, Tax rate, Payable tax amount Total and Method of payment is required to add commodity duty tax", require1Field[DutyTaxFee](_.specificTaxBaseQuantity, _.taxRateNumeric, _.payment, _.typeCode))
 
+  val cancelMapping = mapping(
+    "changeReasonCode" -> of[ChangeReasonCode],
+    "description" -> nonEmptyText.verifying("Description cannot be longer than 512 characters", _.length <= 512)
+  )(Cancel.apply)(Cancel.unapply)
 }
 
 case class ObligationGuaranteeForm(guarantees: Seq[ObligationGuarantee] = Seq.empty)

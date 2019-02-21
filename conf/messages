@@ -572,7 +572,7 @@ governmentAgencyGoodsItem.addGoodsItem=Add goods item
 governmentAgencyGoodsItem.numberGovAgencyGoodsItems=No of Government Agency Goods Items Added:
 governmentAgencyGoodsItem.add=Add
 governmentAgencyGoodsItem.commodityTaxes=Commodity duty taxes
-
+governmentAgencyGoodsItem.chargeDeductions=Additions & Deductions
 governmentAgencyGoodsItem.additionalDocuments=Additional documents
 governmentAgencyGoodsItem.additionalInformation=Additional information
 governmentAgencyGoodsItem.mutualRecognitionParties=Additional supply chain actor(s)

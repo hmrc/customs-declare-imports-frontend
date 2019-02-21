@@ -17,7 +17,7 @@
 package views.behaviours
 
 import org.scalacheck.Gen
-import org.scalacheck.Gen.listOf
+import org.scalacheck.Gen.listOfN
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.twirl.api.{Html, HtmlFormat}
@@ -112,7 +112,7 @@ trait ViewBehaviours extends ViewSpecBase with PropertyChecks {
 
       "display a table with multiple items in" in {
 
-        forAll(listOf(data)) { multipleItems =>
+        forAll(listOfN(10, data)) { multipleItems =>
 
           whenever(multipleItems.size > 1) {
 

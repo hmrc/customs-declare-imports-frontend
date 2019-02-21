@@ -42,6 +42,7 @@
                         <th scope="col">@messages("governmentAgencyGoodsItem.packagings")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItem.previousDocuments")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItem.dutyTaxFees")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.chargeDeductions")</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,6 +57,7 @@
                         <td>@goodsItem.packagings.size</td>
                         <td>@goodsItem.previousDocuments.size</td>
                         <td>@goodsItem.commodity.fold(0)(_.dutyTaxFees.size)</td>
+                        <td>@goodsItem.customsValuation.fold(0)(_.chargeDeductions.size)</td>
                     </tr>
                 }
                 </tbody>
