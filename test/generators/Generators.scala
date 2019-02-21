@@ -21,7 +21,6 @@ import domain._
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
 import models.ChangeReasonCode
-import models.ChangeReasonCode
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
 import org.scalacheck.{Arbitrary, Gen, Shrink}
