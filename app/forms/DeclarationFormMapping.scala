@@ -21,6 +21,8 @@ import java.text.DecimalFormat
 import domain.{InvoiceAndCurrency, References, WarehouseAndCustoms}
 import config.Options
 import domain._
+import domain.Cancel._
+import models.ChangeReasonCode
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.data.Forms._
@@ -49,18 +51,19 @@ object DeclarationFormMapping {
     "roleCode" -> optional(text.verifying("roleCode is only 3 characters", _.length <= 3))
   )(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.apply)(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.unapply)
 
-  val amountMapping: Mapping[Amount] = mapping(
+  val amountMapping: Mapping[Amount] = amountMapping()
+  private def amountMapping(valueKey:String = "Amount", currencyKey:String = "Currency"): Mapping[Amount] = mapping(
     "currencyId" -> optional(
       text
-        .verifying("Currency ID is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
+        .verifying(s"$currencyKey is not valid", x => config.Options.currencyTypes.exists(_._1 == x))),
     "value" -> optional(
       bigDecimal
-        .verifying("Amount cannot be greater than 99999999999999.99", _.precision <= 16)
-        .verifying("Amount cannot have more than 2 decimal places", _.scale <= 2)
-        .verifying("Amount must not be negative", _ >= 0))
+        .verifying(s"$valueKey cannot be greater than 99999999999999.99", _.precision <= 16)
+        .verifying(s"$valueKey cannot have more than 2 decimal places", _.scale <= 2)
+        .verifying(s"$valueKey must not be negative", _ >= 0))
   )(Amount.apply)(Amount.unapply)
-    .verifying("Amount is required when currency is provided", requireAllDependantFields[Amount](_.currencyId)(_.value))
-    .verifying("Currency is required when amount is provided", requireAllDependantFields[Amount](_.value)(_.currencyId))
+    .verifying(s"$valueKey is required when $currencyKey is provided", requireAllDependantFields[Amount](_.currencyId)(_.value))
+    .verifying(s"$currencyKey is required when $valueKey is provided", requireAllDependantFields[Amount](_.value)(_.currencyId))
 
   val currencyExchangeMapping: Mapping[CurrencyExchange] = mapping(
     "currencyTypeCode" -> optional(
@@ -156,14 +159,22 @@ object DeclarationFormMapping {
   )(AdditionalInformation.apply)(AdditionalInformation.unapply)
     .verifying("You must provide Code or Description", require1Field[AdditionalInformation](_.statementCode, _.statementDescription))
 
-  val destinationMapping = mapping("countryCode" -> optional(text.verifying("country code is only 3 characters", _.length <= 3)),
-    "regionId" -> optional(text.verifying("regionId code is only 9 characters", _.length <= 9)))(Destination.apply)(Destination.unapply)
+  val destinationMapping = mapping(
+    "countryCode" -> optional(text.verifying("countryCode is not a valid countryCode", isInList(Options.countryOptions))),
+    "regionId" -> ignored[Option[String]](None)
+  )(Destination.apply)(Destination.unapply)
 
   val ucrMapping = mapping("id" -> optional(text.verifying("id should be less than or equal to 35 characters", _.length <= 35)),
     "traderAssignedReferenceId" -> optional(text.verifying("traderAssignedReferenceId should be less than or equal to 35 characters", _.length <= 35)))(Ucr.apply)(Ucr.unapply)
 
-  val exportCountryMapping = mapping("id" -> text.verifying("export Country code should be less than or equal to 2 characters",
-    _.length <= 2))(ExportCountry.apply)(ExportCountry.unapply)
+  val exportCountryMapping = mapping(
+    "id" -> text.verifying("ID is not a valid ID", isInList(Options.countryTypes))
+  )(ExportCountry.apply)(ExportCountry.unapply)
+
+  val loadingLocationMapping = mapping(
+    "name" -> ignored[Option[String]](None),
+    "id" -> optional(text.verifying("id should be less than or equal to 17 characters", _.length <= 17))
+  )(LoadingLocation.apply)(LoadingLocation.unapply)
 
   val valuationAdjustmentMapping = mapping("additionCode" -> optional(
     text.verifying("valuationAdjustment should be less than or equal to 4 characters",
@@ -204,8 +215,8 @@ object DeclarationFormMapping {
   )(Address.apply)(Address.unapply)
 
   val namedEntityWithAddressMapping = mapping(
-    "name" -> optional(text.verifying("name should be less than or equal to 70 characters", _.length <= 70)), //: Option[String] = None, // max 70 chars
-    "id" -> optional(text.verifying("id  should be less than or equal to 17 characters", _.length <= 17)), // max 17 chars
+    "name" -> optional(text.verifying("Name should be less than or equal to 70 characters", _.length <= 70)), //: Option[String] = None, // max 70 chars
+    "id" -> optional(text.verifying("ID  should be less than or equal to 17 characters", _.length <= 17)), // max 17 chars
     "address" -> optional(addressMapping)
   )(NamedEntityWithAddress.apply)(NamedEntityWithAddress.unapply)
 
@@ -256,15 +267,23 @@ object DeclarationFormMapping {
   )(ImportExportParty.apply)(ImportExportParty.unapply)
 
   val chargeDeductionMapping = mapping(
-    "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 2 characters", _.length <= 2)),
-    "otherChargeDeductionAmount" -> optional(amountMapping) // Option[Amount] = None
+    "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 2 characters", _.length <= 2)
+                                            .verifying("Charges code must contain only A-Z characters", isAlpha)),
+    "otherChargeDeductionAmount" -> optional(amountMapping("Value","Currency")) // Option[Amount] = None
   )(ChargeDeduction.apply)(ChargeDeduction.unapply)
     .verifying("Charges code, currency id or amount are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
+
+  val goodsChargeDeductionMapping = mapping(
+    "chargesTypeCode" -> optional(text.verifying("Type should be 2 characters", _.length == 2)
+                                            .verifying("Type must contain only A-Z characters", isAlpha)),
+    "otherChargeDeductionAmount" -> optional(amountMapping("Value","Currency")) // Option[Amount] = None
+  )(ChargeDeduction.apply)(ChargeDeduction.unapply)
+    .verifying("Type or Currency and Value are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
 
 
   val customsValuationMapping = mapping("methodCode" -> optional(text.verifying(" Charges code should be less than or equal to 3 characters", _.length <= 3)), // max 3 chars; not valid outside GovernmentAgencyGoodsItem
     "freightChargeAmount" -> optional(bigDecimal), // default(bigDecimal, None),
-    "chargeDeductions" -> seq(chargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
+    "chargeDeductions" -> seq(goodsChargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
 
 
   val officeMapping = mapping("id" -> optional(text
@@ -403,6 +422,55 @@ object DeclarationFormMapping {
     "borderTransportMeans" -> optional(borderTransportMeansMapping),
     "arrivalTransportMeans" -> optional(transportMeansMapping)
   )(Transport.apply)(Transport.unapply)
+
+  val goodsLocationAddressMapping = mapping(
+    "typeCode" -> optional(text.verifying("typeCode is not a valid typeCode", isInList(Options.goodsLocationTypeCode))),
+    "cityName" -> optional(text.verifying("cityName should be less than or equal to 35 characters", _.length <= 35)),
+    "countryCode" -> optional(text.verifying("countryCode is not a valid countryCode", isInList(Options.countryOptions))),
+    "line" -> optional(text.verifying("Line should be less than or equal to 70 characters", _.length <= 70)),
+    "postcodeId" -> optional(text.verifying("postcodeId should be less than or equal to 9 characters", _.length <= 9))
+  )(GoodsLocationAddress.apply)(GoodsLocationAddress.unapply)
+
+  val goodsLocationMapping = mapping(
+    "name" -> optional(text.verifying("Name should be less than or equal to 35 characters", _.length <= 35)),
+    "id" -> text.verifying("ID should be less than or equal to 3 characters", _.length <= 3),
+    "typeCode" -> optional(text.verifying("typeCode is not a valid typeCode", isInList(Options.goodsLocationTypeCode))),
+    "address" -> optional(goodsLocationAddressMapping)
+  )(GoodsLocation.apply)(GoodsLocation.unapply)
+
+  val locationOfGoodsMapping = mapping(
+    "goodsLocation" -> optional(goodsLocationMapping),
+    "destination" -> optional(destinationMapping),
+    "exportCountry" -> optional(exportCountryMapping),
+    "loadingLocation" -> optional(loadingLocationMapping)
+  )(LocationOfGoods.apply)(LocationOfGoods.unapply)
+
+  val paymentMapping  = mapping(
+    "methodCode" -> optional(text.verifying("Method of Payment must be a single character or less", _.length < 2)
+                        .verifying("Method of Payment must contains only A-Z characters", isAlpha)), // alpha max 1 in tariff
+    "taxAssessedAmount" -> optional(amountMapping("Total","Total - Currency")),
+    "paymentAmount" -> optional(amountMapping("Payable Tax Amount", "Currency"))
+  )(Payment.apply)(Payment.unapply)
+
+  val dutyTaxFeeMapping = mapping (
+    "adValoremTaxBaseAmount" -> ignored[Option[Amount]](None),
+    "deductAmount" -> ignored[Option[Amount]](None),
+    "dutyRegimeCode" -> ignored[Option[String]](None),
+    "specificTaxBaseQuantity" -> optional(measureMapping),
+    "taxRateNumeric" -> optional(bigDecimal
+      .verifying("Tax Rate cannot be greater than 99999999999999.999", _.precision <= 17)
+      .verifying("Tax Rate cannot have more than 3 decimal places", _.scale <= 3)
+      .verifying("Tax Rate must not be negative", _ >= 0)),
+    "typeCode" -> optional(text.verifying("Tax Type should be 3 characters", _.length == 3)),
+    "quotaOrderId" -> optional(text.verifying("Quota order number should be 6 characters", _.length == 6)),
+    "payment" -> optional(paymentMapping)
+  )(DutyTaxFee.apply)(DutyTaxFee.unapply)
+    .verifying("One of Tax type, Tax base, Tax rate, Payable tax amount Total and Method of payment is required to add commodity duty tax", require1Field[DutyTaxFee](_.specificTaxBaseQuantity, _.taxRateNumeric, _.payment, _.typeCode))
+
+  val cancelMapping = mapping(
+    "changeReasonCode" -> of[ChangeReasonCode],
+    "description" -> nonEmptyText.verifying("Description cannot be longer than 512 characters", _.length <= 512)
+  )(Cancel.apply)(Cancel.unapply)
 }
 
 case class ObligationGuaranteeForm(guarantees: Seq[ObligationGuarantee] = Seq.empty)

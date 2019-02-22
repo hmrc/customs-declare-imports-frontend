@@ -19,6 +19,7 @@ package controllers
 import com.google.inject.ImplementedBy
 import config.{AppConfig, ErrorHandler}
 import domain.auth._
+import domain.DeclarationFormats._
 import domain.features.Feature.Feature
 import domain.features.FeatureStatus
 import javax.inject.{Inject, Singleton}
@@ -45,6 +46,8 @@ trait Actions {
 
   def lrn: ActionRefiner[EORIRequest, LRNRequest]
 
+  def goodsItem: ActionRefiner[EORIRequest, GoodsItemRequest]
+
   def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request]
 }
 
@@ -57,6 +60,8 @@ class ActionsImpl @Inject()(authConnector: AuthConnector, errorHandler: ErrorHan
   def eori: ActionRefiner[AuthenticatedRequest, EORIRequest] = new EORIAction(errorHandler)
 
   def lrn: ActionRefiner[EORIRequest, LRNRequest] = new LRNAction(errorHandler, cache)
+
+  def goodsItem: ActionRefiner[EORIRequest, GoodsItemRequest] = new GoodsItemAction(errorHandler, cache)
 
   def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request] = new ActionBuilder[Request] with ActionFilter[Request] {
 
@@ -112,6 +117,19 @@ class LRNAction(errorHandler: ErrorHandler, cache: CustomsCacheService)(implicit
     cache.getByKey(request.eori, CacheKey.references)(hc, implicitly, implicitly).map {
       _.map(e => LRNRequest(request, e.functionalReferenceId))
         .toRight(BadRequest(errorHandler.badRequestTemplate(request)))
+    }
+  }
+}
+
+class GoodsItemAction(errorHandler: ErrorHandler, cache: CustomsCacheService)
+                     (implicit ec: ExecutionContext) extends ActionRefiner[EORIRequest, GoodsItemRequest] {
+
+  override protected def refine[A](request: EORIRequest[A]): Future[Either[Result, GoodsItemRequest[A]]] = {
+    implicit val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
+
+    cache.getByKey(request.eori, CacheKey.goodsItem).map {
+      case Some(good) => Right(GoodsItemRequest(request, good))
+      case None => Left(BadRequest(errorHandler.badRequestTemplate(request)))
     }
   }
 }

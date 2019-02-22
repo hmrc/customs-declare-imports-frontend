@@ -102,5 +102,6 @@ trait Lenses extends OptionValues {
     val guaranteeTypes              = mapProperty(CacheKey.guaranteeTypes)
     val govAgencyGoodsItemsList     = mapProperty(CacheKey.govAgencyGoodsItemsList)
     val warehouseAndCustsoms        = mapProperty(CacheKey.warehouseAndCustoms)
+    val locationOfGoods             = mapProperty(CacheKey.locationOfGoods)
   }
 }

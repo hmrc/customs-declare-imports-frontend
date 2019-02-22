@@ -417,6 +417,20 @@ class DeclarationFormMappingSpec extends WordSpec
         }
       }
 
+      "Type has alphanumeric characters" in {
+
+        forAll(arbitrary[ChargeDeduction], nonAlphaString) {
+          (charge, typeCode) =>
+            whenever(typeCode.nonEmpty) {
+              val data = charge.copy(chargesTypeCode = Some(typeCode))
+              Form(chargeDeductionMapping).fillAndValidate(data).fold(
+                _ must haveErrorMessage("Charges code must contain only A-Z characters"),
+                _ => fail("form should not succeed")
+              )
+            }
+        }
+      }
+
       "type code and amount are missing" in {
 
         Form(chargeDeductionMapping).bind(Map[String, String]()).fold(
@@ -1254,7 +1268,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             val data = amount.copy(currencyId = Some(currency))
             Form(amountMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Currency ID is not a valid currency"),
+              _ must haveErrorMessage("Currency is not valid"),
               _ => fail("form should not succeed")
             )
         }
@@ -1308,7 +1322,7 @@ class DeclarationFormMappingSpec extends WordSpec
           whenever(amount.currencyId.nonEmpty) {
 
             Form(amountMapping).bind(Map("currencyId" -> amount.currencyId.getOrElse(""))).fold(
-              _ must haveErrorMessage("Amount is required when currency is provided"),
+              _ must haveErrorMessage("Amount is required when Currency is provided"),
               _ => fail("form should not succeed")
             )
           }
@@ -1322,7 +1336,7 @@ class DeclarationFormMappingSpec extends WordSpec
           whenever(amount.value.nonEmpty) {
 
             Form(amountMapping).bind(Map("value" -> amount.value.fold("")(_.toString))).fold(
-              _ must haveErrorMessage("Currency is required when amount is provided"),
+              _ must haveErrorMessage("Currency is required when Amount is provided"),
               _ => fail("form should not succeed")
             )
           }

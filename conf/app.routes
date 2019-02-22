@@ -32,6 +32,9 @@ POST        /submit-declaration/delivery-terms                 controllers.Deliv
 GET         /submit-declaration/invoice-and-currency           controllers.InvoiceAndCurrencyController.onPageLoad()
 POST        /submit-declaration/invoice-and-currency           controllers.InvoiceAndCurrencyController.onSubmit()
 
+GET         /submit-declaration/location-of-goods              controllers.LocationOfGoodsController.onPageLoad()
+POST        /submit-declaration/location-of-goods              controllers.LocationOfGoodsController.onSubmit()
+
 GET         /submit-declaration/seller-details                 controllers.SellerDetailsController.onPageLoad()
 POST        /submit-declaration/seller-details                 controllers.SellerDetailsController.onSubmit()
 
@@ -81,14 +84,14 @@ GET         /submit-declaration/success/:conversationId        controllers.Decla
 GET         /submit-declaration/:name                          controllers.DeclarationController.displaySubmitForm(name)
 POST        /submit-declaration/:name                          controllers.DeclarationController.handleSubmitForm(name)
 
-GET       /submit-declaration-goods/add-gov-agency-goods-item        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
-GET       /submit-declaration-goods/goods-item-value        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemValuePage()
-POST       /submit-declaration-goods/goods-item-value        controllers.GovernmentAgencyGoodsItemsController.submitGoodsItemValueSection()
+GET         /submit-declaration-goods/add-gov-agency-goods-item     controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
+GET         /submit-declaration-goods/goods-item-value      controllers.GovernmentAgencyGoodsItemsController.showGoodsItemValuePage()
+POST        /submit-declaration-goods/goods-item-value      controllers.GovernmentAgencyGoodsItemsController.submitGoodsItemValueSection()
 
-POST       /submit-declaration-goods/add-gov-agency-goods-item        controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
-
-GET       /submit-declaration-goods/add-manufacturers       controllers.GovernmentAgencyGoodsItemsController.showNamedEntryAddressParties()
-POST       /submit-declaration-goods/add-manufacturers      controllers.GovernmentAgencyGoodsItemsController.handleNamedEntityPartiesSubmit()
+POST        /submit-declaration-goods/add-gov-agency-goods-item     controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
 
 GET       /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.display()
 POST      /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()
+
+GET         /cancel-declaration/:mrn                           controllers.DeclarationController.displayCancelForm(mrn)
+POST        /cancel-declaration/:mrn                           controllers.DeclarationController.handleCancelForm(mrn)

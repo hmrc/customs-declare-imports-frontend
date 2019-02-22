@@ -53,7 +53,7 @@ extends CustomsController {
       transport =>
         cache
         .insert(req.eori, CacheKey.transport, transport)
-        .map(_ => Redirect(routes.DeclarationController.displaySubmitForm("location-of-goods")))
+        .map(_ => Redirect(routes.LocationOfGoodsController.onPageLoad()))
     )
   }
 }

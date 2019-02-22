@@ -59,7 +59,7 @@ class AppConfigSpec extends CustomsSpec with FeatureBehaviours {
     }
 
     "have a cancel import declarations uri" in {
-      cfg.cancelImportDeclarationUri must be ("/cancellation-requests")
+      cfg.cancelImportDeclarationUri must be ("/cancel")
     }
 
     "have customs declarations endpoint" in {

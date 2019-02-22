@@ -61,7 +61,7 @@ extends CustomsController {
           Logger.info("goodsItemValue form --->" + form)
 
           cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, form).map {
-            _ => Redirect(routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+            _ => Redirect(controllers.goodsitems.routes.GoodsItemsExporterDetailsController.onSubmit())
           }
         })
   }
@@ -70,31 +70,5 @@ extends CustomsController {
     implicit request =>
       cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key).map(res =>
         Ok(views.html.gov_agency_goods_items(res)))
-  }
-
-
-  def showNamedEntryAddressParties(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
-        Ok(views.html.goods_items_named_entity_parties(namedEntityWithAddressForm, goodsItem.map(_.manufacturers).getOrElse(Seq.empty)))
-      }
-  }
-
-  def handleNamedEntityPartiesSubmit(): Action[AnyContent] = (actions.auth andThen actions.eori).async {
-    implicit request =>
-      namedEntityWithAddressForm.bindFromRequest().fold(
-        (formWithErrors: Form[NamedEntityWithAddress]) =>
-          Future.successful(BadRequest(views.html.goods_items_named_entity_parties(formWithErrors, List.empty))),
-        form =>
-          cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
-            val updatedGoodsItem = res match {
-              case Some(goodsItem) => goodsItem.copy(manufacturers = goodsItem.manufacturers :+ form)
-              case None => GovernmentAgencyGoodsItem(manufacturers = Seq(form), sequenceNumeric = 0)
-            }
-
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
-              Ok(views.html.goods_items_named_entity_parties(namedEntityWithAddressForm, updatedGoodsItem.manufacturers))
-            }
-          })
   }
 }

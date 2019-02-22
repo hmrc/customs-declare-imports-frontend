@@ -40,7 +40,7 @@ class AppConfig @Inject()(val runModeConfiguration: Configuration, val environme
   lazy val customsDeclareImportsEndpoint: String = baseUrl("customs-declare-imports")
 
   lazy val customsDeclarationsApiVersion: String = getConfString("customs-declarations.api-version", throw new IllegalStateException("Missing configuration for Customs Declarations API version"))
-  lazy val cancelImportDeclarationUri: String = getConfString("customs-declarations.cancel-uri", throw new IllegalStateException("Missing configuration for Customs Declarations cancel URI"))
+  lazy val cancelImportDeclarationUri: String = getConfString("customs-declare-imports.cancel-uri", throw new IllegalStateException("Missing configuration for Customs Declarations cancel URI"))
   lazy val submitImportDeclarationUri: String = getConfString("customs-declare-imports.submit-uri", throw new IllegalStateException("Missing configuration for Customs Declarations submission URI"))
   lazy val developerHubClientId: String = appName
 

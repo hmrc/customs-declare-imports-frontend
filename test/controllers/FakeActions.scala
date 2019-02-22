@@ -17,20 +17,22 @@
 package controllers
 import config.{AppConfig, ErrorHandler}
 import domain.References
-import domain.auth.{AuthenticatedRequest, EORIRequest, LRNRequest, SignedInUser}
+import domain.auth.{AuthenticatedRequest, EORIRequest, LRNRequest, SignedInUser, _}
 import domain.features.Feature.Feature
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
+import org.scalatest.OptionValues
 import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.MessagesApi
-import play.api.mvc._
 import play.api.mvc.Results._
+import play.api.mvc._
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
+import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItem
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeActions(signedInUser: Option[SignedInUser], localReferenceNumber: Option[String] = None)
+class FakeActions(signedInUser: Option[SignedInUser], item: Option[GovernmentAgencyGoodsItem] = None, localReferenceNumber: Option[String] = None)
                  (implicit messages: MessagesApi, appConfig: AppConfig, ec: ExecutionContext)
   extends Actions with MockitoSugar {
 
@@ -38,6 +40,9 @@ class FakeActions(signedInUser: Option[SignedInUser], localReferenceNumber: Opti
 
   when(mockCustomsCache.getByKey(any(), eqTo(CacheKey.references))(any(), any(), any()))
     .thenReturn(Future.successful(localReferenceNumber.map(References(None, None, None, _, None))))
+
+  when(mockCustomsCache.getByKey(any(), eqTo(CacheKey.goodsItem))(any(), any(), any()))
+    .thenReturn(Future.successful(item))
 
   override def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] =
     new ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] {
@@ -50,6 +55,9 @@ class FakeActions(signedInUser: Option[SignedInUser], localReferenceNumber: Opti
 
   override def lrn: ActionRefiner[EORIRequest, LRNRequest] =
     new LRNAction(new ErrorHandler(), mockCustomsCache)
+
+  override def goodsItem: ActionRefiner[EORIRequest, GoodsItemRequest] =
+    new GoodsItemAction(new ErrorHandler(), mockCustomsCache)
 
   override def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request] = ???
 }

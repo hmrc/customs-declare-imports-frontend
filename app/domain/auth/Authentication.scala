@@ -20,6 +20,7 @@ import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments}
+import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItem
 
 case class SignedInUser(credentials: Credentials,
                         name: Name,
@@ -57,5 +58,12 @@ case class EORIRequest[A](request: AuthenticatedRequest[A], eori: EORI) extends 
 case class LRNRequest[A](request: EORIRequest[A], lrn: String) extends WrappedRequest(request) {
 
   val user: SignedInUser = request.user
+  val eori: EORI = request.eori
+}
+
+case class GoodsItemRequest[A](request: EORIRequest[A], goodsItem: GovernmentAgencyGoodsItem) extends WrappedRequest(request) {
+
+  val user: SignedInUser = request.user
+
   val eori: EORI = request.eori
 }

@@ -344,5 +344,20 @@ class MetaDataMappingSpec extends WordSpec
         dec.flatMap(_.supervisingOffice) mustBe data.flatMap(_.supervisingOffice)
       }
     }
+
+    "convert using LocationOfGoodsId" in {
+
+      forAll { cacheMap: CacheMap =>
+
+        val data = cacheMap.getEntry[LocationOfGoods](CacheKey.locationOfGoods.key)
+
+        val dec = MetaDataMapping.produce(cacheMap).declaration
+
+        dec.flatMap(_.goodsShipment).flatMap(_.consignment).flatMap(_.goodsLocation) mustBe data.flatMap(_.goodsLocation)
+        dec.flatMap(_.goodsShipment).flatMap(_.consignment).flatMap(_.loadingLocation) mustBe data.flatMap(_.loadingLocation)
+        dec.flatMap(_.goodsShipment).flatMap(_.exportCountry) mustBe data.flatMap(_.exportCountry)
+        dec.flatMap(_.goodsShipment).flatMap(_.destination) mustBe data.flatMap(_.destination)
+      }
+    }
   }
 }

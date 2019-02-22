@@ -28,39 +28,31 @@ import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, PreviousDocument}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PreviousDocumentsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-  (implicit appConfig: AppConfig, override val messagesApi: MessagesApi, ec: ExecutionContext)
+                                           (implicit appConfig: AppConfig, override val messagesApi: MessagesApi, ec: ExecutionContext)
   extends CustomsController {
 
   def previousDocumentForm: Form[PreviousDocument] = Form(previousDocumentMapping)
 
-  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori).async {
+  def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori andThen actions.goodsItem) {
     implicit req =>
-      cacheService.getByKey(req.eori, CacheKey.goodsItem).map { goodsItem =>
-        Ok(views.html.goods_items_previousdocs(previousDocumentForm, goodsItem.map(_.previousDocuments).getOrElse(Seq.empty)))
-      }
+      Ok(views.html.goods_items_previousdocs(previousDocumentForm, req.goodsItem.previousDocuments))
   }
 
-  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async {
+  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori andThen actions.goodsItem).async {
     implicit request =>
       previousDocumentForm.bindFromRequest().fold(
         (formWithErrors: Form[PreviousDocument]) =>
-          cacheService.getByKey(request.eori, CacheKey.goodsItem).map(goodsItem =>
-          BadRequest(views.html.goods_items_previousdocs(formWithErrors, goodsItem.map(_.previousDocuments).getOrElse(Seq.empty)))),
-        form =>
-          cacheService.getByKey(request.eori, CacheKey.goodsItem).flatMap { res =>
-            val updatedGoodsItem = res match {
-              case Some(goodsItem) => goodsItem.copy(previousDocuments = goodsItem.previousDocuments :+ form)
-              case None => GovernmentAgencyGoodsItem(previousDocuments = Seq(form), sequenceNumeric = 0)
-            }
+          Future.successful(BadRequest(views.html.goods_items_previousdocs(formWithErrors, request.goodsItem.previousDocuments))),
+        form => {
+          val updatedGoodsItem = request.goodsItem.copy(previousDocuments = request.goodsItem.previousDocuments :+ form)
 
-            cacheService.cache[GovernmentAgencyGoodsItem](request.eori.value, CacheKey.goodsItem.key, updatedGoodsItem).map { _ =>
-             Redirect(routes.PreviousDocumentsController.onPageLoad())
-            }
-          })
+          cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
+            Redirect(routes.PreviousDocumentsController.onPageLoad())
+          }
+        })
   }
-
 }

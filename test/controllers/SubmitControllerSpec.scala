@@ -38,7 +38,7 @@ class SubmitControllerSpec extends CustomsSpec
   with EndpointBehaviours {
 
   def controller(user: SignedInUser, lrn: Option[String]) =
-    new SubmitController(new FakeActions(Some(user), lrn), mockCustomsCacheService, mockCustomsDeclarationsConnector)
+    new SubmitController(new FakeActions(Some(user), localReferenceNumber = lrn), mockCustomsCacheService, mockCustomsDeclarationsConnector)
 
   
   "onSubmit" should {
