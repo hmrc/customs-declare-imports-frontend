@@ -19,17 +19,14 @@ package views.behaviours
 import org.scalacheck.Gen
 import org.scalacheck.Gen.listOfN
 import org.scalatest.prop.PropertyChecks
-import play.api.data.Form
-import play.twirl.api.{Html, HtmlFormat}
-import uk.gov.hmrc.wco.dec.AuthorisationHolder
-import viewmodels.HtmlTable
+import play.twirl.api.HtmlFormat
 import views.ViewSpecBase
 
 trait ViewBehaviours extends ViewSpecBase with PropertyChecks {
 
   def normalPage(view: () => HtmlFormat.Appendable,
-                 messageKeyPrefix: String,
-                 expectedGuidanceKeys: String*) = {
+    messageKeyPrefix: String,
+    expectedGuidanceKeys: String*) = {
 
     "behave like a page with a heading" when {
       "rendered" must {
@@ -51,12 +48,12 @@ trait ViewBehaviours extends ViewSpecBase with PropertyChecks {
       }
     }
 
-    behave like pageWithoutHeading(view, messageKeyPrefix, expectedGuidanceKeys:_*)
+    behave like pageWithoutHeading(view, messageKeyPrefix, expectedGuidanceKeys: _*)
   }
 
   def pageWithoutHeading(view: () => HtmlFormat.Appendable,
-                         messageKeyPrefix: String,
-                         expectedGuidanceKeys: String*) = {
+    messageKeyPrefix: String,
+    expectedGuidanceKeys: String*) = {
 
     "behave like a normal page" when {
       "rendered" must {
