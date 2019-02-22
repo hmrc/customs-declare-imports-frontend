@@ -149,7 +149,7 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
           val header = resp.futureValue.header
           status(resp) must be(SEE_OTHER)
           header.headers.get("Location") must
-            be(Some("/customs-declare-imports/submit-declaration-goods/add-gov-agency-goods-item"))
+            be(Some("/customs-declare-imports/submit-declaration-goods/goods-item-exporter-details"))
         }
       }
     }

@@ -18,19 +18,24 @@ package controllers
 
 import com.google.inject.ImplementedBy
 import config.{AppConfig, ErrorHandler}
-import domain.auth.{AuthenticatedRequest, EORI, EORIRequest, SignedInUser}
+import domain.auth._
+import domain.DeclarationFormats._
 import domain.features.Feature.Feature
 import domain.features.FeatureStatus
 import javax.inject.{Inject, Singleton}
+import play.api.libs.json.Reads
 import play.api.mvc.Results._
 import play.api.mvc._
 import play.api.{Configuration, Environment}
+import services.CustomsCacheService
+import services.cachekeys.CacheKey
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
+import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItem
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,15 +46,20 @@ trait Actions {
 
   def eori: ActionRefiner[AuthenticatedRequest, EORIRequest]
 
+  def goodsItem: ActionRefiner[EORIRequest, GoodsItemRequest]
+
   def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request]
 }
 
 @Singleton
-class ActionsImpl @Inject()(authConnector: AuthConnector, errorHandler: ErrorHandler)(implicit val appConfig: AppConfig, ec: ExecutionContext) extends Actions {
+class ActionsImpl @Inject()(authConnector: AuthConnector, errorHandler: ErrorHandler, cache: CustomsCacheService)
+                           (implicit val appConfig: AppConfig, ec: ExecutionContext) extends Actions {
 
   def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] = new AuthAction(authConnector)
 
   def eori: ActionRefiner[AuthenticatedRequest, EORIRequest] = new EORIAction(errorHandler)
+
+  def goodsItem: ActionRefiner[EORIRequest, GoodsItemRequest] = new GoodsItemAction(errorHandler, cache)
 
   def switch(feature: Feature): ActionBuilder[Request] with ActionFilter[Request] = new ActionBuilder[Request] with ActionFilter[Request] {
 
@@ -94,4 +104,18 @@ class EORIAction(errorHandler: ErrorHandler) extends ActionRefiner[Authenticated
       request.user.eori
         .map(e => EORIRequest(request, EORI(e)))
         .toRight(Unauthorized(errorHandler.notFoundTemplate(request))))
+}
+
+class GoodsItemAction(errorHandler: ErrorHandler, cache: CustomsCacheService)
+                     (implicit ec: ExecutionContext) extends ActionRefiner[EORIRequest, GoodsItemRequest] {
+
+  override protected def refine[A](request: EORIRequest[A]): Future[Either[Result, GoodsItemRequest[A]]] = {
+    implicit val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
+    cache.getByKey(request.eori, CacheKey.goodsItem).map { goodsItem =>
+      goodsItem match {
+        case Some(good) => Right(GoodsItemRequest(request, good))
+        case None => Left(BadRequest(errorHandler.badRequestTemplate(request)))
+      }
+    }
+  }
 }

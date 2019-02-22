@@ -39,7 +39,7 @@ class ActionsSpec extends CustomsSpec
   with Generators{
 
   val errorHandler = component[ErrorHandler]
-  val actions = new ActionsImpl(authConnector, errorHandler)
+  val actions = new ActionsImpl(authConnector, errorHandler, mockCustomsCacheService)
 
   val switchedController = new MySwitchedController(actions, Feature.start)
 
