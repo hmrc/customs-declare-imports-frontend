@@ -580,10 +580,18 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     } yield DutyTaxFee(None, None, None, Some(specificTaxBaseQuantity), Some(taxRateNumeric), typeCode, quataOrderNo, Some(payment))
   }
 
+  implicit val arbitraryClassification:Arbitrary[Classification] = Arbitrary{
+    for{
+       id <- nonEmptyString.map(_.take(3))
+       typeCode <- oneOf(config.Options.commodityClassificationType.map(_._1))
+    } yield Classification(id = Some(id), identificationTypeCode = Some(typeCode))
+  }
+
   implicit val arbitraryCommodity: Arbitrary[Commodity] = Arbitrary {
     for {
       dutyTaxFees <- Gen.listOfN(1, arbitrary[DutyTaxFee])
-    } yield Commodity(dutyTaxFees = dutyTaxFees)
+      classifications <- Gen.listOfN(1, arbitrary[Classification])
+    } yield Commodity(dutyTaxFees = dutyTaxFees, classifications =classifications)
   }
 
   implicit val arbitraryCustomsValuation: Arbitrary[CustomsValuation] = Arbitrary {
