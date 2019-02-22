@@ -32,7 +32,7 @@
     }
 }
 
-@main_template(title = messages("classifications.title"), bodyClasses = None) {
+@main_template(title = messages("classifications.title")) {
 
     @helpers.form(action = controllers.goodsitems.routes.ClassificationsController.onSubmit()) {
 
@@ -56,7 +56,7 @@
             @components.input_radio(
             form("identificationTypeCode"),
             messages("classifications.identificationTypeCode"),
-            hint = Some(messages("classifications.identificationTypeCode")),
+            hint = Some(messages("classifications.identificationTypeCode.hint")),
             inputs = RadioOption.fromTuples(config.Options.commodityClassificationType)
             )
         </fieldset>

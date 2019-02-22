@@ -689,4 +689,4 @@ classifications.title=Classifications
 classifications.id=Id
 classifications.identificationTypeCode=Type
 classifications.add=Add classification
-
+classifications.identificationTypeCode.hint=Add only one CUS code, Combined nomenclature code, TARIC code, 99  of TARIC additional code(s) or National additional code(s) can be added
