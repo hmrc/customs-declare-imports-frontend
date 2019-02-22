@@ -35,3 +35,6 @@ POST  /goods-item-exporter-details      controllers.goodsitems.GoodsItemsExporte
 
 GET   /add-charge-deductions    controllers.goodsitems.AdditionsAndDeductionsController.onPageLoad()
 POST  /add-charge-deductions    controllers.goodsitems.AdditionsAndDeductionsController.onSubmit()
+
+GET   /add-classifications    controllers.goodsitems.ClassificationsController.onPageLoad()
+POST  /add-classifications    controllers.goodsitems.ClassificationsController.onSubmit()

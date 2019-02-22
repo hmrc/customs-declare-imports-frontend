@@ -584,6 +584,7 @@ governmentAgencyGoodsItem.packagings=Packagings
 governmentAgencyGoodsItem.previousDocuments=Previous documents
 governmentAgencyGoodsItem.refundRecipientParties=Refund recipient parties
 governmentAgencyGoodsItem.saveGoodsItem=Save goods item
+governmentAgencyGoodsItem.classifications=Classifications
 
 governmentAgencyGoodsItemAdd.title=Additional documents
 governmentAgencyGoodsItemAdd.dateOfDocument=Date of documents
@@ -681,3 +682,11 @@ dutytaxefee.totalcurrency=Total - currency
 dutytaxefee.paymentmethod=Method of payment
 dutytaxefee.quotaorder=Quota order number
 
+classifications.heading=Classifications
+classifications.table.heading=1 Classification added
+classifications.table.multiple.heading={0} Classifications added
+classifications.title=Classifications
+classifications.id=Id
+classifications.identificationTypeCode=Type
+classifications.add=Add classification
+classifications.identificationTypeCode.hint=Add only one CUS code, Combined nomenclature code, TARIC code, 99  of TARIC additional code(s) or National additional code(s) can be added
