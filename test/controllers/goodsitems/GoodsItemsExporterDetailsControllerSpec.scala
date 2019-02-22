@@ -116,7 +116,7 @@ class GoodsItemsExporterDetailsControllerSpec extends CustomsSpec
           val result = controller(Some(user), Some(goodsItem)).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url)
+          redirectLocation(result) mustBe Some(controllers.goodsitems.routes.GoodsItemsSellerDetailsController.onPageLoad().url)
         }
       }
     }
