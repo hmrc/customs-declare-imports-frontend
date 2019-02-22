@@ -681,3 +681,7 @@ dutytaxefee.totalcurrency=Total - currency
 dutytaxefee.paymentmethod=Method of payment
 dutytaxefee.quotaorder=Quota order number
 
+submitFailure.title=Failed submission
+submitFailure.heading=Failed submission
+submitFailure.intro=Failed to submit declaration
+submitFailure.link=Re-submit declaration
