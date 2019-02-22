@@ -40,7 +40,9 @@ class SubmitController @Inject()(actions: Actions, cache: CustomsCacheService, c
             customsConnector.submitImportDeclaration(metaData, request.lrn)
           }
         }
-        .map(_ => Redirect(routes.LandingController.displayLandingPage()))
+        .map {
+          _ => Redirect(routes.LandingController.displayLandingPage())
+        }
         .recover {
           case _ => Redirect(routes.SubmitController.onFailure())
         }
