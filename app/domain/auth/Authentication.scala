@@ -47,12 +47,12 @@ object SignedInUser {
 
 case class AuthenticatedRequest[A](request: Request[A], user: SignedInUser) extends WrappedRequest[A](request)
 
-case class EORI(value: String)
-
 case class EORIRequest[A](request: AuthenticatedRequest[A], eori: EORI) extends WrappedRequest(request) {
 
   val user: SignedInUser = request.user
 }
+
+case class EORI(value: String)
 
 case class LRNRequest[A](request: EORIRequest[A], lrn: String) extends WrappedRequest(request) {
 

@@ -20,7 +20,7 @@ import java.net.ConnectException
 import java.util.concurrent.TimeoutException
 
 import akka.actor.ActorSystem
-import domain.auth.SignedInUser
+import domain.auth.{EORI, SignedInUser}
 import org.scalatest.OptionValues
 import play.api.Configuration
 import play.api.http.{ContentTypes, HeaderNames, HttpVerbs, Status}
@@ -107,7 +107,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
       withHttpClient(expectingFailure(ex)) { http =>
           withCustomsDeclarationsConnector(http) { connector =>
             connector.
-              submitImportDeclaration(aRandomSubmitDeclaration, "").
+              submitImportDeclaration(aRandomSubmitDeclaration, EORI("abc"), "").
               failed.futureValue.
               asInstanceOf[GatewayTimeoutException].
               message must be(http.gatewayTimeoutMessage(HttpVerbs.POST, submitUrl, ex))
@@ -120,7 +120,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
       withHttpClient(expectingFailure(ex)) { http =>
           withCustomsDeclarationsConnector(http) { connector =>
             connector.
-              submitImportDeclaration(aRandomSubmitDeclaration, "").
+              submitImportDeclaration(aRandomSubmitDeclaration, EORI("abc"), "").
               failed.futureValue.
               asInstanceOf[BadGatewayException].
               message must be(http.badGatewayMessage(HttpVerbs.POST, submitUrl, ex))
@@ -131,7 +131,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
     "throw upstream 5xx exception when API responds with internal server error" in withoutLocalReferenceNumber() { headers =>
       withHttpClient(expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.INTERNAL_SERVER_ERROR, headers)) { http =>
           withCustomsDeclarationsConnector(http) { connector =>
-            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, "").failed.futureValue.asInstanceOf[Upstream5xxResponse]
+            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, EORI("abc"), "").failed.futureValue.asInstanceOf[Upstream5xxResponse]
             ex.upstreamResponseCode must be(Status.INTERNAL_SERVER_ERROR)
             ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
           }
@@ -141,7 +141,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
     "throw upstream 4xx exception when API responds with bad request" in withoutLocalReferenceNumber() { headers =>
       withHttpClient(expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.BAD_REQUEST, headers)) { http =>
           withCustomsDeclarationsConnector(http) { connector =>
-            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, "").failed.futureValue.asInstanceOf[Upstream4xxResponse]
+            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, EORI("abc"), "").failed.futureValue.asInstanceOf[Upstream4xxResponse]
             ex.upstreamResponseCode must be(Status.BAD_REQUEST)
             ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
           }
@@ -151,7 +151,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
     "throw upstream 4xx exception when API responds with unauthhorised" in withoutLocalReferenceNumber() { headers =>
       withHttpClient(expectingOtherResponse(submitRequest(aRandomSubmitDeclaration, headers), Status.UNAUTHORIZED, headers)) { http =>
           withCustomsDeclarationsConnector(http) { connector =>
-            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, "").failed.futureValue.asInstanceOf[Upstream4xxResponse]
+            val ex = connector.submitImportDeclaration(aRandomSubmitDeclaration, EORI("abc"), "").failed.futureValue.asInstanceOf[Upstream4xxResponse]
             ex.upstreamResponseCode must be(Status.UNAUTHORIZED)
             ex.reportAs must be(Status.INTERNAL_SERVER_ERROR)
           }
@@ -168,7 +168,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
       val expectation = expectingAcceptedResponse(submitRequest(submission, headers), headers)
       withHttpClient(expectation) { http =>
           withCustomsDeclarationsConnector(http) { connector =>
-            whenReady(connector.submitImportDeclaration(submission, declarantLocalReferenceNumber)) { _ =>
+            whenReady(connector.submitImportDeclaration(submission, EORI("abc"), declarantLocalReferenceNumber)) { _ =>
               test(headers, http, expectation.right.get, connector)
             }
           }
@@ -179,7 +179,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
       val expectation = expectingAcceptedResponse(submitRequest(submission, headers), headers)
       withHttpClient(expectation) { http =>
           withCustomsDeclarationsConnector(http) { connector =>
-            whenReady(connector.submitImportDeclaration(submission, "")) { _ =>
+            whenReady(connector.submitImportDeclaration(submission, EORI("abc"), "")) { _ =>
               test(headers, http, expectation.right.get, connector)
             }
           }
@@ -208,7 +208,7 @@ class CustomsDeclarationsConnectorImplSpec extends CustomsSpec with OptionValues
 
   def withCustomsDeclarationsConnector(httpClient: HttpClient)
                                       (test: CustomsDeclarationsConnector => Unit): Unit = {
-    test(new CustomsDeclarationsConnector(appConfig, httpClient))
+    test(new CustomsDeclarationsConnector(appConfig, httpClient, mockAuditConnector))
   }
 
 }

@@ -33,13 +33,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class TestingUtilitiesController @Inject()(actions: Actions, connector: CustomsDeclarationsConnector)
                                           (implicit val appConfig: AppConfig, ec: ExecutionContext) extends FrontendController {
 
-  def submitDeclarationXml: Action[String] = actions.auth.async(parse.tolerantText) { implicit authenticatedRequest =>
+  def submitDeclarationXml: Action[String] = (actions.auth andThen actions.eori).async(parse.tolerantText) { implicit authenticatedRequest =>
     implicit val user: SignedInUser = authenticatedRequest.user
 
     val maybeLrn = MetaData.fromXml(authenticatedRequest.body).declaration.flatMap(_.functionalReferenceId)
 
     maybeLrn.fold(Future.successful(BadRequest("Local Reference Number is required in metadata"))){ lrn =>
-        connector.submitImportDeclaration(MetaData.fromXml(authenticatedRequest.body), lrn).map { resp =>
+        connector.submitImportDeclaration(MetaData.fromXml(authenticatedRequest.body), authenticatedRequest.eori, lrn).map { resp =>
           Created(resp.conversationId)
         }recover{
           case e: Throwable =>

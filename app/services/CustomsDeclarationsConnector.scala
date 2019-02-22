@@ -18,12 +18,14 @@ package services
 
 import com.google.inject.Inject
 import config.AppConfig
-import domain.auth.SignedInUser
+import domain.audit.AuditSubmission
+import domain.auth.EORI
 import javax.inject.Singleton
 import models.Declaration
 import play.api.http.{ContentTypes, HeaderNames, Status}
 import play.api.mvc.Codec
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.wco.dec.MetaData
 
@@ -40,10 +42,14 @@ object BackEndHeaderNames {
 
 @Singleton
 class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
-                                                 httpClient: HttpClient) {
+                                             httpClient: HttpClient,
+                                             auditConnector: AuditConnector) {
 
-  def submitImportDeclaration(metaData: MetaData, localReferenceNumber: String)
+  def submitImportDeclaration(metaData: MetaData, eori: EORI, localReferenceNumber: String)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
+
+    auditConnector.sendExplicitAudit("SubmitImportDeclaration", AuditSubmission(eori, metaData))
+
     postMetaData(appConfig.submitImportDeclarationUri, metaData, localReferenceNumber)
   }
 

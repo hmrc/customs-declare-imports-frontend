@@ -17,7 +17,7 @@
 package controllers
 
 import config._
-import domain.auth.{AuthenticatedRequest, SignedInUser}
+import domain.auth.{AuthenticatedRequest, EORIRequest, SignedInUser}
 import domain.features.Feature
 import javax.inject.{Inject, Singleton}
 import org.joda.time.DateTime
@@ -63,7 +63,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     }
   }
 
-  def handleSubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
+  def handleSubmitForm(name: String): Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth andThen actions.eori).async { implicit req =>
     val data: Map[String, String] = formDataAsMap()
     implicit val errors: Map[String, Seq[ValidationError]] = validate(data)
     Logger.info("Errors: " + errors.mkString("\n"))
@@ -74,7 +74,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     } else { invalid(name, data) }
   }
 
-  def onSubmitComplete: Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth).async { implicit req =>
+  def onSubmitComplete: Action[AnyContent] = (actions.switch(Feature.submit) andThen actions.auth andThen actions.eori).async { implicit req =>
     val data: Map[String, String] = formDataAsMap()
     implicit val user: SignedInUser = req.user
 
@@ -88,7 +88,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
                 metadata.declaration.flatMap(declaration => declaration.functionalReferenceId)
                   .fold(Future.successful(InternalServerError("Lrn Is Required"))) {
                     localReferenceNumber =>
-                    client.submitImportDeclaration(metadata, localReferenceNumber).map { resp =>
+                    client.submitImportDeclaration(metadata, req.eori, localReferenceNumber).map { resp =>
                       Redirect(routes.DeclarationController.displaySubmitConfirmation(resp.conversationId))
                     }
                 }
@@ -104,9 +104,9 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
     } else { invalid(data("last-page"), data) }
   }
 
-  private def invalid(name: String, data: Map[String, String])(implicit req: AuthenticatedRequest[AnyContent], errors: Map[String, Seq[ValidationError]]): Future[Result] = Future.successful(BadRequest(views.html.generic_view(name, data)))
+  private def invalid(name: String, data: Map[String, String])(implicit req: Request[AnyContent], errors: Map[String, Seq[ValidationError]]): Future[Result] = Future.successful(BadRequest(views.html.generic_view(name, data)))
 
-  private def cacheSubmission(data: Map[String, String])(f: (Map[String, String], CacheMap) => Future[Result])(implicit req: AuthenticatedRequest[AnyContent]): Future[Result] = cache.get(appConfig.submissionCacheId, req.user.requiredEori).flatMap { existing =>
+  private def cacheSubmission(data: Map[String, String])(f: (Map[String, String], CacheMap) => Future[Result])(implicit req: EORIRequest[AnyContent]): Future[Result] = cache.get(appConfig.submissionCacheId, req.user.requiredEori).flatMap { existing =>
     val merged = existing.getOrElse(Map.empty) ++ data
     cache.put(appConfig.submissionCacheId, req.user.requiredEori, merged).flatMap { cached =>
       f(merged, cached)
@@ -132,7 +132,7 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
       map(field => field._1 -> field._2.get)
   }.getOrElse(Map.empty)
 
-  private def updateMetaData(metaData: MetaData)(implicit req: AuthenticatedRequest[AnyContent], hc: HeaderCarrier) = {
+  private def updateMetaData(metaData: MetaData)(implicit req: EORIRequest[AnyContent], hc: HeaderCarrier) = {
     cache.fetchAndGetEntry[ObligationGuaranteeForm](req.user.eori.get,"ObligationGuarantees").flatMap( obligationGuaranteeForm =>
     cache.fetchAndGetEntry[List[GovernmentAgencyGoodsItem]](req.user.eori.get, GOV_AGENCY_GOODS_ITEMS_LIST_CACHE_KEY).map(_.map { items =>
       val decGoodsItems: Seq[GovernmentAgencyGoodsItem] =

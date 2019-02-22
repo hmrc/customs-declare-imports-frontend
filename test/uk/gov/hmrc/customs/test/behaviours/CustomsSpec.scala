@@ -28,7 +28,7 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.Application
+import play.api.{Application, Logger}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -40,6 +40,7 @@ import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.{CustomsFixtures, CustomsFutures}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect._
@@ -66,6 +67,8 @@ trait CustomsSpec extends PlaySpec
 
   val mockCustomsCacheService: CustomsCacheService = mock[CustomsCacheService]
   val mockCustomsDeclarationsConnector: CustomsDeclarationsConnector = mock[CustomsDeclarationsConnector]
+  val mockAuditConnector: AuditConnector = mock[AuditConnector]
+
 
   def withCaching[T](form: Option[T]): OngoingStubbing[Future[CacheMap]] = {
     when(mockCustomsCacheService.get(any(), any())(any(), any()))

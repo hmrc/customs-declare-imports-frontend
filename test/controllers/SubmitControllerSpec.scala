@@ -54,10 +54,12 @@ class SubmitControllerSpec extends CustomsSpec
 
         forAll(arbitrary[SignedInUser], nonEmptyString, arbitrary[CacheMap]) { (user, lrn, cacheMap) =>
 
-          withCacheMap(EORI(user.eori.value), Some(cacheMap)) {
+          val eori = EORI(user.eori.value)
+
+          withCacheMap(eori, Some(cacheMap)) {
 
             when(mockCustomsDeclarationsConnector
-              .submitImportDeclaration(eqTo(MetaDataMapping.produce(cacheMap)), eqTo(lrn))(any(), any())
+              .submitImportDeclaration(eqTo(MetaDataMapping.produce(cacheMap)), eqTo(eori), eqTo(lrn))(any(), any())
             ).thenReturn(Future.successful(CustomsDeclarationsResponse("")))
 
             val result = controller(user, Some(lrn)).onSubmit(fakeRequest)
@@ -72,10 +74,12 @@ class SubmitControllerSpec extends CustomsSpec
 
         forAll(arbitrary[SignedInUser], nonEmptyString, arbitrary[CacheMap]) { (user, lrn, cacheMap) =>
 
-          withCacheMap(EORI(user.eori.value), Some(cacheMap)) {
+          val eori = EORI(user.eori.value)
+
+          withCacheMap(eori, Some(cacheMap)) {
 
             when(mockCustomsDeclarationsConnector
-              .submitImportDeclaration(eqTo(MetaDataMapping.produce(cacheMap)), eqTo(lrn))(any(), any()))
+              .submitImportDeclaration(eqTo(MetaDataMapping.produce(cacheMap)), eqTo(eori), eqTo(lrn))(any(), any()))
               .thenReturn(Future.failed(new Exception))
 
             val result = controller(user, Some(lrn)).onSubmit(fakeRequest)

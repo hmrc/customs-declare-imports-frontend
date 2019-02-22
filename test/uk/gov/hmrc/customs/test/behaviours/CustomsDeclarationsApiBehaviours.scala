@@ -19,7 +19,7 @@ package uk.gov.hmrc.customs.test.behaviours
 import java.util.UUID
 
 import config.AppConfig
-import domain.auth.SignedInUser
+import domain.auth.{EORI, SignedInUser}
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status
 import play.api.inject.bind
@@ -50,7 +50,7 @@ trait CustomsDeclarationsApiBehaviours extends CustomsSpec with MockitoSugar{
 
 
 class MockCustomsDeclarationsConnector(mockConfig : AppConfig, mockhttpClient: HttpClient) extends CustomsDeclarationsConnector(appConfig = mockConfig,
-                                                                              httpClient = mockhttpClient)
+                                                                              httpClient = mockhttpClient, null)
   with XmlAssertions {
 
   val expectedSubmissions: mutable.Map[MetaData, Future[CustomsDeclarationsResponse]] = mutable.Map.empty
@@ -61,7 +61,7 @@ class MockCustomsDeclarationsConnector(mockConfig : AppConfig, mockhttpClient: H
 
   val cancellationSchemas: Seq[String] = Seq("/CANCEL_METADATA.xsd","/CANCEL.xsd")
 
-  override def submitImportDeclaration(metaData: MetaData, localReferenceNumber: String)
+  override def submitImportDeclaration(metaData: MetaData, eori: EORI, localReferenceNumber: String)
                                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
     expectedSubmissions.getOrElse(metaData, throw new IllegalArgumentException("Unexpected API submission call"))
 

@@ -18,13 +18,17 @@ package controllers
 
 import com.google.inject.Inject
 import domain.MetaDataMapping
+import play.api.Logger
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.{CustomsCacheService, CustomsDeclarationsConnector, CustomsDeclarationsResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SubmitController @Inject()(actions: Actions, cache: CustomsCacheService, customsConnector: CustomsDeclarationsConnector)
+class SubmitController @Inject()(
+                                  actions: Actions,
+                                  cache: CustomsCacheService,
+                                  customsConnector: CustomsDeclarationsConnector)
                                 (implicit override val messagesApi: MessagesApi, ec: ExecutionContext)
   extends CustomsController {
 
@@ -36,15 +40,23 @@ class SubmitController @Inject()(actions: Actions, cache: CustomsCacheService, c
       cache.fetch(request.eori.value)
         .map(_.map(MetaDataMapping.produce))
         .flatMap {
-          _.fold(Future.failed[CustomsDeclarationsResponse](new Exception)) { metaData =>
-            customsConnector.submitImportDeclaration(metaData, request.lrn)
+          _.fold(Future.failed[CustomsDeclarationsResponse](new Exception("CacheMap not found"))) { metaData =>
+
+            Logger.debug(s"[MetaData] $metaData")
+
+            customsConnector.submitImportDeclaration(metaData, request.eori, request.lrn)
           }
         }
         .map {
           _ => Redirect(routes.LandingController.displayLandingPage())
         }
         .recover {
-          case _ => Redirect(routes.SubmitController.onFailure())
+          case e => {
+
+            Logger.debug(s"[SubmissionFailed] ${e.getMessage}")
+
+            Redirect(routes.SubmitController.onFailure())
+          }
         }
   }
 }
