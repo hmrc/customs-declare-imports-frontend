@@ -557,6 +557,18 @@ governmentAgencyGoodsItem.exporterDetails.address.country=Country
 governmentAgencyGoodsItem.exporterDetails.address.postcode=Postcode
 governmentAgencyGoodsItem.exporterDetails.id=Exporter identification no.
 
+## Goods item buyer details
+
+governmentAgencyGoodsItem.buyerDetails.title=Buyer'’s details
+governmentAgencyGoodsItem.buyerDetails.heading=Buyer'’s details
+governmentAgencyGoodsItem.buyerDetails.name=Name
+governmentAgencyGoodsItem.buyerDetails.address.line=Street and number
+governmentAgencyGoodsItem.buyerDetails.address.cityName=City
+governmentAgencyGoodsItem.buyerDetails.address.country=Country
+governmentAgencyGoodsItem.buyerDetails.address.postcode=Postcode
+governmentAgencyGoodsItem.buyerDetails.communication.id=Phone number
+governmentAgencyGoodsItem.buyerDetails.id=Buyer identification no.
+
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Government agency goods item
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
