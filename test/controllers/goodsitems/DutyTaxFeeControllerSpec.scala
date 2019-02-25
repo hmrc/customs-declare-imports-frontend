@@ -171,7 +171,7 @@ class DutyTaxFeeControllerSpec extends CustomsSpec
               val request = fakeRequest.withFormUrlEncodedBody(asFormParams(dutyTaxFee): _*)
               await(controller(Some(user)).onSubmit(request))
 
-              val commodity = governmentAgencyGoodsItem.commodity.fold(Some(Commodity(dutyTaxFees = Seq(dutyTaxFee))))(d => Some(Commodity(dutyTaxFees =  d.dutyTaxFees :+ dutyTaxFee)))
+              val commodity = governmentAgencyGoodsItem.commodity.fold(Some(Commodity(dutyTaxFees = Seq(dutyTaxFee))))(d => Some(d.copy(dutyTaxFees =  d.dutyTaxFees :+ dutyTaxFee)))
               val expected = governmentAgencyGoodsItem.copy(commodity = commodity)
 
               verify(mockCustomsCacheService, atLeastOnce())
