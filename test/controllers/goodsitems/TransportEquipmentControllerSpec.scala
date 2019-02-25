@@ -163,7 +163,6 @@ class TransportEquipmentControllerSpec extends CustomsSpec
           (user: SignedInUser, transport: TransportEquipment, governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
 
             withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(governmentAgencyGoodsItem)) {
-            println("1.GovernmentAgencyGoodsItem --> " + governmentAgencyGoodsItem.toString)
               val request = fakeRequest.withFormUrlEncodedBody(asFormParams(transport): _*)
               await(controller(Some(user)).onSubmit(request))
 
@@ -171,7 +170,6 @@ class TransportEquipmentControllerSpec extends CustomsSpec
                 Seq(transport))))(com => Some(com.copy(transportEquipments =
                 com.transportEquipments :+ transport.copy(com.transportEquipments.maxBy(_.sequenceNumeric).sequenceNumeric + 1))))
               val expected = governmentAgencyGoodsItem.copy(commodity = commodity)
-              println("3.EXP GovernmentAgencyGoodsItem --> " + expected.toString)
 
               verify(mockCustomsCacheService, atLeastOnce())
                 .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem), eqTo(expected))(any(), any(), any())
