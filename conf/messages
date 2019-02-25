@@ -682,10 +682,12 @@ dutytaxefee.totalcurrency=Total - currency
 dutytaxefee.paymentmethod=Method of payment
 dutytaxefee.quotaorder=Quota order number
 
-submitFailure.title=Failed submission
-submitFailure.heading=Failed submission
-submitFailure.intro=Failed to submit declaration
-submitFailure.link=Re-submit declaration
+submitFailure.title=Your submission has been unsuccessful.
+submitFailure.heading=Your submission has been unsuccessful.
+submitFailure.listItem1=contact our Service Support Team on 0300 790 6802 if your second attempt is unsuccessful
+submitFailure.listItem2=return to the {0} page if you want to create a new declaration
+submitFailure.startDecLink=Start a declaration
+submitFailure.resubmit=resubmit
 
 classifications.heading=Classifications
 classifications.table.heading=1 Classification added

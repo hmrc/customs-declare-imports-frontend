@@ -28,13 +28,25 @@ class SubmitFailureSpec extends ViewBehaviours {
 
   "submit_failure view" should {
 
-    behave like normalPage(view, messagePrefix, "intro")
+    behave like normalPage(view, messagePrefix, "listItem1")
     behave like pageWithBackLink(view)
 
     "have link to re submit" in {
 
       val doc = asDocument(view())
       assertContainsLink(doc, messages(s"$messagePrefix.link"), routes.SubmitController.onSubmit().url)
+    }
+
+    "have list item 2" in {
+
+      val doc = asDocument(view())
+      assertContainsText(doc, messages(s"$messagePrefix.listItem2", messages(s"$messagePrefix.startDecLink")))
+    }
+
+    "have start a declaration link" in {
+
+      val doc = asDocument(view())
+      assertContainsLink(doc, messages(s"$messagePrefix.startDecLink"), routes.LandingController.displayLandingPage().url)
     }
   }
 }

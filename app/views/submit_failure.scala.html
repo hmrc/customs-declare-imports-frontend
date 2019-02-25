@@ -15,6 +15,7 @@
  *@
 
 @import config.AppConfig
+@import views.helpers.ViewUtils.link
 
 @()(implicit req: Request[_], messages: Messages, cfg: AppConfig)
 
@@ -24,12 +25,17 @@
 
  <div class="govuk-box-highlight">
   <h1 id="heading-application-submitted" class="heading-xlarge">@messages("submitFailure.heading")</h1>
-  <p class="font-large">
-   @messages("submitFailure.intro")
-  </p>
- </div>
+   <ul>
+    <li>
+     @link(messages("submitFailure.link"), routes.SubmitController.onSubmit().url)
+    </li>
+    <li>
+     @messages("submitFailure.listItem1")
+    </li>
+    <li>
+     @Html(messages("submitFailure.listItem2", link(messages("submitFailure.startDecLink"), routes.LandingController.displayLandingPage().url)))
+    </li>
+   </ul>
 
- <p>
-  <a href="@routes.SubmitController.onSubmit().url">@messages("submitFailure.link")</a>
- </p>
+ </div>
 }
