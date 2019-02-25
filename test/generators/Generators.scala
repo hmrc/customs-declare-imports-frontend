@@ -125,6 +125,14 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
   private def zip[A, B](fa: Option[A], fb: Option[B]): Option[(A, B)] =
     fa.flatMap(a => fb.map(b => (a, b)))
 
+  private def zipAll(fa: Option[Any], fas: Option[Any]*): Option[Any] =
+    (fa :: fas.toList).reduce[Option[Any]](zip)
+
+  private def maybeOptional[A](g: Gen[A], isOptional: Boolean): Gen[Option[A]] = {
+    if (isOptional) option(g)
+    else some(g)
+  }
+
   implicit val arbitraryOffice: Arbitrary[Office] = Arbitrary {
     for {
       id <- option(nonEmptyString.map(_.take(8)))
@@ -222,9 +230,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val arbitraryPreviousDocument: Arbitrary[PreviousDocument] = Arbitrary {
     for {
-      categoryCode <- option(arbitrary[String].map(_.take(1)))
-      id <- option(arbitrary[String].map(_.take(35)))
-      typeCode <- option(arbitrary[String].map(_.take(3)))
+      categoryCode <- option(nonEmptyString.map(_.take(1)))
+      id <- option(nonEmptyString.map(_.take(35)))
+      typeCode <- option(nonEmptyString.map(_.take(3)))
       lineNumeric <- option(intBetweenRange(1, 999))
       if categoryCode.nonEmpty || id.nonEmpty || typeCode.nonEmpty || lineNumeric.nonEmpty
     } yield PreviousDocument(categoryCode, id, typeCode, lineNumeric)
@@ -232,10 +240,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val arbitraryAdditionalDocument: Arbitrary[AdditionalDocument] = Arbitrary {
     for {
-      id <- option(intBetweenRange(0, 9999999).map(_.toString))
       categoryCode <- option(arbitrary[String].map(_.take(1)))
+      id <- option(intBetweenRange(0, 9999999).map(_.toString))
       typeCode <- option(arbitrary[String].map(_.take(3)))
-    } yield AdditionalDocument(id, categoryCode, typeCode)
+    } yield AdditionalDocument(categoryCode, id, typeCode)
   }
 
   implicit val arbitraryOrigin: Arbitrary[Origin] = Arbitrary {
@@ -247,9 +255,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val arbitraryRoleBasedParty: Arbitrary[RoleBasedParty] = Arbitrary {
     for {
-      id <- option(nonEmptyString.map(_.take(17)))
-      roleCode <- option(alphaStr.map(_.take(3))).map(_.find(_.nonEmpty))
-      if id.nonEmpty || roleCode.nonEmpty
+      roleCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(3)))
+      id       <- maybeOptional(nonEmptyString.map(_.take(17)), roleCode.nonEmpty)
     } yield RoleBasedParty(id, roleCode)
   }
 
@@ -502,10 +509,12 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
     for {
       container <- option(intBetweenRange(0, 9))
       border <- arbitrary[BorderTransportMeans]
-      arrival <- option(arbitrary[TransportMeans])
+      arrival <- arbitrary[TransportMeans]
       borderOpt = zip(border.registrationNationalityCode, border.modeCode).map(_ => border)
+      arrivalOpt =
+        zipAll(arrival.name, arrival.id, arrival.identificationTypeCode, arrival.typeCode, arrival.modeCode).map(_ => arrival)
     } yield {
-      Transport(container, borderOpt, arrival)
+      Transport(container, borderOpt, arrivalOpt)
     }
   }
 
@@ -604,14 +613,23 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
       typeCode <- option(nonEmptyString.map(_.take(3)))
       quataOrderNo <- option(nonEmptyString.map(_.take(6)))
       payment <- arbitraryPayment.arbitrary
+      specificTaxBaseQuantityOpt = zip(specificTaxBaseQuantity.value, specificTaxBaseQuantity.unitCode).map(_ => specificTaxBaseQuantity)
       if (typeCode.exists(_.length == 3) && quataOrderNo.exists(_.length == 6))
-    } yield DutyTaxFee(None, None, None, Some(specificTaxBaseQuantity), Some(taxRateNumeric), typeCode, quataOrderNo, Some(payment))
+    } yield DutyTaxFee(None, None, None, specificTaxBaseQuantityOpt, Some(taxRateNumeric), typeCode, quataOrderNo, Some(payment))
+  }
+
+  implicit val arbitraryClassification:Arbitrary[Classification] = Arbitrary{
+    for{
+       id <- nonEmptyString.map(_.take(3))
+       typeCode <- oneOf(config.Options.commodityClassificationType.map(_._1))
+    } yield Classification(id = Some(id), identificationTypeCode = Some(typeCode))
   }
 
   implicit val arbitraryCommodity: Arbitrary[Commodity] = Arbitrary {
     for {
       dutyTaxFees <- Gen.listOfN(1, arbitrary[DutyTaxFee])
-    } yield Commodity(dutyTaxFees = dutyTaxFees)
+      classifications <- Gen.listOfN(1, arbitrary[Classification])
+    } yield Commodity(dutyTaxFees = dutyTaxFees, classifications =classifications)
   }
 
   implicit val arbitraryCustomsValuation: Arbitrary[CustomsValuation] = Arbitrary {

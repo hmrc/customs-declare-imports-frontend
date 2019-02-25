@@ -242,7 +242,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll(arbitrary[AdditionalDocument], intBetweenRange(9999999, Int.MaxValue)) { (arbitraryAdditionalDocument, invalidId) =>
 
           Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(id = Some(invalidId.toString))).fold(
-            error => error.error("id") must haveMessage("Deferred Payment ID should be less than or equal to 7 characters"),
+            _ must haveErrorMessage("Deferred Payment ID should be less than or equal to 7 characters"),
             _ => fail("Should not succeed")
           )
         }
@@ -253,7 +253,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll(arbitrary[AdditionalDocument], minStringLength(2)) { (arbitraryAdditionalDocument, invalidCategoryCode) =>
 
           Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
-            error => error.error("categoryCode") must haveMessage("Deferred Payment Category should be less than or equal to 1 character"),
+            _ must haveErrorMessage("Deferred Payment Category should be less than or equal to 1 character"),
             _ => fail("Should not succeed")
           )
         }
@@ -264,7 +264,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll(arbitrary[AdditionalDocument], minStringLength(4)) { (arbitraryAdditionalDocument, invalidTypeCode) =>
 
           Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(typeCode = Some(invalidTypeCode))).fold(
-            error => error.error("typeCode") must haveMessage("Deferred Payment Type should be less than or equal to 3 characters"),
+            _ must haveErrorMessage("Deferred Payment Type should be less than or equal to 3 characters"),
             _ => fail("Should not succeed")
           )
         }

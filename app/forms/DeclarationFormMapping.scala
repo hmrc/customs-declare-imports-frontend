@@ -104,7 +104,18 @@ object DeclarationFormMapping {
 
   val writeOffMapping = mapping("quantity" -> optional(measureMapping), "amount" -> optional(amountMapping))(WriteOff.apply)(WriteOff.unapply)
 
-  case class Date(day: Int, month: Int, year: Int)
+  case class Date(day: Int, month: Int, year: Int) {
+
+    override def toString: String =
+      s"$year${df.format(month)}${df.format(year)}"
+
+    private val df = new DecimalFormat("00")
+  }
+
+  val isDateValid: Date => Boolean = date => {
+    (allCatch[DateTime] opt DateTime.parse(s"$date",
+      DateTimeFormat.forPattern("yyyyMMdd"))).isDefined
+  }
 
   val dateMapping = mapping(
     "day" -> number.verifying("Day is invalid", day => day >= 1 && day <= 31),
@@ -113,15 +124,9 @@ object DeclarationFormMapping {
   )(Date.apply)(Date.unapply)
     .verifying("Date entered is invalid", isDateValid)
 
-  def isDateValid(): Date => Boolean = date => {
-    val df = new DecimalFormat("00")
-    (allCatch[DateTime] opt (DateTime.parse(s"${date.year}${df.format(date.month)}${df.format(date.day)}",
-      DateTimeFormat.forPattern("yyyyMMdd")))).isDefined
-  }
-
   val dateTimeElementMapping = mapping(
     "date" -> dateMapping
-  )(date => DateTimeElement(DateTimeString("102", s"${date.year}/${date.month}/${date.day}")))((
+  )(date => DateTimeElement(DateTimeString("102", s"$date")))((
   d: DateTimeElement) => toDate(d.dateTimeString.value))
 
   def toDate(dateString: String): Option[Date] = {
@@ -343,8 +348,8 @@ object DeclarationFormMapping {
     .verifying("You must provide a Document Category or Document Reference or Previous Document Type or Goods Item Identifier", require1Field[PreviousDocument](_.categoryCode, _.id, _.typeCode, _.lineNumeric))
 
   val additionalDocumentMapping = mapping(
-    "id" -> optional(text.verifying("Deferred Payment ID should be less than or equal to 7 characters", _.length <= 7)),
     "categoryCode" -> optional(text.verifying("Deferred Payment Category should be less than or equal to 1 character", _.length <= 1)),
+    "id" -> optional(text.verifying("Deferred Payment ID should be less than or equal to 7 characters", _.length <= 7)),
     "typeCode" -> optional(text.verifying("Deferred Payment Type should be less than or equal to 3 characters", _.length <= 3))
   )(AdditionalDocument.apply)(AdditionalDocument.unapply)
     .verifying("You must provide a Deferred Payment ID or Deferred Payment Category or Deferred Payment Type", require1Field[AdditionalDocument](_.id, _.categoryCode, _.typeCode))
@@ -471,6 +476,15 @@ object DeclarationFormMapping {
     "changeReasonCode" -> of[ChangeReasonCode],
     "description" -> nonEmptyText.verifying("Description cannot be longer than 512 characters", _.length <= 512)
   )(Cancel.apply)(Cancel.unapply)
+
+  val classificationMapping = mapping(
+    "id" -> optional(text.verifying("Id must be less than 5 characters", _.length <= 4)),
+    "identificationTypeCode" -> optional(text)
+  )((id,typeCode) => Classification(id,None,typeCode,None))(Classification.unapply(_).map(c => (c._1,c._3)))
+    .verifying("Id and Type is required to add classification", require1Field[Classification](_.id, _.identificationTypeCode))
+    .verifying("Type is required when Id is provided", requireAllDependantFields[Classification](_.id)(_.identificationTypeCode))
+    .verifying("Id is required when Type is provided", requireAllDependantFields[Classification](_.identificationTypeCode)(_.id))
+
 }
 
 case class ObligationGuaranteeForm(guarantees: Seq[ObligationGuarantee] = Seq.empty)
