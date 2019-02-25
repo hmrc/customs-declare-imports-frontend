@@ -111,6 +111,14 @@
                             <span class="visually-hidden">@messages("governmentAgencyGoodsItem.commodityTaxes")</span></a>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">@messages("governmentAgencyGoodsItem.classifications")</th>
+                    <td>@goodsItem.map(_.commodity.fold(0)(_.classifications.size))</td>
+                    <td>
+                        <a href="@controllers.goodsitems.routes.ClassificationsController.onPageLoad().url" name="add" class="button" id="AddClassifications">@messages("governmentAgencyGoodsItem.add")
+                            <span class="visually-hidden">@messages("governmentAgencyGoodsItem.classifications")</span></a>
+                    </td>
+                </tr>
             </tbody>
         </table>
 
