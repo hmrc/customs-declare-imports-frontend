@@ -58,7 +58,7 @@ class TransportEquipmentController @Inject()(actions: Actions, cacheService: Cus
             val updatedGoodsItem = res match {
               case Some(goodsItem) => goodsItem.copy(commodity =
                 goodsItem.commodity.fold(Some(Commodity(transportEquipments = Seq(form))))(com =>
-                  Some(com.copy(transportEquipments = com.transportEquipments :+ form.copy(com.transportEquipments.maxBy(_.sequenceNumeric).sequenceNumeric + 1)))))
+                  Some(com.copy(transportEquipments = com.transportEquipments :+ form.copy(com.transportEquipments.map(_.sequenceNumeric).fold(0)(_.max(_)) + 1)))))
               case None => GovernmentAgencyGoodsItem(sequenceNumeric = 0, commodity = Some(Commodity(transportEquipments = Seq(form))))
             }
             cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>

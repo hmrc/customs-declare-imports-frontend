@@ -601,9 +601,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryCommodity: Arbitrary[Commodity] = Arbitrary {
     for {
-      dutyTaxFees <- Gen.listOfN(1, arbitrary[DutyTaxFee])
-      classifications <- Gen.listOfN(1, arbitrary[Classification])
-      transportEquipments <- Gen.listOfN(1, arbitrary[TransportEquipment])
+      dutyTaxFees <- varListOf(5)(arbitrary[DutyTaxFee])
+      classifications <- varListOf(5)(arbitrary[Classification])
+      transportEquipments <- varListOf(5)(arbitrary[TransportEquipment])
     } yield Commodity(dutyTaxFees = dutyTaxFees, classifications =classifications, transportEquipments =transportEquipments)
   }
 

@@ -168,7 +168,7 @@ class TransportEquipmentControllerSpec extends CustomsSpec
 
               val commodity = governmentAgencyGoodsItem.commodity.fold(Some(Commodity(transportEquipments =
                 Seq(transport))))(com => Some(com.copy(transportEquipments =
-                com.transportEquipments :+ transport.copy(com.transportEquipments.maxBy(_.sequenceNumeric).sequenceNumeric + 1))))
+                com.transportEquipments :+ transport.copy(com.transportEquipments.map(_.sequenceNumeric).fold(0)(_.max(_)) + 1))))
               val expected = governmentAgencyGoodsItem.copy(commodity = commodity)
 
               verify(mockCustomsCacheService, atLeastOnce())
