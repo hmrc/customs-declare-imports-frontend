@@ -42,7 +42,7 @@
                                  messages("governmentAgencyGoodsItem.buyerDetails.address.country"),
                                  config.Options.countryOptions)
         @components.input_text(form("address.postcodeId"), messages("governmentAgencyGoodsItem.buyerDetails.address.postcode"))
-        @components.input_text(form("communications.id"), messages("governmentAgencyGoodsItem.buyerDetails.communication.id"))
+        @components.input_text(form("communications[0].id"), messages("governmentAgencyGoodsItem.buyerDetails.communication.id"))
         @components.input_text(form("id"),
                                messages("governmentAgencyGoodsItem.buyerDetails.id"),
                                hint = Some(messages("common.hints.eori")))
