@@ -21,7 +21,7 @@ import domain._
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
 import models.ChangeReasonCode
-import org.scalacheck.Arbitrary._
+import org.scalacheck.Arbitrary.{arbitrary, _}
 import org.scalacheck.Gen._
 import org.scalacheck.{Arbitrary, Gen, Shrink}
 import play.api.libs.json.{JsString, JsValue}
@@ -379,6 +379,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       origins <- Gen.listOfN(1, arbitraryOrigin.arbitrary)
       packagings <- Gen.listOfN(1, arbitraryPackaging.arbitrary)
       previousDocuments <- Gen.listOfN(1, arbitraryPreviousDocument.arbitrary)
+      commodity <- option(arbitrary[Commodity])
     } yield {
       GovernmentAgencyGoodsItem(
         customsValueAmount = customsValueAmount,
@@ -397,14 +398,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
         packagings = packagings,
         previousDocuments = previousDocuments,
         ucr = ucr,
-        valuationAdjustment = valuationAdjustment)
+        valuationAdjustment = valuationAdjustment,
+        commodity =commodity)
     }
   }
 
   implicit val arbitraryTransportEquipment = Arbitrary {
     stringsWithMaxLength(17)
       .suchThat(_.nonEmpty)
-      .map(s => TransportEquipment(0, Some(s)))
+      .map(s => TransportEquipment(1, Some(s)))
   }
 
   implicit val arbitraryChargeDeduction: Arbitrary[ChargeDeduction] = Arbitrary {
@@ -591,7 +593,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       dutyTaxFees <- Gen.listOfN(1, arbitrary[DutyTaxFee])
       classifications <- Gen.listOfN(1, arbitrary[Classification])
-    } yield Commodity(dutyTaxFees = dutyTaxFees, classifications =classifications)
+      transportEquipments <- Gen.listOfN(1, arbitrary[TransportEquipment])
+    } yield Commodity(dutyTaxFees = dutyTaxFees, classifications =classifications, transportEquipments =transportEquipments)
   }
 
   implicit val arbitraryCustomsValuation: Arbitrary[CustomsValuation] = Arbitrary {

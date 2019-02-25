@@ -585,7 +585,7 @@ governmentAgencyGoodsItem.previousDocuments=Previous documents
 governmentAgencyGoodsItem.refundRecipientParties=Refund recipient parties
 governmentAgencyGoodsItem.saveGoodsItem=Save goods item
 governmentAgencyGoodsItem.classifications=Classifications
-
+governmentAgencyGoodsItem.transportEquipments=Container details
 governmentAgencyGoodsItemAdd.title=Additional documents
 governmentAgencyGoodsItemAdd.dateOfDocument=Date of documents
 governmentAgencyGoodsItemAdd.dateOfDocument.hint=For example, 31 3 1980
@@ -690,3 +690,10 @@ classifications.id=Id
 classifications.identificationTypeCode=Type
 classifications.add=Add classification
 classifications.identificationTypeCode.hint=Add only one CUS code, Combined nomenclature code, TARIC code, 99  of TARIC additional code(s) or National additional code(s) can be added
+
+containerDetails.table.heading=1 Container details added
+containerDetails.table.multiple.heading={0} Container details added
+containerDetails.title=Container details
+containerDetails.heading=Container details
+containerDetails.id=Container identification number
+containerDetails.add=Add container details
