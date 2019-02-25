@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package controllers.goodsitems
 
 import controllers.FakeActions
@@ -26,12 +42,12 @@ class GoodsItemsBuyerDetailsControllerSpec extends CustomsSpec
   val form = Form(importExportPartyMapping)
 
   def view(form: Form[_]): String =
-    goods_items_seller_details(form)(fakeRequest, messages, appConfig).body
+    goods_items_buyer_details(form)(fakeRequest, messages, appConfig).body
 
   def controller(user: Option[SignedInUser], item: Option[GovernmentAgencyGoodsItem]) =
-    new GoodsItemsSellerDetailsController(new FakeActions(user, item), mockCustomsCacheService)
+    new GoodsItemsBuyerDetailsController(new FakeActions(user, item), mockCustomsCacheService)
 
-  val uri = "/submit-declaration-goods/goods-item-seller-details"
+  val uri = "/submit-declaration-goods/goods-item-buyer-details"
 
   "onPageLoad" should {
 
@@ -69,7 +85,7 @@ class GoodsItemsBuyerDetailsControllerSpec extends CustomsSpec
       forAll { (signedInUser: SignedInUser, goodsItem: GovernmentAgencyGoodsItem) =>
 
         val result = controller(Some(signedInUser), Some(goodsItem)).onPageLoad()(fakeRequest)
-        val popForm = goodsItem.seller.fold(form)(form.fill)
+        val popForm = goodsItem.buyer.fold(form)(form.fill)
 
         status(result) mustBe OK
         contentAsString(result) mustBe view(popForm)
@@ -142,7 +158,7 @@ class GoodsItemsBuyerDetailsControllerSpec extends CustomsSpec
             val request = fakeRequest.withFormUrlEncodedBody(asFormParams(importExportParty): _*)
             await(controller(Some(user), Some(goodsItem)).onSubmit(request))
 
-            val expected = goodsItem.copy(seller = Some(importExportParty))
+            val expected = goodsItem.copy(buyer = Some(importExportParty))
 
             verify(mockCustomsCacheService, atLeastOnce())
               .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem), eqTo(expected))(any(), any(), any())

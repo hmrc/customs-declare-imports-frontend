@@ -33,6 +33,12 @@ POST  /add-commodity-taxes    controllers.goodsitems.DutyTaxFeeController.onSubm
 GET   /goods-item-exporter-details      controllers.goodsitems.GoodsItemsExporterDetailsController.onPageLoad()
 POST  /goods-item-exporter-details      controllers.goodsitems.GoodsItemsExporterDetailsController.onSubmit()
 
+GET   /goods-item-seller-details      controllers.goodsitems.GoodsItemsSellerDetailsController.onPageLoad()
+POST  /goods-item-seller-details      controllers.goodsitems.GoodsItemsSellerDetailsController.onSubmit()
+
+GET   /goods-item-buyer-details       controllers.goodsitems.GoodsItemsBuyerDetailsController.onPageLoad()
+POST  /goods-item-buyer-details       controllers.goodsitems.GoodsItemsBuyerDetailsController.onSubmit()
+
 GET   /add-charge-deductions    controllers.goodsitems.AdditionsAndDeductionsController.onPageLoad()
 POST  /add-charge-deductions    controllers.goodsitems.AdditionsAndDeductionsController.onSubmit()
 
