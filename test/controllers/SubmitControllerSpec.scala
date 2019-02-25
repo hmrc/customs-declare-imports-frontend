@@ -28,7 +28,6 @@ import play.api.test.Helpers._
 import services.CustomsDeclarationsResponse
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.wco.dec.MetaData
 
 import scala.concurrent.Future
 

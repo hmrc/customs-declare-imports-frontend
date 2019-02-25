@@ -232,10 +232,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val arbitraryAdditionalDocument: Arbitrary[AdditionalDocument] = Arbitrary {
     for {
-      id <- option(intBetweenRange(0, 9999999).map(_.toString))
       categoryCode <- option(arbitrary[String].map(_.take(1)))
+      id <- option(intBetweenRange(0, 9999999).map(_.toString))
       typeCode <- option(arbitrary[String].map(_.take(3)))
-    } yield AdditionalDocument(id, categoryCode, typeCode)
+    } yield AdditionalDocument(categoryCode, id, typeCode)
   }
 
   implicit val arbitraryOrigin: Arbitrary[Origin] = Arbitrary {
