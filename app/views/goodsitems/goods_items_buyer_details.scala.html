@@ -24,6 +24,8 @@
 
 @main_template(messages("governmentAgencyGoodsItem.buyerDetails.title")) {
 
+@helpers.form(action = controllers.goodsitems.routes.GoodsItemsBuyerDetailsController.onSubmit()) {
+
     @components.back_link()
 
     @components.error_summary(form.errors)
@@ -41,7 +43,9 @@
                                  config.Options.countryOptions)
         @components.input_text(form("address.postcodeId"), messages("governmentAgencyGoodsItem.buyerDetails.address.postcode"))
         @components.input_text(form("communications.id"), messages("governmentAgencyGoodsItem.buyerDetails.communication.id"))
-        @components.input_text(form("id"), messages("governmentAgencyGoodsItem.buyerDetails.id"))
+        @components.input_text(form("id"),
+                               messages("governmentAgencyGoodsItem.buyerDetails.id"),
+                               hint = Some(messages("common.hints.eori")))
 
     </fieldset>
 
@@ -49,4 +53,5 @@
         @messages("common.button.continue")
     </button>
 
+    }
 }

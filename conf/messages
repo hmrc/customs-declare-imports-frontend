@@ -567,7 +567,7 @@ governmentAgencyGoodsItem.buyerDetails.address.cityName=City
 governmentAgencyGoodsItem.buyerDetails.address.country=Country
 governmentAgencyGoodsItem.buyerDetails.address.postcode=Postcode
 governmentAgencyGoodsItem.buyerDetails.communication.id=Phone number
-governmentAgencyGoodsItem.buyerDetails.id=Buyer identification no.
+governmentAgencyGoodsItem.buyerDetails.id=EORI number
 
 ## Goods item seller details
 
@@ -579,7 +579,7 @@ governmentAgencyGoodsItem.sellerDetails.address.cityName=City
 governmentAgencyGoodsItem.sellerDetails.address.country=Country
 governmentAgencyGoodsItem.sellerDetails.address.postcode=Postcode
 governmentAgencyGoodsItem.sellerDetails.communication.id=Phone number
-governmentAgencyGoodsItem.sellerDetails.id=Seller identification no.
+governmentAgencyGoodsItem.sellerDetails.id=EORI number
 
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Government agency goods item

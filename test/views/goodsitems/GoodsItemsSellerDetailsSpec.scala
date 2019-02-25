@@ -64,7 +64,9 @@ class GoodsItemsSellerDetailsSpec extends ViewBehaviours
       forAll { importExportParty: ImportExportParty =>
 
         val popForm = Form(importExportPartyMapping).fillAndValidate(importExportParty)
-        val input = input_text(popForm("id"), messages("governmentAgencyGoodsItem.sellerDetails.id"))
+        val input = input_text(popForm("id"),
+          messages("governmentAgencyGoodsItem.sellerDetails.id"),
+          hint = Some(messages("common.hints.eori")))
 
         view(popForm) must include(input)
       }
