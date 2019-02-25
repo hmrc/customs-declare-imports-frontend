@@ -17,18 +17,23 @@
 package controllers
 
 import com.google.inject.Inject
+import config.AppConfig
 import domain.MetaDataMapping
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.{CustomsCacheService, CustomsDeclarationsConnector, CustomsDeclarationsResponse}
+import views.html.submit_failure
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class SubmitController @Inject()(actions: Actions, cache: CustomsCacheService, customsConnector: CustomsDeclarationsConnector)
-                                (implicit override val messagesApi: MessagesApi, ec: ExecutionContext)
+                                (implicit override val messagesApi: MessagesApi, ec: ExecutionContext, appConfig: AppConfig)
   extends CustomsController {
 
-  def onFailure: Action[AnyContent] = ???
+  def onFailure: Action[AnyContent] = (actions.auth andThen actions.eori andThen actions.lrn) {
+    implicit request =>
+      Ok(submit_failure())
+  }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori andThen actions.lrn).async {
     implicit request =>
