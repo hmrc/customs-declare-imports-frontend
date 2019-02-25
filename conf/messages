@@ -558,18 +558,17 @@ governmentAgencyGoodsItem.exporterDetails.address.postcode=Postcode
 governmentAgencyGoodsItem.exporterDetails.id=Exporter identification no.
 
 ## Government agency goods item
-governmentAgencyGoodsItem.title=Government agency goods item
+governmentAgencyGoodsItem.title=Goods items
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
 governmentAgencyGoodsItem.additionalDocuments=Additional documents
 governmentAgencyGoodsItem.additionalInformation=Additional information
 governmentAgencyGoodsItem.domesticDutyParties=Domestic duty parties
-governmentAgencyGoodsItem.governmentProcedures=Government procedures
 governmentAgencyGoodsItem.originOfGoods=Origin of goods
 governmentAgencyGoodsItem.packagings=Packagings
 governmentAgencyGoodsItem.previousDocuments=Previous documents
 governmentAgencyGoodsItem.dutyTaxFees=Commodity duty taxes
 governmentAgencyGoodsItem.addGoodsItem=Add goods item
-governmentAgencyGoodsItem.numberGovAgencyGoodsItems=No of Government Agency Goods Items Added:
+governmentAgencyGoodsItem.numberGovAgencyGoodsItems=Goods Items Added
 governmentAgencyGoodsItem.add=Add
 governmentAgencyGoodsItem.commodityTaxes=Commodity duty taxes
 governmentAgencyGoodsItem.chargeDeductions=Additions & Deductions
@@ -577,7 +576,7 @@ governmentAgencyGoodsItem.additionalDocuments=Additional documents
 governmentAgencyGoodsItem.additionalInformation=Additional information
 governmentAgencyGoodsItem.mutualRecognitionParties=Additional supply chain actor(s)
 governmentAgencyGoodsItem.domesticDutyParties=Additional fiscal references
-governmentAgencyGoodsItem.governmentProcedures=Government procedures
+governmentAgencyGoodsItem.governmentProcedures=Procedure codes
 governmentAgencyGoodsItem.originOfGoods=Origin of goods
 governmentAgencyGoodsItem.manufacturers=Manufacturers
 governmentAgencyGoodsItem.packagings=Packagings
@@ -626,11 +625,11 @@ governmentAgencyGoodsItemMutual.title=Mutual recognition parties
 governmentAgencyGoodsItemMutual.mutualPartiesAdded=mutual recognition parties added
 governmentAgencyGoodsItemMutual.addMutualParties=Add mutual recognition parties
 
-governmentprocedures.title=Government procedures
-governmentprocedures.govProceduresAdded=government procedures added
+governmentprocedures.title=Procedures codes
+governmentprocedures.govProceduresAdded=Procedures codes added
 governmentprocedures.currentCode=Requested Procedure Code
 governmentprocedures.previousCode=Previous Procedure Code
-governmentprocedures.addGovProcedures=Add government procedure
+governmentprocedures.addGovProcedures=Add Procedure code
 
 packaging.title=Goods packages
 packaging.heading=Goods packages

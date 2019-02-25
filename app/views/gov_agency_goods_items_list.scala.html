@@ -25,10 +25,12 @@
     title = messages("governmentAgencyGoodsItem.title"),
     bodyClasses = None) {
 
+    @components.back_link()
+
     <h1 class="heading-large">@messages("governmentAgencyGoodsItem.title")</h1>
 
         @if(govAgencyGoodsItems.nonEmpty) {
-            <p>@messages("governmentAgencyGoodsItem.numberGovAgencyGoodsItems") @govAgencyGoodsItems.size</p>
+            <p>@govAgencyGoodsItems.size @messages("governmentAgencyGoodsItem.numberGovAgencyGoodsItems")</p>
 
             <table>
                 <thead>
