@@ -23,9 +23,9 @@
 
  @components.back_link()
 
- <div class="govuk-box-highlight">
-  <h1 id="heading-application-submitted" class="heading-xlarge">@messages("submitFailure.heading")</h1>
-   <ul>
+ <div>
+  <h1 class="heading-large">@messages("submitFailure.heading")</h1>
+   <ul class="bullets">
     <li>
      @link(messages("submitFailure.link"), routes.SubmitController.onSubmit().url)
     </li>
