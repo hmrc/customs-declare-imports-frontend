@@ -582,18 +582,17 @@ governmentAgencyGoodsItem.sellerDetails.communication.id=Phone number
 governmentAgencyGoodsItem.sellerDetails.id=EORI number
 
 ## Government agency goods item
-governmentAgencyGoodsItem.title=Government agency goods item
+governmentAgencyGoodsItem.title=Goods items
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
 governmentAgencyGoodsItem.additionalDocuments=Additional documents
 governmentAgencyGoodsItem.additionalInformation=Additional information
 governmentAgencyGoodsItem.domesticDutyParties=Domestic duty parties
-governmentAgencyGoodsItem.governmentProcedures=Government procedures
 governmentAgencyGoodsItem.originOfGoods=Origin of goods
 governmentAgencyGoodsItem.packagings=Packagings
 governmentAgencyGoodsItem.previousDocuments=Previous documents
 governmentAgencyGoodsItem.dutyTaxFees=Commodity duty taxes
 governmentAgencyGoodsItem.addGoodsItem=Add goods item
-governmentAgencyGoodsItem.numberGovAgencyGoodsItems=No of Government Agency Goods Items Added:
+governmentAgencyGoodsItem.numberGovAgencyGoodsItems=Goods Items Added
 governmentAgencyGoodsItem.add=Add
 governmentAgencyGoodsItem.commodityTaxes=Commodity duty taxes
 governmentAgencyGoodsItem.chargeDeductions=Additions & Deductions
@@ -601,7 +600,7 @@ governmentAgencyGoodsItem.additionalDocuments=Additional documents
 governmentAgencyGoodsItem.additionalInformation=Additional information
 governmentAgencyGoodsItem.mutualRecognitionParties=Additional supply chain actor(s)
 governmentAgencyGoodsItem.domesticDutyParties=Additional fiscal references
-governmentAgencyGoodsItem.governmentProcedures=Government procedures
+governmentAgencyGoodsItem.governmentProcedures=Procedure codes
 governmentAgencyGoodsItem.originOfGoods=Origin of goods
 governmentAgencyGoodsItem.manufacturers=Manufacturers
 governmentAgencyGoodsItem.packagings=Packagings
@@ -609,7 +608,7 @@ governmentAgencyGoodsItem.previousDocuments=Previous documents
 governmentAgencyGoodsItem.refundRecipientParties=Refund recipient parties
 governmentAgencyGoodsItem.saveGoodsItem=Save goods item
 governmentAgencyGoodsItem.classifications=Classifications
-
+governmentAgencyGoodsItem.transportEquipments=Container details
 governmentAgencyGoodsItemAdd.title=Additional documents
 governmentAgencyGoodsItemAdd.dateOfDocument=Date of documents
 governmentAgencyGoodsItemAdd.dateOfDocument.hint=For example, 31 3 1980
@@ -650,11 +649,11 @@ governmentAgencyGoodsItemMutual.title=Mutual recognition parties
 governmentAgencyGoodsItemMutual.mutualPartiesAdded=mutual recognition parties added
 governmentAgencyGoodsItemMutual.addMutualParties=Add mutual recognition parties
 
-governmentprocedures.title=Government procedures
-governmentprocedures.govProceduresAdded=government procedures added
+governmentprocedures.title=Procedures codes
+governmentprocedures.govProceduresAdded=Procedures codes added
 governmentprocedures.currentCode=Requested Procedure Code
 governmentprocedures.previousCode=Previous Procedure Code
-governmentprocedures.addGovProcedures=Add government procedure
+governmentprocedures.addGovProcedures=Add Procedure code
 
 packaging.title=Goods packages
 packaging.heading=Goods packages
@@ -714,3 +713,10 @@ classifications.id=Id
 classifications.identificationTypeCode=Type
 classifications.add=Add classification
 classifications.identificationTypeCode.hint=Add only one CUS code, Combined nomenclature code, TARIC code, 99  of TARIC additional code(s) or National additional code(s) can be added
+
+containerDetails.table.heading=1 Container details added
+containerDetails.table.multiple.heading={0} Container details added
+containerDetails.title=Container details
+containerDetails.heading=Container details
+containerDetails.id=Container identification number
+containerDetails.add=Add container details

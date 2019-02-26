@@ -44,3 +44,6 @@ POST  /add-charge-deductions    controllers.goodsitems.AdditionsAndDeductionsCon
 
 GET   /add-classifications    controllers.goodsitems.ClassificationsController.onPageLoad()
 POST  /add-classifications    controllers.goodsitems.ClassificationsController.onSubmit()
+
+GET   /add-container-details    controllers.goodsitems.TransportEquipmentController.onPageLoad()
+POST  /add-container-details    controllers.goodsitems.TransportEquipmentController.onSubmit()
