@@ -411,8 +411,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   }
 
   implicit val arbitraryTransportEquipment = Arbitrary {
-    stringsWithMaxLength(17)
-      .suchThat(_.nonEmpty)
+    nonEmptyString
+      .map(_.take(17))
       .map(s => TransportEquipment(1, Some(s)))
   }
 
@@ -588,7 +588,6 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       quataOrderNo <- option(nonEmptyString.map(_.take(6)))
       payment <- arbitraryPayment.arbitrary
       specificTaxBaseQuantityOpt = zip(specificTaxBaseQuantity.value, specificTaxBaseQuantity.unitCode).map(_ => specificTaxBaseQuantity)
-      if (typeCode.exists(_.length == 3) && quataOrderNo.exists(_.length == 6))
     } yield DutyTaxFee(None, None, None, specificTaxBaseQuantityOpt, Some(taxRateNumeric), typeCode, quataOrderNo, Some(payment))
   }
 
@@ -604,7 +603,12 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       dutyTaxFees <- varListOf(5)(arbitrary[DutyTaxFee])
       classifications <- varListOf(5)(arbitrary[Classification])
       transportEquipments <- varListOf(5)(arbitrary[TransportEquipment])
-    } yield Commodity(dutyTaxFees = dutyTaxFees, classifications =classifications, transportEquipments =transportEquipments)
+    } yield {
+      Commodity(
+        dutyTaxFees = dutyTaxFees,
+        classifications = classifications,
+        transportEquipments = transportEquipments)
+    }
   }
 
   implicit val arbitraryCustomsValuation: Arbitrary[CustomsValuation] = Arbitrary {
