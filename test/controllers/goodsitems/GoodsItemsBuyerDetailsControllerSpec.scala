@@ -23,36 +23,31 @@ import generators.Generators
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen
-import org.scalacheck.Gen._
 import org.scalatest.OptionValues
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, NamedEntityWithAddress}
-import views.html.goodsitems.goods_items_exporter_details
+import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, ImportExportParty}
+import views.html.goodsitems.goods_items_buyer_details
 
-import scala.concurrent.Future
-
-class GoodsItemsExporterDetailsControllerSpec extends CustomsSpec
+class GoodsItemsBuyerDetailsControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
   with OptionValues
   with EndpointBehaviours {
 
-  val form = Form(namedEntityWithAddressMapping)
 
-  def view(form: Form[_] = form): String =
-    goods_items_exporter_details(form)(fakeRequest, messages, appConfig).body
+  val form = Form(importExportPartyMapping)
+
+  def view(form: Form[_]): String =
+    goods_items_buyer_details(form)(fakeRequest, messages, appConfig).body
 
   def controller(user: Option[SignedInUser], item: Option[GovernmentAgencyGoodsItem]) =
-    new GoodsItemsExporterDetailsController(new FakeActions(user, item), mockCustomsCacheService)
+    new GoodsItemsBuyerDetailsController(new FakeActions(user, item), mockCustomsCacheService)
 
-  val locationOfGoodsGen: Gen[Option[NamedEntityWithAddress]] = option(arbitrary[NamedEntityWithAddress])
-  val uri = "/submit-declaration-goods/goods-item-exporter-details"
+  val uri = "/submit-declaration-goods/goods-item-buyer-details"
 
   "onPageLoad" should {
 
@@ -63,13 +58,11 @@ class GoodsItemsExporterDetailsControllerSpec extends CustomsSpec
 
       "user is signed in" in {
 
-        forAll { (user: SignedInUser, goodsItem: GovernmentAgencyGoodsItem) =>
+        forAll { (signedInUser: SignedInUser, goodsItem: GovernmentAgencyGoodsItem) =>
 
-          val result = controller(Some(user), Some(goodsItem)).onPageLoad()(fakeRequest)
-          val popForm = goodsItem.consignor.fold(form)(form.fill)
+          val result = controller(Some(signedInUser), Some(goodsItem)).onPageLoad()(fakeRequest)
 
           status(result) mustBe OK
-          contentAsString(result) mustBe view(popForm)
         }
       }
     }
@@ -89,19 +82,18 @@ class GoodsItemsExporterDetailsControllerSpec extends CustomsSpec
 
     "load data from cache" in {
 
-      forAll(arbitrary[SignedInUser], arbitrary[GovernmentAgencyGoodsItem]) {
-        case (user, item) =>
+      forAll { (signedInUser: SignedInUser, goodsItem: GovernmentAgencyGoodsItem) =>
 
-          val result = controller(Some(user), Some(item)).onPageLoad(fakeRequest)
-          val popForm = item.consignor.fold(form)(form.fill)
+        val result = controller(Some(signedInUser), Some(goodsItem)).onPageLoad()(fakeRequest)
+        val popForm = goodsItem.buyer.fold(form)(form.fill)
 
-          status(result) mustBe OK
-          contentAsString(result) mustBe view(popForm)
+        status(result) mustBe OK
+        contentAsString(result) mustBe view(popForm)
       }
     }
   }
 
-  ".onSubmit" should {
+  "onSubmit" should {
 
     behave like badRequestEndpoint(uri, POST)
     behave like authenticatedEndpoint(uri, POST)
@@ -110,13 +102,13 @@ class GoodsItemsExporterDetailsControllerSpec extends CustomsSpec
 
       "user submits valid data" in {
 
-        forAll { (user: SignedInUser, entity: NamedEntityWithAddress, goodsItem: GovernmentAgencyGoodsItem) =>
+        forAll { (user: SignedInUser, importExportParty: ImportExportParty, goodsItem: GovernmentAgencyGoodsItem) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(entity): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(importExportParty): _*)
           val result = controller(Some(user), Some(goodsItem)).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.goodsitems.routes.GoodsItemsSellerDetailsController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url)
         }
       }
     }
@@ -140,9 +132,9 @@ class GoodsItemsExporterDetailsControllerSpec extends CustomsSpec
 
         val badData =
           for {
-            entity    <- arbitrary[NamedEntityWithAddress]
+            importExportParty <- arbitrary[ImportExportParty]
             invalidId <- stringsLongerThan(18)
-          } yield entity.copy(id = Some(invalidId))
+          } yield importExportParty.copy(id = Some(invalidId))
 
         forAll(arbitrary[SignedInUser], badData, arbitrary[GovernmentAgencyGoodsItem]) {
           case (user, formData, goodsItem) =>
@@ -160,13 +152,13 @@ class GoodsItemsExporterDetailsControllerSpec extends CustomsSpec
 
       "valid data is provided" in {
 
-        forAll { (user: SignedInUser, entity: NamedEntityWithAddress, goodsItem: GovernmentAgencyGoodsItem) =>
+        forAll { (user: SignedInUser, importExportParty: ImportExportParty, goodsItem: GovernmentAgencyGoodsItem) =>
 
           withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(goodsItem)) {
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(entity): _*)
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(importExportParty): _*)
             await(controller(Some(user), Some(goodsItem)).onSubmit(request))
 
-            val expected = goodsItem.copy(consignor = Some(entity))
+            val expected = goodsItem.copy(buyer = Some(importExportParty))
 
             verify(mockCustomsCacheService, atLeastOnce())
               .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem), eqTo(expected))(any(), any(), any())
