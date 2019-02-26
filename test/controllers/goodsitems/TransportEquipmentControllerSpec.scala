@@ -31,32 +31,32 @@ import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.{Commodity, DutyTaxFee, GovernmentAgencyGoodsItem}
-import views.html.goods_items_dutytaxfee
+import uk.gov.hmrc.wco.dec.{Commodity, GovernmentAgencyGoodsItem, TransportEquipment}
+import views.html.goods_item_transportequipment
 
-class DutyTaxFeeControllerSpec extends CustomsSpec
+class TransportEquipmentControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
   with OptionValues
   with MockitoSugar
   with EndpointBehaviours {
 
-  private def form = Form(dutyTaxFeeMapping)
+  private def form = Form(transportEquipmentMapping)
 
-  val dutyTaxesPageUri = "/submit-declaration-goods/add-commodity-taxes"
+  val transportEquipmenntPageUri = "/submit-declaration-goods/add-container-details"
 
   private def controller(user: Option[SignedInUser]) =
-    new DutyTaxFeeController(new FakeActions(user), mockCustomsCacheService)
+    new TransportEquipmentController(new FakeActions(user), mockCustomsCacheService)
 
   val goodsItemGen = option(arbitrary[GovernmentAgencyGoodsItem])
 
-  def view(form: Form[DutyTaxFee] = form, taxes: Seq[DutyTaxFee] = Seq()): String =
-    goods_items_dutytaxfee(form, taxes)(fakeRequest, messages, appConfig).body
+  def view(form: Form[TransportEquipment] = form, transportEquipments: Seq[TransportEquipment] = Seq()): String =
+    goods_item_transportequipment(form, transportEquipments)(fakeRequest, messages, appConfig).body
 
   ".onPageLoad" should {
 
-    behave like okEndpoint(dutyTaxesPageUri)
-    behave like authenticatedEndpoint(dutyTaxesPageUri)
+    behave like okEndpoint(transportEquipmenntPageUri)
+    behave like authenticatedEndpoint(transportEquipmenntPageUri)
 
     "return OK" when {
 
@@ -93,7 +93,7 @@ class DutyTaxFeeControllerSpec extends CustomsSpec
             val result = controller(Some(user)).onPageLoad(fakeRequest)
 
             status(result) mustBe OK
-            contentAsString(result) mustBe view(taxes= data.flatMap(_.commodity.map(_.dutyTaxFees)).getOrElse(Seq.empty))
+            contentAsString(result) mustBe view(transportEquipments = data.flatMap(_.commodity.map(_.transportEquipments)).getOrElse(Seq.empty))
           }
       }
     }
@@ -101,22 +101,22 @@ class DutyTaxFeeControllerSpec extends CustomsSpec
 
   ".onSubmit" should {
 
-    behave like badRequestEndpoint(dutyTaxesPageUri, POST)
-    behave like authenticatedEndpoint(dutyTaxesPageUri, POST)
+    behave like badRequestEndpoint(transportEquipmenntPageUri, POST)
+    behave like authenticatedEndpoint(transportEquipmenntPageUri, POST)
 
     "return OK" when {
 
       "user submits valid data" in {
 
-        forAll { (user: SignedInUser, dutyTaxFee: DutyTaxFee, governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
+        forAll { (user: SignedInUser, transport: TransportEquipment, governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
 
           withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(governmentAgencyGoodsItem)) {
 
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(dutyTaxFee): _*)
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(transport): _*)
             val result = controller(Some(user)).onSubmit(request)
 
             status(result) mustBe SEE_OTHER
-            redirectLocation(result) mustBe Some(routes.DutyTaxFeeController.onPageLoad().url)
+            redirectLocation(result) mustBe Some(routes.TransportEquipmentController.onPageLoad().url)
           }
         }
       }
@@ -139,11 +139,7 @@ class DutyTaxFeeControllerSpec extends CustomsSpec
 
       "user submits invalid data" in {
 
-        val badData =
-          for {
-            dutyTax <- arbitrary[DutyTaxFee]
-            typeCode <- stringsLongerThan(3)
-          } yield dutyTax.copy(typeCode = Some(typeCode))
+        val badData = stringsLongerThan(17).map(s => TransportEquipment(0, Some(s)))
 
         forAll(arbitrary[SignedInUser], badData, goodsItemGen) {
           case (user, formData, data) =>
@@ -153,7 +149,7 @@ class DutyTaxFeeControllerSpec extends CustomsSpec
               val result = controller(Some(user)).onSubmit(request)
 
               status(result) mustBe BAD_REQUEST
-              contentAsString(result) mustBe view(badForm, data.flatMap(_.commodity.map(_.dutyTaxFees)).getOrElse(Seq.empty))
+              contentAsString(result) mustBe view(badForm, data.flatMap(_.commodity.map(_.transportEquipments)).getOrElse(Seq.empty))
             }
         }
       }
@@ -164,14 +160,15 @@ class DutyTaxFeeControllerSpec extends CustomsSpec
       "valid data is provided" in {
 
         forAll {
-          (user: SignedInUser, dutyTaxFee: DutyTaxFee, governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
+          (user: SignedInUser, transport: TransportEquipment, governmentAgencyGoodsItem: GovernmentAgencyGoodsItem) =>
 
             withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(governmentAgencyGoodsItem)) {
-
-              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(dutyTaxFee): _*)
+              val request = fakeRequest.withFormUrlEncodedBody(asFormParams(transport): _*)
               await(controller(Some(user)).onSubmit(request))
 
-              val commodity = governmentAgencyGoodsItem.commodity.fold(Some(Commodity(dutyTaxFees = Seq(dutyTaxFee))))(d => Some(d.copy(dutyTaxFees =  d.dutyTaxFees :+ dutyTaxFee)))
+              val commodity = governmentAgencyGoodsItem.commodity.fold(Some(Commodity(transportEquipments =
+                Seq(transport))))(com => Some(com.copy(transportEquipments =
+                com.transportEquipments :+ transport.copy(com.transportEquipments.map(_.sequenceNumeric).fold(0)(_.max(_)) + 1))))
               val expected = governmentAgencyGoodsItem.copy(commodity = commodity)
 
               verify(mockCustomsCacheService, atLeastOnce())
