@@ -172,7 +172,7 @@ class ClassificationsControllerSpec extends CustomsSpec
               await(controller(Some(user)).onSubmit(request))
 
               val commodity = governmentAgencyGoodsItem.commodity.fold(Some(Commodity(classifications =
-                Seq(classification))))(d => Some(Commodity(classifications =  d.classifications :+ classification)))
+                Seq(classification))))(d => Some(d.copy(classifications =  d.classifications :+ classification)))
               val expected = governmentAgencyGoodsItem.copy(commodity = commodity)
 
               verify(mockCustomsCacheService, atLeastOnce())
