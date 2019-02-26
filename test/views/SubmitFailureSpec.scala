@@ -29,7 +29,6 @@ class SubmitFailureSpec extends ViewBehaviours {
   "submit_failure view" should {
 
     behave like normalPage(view, messagePrefix, "listItem1")
-    behave like pageWithBackLink(view)
 
     "have link to re submit" in {
 

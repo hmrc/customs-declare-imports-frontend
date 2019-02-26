@@ -227,7 +227,7 @@ object DeclarationFormMapping {
 
   val roleBasedPartyMapping = mapping(
     "id" -> optional(text.verifying("Identifier should be less than or equal to 17 characters", _.length <= 17)), // max 17 chars
-    "roleCode" -> optional(text.verifying("Role code should be 3 characters and must contain only A-Z characters", (code => code.length <= 3 && isAlpha(code)))) // max 3 chars
+    "roleCode" -> optional(text.verifying("Role code should be 3 characters and must contain only A-Z characters", code => code.length <= 3 && isAlpha(code))) // max 3 chars
   )(RoleBasedParty.apply)(RoleBasedParty.unapply)
     .verifying("You must provide an Identifier or Role code", require1Field[RoleBasedParty](_.id, _.roleCode))
 
