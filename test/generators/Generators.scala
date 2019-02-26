@@ -90,6 +90,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   def nonEmptyString: Gen[String] =
     arbitrary[String] suchThat (_.nonEmpty)
 
+  def fixedLengthString(size: Int): Gen[String] =
+    listOfN(size, arbitrary[Char]).map(_.mkString)
+
   def stringsWithMaxLength(maxLength: Int): Gen[String] =
     for {
       length <- choose(1, maxLength)
@@ -584,8 +587,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       specificTaxBaseQuantity <- arbitrary[Measure]
       taxRateNumeric <- posDecimal(16, 2)
-      typeCode <- option(nonEmptyString.map(_.take(3)))
-      quataOrderNo <- option(nonEmptyString.map(_.take(6)))
+      typeCode <- option(fixedLengthString(3))
+      quataOrderNo <- option(fixedLengthString(6))
       payment <- arbitraryPayment.arbitrary
       specificTaxBaseQuantityOpt = zip(specificTaxBaseQuantity.value, specificTaxBaseQuantity.unitCode).map(_ => specificTaxBaseQuantity)
     } yield DutyTaxFee(None, None, None, specificTaxBaseQuantityOpt, Some(taxRateNumeric), typeCode, quataOrderNo, Some(payment))
