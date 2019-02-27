@@ -707,6 +707,7 @@ dutytaxefee.quotaorder=Quota order number
 
 submitFailure.title=Your submission has been unsuccessful.
 submitFailure.heading=Your submission has been unsuccessful.
+submitFailure.listHeading=You can:
 submitFailure.listItem1=contact our Service Support Team on 0300 790 6802 if your second attempt is unsuccessful
 submitFailure.listItem2=return to the {0} page if you want to create a new declaration
 submitFailure.startDecLink=Start a declaration
