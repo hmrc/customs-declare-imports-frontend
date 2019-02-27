@@ -490,6 +490,15 @@ object DeclarationFormMapping {
     .verifying("Type is required when Id is provided", requireAllDependantFields[Classification](_.id)(_.identificationTypeCode))
     .verifying("Id is required when Type is provided", requireAllDependantFields[Classification](_.identificationTypeCode)(_.id))
 
+  val commodityMapping = mapping(
+    "description" -> optional(text.verifying("Description should be less than equal to 512 characters", _.length <= 512)),
+    "classification" -> ignored[Seq[Classification]](Seq.empty),
+    "dangerousGoods" -> ignored[Seq[DangerousGoods]](Seq.empty),
+    "dutyTaxFees" -> seq(dutyTaxFeeMapping),
+    "dutyTaxFees" -> optional(goodsMeasureMapping),
+    "invoiceLine" -> optional(invoiceLineMapping),
+    "transportEquipments" -> ignored[Seq[TransportEquipment]](Seq.empty)
+  )(Commodity.apply)(Commodity.unapply)
 }
 
 case class ObligationGuaranteeForm(guarantees: Seq[ObligationGuarantee] = Seq.empty)
