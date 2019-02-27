@@ -381,6 +381,16 @@ object DeclarationFormMapping {
     "address" -> optional(addressMapping)
   )(Agent.apply)(Agent.unapply)
 
+  val invoiceLineMapping = mapping(
+    "itemChargeAmount" -> optional(amountMapping)
+  )(InvoiceLine.apply)(InvoiceLine.unapply)
+
+  val goodsMeasureMapping = mapping(
+    "grossMassMeasure" -> optional(measureMapping),
+    "netWeightMeasure" -> optional(measureMapping),
+    "tariffQuantity" -> optional(measureMapping)
+  )(GoodsMeasure.apply)(GoodsMeasure.unapply)
+
   val summaryOfGoodsMapping = mapping(
     "totalPackageQuantity" -> optional(
       number
@@ -455,7 +465,7 @@ object DeclarationFormMapping {
   val dutyTaxFeeMapping = mapping (
     "adValoremTaxBaseAmount" -> ignored[Option[Amount]](None),
     "deductAmount" -> ignored[Option[Amount]](None),
-    "dutyRegimeCode" -> ignored[Option[String]](None),
+    "dutyRegimeCode" -> optional(text.verifying("Duty regime code should be less than or equal to 3 characters", _.length <= 3)),
     "specificTaxBaseQuantity" -> optional(measureMapping),
     "taxRateNumeric" -> optional(bigDecimal
       .verifying("Tax Rate cannot be greater than 99999999999999.999", _.precision <= 17)

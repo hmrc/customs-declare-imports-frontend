@@ -586,8 +586,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       quataOrderNo <- option(nonEmptyString.map(_.take(6)))
       payment <- arbitraryPayment.arbitrary
       specificTaxBaseQuantityOpt = zip(specificTaxBaseQuantity.value, specificTaxBaseQuantity.unitCode).map(_ => specificTaxBaseQuantity)
+      dutyRegimeCode  <- option(intBetweenRange(0, 999).map(_.toString))
       if (typeCode.exists(_.length == 3) && quataOrderNo.exists(_.length == 6))
-    } yield DutyTaxFee(None, None, None, specificTaxBaseQuantityOpt, Some(taxRateNumeric), typeCode, quataOrderNo, Some(payment))
+    } yield DutyTaxFee(None, None, dutyRegimeCode, specificTaxBaseQuantityOpt, Some(taxRateNumeric), typeCode, quataOrderNo, Some(payment))
   }
 
   implicit val arbitraryClassification:Arbitrary[Classification] = Arbitrary{
@@ -599,9 +600,18 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryCommodity: Arbitrary[Commodity] = Arbitrary {
     for {
-      dutyTaxFees <- Gen.listOfN(1, arbitrary[DutyTaxFee])
+      description     <- option(nonEmptyString.map(_.take(512)))
       classifications <- Gen.listOfN(1, arbitrary[Classification])
-    } yield Commodity(dutyTaxFees = dutyTaxFees, classifications =classifications)
+      dutyTaxFees     <- Gen.listOfN(1, arbitrary[DutyTaxFee])
+      goodsMeasure    <- option(arbitrary[GoodsMeasure])
+      invoiceLine     <- option(arbitrary[InvoiceLine])
+    } yield Commodity(
+      description = description,
+      classifications = classifications,
+      dutyTaxFees = dutyTaxFees,
+      goodsMeasure = goodsMeasure,
+      invoiceLine = invoiceLine
+    )
   }
 
   implicit val arbitraryCustomsValuation: Arbitrary[CustomsValuation] = Arbitrary {
@@ -617,6 +627,24 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       changeReasonCode <- arbitrary[ChangeReasonCode]
       description <- stringsWithMaxLength(512)
     } yield Cancel(changeReasonCode, description)
+  }
+
+  implicit val arbitraryInvoiceLine: Arbitrary[InvoiceLine] = Arbitrary {
+    for {
+      itemChargeAmount <- arbitrary[Amount]
+    } yield {
+      InvoiceLine(itemChargeAmount.currencyId.map(_ => itemChargeAmount))
+    }
+  }
+
+  implicit val arbitraryGoodsMeasure: Arbitrary[GoodsMeasure] = Arbitrary {
+    for {
+      grossMassMeasure  <- arbitrary[Measure]
+      netWeightMeasure  <- arbitrary[Measure]
+      tariffQuantity    <- arbitrary[Measure]
+    } yield GoodsMeasure(grossMassMeasure.unitCode.map(_ => grossMassMeasure),
+      netWeightMeasure.unitCode.map(_ => netWeightMeasure),
+      tariffQuantity.unitCode.map(_ => tariffQuantity))
   }
 
   def intGreaterThan(min: Int): Gen[Int] =
