@@ -581,6 +581,18 @@ governmentAgencyGoodsItem.sellerDetails.address.postcode=Postcode
 governmentAgencyGoodsItem.sellerDetails.communication.id=Phone number
 governmentAgencyGoodsItem.sellerDetails.id=EORI number
 
+## Goods item commodity details
+
+governmentAgencyGoodsItem.commodityDetails.title=Commodity details
+governmentAgencyGoodsItem.commodityDetails.heading=Commodity details
+governmentAgencyGoodsItem.commodityDetails.currencyId=Currency
+governmentAgencyGoodsItem.commodityDetails.value=Amount
+governmentAgencyGoodsItem.commodityDetails.dutyRegimeCode=Preference
+governmentAgencyGoodsItem.commodityDetails.netWeightMeasure=Net mass
+governmentAgencyGoodsItem.commodityDetails.tariffQuantity=Supplementary units
+governmentAgencyGoodsItem.commodityDetails.grossMassMeasure=Gross mass
+governmentAgencyGoodsItem.commodityDetails.description=Description of goods
+
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Government agency goods item
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
