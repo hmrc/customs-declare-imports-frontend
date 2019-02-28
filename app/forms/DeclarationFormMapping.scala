@@ -492,10 +492,10 @@ object DeclarationFormMapping {
 
   val commodityMapping = mapping(
     "description" -> optional(text.verifying("Description should be less than equal to 512 characters", _.length <= 512)),
-    "classification" -> ignored[Seq[Classification]](Seq.empty),
+    "classifications" -> seq(classificationMapping),
     "dangerousGoods" -> ignored[Seq[DangerousGoods]](Seq.empty),
     "dutyTaxFees" -> seq(dutyTaxFeeMapping),
-    "dutyTaxFees" -> optional(goodsMeasureMapping),
+    "goodsMeasure" -> optional(goodsMeasureMapping),
     "invoiceLine" -> optional(invoiceLineMapping),
     "transportEquipments" -> ignored[Seq[TransportEquipment]](Seq.empty)
   )(Commodity.apply)(Commodity.unapply)

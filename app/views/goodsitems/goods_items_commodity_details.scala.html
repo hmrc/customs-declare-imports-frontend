@@ -24,35 +24,38 @@
 
 @main_template(messages("governmentAgencyGoodsItem.commodityDetails.title")) {
 
+@helpers.form(action = controllers.goodsitems.routes.GoodsItemsCommodityDetailsController.onSubmit()) {
+
 @components.back_link()
 
 @components.error_summary(form.errors)
 
-<fieldset>
-    <legend>
-        <h1 class="heading-large">@messages("governmentAgencyGoodsItem.commodityDetails.heading")</h1>
-    </legend>
+    <fieldset>
+        <legend>
+            <h1 class="heading-large">@messages("governmentAgencyGoodsItem.commodityDetails.heading")</h1>
+        </legend>
 
-    @components.input_select(form("invoiceLine.itemChargeAmount.currencyId"),
-                             messages("governmentAgencyGoodsItem.commodityDetails.currencyId"),
-                             config.Options.currencyTypes)
-    @components.input_text(form("invoiceLine.itemChargeAmount.value"),
-                           messages("governmentAgencyGoodsItem.commodityDetails.value"))
-    @components.input_text(form("dutyTaxFees[0].dutyRegimeCode"),
-                           messages("governmentAgencyGoodsItem.commodityDetails.dutyRegimeCode"))
-    @components.input_text(form("goodsMeasure.netWeightMeasure.value"),
-                           messages("governmentAgencyGoodsItem.commodityDetails.netWeightMeasure"))
-    @components.input_text(form("goodsMeasure.tariffQuantity.value"),
-                           messages("governmentAgencyGoodsItem.commodityDetails.tariffQuantity"))
-    @components.input_text(form("goodsMeasure.grossMassMeasure.value"),
-                           messages("governmentAgencyGoodsItem.commodityDetails.grossMassMeasure"))
-    @components.input_text(form("description"),
-                           messages("governmentAgencyGoodsItem.commodityDetails.description"))
+        @components.input_select(form("invoiceLine.itemChargeAmount.currencyId"),
+                                 messages("governmentAgencyGoodsItem.commodityDetails.currencyId"),
+                                 config.Options.currencyTypes)
+        @components.input_text(form("invoiceLine.itemChargeAmount.value"),
+                               messages("governmentAgencyGoodsItem.commodityDetails.value"))
+        @components.input_text(form("dutyTaxFees[0].dutyRegimeCode"),
+                               messages("governmentAgencyGoodsItem.commodityDetails.dutyRegimeCode"))
+        @components.input_text(form("goodsMeasure.netWeightMeasure.value"),
+                               messages("governmentAgencyGoodsItem.commodityDetails.netWeightMeasure"))
+        @components.input_text(form("goodsMeasure.tariffQuantity.value"),
+                               messages("governmentAgencyGoodsItem.commodityDetails.tariffQuantity"))
+        @components.input_text(form("goodsMeasure.grossMassMeasure.value"),
+                               messages("governmentAgencyGoodsItem.commodityDetails.grossMassMeasure"))
+        @components.input_text(form("description"),
+                               messages("governmentAgencyGoodsItem.commodityDetails.description"))
 
-</fieldset>
+    </fieldset>
 
-<button id="Add" name="submit">
-    @messages("common.button.continue")
-</button>
+    <button id="Add" name="submit">
+        @messages("common.button.continue")
+    </button>
 
+    }
 }
