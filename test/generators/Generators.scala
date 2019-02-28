@@ -91,6 +91,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
   def nonEmptyString: Gen[String] =
     arbitrary[String] suchThat (_.nonEmpty)
 
+  def fixedLengthString(size: Int): Gen[String] =
+    listOfN(size, arbitrary[Char]).map(_.mkString)
+
   def stringsWithMaxLength(maxLength: Int): Gen[String] =
     for {
       length <- choose(1, maxLength)
@@ -410,8 +413,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
   }
 
   implicit val arbitraryTransportEquipment = Arbitrary {
-    stringsWithMaxLength(17)
-      .suchThat(_.nonEmpty)
+    nonEmptyString
+      .map(_.take(17))
       .map(s => TransportEquipment(1, Some(s)))
   }
 
@@ -612,11 +615,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
     for {
       specificTaxBaseQuantity <- arbitrary[Measure]
       taxRateNumeric <- posDecimal(16, 2)
-      typeCode <- option(nonEmptyString.map(_.take(3)))
-      quataOrderNo <- option(nonEmptyString.map(_.take(6)))
+      typeCode <- option(fixedLengthString(3))
+      quataOrderNo <- option(fixedLengthString(6))
       payment <- arbitraryPayment.arbitrary
       specificTaxBaseQuantityOpt = zip(specificTaxBaseQuantity.value, specificTaxBaseQuantity.unitCode).map(_ => specificTaxBaseQuantity)
-      if (typeCode.exists(_.length == 3) && quataOrderNo.exists(_.length == 6))
     } yield DutyTaxFee(None, None, None, specificTaxBaseQuantityOpt, Some(taxRateNumeric), typeCode, quataOrderNo, Some(payment))
   }
 
@@ -632,7 +634,12 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
       dutyTaxFees <- varListOf(5)(arbitrary[DutyTaxFee])
       classifications <- varListOf(5)(arbitrary[Classification])
       transportEquipments <- varListOf(5)(arbitrary[TransportEquipment])
-    } yield Commodity(dutyTaxFees = dutyTaxFees, classifications =classifications, transportEquipments =transportEquipments)
+    } yield {
+      Commodity(
+        dutyTaxFees = dutyTaxFees,
+        classifications = classifications,
+        transportEquipments = transportEquipments)
+    }
   }
 
   implicit val arbitraryCustomsValuation: Arbitrary[CustomsValuation] = Arbitrary {

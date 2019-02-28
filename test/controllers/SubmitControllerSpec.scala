@@ -28,6 +28,7 @@ import play.api.test.Helpers._
 import services.CustomsDeclarationsResponse
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
 import uk.gov.hmrc.http.cache.client.CacheMap
+import views.html.submit_failure
 
 import scala.concurrent.Future
 
@@ -36,9 +37,52 @@ class SubmitControllerSpec extends CustomsSpec
   with Generators
   with EndpointBehaviours {
 
+  def view(): String = submit_failure()(fakeRequest, messages, appConfig).body
+
   def controller(user: SignedInUser, lrn: Option[String]) =
     new SubmitController(new FakeActions(Some(user), localReferenceNumber = lrn), mockCustomsCacheService, mockCustomsDeclarationsConnector)
 
+  "onFailure" should {
+
+    "return OK" when {
+      "user is signed in" in {
+
+        forAll(arbitrary[SignedInUser], nonEmptyString) { (user, lrn) =>
+
+          val result = controller(user, Some(lrn)).onFailure(fakeRequest)
+
+          status(result) mustBe OK
+          contentAsString(result) mustBe view()
+        }
+      }
+    }
+
+    "return UNAUTHORIZED" when {
+
+      "user doesn't have an eori" in {
+
+        forAll(arbitrary[UnauthenticatedUser], nonEmptyString) { (user, lrn) =>
+
+          val result = controller(user.user, Some(lrn)).onFailure(fakeRequest)
+
+          status(result) mustBe UNAUTHORIZED
+        }
+      }
+    }
+
+    "return BAD_REQUEST" when {
+
+      "user doesn't have a lrn" in {
+
+        forAll { user: SignedInUser =>
+
+          val result = controller(user, None).onFailure(fakeRequest)
+
+          status(result) mustBe BAD_REQUEST
+        }
+      }
+    }
+  }
   
   "onSubmit" should {
 

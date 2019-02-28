@@ -57,7 +57,7 @@ extends CustomsController {
           .upsert(req.eori, CacheKey.containerIdNos)(
             () => Seq(transport),
             transports => {
-              val prevSeqNum = transports.maxBy(_.sequenceNumeric).sequenceNumeric
+              val prevSeqNum = transports.map(_.sequenceNumeric).fold(0)(_.max(_))
               transport.copy(sequenceNumeric = prevSeqNum + 1) +: transports
             })
           .map(_ => Redirect(routes.ContainerIdentificationNumberController.onPageLoad()))
