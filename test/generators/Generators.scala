@@ -21,7 +21,7 @@ import domain._
 import forms.DeclarationFormMapping.Date
 import forms.ObligationGuaranteeForm
 import models.ChangeReasonCode
-import org.scalacheck.Arbitrary._
+import org.scalacheck.Arbitrary.{arbitrary, _}
 import org.scalacheck.Gen._
 import org.scalacheck.{Arbitrary, Gen, Shrink}
 import play.api.libs.json.{JsString, JsValue}
@@ -89,6 +89,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   def nonEmptyString: Gen[String] =
     arbitrary[String] suchThat (_.nonEmpty)
+
+  def fixedLengthString(size: Int): Gen[String] =
+    listOfN(size, arbitrary[Char]).map(_.mkString)
 
   def stringsWithMaxLength(maxLength: Int): Gen[String] =
     for {
@@ -386,6 +389,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       origins <- Gen.listOfN(1, arbitraryOrigin.arbitrary)
       packagings <- Gen.listOfN(1, arbitraryPackaging.arbitrary)
       previousDocuments <- Gen.listOfN(1, arbitraryPreviousDocument.arbitrary)
+      commodity <- option(arbitrary[Commodity])
     } yield {
       GovernmentAgencyGoodsItem(
         customsValueAmount = customsValueAmount,
@@ -404,14 +408,15 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
         packagings = packagings,
         previousDocuments = previousDocuments,
         ucr = ucr,
-        valuationAdjustment = valuationAdjustment)
+        valuationAdjustment = valuationAdjustment,
+        commodity =commodity)
     }
   }
 
   implicit val arbitraryTransportEquipment = Arbitrary {
-    stringsWithMaxLength(17)
-      .suchThat(_.nonEmpty)
-      .map(s => TransportEquipment(0, Some(s)))
+    nonEmptyString
+      .map(_.take(17))
+      .map(s => TransportEquipment(1, Some(s)))
   }
 
   implicit val arbitraryChargeDeduction: Arbitrary[ChargeDeduction] = Arbitrary {
@@ -582,8 +587,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       specificTaxBaseQuantity <- arbitrary[Measure]
       taxRateNumeric <- posDecimal(16, 2)
-      typeCode <- option(nonEmptyString.map(_.take(3)))
-      quataOrderNo <- option(nonEmptyString.map(_.take(6)))
+      typeCode <- option(fixedLengthString(3))
+      quataOrderNo <- option(fixedLengthString(6))
       payment <- arbitraryPayment.arbitrary
       specificTaxBaseQuantityOpt = zip(specificTaxBaseQuantity.value, specificTaxBaseQuantity.unitCode).map(_ => specificTaxBaseQuantity)
       dutyRegimeCode  <- option(intBetweenRange(0, 999).map(_.toString))
@@ -601,16 +606,18 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryCommodity: Arbitrary[Commodity] = Arbitrary {
     for {
       description     <- option(nonEmptyString.map(_.take(512)))
-      classifications <- Gen.listOfN(1, arbitrary[Classification])
-      dutyTaxFees     <- Gen.listOfN(1, arbitrary[DutyTaxFee])
+      classifications <- varListOf(5)(arbitrary[Classification])
+      dutyTaxFees <- varListOf(5)(arbitrary[DutyTaxFee])
       goodsMeasure    <- option(arbitrary[GoodsMeasure])
       invoiceLine     <- option(arbitrary[InvoiceLine])
+      transportEquipments <- varListOf(5)(arbitrary[TransportEquipment])
     } yield Commodity(
       description = description,
       classifications = classifications,
       dutyTaxFees = dutyTaxFees,
       goodsMeasure = goodsMeasure,
-      invoiceLine = invoiceLine
+      invoiceLine = invoiceLine,
+      transportEquipments = transportEquipments
     )
   }
 

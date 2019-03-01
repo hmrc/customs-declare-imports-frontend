@@ -25,10 +25,12 @@
     title = messages("governmentAgencyGoodsItem.title"),
     bodyClasses = None) {
 
+    @components.back_link()
+
     <h1 class="heading-large">@messages("governmentAgencyGoodsItem.title")</h1>
 
         @if(govAgencyGoodsItems.nonEmpty) {
-            <p>@messages("governmentAgencyGoodsItem.numberGovAgencyGoodsItems") @govAgencyGoodsItems.size</p>
+            <p>@govAgencyGoodsItems.size @messages("governmentAgencyGoodsItem.numberGovAgencyGoodsItems")</p>
 
             <table>
                 <thead>
@@ -44,6 +46,7 @@
                         <th scope="col">@messages("governmentAgencyGoodsItem.dutyTaxFees")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItem.chargeDeductions")</th>
                         <th scope="col">@messages("governmentAgencyGoodsItem.classifications")</th>
+                        <th scope="col">@messages("governmentAgencyGoodsItem.transportEquipments")</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,6 +63,7 @@
                         <td>@goodsItem.commodity.fold(0)(_.dutyTaxFees.size)</td>
                         <td>@goodsItem.customsValuation.fold(0)(_.chargeDeductions.size)</td>
                         <td>@goodsItem.commodity.fold(0)(_.classifications.size)</td>
+                        <td>@goodsItem.commodity.fold(0)(_.transportEquipments.size)</td>
                     </tr>
                 }
                 </tbody>
