@@ -75,6 +75,12 @@ trait Lenses extends OptionValues {
       GenLens(_.totalPackageQuantity, a => _.copy(totalPackageQuantity = a))
   }
 
+  object NamedEntityWithAddress {
+
+    val id: GenLens[NamedEntityWithAddress, Option[String]] =
+      GenLens(_.id, a => _.copy(id = a))
+  }
+
   object CacheMapLens {
 
     private def mapProperty[T: Reads: Writes](id: CacheKey[T]): GenLens[CacheMap, T] =

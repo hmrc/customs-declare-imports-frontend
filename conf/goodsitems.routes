@@ -47,3 +47,9 @@ POST  /add-classifications    controllers.goodsitems.ClassificationsController.o
 
 GET   /add-container-details    controllers.goodsitems.TransportEquipmentController.onPageLoad()
 POST  /add-container-details    controllers.goodsitems.TransportEquipmentController.onSubmit()
+
+GET   /consignee                controllers.goodsitems.ConsigneeController.onPageLoad()
+POST  /consignee                controllers.goodsitems.ConsigneeController.onSubmit()
+
+GET   /consignor                controllers.goodsitems.ConsignorController.onPageLoad()
+POST  /consignor                controllers.goodsitems.ConsignorController.onSubmit()
