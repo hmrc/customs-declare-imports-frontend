@@ -106,7 +106,7 @@ pages.locationOfGoods.form.legend=Location of goods
 
 pages.warehouseAndCustomsOffices.title=Warehouse and customs offices
 pages.warehouseAndCustomsOffices.form.legend=Warehouse and customs offices
-pages.warehouseAndCustomsOffices.h2.warehouseDetails=Details of warehouse goods are being held
+pages.warehouseAndCustomsOffices.h2.warehouseDetails=2/7 Details of warehouse goods are being held
 pages.warehouseAndCustomsOffices.h2.customsOfficeDetails=Details of customs office
 
 pages.deliveryTerms.title=Delivery terms
@@ -371,11 +371,11 @@ invoiceAndCurrency.exchangeCurrencyAmount=Exchange Rate
 
 warehouseAndCustomsOffices.title=Warehouse and customs offices
 warehouseAndCustomsOffices.heading=Warehouse and customs offices
-warehouseAndCustomsOffices.warehouse.id=Warehouse Identifier
-warehouseAndCustomsOffices.warehouse.typeCode=Warehouse Type
-warehouseAndCustomsOffices.presentationOffice=Details of customs office
-warehouseAndCustomsOffices.supervisingOffice=Supervising customs office
-warehouseAndCustomsOffices.h2.warehouseDetails=Details of warehouse goods are being held
+warehouseAndCustomsOffices.warehouse.id=Warehouse identifier
+warehouseAndCustomsOffices.warehouse.typeCode=Warehouse type
+warehouseAndCustomsOffices.presentationOffice=5/26 Details of customs office
+warehouseAndCustomsOffices.supervisingOffice=5/27 Supervising customs office
+warehouseAndCustomsOffices.h2.warehouseDetails=2/7 Details of warehouse goods are being held
 warehouseAndCustomsOffices.h2.customsOfficeDetails=Details of customs office
 
 ## Importer details
@@ -412,7 +412,7 @@ buyerDetails.id=3/27 EORI number
 
 ## Location of goods
 locationOfGoods.title=Location of goods
-locationOfGoods.heading=Location of goods
+locationOfGoods.heading=5/23 Location of goods
 locationOfGoods.goodsLocation.name=Identification of location
 locationOfGoods.goodsLocation.id=Additional identifier
 locationOfGoods.goodsLocation.typeCode=Type of location
@@ -421,9 +421,9 @@ locationOfGoods.goodsLocationAddress.postcodeId=Postcode
 locationOfGoods.goodsLocationAddress.cityName=City
 locationOfGoods.goodsLocationAddress.countryCode=Country
 locationOfGoods.goodsLocationAddress.typeCode=Qualifier of the identification
-locationOfGoods.destination.countryCode=Country of destination code
-locationOfGoods.exportCountry.id=Country of dispatch/export code
-locationOfGoods.loadingLocation.id=Airport code
+locationOfGoods.destination.countryCode=5/8 Country of destination code
+locationOfGoods.exportCountry.id=5/14 Country of dispatch/export code
+locationOfGoods.loadingLocation.id=5/21 Airport code
 
 ## Summary of goods
 summaryOfGoods.title=About the goods
