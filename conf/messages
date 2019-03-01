@@ -428,18 +428,18 @@ locationOfGoods.loadingLocation.id=Airport code
 ## Summary of goods
 summaryOfGoods.title=About the goods
 summaryOfGoods.heading=About the goods
-summaryOfGoods.totalPackage=Total packages
-summaryOfGoods.grossMass.value=Gross mass
+summaryOfGoods.totalPackage=6/18 Total packages
+summaryOfGoods.grossMass.value=6/5 Gross mass
 
 ## Transport
 transport.title=Transport
 transport.heading=Transport
-transport.containerCode=Container
-transport.borderTransportMeans.modeCode=Mode of transport at border
-transport.arrivalTransportMeans.modeCode=Inland mode of transport
-transport.arrivalTransportMeans.identificationTypeCode=Identity of means of transport on arrival - Type of Identification
-transport.arrivalTransportMeans.id=Identity of means of transport on arrival - Identification Number
-transport.borderTransportMeans.registrationNationalityCode=Nationality of active means of transport crossing the border
+transport.containerCode=7/2 Container
+transport.borderTransportMeans.modeCode=7/4 Mode of transport at border
+transport.arrivalTransportMeans.modeCode=7/5 Inland mode of transport
+transport.arrivalTransportMeans.identificationTypeCode=7/9 Identity of means of transport on arrival - Type of Identification
+transport.arrivalTransportMeans.id=7/9 Identity of means of transport on arrival - Identification Number
+transport.borderTransportMeans.registrationNationalityCode=7/15 Nationality of active means of transport crossing the border
 
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
