@@ -470,7 +470,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       amount <- arbitrary[Amount]
       currency <- arbitrary[CurrencyExchange]
-    } yield InvoiceAndCurrency(amount.currencyId.map(_ => amount), currency.currencyTypeCode.map(_ => currency))
+    } yield InvoiceAndCurrency(amount.currencyId.map(_ => amount),
+                               currency.currencyTypeCode.map(_ => currency))
   }
 
   implicit val arbitraryCommunication: Arbitrary[Communication] = Arbitrary {
@@ -592,7 +593,6 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       payment <- arbitraryPayment.arbitrary
       specificTaxBaseQuantityOpt = zip(specificTaxBaseQuantity.value, specificTaxBaseQuantity.unitCode).map(_ => specificTaxBaseQuantity)
       dutyRegimeCode  <- option(intBetweenRange(0, 999).map(_.toString))
-      if (typeCode.exists(_.length == 3) && quataOrderNo.exists(_.length == 6))
     } yield DutyTaxFee(None, None, dutyRegimeCode, specificTaxBaseQuantityOpt, Some(taxRateNumeric), typeCode, quataOrderNo, Some(payment))
   }
 
@@ -605,11 +605,11 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryCommodity: Arbitrary[Commodity] = Arbitrary {
     for {
-      description     <- option(nonEmptyString.map(_.take(512)))
-      classifications <- varListOf(5)(arbitrary[Classification])
-      dutyTaxFees <- varListOf(5)(arbitrary[DutyTaxFee])
-      goodsMeasure    <- option(arbitrary[GoodsMeasure])
-      invoiceLine     <- option(arbitrary[InvoiceLine])
+      description         <- option(nonEmptyString.map(_.take(512)))
+      classifications     <- varListOf(5)(arbitrary[Classification])
+      dutyTaxFees         <- varListOf(5)(arbitrary[DutyTaxFee])
+      goodsMeasure        <- option(arbitrary[GoodsMeasure])
+      invoiceLine         <- option(arbitrary[InvoiceLine])
       transportEquipments <- varListOf(5)(arbitrary[TransportEquipment])
     } yield Commodity(
       description = description,
@@ -639,8 +639,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryInvoiceLine: Arbitrary[InvoiceLine] = Arbitrary {
     for {
       itemChargeAmount <- arbitrary[Amount]
+      if (itemChargeAmount.currencyId.exists(_.nonEmpty))
     } yield {
-      InvoiceLine(itemChargeAmount.currencyId.map(_ => itemChargeAmount))
+      InvoiceLine(Some(itemChargeAmount))
     }
   }
 

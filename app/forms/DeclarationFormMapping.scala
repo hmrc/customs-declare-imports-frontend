@@ -497,7 +497,7 @@ object DeclarationFormMapping {
     "dutyTaxFees" -> seq(dutyTaxFeeMapping),
     "goodsMeasure" -> optional(goodsMeasureMapping),
     "invoiceLine" -> optional(invoiceLineMapping),
-    "transportEquipments" -> ignored[Seq[TransportEquipment]](Seq.empty)
+    "transportEquipments" -> seq(transportEquipmentMapping)
   )(Commodity.apply)(Commodity.unapply)
 }
 
