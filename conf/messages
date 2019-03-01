@@ -313,43 +313,43 @@ contains.optional=When specified, the value of this field must be one of the ava
 
 ## Declarant details
 declarantDetails.title=Declarant'’s details
-declarantDetails.heading=Declarant'’s details
+declarantDetails.heading=3/17 Declarant'’s details
 declarantDetails.name=Name
 declarantDetails.address.line=Street and number
 declarantDetails.address.cityName=City
 declarantDetails.address.countryCode=Country
 declarantDetails.address.postcode=Postcode
-declarantDetails.id=EORI number
+declarantDetails.id=3/18 EORI number
 
 ## References
 references.title=Reference numbers
 references.heading=Reference numbers
-references.typeCode=Declaration type
-references.typerCode=Additional declaration type
-references.traderAssignedReferenceId=Reference number/UCR
-references.functionalReferenceId=LRN
-references.transactionNatureCode=Nature of transaction
+references.typeCode=1/1 Declaration type
+references.typerCode=1/2 Additional declaration type
+references.traderAssignedReferenceId=2/4 Reference number/UCR
+references.functionalReferenceId=2/5 LRN
+references.transactionNatureCode=8/5 Nature of transaction
 
 ## Exporter details
 exporterDetails.title=Exporter'’s details
-exporterDetails.heading=Exporter'’s details
+exporterDetails.heading=3/1 Exporter'’s details
 exporterDetails.name=Name
 exporterDetails.address.line=Street and number
 exporterDetails.address.cityName=City
 exporterDetails.address.country=Country
 exporterDetails.address.postcode=Postcode
-exporterDetails.id=EORI number
+exporterDetails.id=3/2 EORI number
 
 ## Representative details
 representativeDetails.title=Representative'’s details
-representativeDetails.heading=Representative'’s details
+representativeDetails.heading=3/19 Representative'’s details
 representativeDetails.name=Name
 representativeDetails.address.line=Street and number
 representativeDetails.address.cityName=City
 representativeDetails.address.country=Country
 representativeDetails.address.postcode=Postcode
-representativeDetails.id=EORI number
-representativeDetails.statusCode=Status code
+representativeDetails.id=3/20 EORI number
+representativeDetails.statusCode=3/21 Status code
 
 ## Delivery terms
 deliveryTerms.title=Delivery terms
@@ -380,35 +380,35 @@ warehouseAndCustomsOffices.h2.customsOfficeDetails=Details of customs office
 
 ## Importer details
 importerDetails.title=Importer’s details
-importerDetails.heading=Importer’s details
+importerDetails.heading=3/15 Importer’s details
 importerDetails.name=Importer’s name
 importerDetails.address.line=First line of address
 importerDetails.address.city=City
 importerDetails.address.country=Country
 importerDetails.address.postcode=Postcode
-importerDetails.id=EORI number
+importerDetails.id=3/16 EORI number
 
 ## Seller details
 sellerDetails.title=Seller’s details
-sellerDetails.heading=Seller’s details
+sellerDetails.heading=3/24 Seller’s details
 sellerDetails.name=Seller’s name
 sellerDetails.address.line=First line of address
 sellerDetails.address.city=City
 sellerDetails.address.country=Country
 sellerDetails.address.postcode=Postcode
 sellerDetails.communication.id=Phone number
-sellerDetails.id=EORI number
+sellerDetails.id=3/25 EORI number
 
 ## Buyer details
 buyerDetails.title=Buyer’s details
-buyerDetails.heading=Buyer’s details
+buyerDetails.heading=3/26 Buyer’s details
 buyerDetails.name=Buyer’s name
 buyerDetails.address.line=First line of address
 buyerDetails.address.city=City
 buyerDetails.address.country=Country
 buyerDetails.address.postcode=Postcode
 buyerDetails.communication.id=Phone number
-buyerDetails.id=EORI number
+buyerDetails.id=3/27 EORI number
 
 ## Location of goods
 locationOfGoods.title=Location of goods
