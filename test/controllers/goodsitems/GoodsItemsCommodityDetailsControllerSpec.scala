@@ -23,13 +23,15 @@ import generators.Generators
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen
+import org.scalacheck.Gen.option
 import org.scalatest.OptionValues
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.{Commodity, GovernmentAgencyGoodsItem}
+import uk.gov.hmrc.wco.dec.{Commodity, DutyTaxFee, GovernmentAgencyGoodsItem}
 import views.html.goodsitems.goods_items_commodity_details
 
 class GoodsItemsCommodityDetailsControllerSpec extends CustomsSpec
@@ -151,7 +153,15 @@ class GoodsItemsCommodityDetailsControllerSpec extends CustomsSpec
 
       "valid data is provided" in {
 
-        forAll { (user: SignedInUser, commodity: Commodity, goodsItem: GovernmentAgencyGoodsItem) =>
+        val plainData = for {
+          commodity <- arbitrary[Commodity]
+          dutyRegimeCode <- Gen.option(intBetweenRange(0, 999).map(_.toString))
+        } yield {
+          commodity.copy(dutyTaxFees = Seq(DutyTaxFee(dutyRegimeCode = dutyRegimeCode)))
+        }
+
+        forAll(arbitrary[SignedInUser], plainData, arbitrary[GovernmentAgencyGoodsItem]) {
+          (user, commodity, goodsItem) =>
 
           withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(goodsItem)) {
             val request = fakeRequest.withFormUrlEncodedBody(asFormParams(commodity): _*)
