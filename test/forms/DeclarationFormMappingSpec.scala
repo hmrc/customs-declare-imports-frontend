@@ -1036,6 +1036,18 @@ class DeclarationFormMappingSpec extends WordSpec
         }
       }
 
+      "functionalReferenceId is empty" in {
+
+        forAll { references: References =>
+
+            val data = references.copy(functionalReferenceId = "")
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("LRN is required"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
       "transactionNatureCode contains more than 2 digits" in {
 
         forAll(arbitrary[References], intOutsideRange(-9, 99)) {

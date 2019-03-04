@@ -446,10 +446,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val arbitraryReferences: Arbitrary[References] = Arbitrary {
     for {
-      typeCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
-      typerCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(1)))
-      traderId <- option(nonEmptyString.map(_.take(35)))
-      funcRefId <- arbitrary[String].map(_.take(22))
+      typeCode   <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
+      typerCode  <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(1)))
+      traderId   <- option(nonEmptyString.map(_.take(35)))
+      funcRefId  <- nonEmptyString.map(_.take(22))
       natureCode <- option(choose[Int](-9, 99))
     } yield {
       References(typeCode, typerCode, traderId, funcRefId, natureCode)
