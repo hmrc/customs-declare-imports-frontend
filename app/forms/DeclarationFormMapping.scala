@@ -107,7 +107,7 @@ object DeclarationFormMapping {
   case class Date(day: Int, month: Int, year: Int) {
 
     override def toString: String =
-      s"$year${df.format(month)}${df.format(year)}"
+      s"$year${df.format(month)}${df.format(day)}"
 
     private val df = new DecimalFormat("00")
   }
