@@ -254,9 +254,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryOrigin: Arbitrary[Origin] = Arbitrary {
     for {
       countryCode <- preferentialCountryGen
-      typeCode <- option(choose[Int](1, 9))
-      if (typeCode.nonEmpty)
-    } yield Origin(Some(countryCode), None)
+    } yield Origin(Some(countryCode))
   }
 
   implicit val arbitraryRoleBasedParty: Arbitrary[RoleBasedParty] = Arbitrary {
@@ -402,8 +400,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
         additionalDocuments = additionalDocuments,
         additionalInformations = additionalInformations,
         aeoMutualRecognitionParties = aeoMutualRecognitionParties,
-        destination = destination,
         domesticDutyTaxParties = domesticParties,
+        destination = destination,
         exportCountry = exportCountry,
         governmentProcedures = governmentProcedures,
         manufacturers = manufacturers,
@@ -412,7 +410,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
         previousDocuments = previousDocuments,
         ucr = ucr,
         valuationAdjustment = valuationAdjustment,
-        commodity =commodity)
+        commodity =commodity
+      )
     }
   }
 
@@ -424,9 +423,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryChargeDeduction: Arbitrary[ChargeDeduction] = Arbitrary {
     for {
-      typeCode <- alphaStr.suchThat(_.nonEmpty).map(_.take(2))
-      amount <- arbitrary[Amount]
-      if typeCode.length == 2 || amount.currencyId.nonEmpty
+      typeCode <- listOfN(2, alphaChar).map(_.mkString)
+      amount   <- arbitrary[Amount]
     } yield {
       ChargeDeduction(Some(typeCode), amount.currencyId.map(_ => amount))
     }
