@@ -163,6 +163,12 @@ confirmationpage.p.part3=for progress updates.
 
 lrn.missing=No reference provided
 
+#missing LRN page
+missingLrn.title=Your submission has been unsuccessful this time.
+missingLrn.heading=Your submission has been unsuccessful this time.
+missingLrn.info=Please {0}.
+missingLrn.link=start a new declaration
+
 ## cancel an import pages
 cancelpage.titleAndHeader=Cancel import declaration
 cancelpage.button.cancel=Cancel Declaration

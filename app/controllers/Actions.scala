@@ -114,9 +114,11 @@ class LRNAction(errorHandler: ErrorHandler, cache: CustomsCacheService)(implicit
   override protected def refine[A](request: EORIRequest[A]): Future[Either[Result, LRNRequest[A]]] = {
     val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
 
-    cache.getByKey(request.eori, CacheKey.references)(hc, implicitly, implicitly).map {
-      _.map(e => LRNRequest(request, e.functionalReferenceId))
-        .toRight(BadRequest(errorHandler.badRequestTemplate(request)))
+    cache.getByKey(request.eori, CacheKey.references)(hc, implicitly, implicitly)
+      .map {
+        _.filter(_.functionalReferenceId.nonEmpty)
+         .map(e => LRNRequest(request, e.functionalReferenceId))
+         .toRight(BadRequest(errorHandler.missingLRNTemplate(request)))
     }
   }
 }
