@@ -106,7 +106,7 @@ pages.locationOfGoods.form.legend=Location of goods
 
 pages.warehouseAndCustomsOffices.title=Warehouse and customs offices
 pages.warehouseAndCustomsOffices.form.legend=Warehouse and customs offices
-pages.warehouseAndCustomsOffices.h2.warehouseDetails=Details of warehouse goods are being held
+pages.warehouseAndCustomsOffices.h2.warehouseDetails=2/7 Details of warehouse goods are being held
 pages.warehouseAndCustomsOffices.h2.customsOfficeDetails=Details of customs office
 
 pages.deliveryTerms.title=Delivery terms
@@ -313,106 +313,106 @@ contains.optional=When specified, the value of this field must be one of the ava
 
 ## Declarant details
 declarantDetails.title=Declarant'’s details
-declarantDetails.heading=Declarant'’s details
+declarantDetails.heading=3/17 Declarant'’s details
 declarantDetails.name=Name
 declarantDetails.address.line=Street and number
 declarantDetails.address.cityName=City
 declarantDetails.address.countryCode=Country
 declarantDetails.address.postcode=Postcode
-declarantDetails.id=EORI number
+declarantDetails.id=3/18 EORI number
 
 ## References
 references.title=Reference numbers
 references.heading=Reference numbers
-references.typeCode=Declaration type
-references.typerCode=Additional declaration type
-references.traderAssignedReferenceId=Reference number/UCR
-references.functionalReferenceId=LRN
-references.transactionNatureCode=Nature of transaction
+references.typeCode=1/1 Declaration type
+references.typerCode=1/2 Additional declaration type
+references.traderAssignedReferenceId=2/4 Reference number/UCR
+references.functionalReferenceId=2/5 LRN
+references.transactionNatureCode=8/5 Nature of transaction
 
 ## Exporter details
 exporterDetails.title=Exporter'’s details
-exporterDetails.heading=Exporter'’s details
+exporterDetails.heading=3/1 Exporter'’s details
 exporterDetails.name=Name
 exporterDetails.address.line=Street and number
 exporterDetails.address.cityName=City
 exporterDetails.address.country=Country
 exporterDetails.address.postcode=Postcode
-exporterDetails.id=EORI number
+exporterDetails.id=3/2 EORI number
 
 ## Representative details
 representativeDetails.title=Representative'’s details
-representativeDetails.heading=Representative'’s details
+representativeDetails.heading=3/19 Representative'’s details
 representativeDetails.name=Name
 representativeDetails.address.line=Street and number
 representativeDetails.address.cityName=City
 representativeDetails.address.country=Country
 representativeDetails.address.postcode=Postcode
-representativeDetails.id=EORI number
-representativeDetails.statusCode=Status code
+representativeDetails.id=3/20 EORI number
+representativeDetails.statusCode=3/21 Status code
 
 ## Delivery terms
 deliveryTerms.title=Delivery terms
-deliveryTerms.heading=Delivery terms
+deliveryTerms.heading=4/1 Delivery terms
 deliveryTerms.tradeTerms.conditionCode=INCOTERM code
-deliveryTerms.tradeTerms.conditionCode.hint=International Commercial Terms for the Declaration. Delivery terms code must be provided for declarations using valuation method 1 (transaction value of imported goods).
-deliveryTerms.tradeTerms.locationId=United Nations Code for Trade and Transport Locations (UN/LOCODE code)
-deliveryTerms.tradeTerms.locationName=Location Name
+deliveryTerms.tradeTerms.conditionCode.hint=International Commercial Terms for the declaration. Delivery terms code must be provided for declarations using valuation method 1 (transaction value of imported goods).
+deliveryTerms.tradeTerms.locationId=United Nations code for trade and transport locations (UN/LOCODE code)
+deliveryTerms.tradeTerms.locationName=Location name
 
 ## Invoice and currency
-invoiceAndCurrency.title=Invoice and Currency
-invoiceAndCurrency.heading=Invoice and Currency
-invoiceAndCurrency.invoiceCurrencyId=Invoice Currency
-invoiceAndCurrency.invoiceAmount=Invoice Amount
-invoiceAndCurrency.exchangeCurrencyId=Currency ID
-invoiceAndCurrency.exchangeCurrencyAmount=Exchange Rate
+invoiceAndCurrency.title=Invoice and currency
+invoiceAndCurrency.heading=Invoice and currency
+invoiceAndCurrency.invoiceCurrencyId=4/10 Invoice currency
+invoiceAndCurrency.invoiceAmount=4/11 Invoice amount
+invoiceAndCurrency.exchangeCurrencyId=4/10 Currency ID
+invoiceAndCurrency.exchangeCurrencyAmount=4/15 Exchange rate
 
 ## Warehouse and customs offices
 
 warehouseAndCustomsOffices.title=Warehouse and customs offices
 warehouseAndCustomsOffices.heading=Warehouse and customs offices
-warehouseAndCustomsOffices.warehouse.id=Warehouse Identifier
-warehouseAndCustomsOffices.warehouse.typeCode=Warehouse Type
-warehouseAndCustomsOffices.presentationOffice=Details of customs office
-warehouseAndCustomsOffices.supervisingOffice=Supervising customs office
-warehouseAndCustomsOffices.h2.warehouseDetails=Details of warehouse goods are being held
+warehouseAndCustomsOffices.warehouse.id=Warehouse identifier
+warehouseAndCustomsOffices.warehouse.typeCode=Warehouse type
+warehouseAndCustomsOffices.presentationOffice=5/26 Details of customs office
+warehouseAndCustomsOffices.supervisingOffice=5/27 Supervising customs office
+warehouseAndCustomsOffices.h2.warehouseDetails=2/7 Details of warehouse goods are being held
 warehouseAndCustomsOffices.h2.customsOfficeDetails=Details of customs office
 
 ## Importer details
 importerDetails.title=Importer’s details
-importerDetails.heading=Importer’s details
+importerDetails.heading=3/15 Importer’s details
 importerDetails.name=Importer’s name
 importerDetails.address.line=First line of address
 importerDetails.address.city=City
 importerDetails.address.country=Country
 importerDetails.address.postcode=Postcode
-importerDetails.id=EORI number
+importerDetails.id=3/16 EORI number
 
 ## Seller details
 sellerDetails.title=Seller’s details
-sellerDetails.heading=Seller’s details
+sellerDetails.heading=3/24 Seller’s details
 sellerDetails.name=Seller’s name
 sellerDetails.address.line=First line of address
 sellerDetails.address.city=City
 sellerDetails.address.country=Country
 sellerDetails.address.postcode=Postcode
 sellerDetails.communication.id=Phone number
-sellerDetails.id=EORI number
+sellerDetails.id=3/25 EORI number
 
 ## Buyer details
 buyerDetails.title=Buyer’s details
-buyerDetails.heading=Buyer’s details
+buyerDetails.heading=3/26 Buyer’s details
 buyerDetails.name=Buyer’s name
 buyerDetails.address.line=First line of address
 buyerDetails.address.city=City
 buyerDetails.address.country=Country
 buyerDetails.address.postcode=Postcode
 buyerDetails.communication.id=Phone number
-buyerDetails.id=EORI number
+buyerDetails.id=3/27 EORI number
 
 ## Location of goods
 locationOfGoods.title=Location of goods
-locationOfGoods.heading=Location of goods
+locationOfGoods.heading=5/23 Location of goods
 locationOfGoods.goodsLocation.name=Identification of location
 locationOfGoods.goodsLocation.id=Additional identifier
 locationOfGoods.goodsLocation.typeCode=Type of location
@@ -421,25 +421,25 @@ locationOfGoods.goodsLocationAddress.postcodeId=Postcode
 locationOfGoods.goodsLocationAddress.cityName=City
 locationOfGoods.goodsLocationAddress.countryCode=Country
 locationOfGoods.goodsLocationAddress.typeCode=Qualifier of the identification
-locationOfGoods.destination.countryCode=Country of destination code
-locationOfGoods.exportCountry.id=Country of dispatch/export code
-locationOfGoods.loadingLocation.id=Airport code
+locationOfGoods.destination.countryCode=5/8 Country of destination code
+locationOfGoods.exportCountry.id=5/14 Country of dispatch/export code
+locationOfGoods.loadingLocation.id=5/21 Airport code
 
 ## Summary of goods
 summaryOfGoods.title=About the goods
 summaryOfGoods.heading=About the goods
-summaryOfGoods.totalPackage=Total packages
-summaryOfGoods.grossMass.value=Gross mass
+summaryOfGoods.totalPackage=6/18 Total packages
+summaryOfGoods.grossMass.value=6/5 Gross mass
 
 ## Transport
 transport.title=Transport
 transport.heading=Transport
-transport.containerCode=Container
-transport.borderTransportMeans.modeCode=Mode of transport at border
-transport.arrivalTransportMeans.modeCode=Inland mode of transport
-transport.arrivalTransportMeans.identificationTypeCode=Identity of means of transport on arrival - Type of Identification
-transport.arrivalTransportMeans.id=Identity of means of transport on arrival - Identification Number
-transport.borderTransportMeans.registrationNationalityCode=Nationality of active means of transport crossing the border
+transport.containerCode=7/2 Container
+transport.borderTransportMeans.modeCode=7/4 Mode of transport at border
+transport.arrivalTransportMeans.modeCode=7/5 Inland mode of transport
+transport.arrivalTransportMeans.identificationTypeCode=7/9 Identity of means of transport on arrival - Type of Identification
+transport.arrivalTransportMeans.id=7/9 Identity of means of transport on arrival - Identification Number
+transport.borderTransportMeans.registrationNationalityCode=7/15 Nationality of active means of transport crossing the border
 
 ## Obligation guarantees
 obligationGuarantees.title=Obligation guarantees
@@ -485,17 +485,16 @@ domesticDutyTaxParties.table.empty=No additional fiscal references available
 domesticDutyTaxParties.add=Add additional fiscal reference
 
 ## Add Previous Documents
-addPreviousDocument.title=Previous Documents
-addPreviousDocument.heading=Previous Documents
-addPreviousDocument.categoryCode=Document Category
+addPreviousDocument.title=Previous documents
+addPreviousDocument.heading=2/1 Previous documents
+addPreviousDocument.categoryCode=Document category
 addPreviousDocument.id=Document Reference
-addPreviousDocument.typeCode=Document Type
-addPreviousDocument.lineNumeric=Goods Item Identifier
-addPreviousDocument.table.heading=Previous Document added
-addPreviousDocument.table.multiple.heading=Previous Documents added
-addPreviousDocument.table.empty=No Previous Documents available
-addPreviousDocument.addPreviousDocumentButton=Add Previous Document
-addPreviousDocument.goodsitem.title=Goods Item Previous Documents
+addPreviousDocument.typeCode=Document type
+addPreviousDocument.lineNumeric=Goods item identifier
+addPreviousDocument.table.heading=Previous document added
+addPreviousDocument.table.multiple.heading=Previous documents added
+addPreviousDocument.addPreviousDocumentButton=Add previous document
+addPreviousDocument.goodsitem.title=Goods item previous documents
 
 ## Add Additions and Deductions
 addAdditionsAndDeductions.title=Additions and Deductions
@@ -549,7 +548,7 @@ addDeferredPayment.addDeferredPaymentButton=Add Deferred Payment
 ## Goods item exporter details
 
 governmentAgencyGoodsItem.exporterDetails.title=Exporter'’s details
-governmentAgencyGoodsItem.exporterDetails.heading=Exporter'’s details
+governmentAgencyGoodsItem.exporterDetails.heading=3/1 Exporter'’s details
 governmentAgencyGoodsItem.exporterDetails.name=Name
 governmentAgencyGoodsItem.exporterDetails.address.line=Street and number
 governmentAgencyGoodsItem.exporterDetails.address.cityName=City

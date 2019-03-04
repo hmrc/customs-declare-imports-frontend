@@ -28,16 +28,17 @@
 
         @components.error_summary(form.errors)
 
-        <h1 class="heading-large">@messages("invoiceAndCurrency.heading")</h1>
-
         <fieldset>
+            <legend>
+                <h1 class="heading-large">@messages("invoiceAndCurrency.heading")</h1>
+            </legend>
             @components.input_select(form("invoice.currencyId"), messages("invoiceAndCurrency.invoiceCurrencyId"), config.Options.currencyTypes)
             @components.input_text(form("invoice.value"), messages("invoiceAndCurrency.invoiceAmount"))
             @components.input_select(form("currency.currencyTypeCode"), messages("invoiceAndCurrency.exchangeCurrencyId"), config.Options.currencyTypes)
             @components.input_text(form("currency.rateNumeric"), messages("invoiceAndCurrency.exchangeCurrencyAmount"))
         </fieldset>
 
-        <button id="Add" name="submit">
+        <button id="Add" name="submit" class="button">
             @messages("common.button.continue")
         </button>
 

@@ -29,23 +29,23 @@
 
         @components.error_summary(form.errors)
 
-               <fieldset>
-                <legend>
-                    <h1 class="heading-large">@messages("deliveryTerms.heading")</h1>
-                </legend>
-                   @components.input_select(
-                       form("conditionCode"),
-                       messages("deliveryTerms.tradeTerms.conditionCode"),
-                       config.Options.incoTermCodes,
-                       hint = Some(messages("deliveryTerms.tradeTerms.conditionCode.hint"))
-                   )
-                   @components.input_text(form("locationId"), messages("deliveryTerms.tradeTerms.locationId"))
-                   @components.input_text(form("locationName"), messages("deliveryTerms.tradeTerms.locationName"))
+         <fieldset>
+          <legend>
+            <h1 class="heading-large">@messages("deliveryTerms.heading")</h1>
+          </legend>
+             @components.input_select(
+                 form("conditionCode"),
+                 messages("deliveryTerms.tradeTerms.conditionCode"),
+                 config.Options.incoTermCodes,
+                 hint = Some(messages("deliveryTerms.tradeTerms.conditionCode.hint"))
+             )
+             @components.input_text(form("locationId"), messages("deliveryTerms.tradeTerms.locationId"))
+             @components.input_text(form("locationName"), messages("deliveryTerms.tradeTerms.locationName"))
 
-               </fieldset>
+         </fieldset>
 
-                <button id="Add" name="submit">
-                    @messages("common.button.continue")
-                </button>
+          <button id="Add" name="submit" class="button">
+              @messages("common.button.continue")
+          </button>
     }
 }
