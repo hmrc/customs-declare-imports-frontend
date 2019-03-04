@@ -493,7 +493,8 @@ object DeclarationFormMapping {
   val commodityDutyTaxFeeMapping = mapping (
     "adValoremTaxBaseAmount" -> ignored[Option[Amount]](None),
     "deductAmount" -> ignored[Option[Amount]](None),
-    "dutyRegimeCode" -> optional(text.verifying("Duty regime code should be less than or equal to 3 characters", _.length <= 3)),
+    "dutyRegimeCode" -> optional(text.verifying("Duty regime code should be less than or equal to 3 characters", _.length <= 3)
+      .verifying("Preference must be numeric character", isInt)),
     "specificTaxBaseQuantity" -> ignored[Option[Measure]](None),
     "taxRateNumeric" -> ignored[Option[BigDecimal]](None),
     "typeCode" -> ignored[Option[String]](None),
