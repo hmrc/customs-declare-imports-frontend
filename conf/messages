@@ -353,19 +353,19 @@ representativeDetails.statusCode=3/21 Status code
 
 ## Delivery terms
 deliveryTerms.title=Delivery terms
-deliveryTerms.heading=Delivery terms
+deliveryTerms.heading=4/1 Delivery terms
 deliveryTerms.tradeTerms.conditionCode=INCOTERM code
-deliveryTerms.tradeTerms.conditionCode.hint=International Commercial Terms for the Declaration. Delivery terms code must be provided for declarations using valuation method 1 (transaction value of imported goods).
-deliveryTerms.tradeTerms.locationId=United Nations Code for Trade and Transport Locations (UN/LOCODE code)
-deliveryTerms.tradeTerms.locationName=Location Name
+deliveryTerms.tradeTerms.conditionCode.hint=International Commercial Terms for the declaration. Delivery terms code must be provided for declarations using valuation method 1 (transaction value of imported goods).
+deliveryTerms.tradeTerms.locationId=United Nations code for trade and transport locations (UN/LOCODE code)
+deliveryTerms.tradeTerms.locationName=Location name
 
 ## Invoice and currency
-invoiceAndCurrency.title=Invoice and Currency
-invoiceAndCurrency.heading=Invoice and Currency
-invoiceAndCurrency.invoiceCurrencyId=Invoice Currency
-invoiceAndCurrency.invoiceAmount=Invoice Amount
-invoiceAndCurrency.exchangeCurrencyId=Currency ID
-invoiceAndCurrency.exchangeCurrencyAmount=Exchange Rate
+invoiceAndCurrency.title=Invoice and currency
+invoiceAndCurrency.heading=Invoice and currency
+invoiceAndCurrency.invoiceCurrencyId=4/10 Invoice currency
+invoiceAndCurrency.invoiceAmount=4/11 Invoice amount
+invoiceAndCurrency.exchangeCurrencyId=4/10 Currency ID
+invoiceAndCurrency.exchangeCurrencyAmount=4/15 Exchange rate
 
 ## Warehouse and customs offices
 
