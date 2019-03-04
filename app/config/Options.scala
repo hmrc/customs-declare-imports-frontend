@@ -658,6 +658,31 @@ class Options {
     "ZW" -> "ZW"
     )
 
+  val groupCountryTypes: Seq[(String, String)] = Seq(
+    "G009" -> "G009",
+    "G022" -> "G022",
+    "G029" -> "G029",
+    "G030" -> "G030",
+    "G033" -> "G033",
+    "G038" -> "G038",
+    "G039" -> "G039",
+    "G044"-> "G044",
+    "G050" -> "G050",
+    "G062" -> "G062",
+    "G065" -> "G065",
+    "G068" -> "G068",
+    "G073" -> "G073",
+    "G083" -> "G083",
+    "G087" -> "G087",
+    "G110" -> "G110",
+    "G111" -> "G111",
+    "G112" -> "G112",
+    "G117" -> "G117",
+    "G124" -> "G124"
+  )
+
+  val preferentialCountryTypes: Seq[(String, String)] = countryTypes ++ groupCountryTypes
+
   val governmentProcedureTypes: Seq[(String, String)] = Seq(
     "10" -> "10",
     "11" -> "11",

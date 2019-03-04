@@ -124,6 +124,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   def countryGen: Gen[String] = oneOf(config.Options.countryOptions.map(_._1))
 
+  def preferentialCountryGen: Gen[String] =
+    oneOf(config.Options.preferentialCountryTypes).map(_._1)
+
   private def zip[A, B](fa: Option[A], fb: Option[B]): Option[(A, B)] =
     fa.flatMap(a => fb.map(b => (a, b)))
 
@@ -250,7 +253,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryOrigin: Arbitrary[Origin] = Arbitrary {
     for {
-      countryCode <- countryGen
+      countryCode <- preferentialCountryGen
       typeCode <- option(choose[Int](1, 9))
       if (typeCode.nonEmpty)
     } yield Origin(Some(countryCode), None)
@@ -258,7 +261,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryRoleBasedParty: Arbitrary[RoleBasedParty] = Arbitrary {
     for {
-      roleCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(3)))
+      roleCode <- option(alphaNumStr.suchThat(_.nonEmpty).map(_.take(3)))
       id       <- maybeOptional(nonEmptyString.map(_.take(17)), roleCode.nonEmpty)
     } yield RoleBasedParty(id, roleCode)
   }

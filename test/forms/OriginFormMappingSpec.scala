@@ -54,7 +54,7 @@ class OriginFormMappingSpec extends WordSpec
         forAll(arbitrary[Origin], arbitrary[String]) {
           (address, countryCode) =>
 
-            whenever(!config.Options.countryOptions.exists(_._1 == countryCode)) {
+            whenever(!config.Options.preferentialCountryTypes.exists(_._1 == countryCode)) {
 
               val data = address.copy(countryCode = Some(countryCode))
               Form(originMapping).fillAndValidate(data).fold(

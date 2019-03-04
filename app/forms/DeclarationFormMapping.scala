@@ -44,6 +44,7 @@ object DeclarationFormMapping {
     s => tuples.exists(_._1 == s)
 
   val isAlpha: String => Boolean = _.matches("^[A-Za-z]*$")
+  val isAlphaNum: String => Boolean = _.matches("^[A-Za-z0-9]*$")
   val isInt: String => Boolean = _.matches("^[0-9-]*$")
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
@@ -222,7 +223,7 @@ object DeclarationFormMapping {
 
   val roleBasedPartyMapping = mapping(
     "id" -> optional(text.verifying("Identifier should be less than or equal to 17 characters", _.length <= 17)), // max 17 chars
-    "roleCode" -> optional(text.verifying("Role code should be 3 characters and must contain only A-Z characters", (code => code.length <= 3 && isAlpha(code)))) // max 3 chars
+    "roleCode" -> optional(text.verifying("Role code should be 3 characters and must contain only A-Z, 0-9 characters", code => code.length <= 3 && isAlphaNum(code))) // max 3 chars
   )(RoleBasedParty.apply)(RoleBasedParty.unapply)
     .verifying("You must provide an Identifier or Role code", require1Field[RoleBasedParty](_.id, _.roleCode))
 
@@ -233,7 +234,7 @@ object DeclarationFormMapping {
     .verifying("To add procedure codes you must provide Current Code or Previous code", require1Field[GovernmentProcedure](_.currentCode, _.previousCode))
 
   val originMapping = mapping(
-    "countryCode" -> text.verifying("Country of origin is invalid", code => config.Options.countryOptions.exists(_._1 == code)), // max 4 chars //expects ISO-3166-1 alpha2 code
+    "countryCode" -> text.verifying("Country of origin is invalid", code => config.Options.preferentialCountryTypes.exists(_._1 == code.toUpperCase)), // max 4 chars //expects ISO-3166-1 alpha2 code
     "typeCode" -> optional(number.verifying("Origin type must be a digit and should be between 1-9", (i => i > 0 &&  i <= 9))) // max 3 chars
   )((countryCode:String, typeCode:Option[Int]) => Origin(Some(countryCode), None, typeCode.map(_.toString)))(Origin.unapply(_).map(o=> (o._1.getOrElse(""), o._3.map(_.toInt))))
   val packagingMapping =
