@@ -77,13 +77,6 @@ class AddPreviousDocumentsSpec
       view() must include(input)
     }
 
-    "not display previous documents table if previous document is not available" in {
-
-      val doc = asDocument(view(form, emptyPreviousDocuments))
-
-      assertContainsText(doc, messages("addPreviousDocument.table.empty"))
-    }
-
     "display previous documents table heading for single item if previous document is available" in {
 
       forAll{ previousDocument: PreviousDocument =>

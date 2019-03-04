@@ -485,17 +485,16 @@ domesticDutyTaxParties.table.empty=No additional fiscal references available
 domesticDutyTaxParties.add=Add additional fiscal reference
 
 ## Add Previous Documents
-addPreviousDocument.title=Previous Documents
-addPreviousDocument.heading=Previous Documents
-addPreviousDocument.categoryCode=Document Category
+addPreviousDocument.title=Previous documents
+addPreviousDocument.heading=2/1 Previous documents
+addPreviousDocument.categoryCode=Document category
 addPreviousDocument.id=Document Reference
-addPreviousDocument.typeCode=Document Type
-addPreviousDocument.lineNumeric=Goods Item Identifier
-addPreviousDocument.table.heading=Previous Document added
-addPreviousDocument.table.multiple.heading=Previous Documents added
-addPreviousDocument.table.empty=No Previous Documents available
-addPreviousDocument.addPreviousDocumentButton=Add Previous Document
-addPreviousDocument.goodsitem.title=Goods Item Previous Documents
+addPreviousDocument.typeCode=Document type
+addPreviousDocument.lineNumeric=Goods item identifier
+addPreviousDocument.table.heading=Previous document added
+addPreviousDocument.table.multiple.heading=Previous documents added
+addPreviousDocument.addPreviousDocumentButton=Add previous document
+addPreviousDocument.goodsitem.title=Goods item previous documents
 
 ## Add Additions and Deductions
 addAdditionsAndDeductions.title=Additions and Deductions
@@ -549,7 +548,7 @@ addDeferredPayment.addDeferredPaymentButton=Add Deferred Payment
 ## Goods item exporter details
 
 governmentAgencyGoodsItem.exporterDetails.title=Exporter'’s details
-governmentAgencyGoodsItem.exporterDetails.heading=Exporter'’s details
+governmentAgencyGoodsItem.exporterDetails.heading=3/1 Exporter'’s details
 governmentAgencyGoodsItem.exporterDetails.name=Name
 governmentAgencyGoodsItem.exporterDetails.address.line=Street and number
 governmentAgencyGoodsItem.exporterDetails.address.cityName=City
