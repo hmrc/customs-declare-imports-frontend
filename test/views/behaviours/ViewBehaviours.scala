@@ -89,12 +89,6 @@ trait ViewBehaviours extends ViewSpecBase with PropertyChecks {
 
     "behave like a page with a table" must {
 
-      "display empty table heading" in {
-
-        val doc = asDocument(view(Seq.empty))
-
-        assertContainsText(doc, messages(s"$messageKeyPrefix.table.empty"))
-      }
 
       "display a table heading for single item" in {
 
