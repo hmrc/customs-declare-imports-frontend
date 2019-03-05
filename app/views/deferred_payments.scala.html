@@ -29,32 +29,35 @@
     @components.back_link()
 
     @components.error_summary(form.errors)
-
-        <h1 class="heading-large">@messages("addDeferredPayment.heading")</h1>
-
-        @if(!additionalDocuments.isEmpty) {
-            @if(additionalDocuments.size == 1) {
-                <p>@additionalDocuments.size @messages("addDeferredPayment.table.heading")</p>
-            } else {
-                <p>@additionalDocuments.size @messages("addDeferredPayment.table.multiple.heading")</p>
-            }
-        }
-
-        @components.table.table(
-            HtmlTable(
-                      messages("addDeferredPayment.id"),
-                      messages("addDeferredPayment.categoryCode"),
-                      messages("addDeferredPayment.typeCode")
-            )(additionalDocuments.map(a => (a.id.getOrElse(""),
-                                      a.categoryCode.getOrElse(""),
-                                      a.typeCode.getOrElse("")))))
         <fieldset>
+            <legend>
+                <h1 class="heading-large">@messages("addDeferredPayment.heading")</h1>
+            </legend>
+
+            @if(!additionalDocuments.isEmpty) {
+                @if(additionalDocuments.size == 1) {
+                    <p>@additionalDocuments.size @messages("addDeferredPayment.table.heading")</p>
+                } else {
+                    <p>@additionalDocuments.size @messages("addDeferredPayment.table.multiple.heading")</p>
+                }
+                <div class="form-group">
+                    @components.table.table(
+                        HtmlTable(
+                          messages("addDeferredPayment.id"),
+                          messages("addDeferredPayment.categoryCode"),
+                          messages("addDeferredPayment.typeCode")
+                        )(additionalDocuments.map(a => (a.id.getOrElse(""),
+                          a.categoryCode.getOrElse(""),
+                          a.typeCode.getOrElse("")))))
+                </div>
+            }
+
             @components.input_text(form("id"), messages("addDeferredPayment.id"))
             @components.input_text(form("categoryCode"), messages("addDeferredPayment.categoryCode"))
             @components.input_text(form("typeCode"), messages("addDeferredPayment.typeCode"))
         </fieldset>
 
-        <button id="Add" name="submit">
+        <button id="Add" name="submit" class="button">
             @messages("addDeferredPayment.addDeferredPaymentButton")
         </button>
 
