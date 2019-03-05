@@ -36,31 +36,31 @@
  @components.back_link()
 
  @components.error_summary(form.errors)
+  <fieldset>
+    <legend>
+      <h1 class="heading-large">@messages(s"$messageKeyPrefix.heading")</h1>
+    </legend>
 
- <h1 class="heading-large">@messages(s"$messageKeyPrefix.heading")</h1>
+    @if(!roleBasedParties.isEmpty) {
+      @if(roleBasedParties.size == 1) {
+       <p>@messages(s"$messageKeyPrefix.table.heading")</p>
+      } else {
+       <p>@messages(s"$messageKeyPrefix.table.multiple.heading", roleBasedParties.size)</p>
+      }
+      <div class="form-group">
+        @components.table.table(
+         HtmlTable(
+          messages("roleBasedParty.id"),
+          messages("roleBasedParty.roleCode")
+         )(roleBasedParties.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
+      </div>
+    }
 
- @if(roleBasedParties.isEmpty) {
-  <p>@messages(s"$messageKeyPrefix.table.empty")</p>
- } else {
-  @if(roleBasedParties.size == 1) {
-   <p>@messages(s"$messageKeyPrefix.table.heading")</p>
-  } else {
-   <p>@messages(s"$messageKeyPrefix.table.multiple.heading", roleBasedParties.size)</p>
-  }
- }
+    @components.input_text(form("id"), messages("roleBasedParty.id"))
+    @components.input_text(form("roleCode"), messages("roleBasedParty.roleCode"))
+   </fieldset>
 
- @components.table.table(
-  HtmlTable(
-   messages("roleBasedParty.id"),
-   messages("roleBasedParty.roleCode")
-  )(roleBasedParties.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
-
- <fieldset>
-  @components.input_text(form("id"), messages("roleBasedParty.id"))
-  @components.input_text(form("roleCode"), messages("roleBasedParty.roleCode"))
- </fieldset>
-
- <button id="Add" name="submit">@messages(s"$messageKeyPrefix.add")</button>
+ <button id="Add" name="submit" class="button">@messages(s"$messageKeyPrefix.add")</button>
 
  <a href="@continueUrl.url" class="button" id="Next">
   @messages("common.button.continue")

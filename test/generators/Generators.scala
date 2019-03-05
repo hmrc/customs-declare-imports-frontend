@@ -125,6 +125,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   def countryGen: Gen[String] = oneOf(config.Options.countryOptions.map(_._1))
 
+  def preferentialCountryGen: Gen[String] =
+    oneOf(config.Options.preferentialCountryTypes).map(_._1)
+
   private def zip[A, B](fa: Option[A], fb: Option[B]): Option[(A, B)] =
     fa.flatMap(a => fb.map(b => (a, b)))
 
@@ -251,14 +254,13 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val arbitraryOrigin: Arbitrary[Origin] = Arbitrary {
     for {
-      countryCode <- countryGen
-      typeCode <- some(choose[Int](1, 9))
-    } yield Origin(Some(countryCode), None)
+      countryCode <- preferentialCountryGen
+    } yield Origin(Some(countryCode))
   }
 
   implicit val arbitraryRoleBasedParty: Arbitrary[RoleBasedParty] = Arbitrary {
     for {
-      roleCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(3)))
+      roleCode <- option(alphaNumStr.suchThat(_.nonEmpty).map(_.take(3)))
       id       <- maybeOptional(nonEmptyString.map(_.take(17)), roleCode.nonEmpty)
     } yield RoleBasedParty(id, roleCode)
   }
@@ -398,8 +400,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
         additionalDocuments = additionalDocuments,
         additionalInformations = additionalInformations,
         aeoMutualRecognitionParties = aeoMutualRecognitionParties,
-        destination = destination,
         domesticDutyTaxParties = domesticParties,
+        destination = destination,
         exportCountry = exportCountry,
         governmentProcedures = governmentProcedures,
         manufacturers = manufacturers,
@@ -408,7 +410,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
         previousDocuments = previousDocuments,
         ucr = ucr,
         valuationAdjustment = valuationAdjustment,
-        commodity =commodity)
+        commodity =commodity
+      )
     }
   }
 
@@ -420,9 +423,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val arbitraryChargeDeduction: Arbitrary[ChargeDeduction] = Arbitrary {
     for {
-      typeCode <- alphaStr.suchThat(_.nonEmpty).map(_.take(2))
-      amount <- arbitrary[Amount]
-      if typeCode.length == 2 || amount.currencyId.nonEmpty
+      typeCode <- listOfN(2, alphaChar).map(_.mkString)
+      amount   <- arbitrary[Amount]
     } yield {
       ChargeDeduction(Some(typeCode), amount.currencyId.map(_ => amount))
     }

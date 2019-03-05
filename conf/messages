@@ -472,11 +472,11 @@ authorisationHolder.addAuthorisationHolderButton=Add Authorisation Holder
 
 ## Role based party
 roleBasedParty.id=Identifier
-roleBasedParty.roleCode=Role Code
+roleBasedParty.roleCode=Role code
 
 ## Additional supply chain actors
 additionalSupplyChainActor.title=Additional supply chain actor(s)
-additionalSupplyChainActor.heading=Additional supply chain actor(s)
+additionalSupplyChainActor.heading=3/37 Additional supply chain actor(s)
 additionalSupplyChainActor.table.heading=1 Additional supply chain actor added
 additionalSupplyChainActor.table.multiple.heading={0} Additional supply chain actors added
 additionalSupplyChainActor.table.empty=No Additional supply chain actors available
@@ -494,7 +494,7 @@ domesticDutyTaxParties.add=Add additional fiscal reference
 addPreviousDocument.title=Previous documents
 addPreviousDocument.heading=2/1 Previous documents
 addPreviousDocument.categoryCode=Document category
-addPreviousDocument.id=Document Reference
+addPreviousDocument.id=Document reference
 addPreviousDocument.typeCode=Document type
 addPreviousDocument.lineNumeric=Goods item identifier
 addPreviousDocument.table.heading=Previous document added
@@ -541,15 +541,14 @@ guaranteeType.table.multiple.heading={0} guarantee types added
 guaranteeType.add=Add guarantee type
 
 ## Add Deferred Payments
-addDeferredPayment.title=Deferred Payments
-addDeferredPayment.heading=Deferred Payments
-addDeferredPayment.id=Deferred Payment ID
-addDeferredPayment.categoryCode=Deferred Payment Category
-addDeferredPayment.typeCode=Deferred Payment Type
-addDeferredPayment.table.heading=Deferred Payment added
-addDeferredPayment.table.multiple.heading=Deferred Payments added
-addDeferredPayment.table.empty.heading=No Deferred Payments available
-addDeferredPayment.addDeferredPaymentButton=Add Deferred Payment
+addDeferredPayment.title=Deferred payments
+addDeferredPayment.heading=2/6 Deferred payments
+addDeferredPayment.id=Deferred payment ID
+addDeferredPayment.categoryCode=Deferred payment category
+addDeferredPayment.typeCode=Deferred payment type
+addDeferredPayment.table.heading=Deferred payment added
+addDeferredPayment.table.multiple.heading=Deferred payments added
+addDeferredPayment.addDeferredPaymentButton=Add deferred payment
 
 ## Goods item exporter details
 
