@@ -490,23 +490,11 @@ object DeclarationFormMapping {
     .verifying("Type is required when Id is provided", requireAllDependantFields[Classification](_.id)(_.identificationTypeCode))
     .verifying("Id is required when Type is provided", requireAllDependantFields[Classification](_.identificationTypeCode)(_.id))
 
-  val commodityDutyTaxFeeMapping = mapping (
-    "adValoremTaxBaseAmount" -> ignored[Option[Amount]](None),
-    "deductAmount" -> ignored[Option[Amount]](None),
-    "dutyRegimeCode" -> optional(text.verifying("Duty regime code should be less than or equal to 3 characters", _.length <= 3)
-      .verifying("Preference must be numeric", isInt)),
-    "specificTaxBaseQuantity" -> ignored[Option[Measure]](None),
-    "taxRateNumeric" -> ignored[Option[BigDecimal]](None),
-    "typeCode" -> ignored[Option[String]](None),
-    "quotaOrderId" -> ignored[Option[String]](None),
-    "payment" -> ignored[Option[Payment]](None)
-  )(DutyTaxFee.apply)(DutyTaxFee.unapply)
-
   val commodityMapping = mapping(
     "description" -> optional(text.verifying("Description should be less than equal to 512 characters", _.length <= 512)),
     "classifications" -> seq(classificationMapping),
     "dangerousGoods" -> ignored[Seq[DangerousGoods]](Seq.empty),
-    "dutyTaxFees" -> seq(commodityDutyTaxFeeMapping),
+    "dutyTaxFees" -> seq(dutyTaxFeeMapping),
     "goodsMeasure" -> optional(goodsMeasureMapping),
     "invoiceLine" -> optional(invoiceLineMapping),
     "transportEquipments" -> seq(transportEquipmentMapping)

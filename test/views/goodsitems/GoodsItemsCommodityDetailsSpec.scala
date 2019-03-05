@@ -71,17 +71,6 @@ class GoodsItemsCommodityDetailsSpec extends ViewBehaviours
       }
     }
 
-    "display preference input" in {
-      forAll { commodity: Commodity =>
-
-        val popForm = Form(commodityMapping).fillAndValidate(commodity)
-        val input = input_text(popForm("dutyTaxFees[0].dutyRegimeCode"),
-          messages("governmentAgencyGoodsItem.commodityDetails.dutyRegimeCode"))
-
-        view(popForm) must include(input)
-      }
-    }
-
     "display net weight measure input" in {
       forAll { commodity: Commodity =>
 

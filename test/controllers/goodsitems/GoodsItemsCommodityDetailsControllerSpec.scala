@@ -153,15 +153,7 @@ class GoodsItemsCommodityDetailsControllerSpec extends CustomsSpec
 
       "valid data is provided" in {
 
-        val plainData = for {
-          commodity <- arbitrary[Commodity]
-          dutyRegimeCode <- Gen.option(intBetweenRange(0, 999).map(_.toString))
-        } yield {
-          commodity.copy(dutyTaxFees = Seq(DutyTaxFee(dutyRegimeCode = dutyRegimeCode)))
-        }
-
-        forAll(arbitrary[SignedInUser], plainData, arbitrary[GovernmentAgencyGoodsItem]) {
-          (user, commodity, goodsItem) =>
+        forAll { (user: SignedInUser, commodity: Commodity, goodsItem: GovernmentAgencyGoodsItem) =>
 
           withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(goodsItem)) {
             val request = fakeRequest.withFormUrlEncodedBody(asFormParams(commodity): _*)
