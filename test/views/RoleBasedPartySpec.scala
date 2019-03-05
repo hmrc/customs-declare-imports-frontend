@@ -79,7 +79,7 @@ class RoleBasedPartySpec extends ViewBehaviours
 
           val popForm = form.fillAndValidate(roleBasedParty)
           val html = view(popForm, Seq.empty, messageKeyPrefix)
-          val input = input_text(popForm("roleCode"), "Role Code")
+          val input = input_text(popForm("roleCode"), "Role code")
 
           html must include(input)
         }
@@ -90,7 +90,7 @@ class RoleBasedPartySpec extends ViewBehaviours
         forAll(listOf(arbitrary[RoleBasedParty])) { roles =>
 
           val htmlTable =
-            table(HtmlTable("Identifier", "Role Code")(roles.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
+            table(HtmlTable("Identifier", "Role code")(roles.map(r => (r.id.getOrElse(""), r.roleCode.getOrElse("")))))
           val html = listView(messageKeyPrefix)(roles)
 
           html must include(htmlTable)
