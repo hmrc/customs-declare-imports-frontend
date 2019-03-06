@@ -586,7 +586,8 @@ governmentAgencyGoodsItem.sellerDetails.communication.id=Phone number
 governmentAgencyGoodsItem.sellerDetails.id=EORI number
 
 ## Government agency goods item
-governmentAgencyGoodsItem.title=Goods items
+governmentAgencyGoodsItem.title=Goods item information
+governmentAgencyGoodsItem.heading=Goods items information
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
 governmentAgencyGoodsItem.additionalDocuments=Additional documents
 governmentAgencyGoodsItem.additionalInformation=Additional information
