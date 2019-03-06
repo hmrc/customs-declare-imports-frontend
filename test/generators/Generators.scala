@@ -374,9 +374,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
   implicit val arbitraryGovernmentAgencyGoodsItem: Arbitrary[GovernmentAgencyGoodsItem] = Arbitrary {
     for {
       customsValueAmount <- option(arbitrary[BigDecimal].map(_.max(9999999999999999.99999)))
-      sequenceNumeric <- arbitrary[Int].map(_.max(99999))
+      sequenceNumeric <- intBetweenRange(1, 999)
       statisticalValueAmount <- option(arbitraryAmount.arbitrary)
-      transactionNatureCode <- option(arbitrary[Int].map(_.max(99)))
+      transactionNatureCode <- option(intBetweenRange(0, 99))
       destination <- option(arbitraryDestination.arbitrary)
       ucr <- option(arbitraryUcr.arbitrary)
       exportCountry <- option(arbitraryExportCountry.arbitrary)

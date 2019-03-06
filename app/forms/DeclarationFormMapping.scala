@@ -177,9 +177,9 @@ object DeclarationFormMapping {
     "id" -> optional(text.verifying("id should be less than or equal to 17 characters", _.length <= 17))
   )(LoadingLocation.apply)(LoadingLocation.unapply)
 
-  val valuationAdjustmentMapping = mapping("additionCode" -> optional(
-    text.verifying("valuationAdjustment should be less than or equal to 4 characters",
-      _.length <= 4)))(ValuationAdjustment.apply)(ValuationAdjustment.unapply)
+  val valuationAdjustmentMapping = mapping(
+    "additionCode" -> optional(text.verifying("valuationAdjustment should be less than or equal to 4 characters", _.length <= 4))
+  )(ValuationAdjustment.apply)(ValuationAdjustment.unapply)
 
   val goodsItemValueInformationMapping = mapping(
     "customsValueAmount" -> optional(bigDecimal.verifying("customs Value Amount must not be negative", a => a > 0)),
@@ -481,6 +481,35 @@ object DeclarationFormMapping {
     .verifying("Type is required when Id is provided", requireAllDependantFields[Classification](_.id)(_.identificationTypeCode))
     .verifying("Id is required when Type is provided", requireAllDependantFields[Classification](_.identificationTypeCode)(_.id))
 
+  val goodsItemDetailsMapping = mapping(
+    "sequenceNumeric" -> (number.verifying("Goods item number must contain 3 digits or less", _.toString.length <= 3)),
+    "statisticalValueAmount" -> optional(amountMapping),
+    "transactionNatureCode" -> optional(number.verifying("Goods item number must contain 2 digits or less", _.toString.length <= 2)),
+    "customsValuation" -> optional(customsValuationMapping),
+    "destination" -> optional(destinationMapping),
+    "exportCountry" -> optional(exportCountryMapping),
+    "ucr" -> optional(ucrMapping),
+    "valuationAdjustment" -> optional(valuationAdjustmentMapping)
+  )((a, b, c, d, e, f, g, h) => GovernmentAgencyGoodsItem(
+    sequenceNumeric = a,
+    statisticalValueAmount = b,
+    transactionNatureCode = c,
+    customsValuation = d,
+    destination = e,
+    exportCountry = f,
+    ucr = g,
+    valuationAdjustment = h)) { item =>
+    Some(
+      (item.sequenceNumeric,
+        item.statisticalValueAmount,
+        item.transactionNatureCode,
+        item.customsValuation,
+        item.destination,
+        item.exportCountry,
+        item.ucr,
+        item.valuationAdjustment)
+    )
+  }
 }
 
 case class ObligationGuaranteeForm(guarantees: Seq[ObligationGuarantee] = Seq.empty)
