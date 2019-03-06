@@ -706,6 +706,7 @@ dutytaxefee.heading=Commodity duty tax
 dutytaxefee.table.heading=1 Commodity duty tax added
 dutytaxefee.table.multiple.heading= {0} Commodity duty taxes added
 dutytaxefee.add=Add duty tax
+dutytaxefee.preference=Preference
 dutytaxefee.taxtype=Tax type
 dutytaxefee.unitqualifier=Tax base - unit & qualifier
 dutytaxefee.quantity=Tax base - quantity
