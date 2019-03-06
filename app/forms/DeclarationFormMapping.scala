@@ -481,7 +481,7 @@ object DeclarationFormMapping {
   )(Cancel.apply)(Cancel.unapply)
 
   val classificationMapping = mapping(
-    "id" -> optional(text.verifying("Id must be less than 5 characters", _.length <= 4)),
+    "id" -> optional(text.verifying("Id must be less than 9 characters", _.length <= 8)),
     "identificationTypeCode" -> optional(text)
   )((id,typeCode) => Classification(id,None,typeCode,None))(Classification.unapply(_).map(c => (c._1,c._3)))
     .verifying("Id and Type is required to add classification", require1Field[Classification](_.id, _.identificationTypeCode))

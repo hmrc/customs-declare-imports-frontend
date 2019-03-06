@@ -142,7 +142,7 @@ class ClassificationsControllerSpec extends CustomsSpec
         val badData =
           for {
             classification <- arbitrary[Classification]
-            id <- stringsLongerThan(5)
+            id <- stringsLongerThan(8)
           } yield classification.copy(id = Some(id))
 
         forAll(arbitrary[SignedInUser], badData, goodsItemGen) {
