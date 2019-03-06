@@ -579,6 +579,20 @@ governmentAgencyGoodsItem.sellerDetails.address.postcode=Postcode
 governmentAgencyGoodsItem.sellerDetails.communication.id=Phone number
 governmentAgencyGoodsItem.sellerDetails.id=EORI number
 
+## Goods item goods item details
+
+governmentAgencyGoodsItem.goodsItemDetails.title=Goods item details
+governmentAgencyGoodsItem.goodsItemDetails.heading=Goods item details
+governmentAgencyGoodsItem.goodsItemDetails.sequenceNumeric=Goods item number
+governmentAgencyGoodsItem.goodsItemDetails.traderAssignedReferenceId=Reference number
+governmentAgencyGoodsItem.goodsItemDetails.additionCode=Valuation indicators
+governmentAgencyGoodsItem.goodsItemDetails.countryCode=Country of destination code
+governmentAgencyGoodsItem.goodsItemDetails.exportCountry=Country of dispatch
+governmentAgencyGoodsItem.goodsItemDetails.methodCode=Valuation method
+governmentAgencyGoodsItem.goodsItemDetails.transactionNatureCode=Nature of transaction
+governmentAgencyGoodsItem.goodsItemDetails.value=Statistical value
+governmentAgencyGoodsItem.goodsItemDetails.currencyId=Statistical value - currency
+
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Goods items
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
