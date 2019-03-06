@@ -585,6 +585,18 @@ governmentAgencyGoodsItem.sellerDetails.address.postcode=Postcode
 governmentAgencyGoodsItem.sellerDetails.communication.id=Phone number
 governmentAgencyGoodsItem.sellerDetails.id=EORI number
 
+## Goods item commodity details
+
+governmentAgencyGoodsItem.commodityDetails.title=Commodity details
+governmentAgencyGoodsItem.commodityDetails.heading=Commodity details
+governmentAgencyGoodsItem.commodityDetails.currencyId=Currency
+governmentAgencyGoodsItem.commodityDetails.value=Amount
+governmentAgencyGoodsItem.commodityDetails.dutyRegimeCode=Preference
+governmentAgencyGoodsItem.commodityDetails.netWeightMeasure=Net mass
+governmentAgencyGoodsItem.commodityDetails.tariffQuantity=Supplementary units
+governmentAgencyGoodsItem.commodityDetails.grossMassMeasure=Gross mass
+governmentAgencyGoodsItem.commodityDetails.description=Description of goods
+
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Goods item information
 governmentAgencyGoodsItem.heading=Goods items information
@@ -699,6 +711,7 @@ dutytaxefee.heading=Commodity duty tax
 dutytaxefee.table.heading=1 Commodity duty tax added
 dutytaxefee.table.multiple.heading= {0} Commodity duty taxes added
 dutytaxefee.add=Add duty tax
+dutytaxefee.preference=Preference
 dutytaxefee.taxtype=Tax type
 dutytaxefee.unitqualifier=Tax base - unit & qualifier
 dutytaxefee.quantity=Tax base - quantity

@@ -389,6 +389,16 @@ object DeclarationFormMapping {
     "address" -> optional(addressMapping)
   )(Agent.apply)(Agent.unapply)
 
+  val invoiceLineMapping = mapping(
+    "itemChargeAmount" -> optional(amountMapping)
+  )(InvoiceLine.apply)(InvoiceLine.unapply)
+
+  val goodsMeasureMapping = mapping(
+    "grossMassMeasure" -> optional(measureMapping),
+    "netWeightMeasure" -> optional(measureMapping),
+    "tariffQuantity" -> optional(measureMapping)
+  )(GoodsMeasure.apply)(GoodsMeasure.unapply)
+
   val summaryOfGoodsMapping = mapping(
     "totalPackageQuantity" -> optional(
       number
@@ -463,7 +473,9 @@ object DeclarationFormMapping {
   val dutyTaxFeeMapping = mapping (
     "adValoremTaxBaseAmount" -> ignored[Option[Amount]](None),
     "deductAmount" -> ignored[Option[Amount]](None),
-    "dutyRegimeCode" -> ignored[Option[String]](None),
+    "dutyRegimeCode" -> optional(
+      text.verifying("Duty regime code should be less than or equal to 3 characters", _.length <= 3)
+        .verifying("Preference must be numeric character", isInt)),
     "specificTaxBaseQuantity" -> optional(measureMapping),
     "taxRateNumeric" -> optional(bigDecimal
       .verifying("Tax Rate cannot be greater than 99999999999999.999", _.precision <= 17)
@@ -488,6 +500,15 @@ object DeclarationFormMapping {
     .verifying("Type is required when Id is provided", requireAllDependantFields[Classification](_.id)(_.identificationTypeCode))
     .verifying("Id is required when Type is provided", requireAllDependantFields[Classification](_.identificationTypeCode)(_.id))
 
+  val commodityMapping = mapping(
+    "description" -> optional(text.verifying("Description should be less than equal to 512 characters", _.length <= 512)),
+    "classifications" -> seq(classificationMapping),
+    "dangerousGoods" -> ignored[Seq[DangerousGoods]](Seq.empty),
+    "dutyTaxFees" -> seq(dutyTaxFeeMapping),
+    "goodsMeasure" -> optional(goodsMeasureMapping),
+    "invoiceLine" -> optional(invoiceLineMapping),
+    "transportEquipments" -> seq(transportEquipmentMapping)
+  )(Commodity.apply)(Commodity.unapply)
 }
 
 case class ObligationGuaranteeForm(guarantees: Seq[ObligationGuarantee] = Seq.empty)

@@ -471,7 +471,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
     for {
       amount <- arbitrary[Amount]
       currency <- arbitrary[CurrencyExchange]
-    } yield InvoiceAndCurrency(amount.currencyId.map(_ => amount), currency.currencyTypeCode.map(_ => currency))
+    } yield InvoiceAndCurrency(amount.currencyId.map(_ => amount),
+                               currency.currencyTypeCode.map(_ => currency))
   }
 
   implicit val arbitraryCommunication: Arbitrary[Communication] = Arbitrary {
@@ -621,7 +622,8 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
       quataOrderNo <- option(fixedLengthString(6))
       payment <- arbitraryPayment.arbitrary
       specificTaxBaseQuantityOpt = zip(specificTaxBaseQuantity.value, specificTaxBaseQuantity.unitCode).map(_ => specificTaxBaseQuantity)
-    } yield DutyTaxFee(None, None, None, specificTaxBaseQuantityOpt, Some(taxRateNumeric), typeCode, quataOrderNo, Some(payment))
+      dutyRegimeCode  <- option(intBetweenRange(0, 999).map(_.toString))
+    } yield DutyTaxFee(None, None, dutyRegimeCode, specificTaxBaseQuantityOpt, Some(taxRateNumeric), typeCode, quataOrderNo, Some(payment))
   }
 
   implicit val arbitraryClassification:Arbitrary[Classification] = Arbitrary{
@@ -633,15 +635,20 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val arbitraryCommodity: Arbitrary[Commodity] = Arbitrary {
     for {
-      dutyTaxFees <- varListOf(5)(arbitrary[DutyTaxFee])
-      classifications <- varListOf(5)(arbitrary[Classification])
+      description         <- option(nonEmptyString.map(_.take(512)))
+      classifications     <- varListOf(5)(arbitrary[Classification])
+      dutyTaxFees         <- varListOf(5)(arbitrary[DutyTaxFee])
+      goodsMeasure        <- option(arbitrary[GoodsMeasure])
+      invoiceLine         <- option(arbitrary[InvoiceLine])
       transportEquipments <- varListOf(5)(arbitrary[TransportEquipment])
-    } yield {
-      Commodity(
-        dutyTaxFees = dutyTaxFees,
-        classifications = classifications,
-        transportEquipments = transportEquipments)
-    }
+    } yield Commodity(
+      description = description,
+      classifications = classifications,
+      dutyTaxFees = dutyTaxFees,
+      goodsMeasure = goodsMeasure,
+      invoiceLine = invoiceLine,
+      transportEquipments = transportEquipments
+    )
   }
 
   implicit val arbitraryCustomsValuation: Arbitrary[CustomsValuation] = Arbitrary {
@@ -657,6 +664,25 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
       changeReasonCode <- arbitrary[ChangeReasonCode]
       description <- stringsWithMaxLength(512)
     } yield Cancel(changeReasonCode, description)
+  }
+
+  implicit val arbitraryInvoiceLine: Arbitrary[InvoiceLine] = Arbitrary {
+    for {
+      itemChargeAmount <- arbitrary[Amount]
+      if (itemChargeAmount.currencyId.exists(_.nonEmpty))
+    } yield {
+      InvoiceLine(Some(itemChargeAmount))
+    }
+  }
+
+  implicit val arbitraryGoodsMeasure: Arbitrary[GoodsMeasure] = Arbitrary {
+    for {
+      grossMassMeasure  <- arbitrary[Measure]
+      netWeightMeasure  <- arbitrary[Measure]
+      tariffQuantity    <- arbitrary[Measure]
+    } yield GoodsMeasure(grossMassMeasure.unitCode.map(_ => grossMassMeasure),
+      netWeightMeasure.unitCode.map(_ => netWeightMeasure),
+      tariffQuantity.unitCode.map(_ => tariffQuantity))
   }
 
   def intGreaterThan(min: Int): Gen[Int] =
