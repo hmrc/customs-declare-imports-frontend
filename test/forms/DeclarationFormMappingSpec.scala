@@ -23,15 +23,18 @@ import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
-import play.api.data.Form
+import play.api.data._
+import play.api.data.Forms._
 import uk.gov.hmrc.customs.test.FormMatchers
+import uk.gov.hmrc.customs.test.utils.FormHelpers
 import uk.gov.hmrc.wco.dec.{GovernmentProcedure, _}
 
 class DeclarationFormMappingSpec extends WordSpec
   with MustMatchers
   with PropertyChecks
   with Generators
-  with FormMatchers {
+  with FormMatchers
+  with FormHelpers {
 
   "additionalInformationForm" should {
 
@@ -1247,11 +1250,16 @@ class DeclarationFormMappingSpec extends WordSpec
 
   "amountMapping" should {
 
+    case class Wrapper(value: Amount)
+    val amountGen = arbitrary[Amount].map(Wrapper)
+    val amountMapping =
+      mapping("value" -> Forms.of(DeclarationFormMapping.amountFormatter()))(Wrapper.apply)(Wrapper.unapply)
+
     "bind" when {
 
       "valid values are passed" in {
 
-        forAll { amount: Amount =>
+        forAll(amountGen) { amount =>
 
           Form(amountMapping).fillAndValidate(amount).fold(
             e => fail(s"form should not fail: ${e.errors}"),
@@ -1266,24 +1274,24 @@ class DeclarationFormMappingSpec extends WordSpec
       "currencyId is not a currency" in {
 
         val badData = stringsExceptSpecificValues(config.Options.currencyTypes.map(_._2).toSet)
-        forAll(arbitrary[Amount], badData) {
+        forAll(amountGen, badData) {
           (amount, currency) =>
 
-            val data = amount.copy(currencyId = Some(currency))
-            Form(amountMapping).fillAndValidate(data).fold(
+            val data = amount.value.copy(currencyId = Some(currency))
+            Form(amountMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("Currency is not valid"),
-              _ => fail("form should not succeed")
+              s => fail("form should not succeed")
             )
         }
       }
 
       "value has a precision greater than 16" in {
 
-        forAll(arbitrary[Amount], decimal(17, 30, 0)) {
+        forAll(amountGen, decimal(17, 30, 0)) {
           (amount, deduction) =>
 
-            val data = amount.copy(value = Some(deduction))
-            Form(amountMapping).fillAndValidate(data).fold(
+            val data = amount.value.copy(value = Some(deduction))
+            Form(amountMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("Amount cannot be greater than 99999999999999.99"),
               _ => fail("form should not succeed")
             )
@@ -1294,11 +1302,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
         val badData = choose(3, 10).flatMap(posDecimal(16, _))
 
-        forAll(arbitrary[Amount], badData) {
+        forAll(amountGen, badData) {
           (amount, deduction) =>
 
-            val data = amount.copy(value = Some(deduction))
-            Form(amountMapping).fillAndValidate(data).fold(
+            val data = amount.value.copy(value = Some(deduction))
+            Form(amountMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("Amount cannot have more than 2 decimal places"),
               _ => fail("form should not succeed")
             )
@@ -1307,11 +1315,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "value is less than 0" in {
 
-        forAll(arbitrary[Amount], intLessThan(0)) {
+        forAll(amountGen, intLessThan(0)) {
           (amount, deduction) =>
 
-            val data = amount.copy(value = Some(BigDecimal(deduction)))
-            Form(amountMapping).fillAndValidate(data).fold(
+            val data = amount.value.copy(value = Some(BigDecimal(deduction)))
+            Form(amountMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("Amount must not be negative"),
               _ => fail("form should not succeed")
             )
@@ -1320,11 +1328,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "has a currency with no value" in {
 
-        forAll { amount: Amount =>
+        forAll(amountGen) { amount =>
 
-          whenever(amount.currencyId.nonEmpty) {
+          whenever(amount.value.currencyId.nonEmpty) {
 
-            Form(amountMapping).bind(Map("currencyId" -> amount.currencyId.getOrElse(""))).fold(
+            Form(amountMapping).bind(Map("value.currencyId" -> amount.value.currencyId.getOrElse(""))).fold(
               _ must haveErrorMessage("Amount is required when Currency is provided"),
               _ => fail("form should not succeed")
             )
@@ -1334,11 +1342,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "has a value with no currency" in {
 
-        forAll { amount: Amount =>
+        forAll(amountGen) { amount =>
 
-          whenever(amount.value.nonEmpty) {
+          whenever(amount.value.value.nonEmpty) {
 
-            Form(amountMapping).bind(Map("value" -> amount.value.fold("")(_.toString))).fold(
+            Form(amountMapping).bind(Map("value.value" -> amount.value.value.fold("")(_.toString))).fold(
               _ must haveErrorMessage("Currency is required when Amount is provided"),
               _ => fail("form should not succeed")
             )
