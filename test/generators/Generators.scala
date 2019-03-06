@@ -25,10 +25,11 @@ import org.scalacheck.Arbitrary.{arbitrary, _}
 import org.scalacheck.Gen._
 import org.scalacheck.{Arbitrary, Gen, Shrink}
 import play.api.libs.json.{JsString, JsValue}
+import typeclasses.Monoid
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.wco.dec._
 
-trait Generators extends SignedInUserGen with ViewModelGenerators {
+trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val dontShrinkStrings: Shrink[String] = Shrink.shrinkAny
   implicit val dontShrinkDecimals: Shrink[BigDecimal] = Shrink.shrinkAny
@@ -245,10 +246,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryAdditionalDocument: Arbitrary[AdditionalDocument] = Arbitrary {
     for {
-      id <- option(intBetweenRange(0, 9999999).map(_.toString))
       categoryCode <- option(arbitrary[String].map(_.take(1)))
+      id <- option(intBetweenRange(0, 9999999).map(_.toString))
       typeCode <- option(arbitrary[String].map(_.take(3)))
-    } yield AdditionalDocument(id, categoryCode, typeCode)
+    } yield AdditionalDocument(categoryCode, id, typeCode)
   }
 
   implicit val arbitraryOrigin: Arbitrary[Origin] = Arbitrary {
@@ -273,9 +274,9 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryGovernmentProcedure: Arbitrary[GovernmentProcedure] = Arbitrary {
     for {
-      currentCode <- option(arbitrary[String].map(_.take(2)))
-      previousCode <- option(arbitrary[String].map(_.take(2)))
-      if currentCode.exists(_.nonEmpty) || previousCode.exists(_.nonEmpty)
+      currentCode <- option(nonEmptyString.map(_.take(2)))
+      previousCode <- option(nonEmptyString.map(_.take(2)))
+      if currentCode.nonEmpty || previousCode.nonEmpty
     } yield GovernmentProcedure(currentCode, previousCode)
   }
 
@@ -319,8 +320,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
     for {
       marksNumbersId <- option(nonEmptyString.map(_.take(500)))
       quantity <- option(choose[Int](1, 999))
-      typeCode <- option(nonEmptyString.map(_.take(2)))
-      if (typeCode.exists(_.size == 2))
+      typeCode <- option(listOfN(2, arbitrary[Char]).map(_.mkString))
     } yield Packaging(None, marksNumbersId, quantity, typeCode, None,
       None, None, None, None)
   }
@@ -448,10 +448,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
 
   implicit val arbitraryReferences: Arbitrary[References] = Arbitrary {
     for {
-      typeCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
-      typerCode <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(1)))
-      traderId <- option(nonEmptyString.map(_.take(35)))
-      funcRefId <- arbitrary[String].map(_.take(22))
+      typeCode   <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(2)))
+      typerCode  <- option(alphaStr.suchThat(_.nonEmpty).map(_.take(1)))
+      traderId   <- option(nonEmptyString.map(_.take(35)))
+      funcRefId  <- nonEmptyString.map(_.take(22))
       natureCode <- option(choose[Int](-9, 99))
     } yield {
       References(typeCode, typerCode, traderId, funcRefId, natureCode)
@@ -572,8 +572,37 @@ trait Generators extends SignedInUserGen with ViewModelGenerators {
       case (k, v) => Map[String, JsValue](k -> JsString(v))
     }).map(_.fold(Map())(_ ++ _))
 
-  implicit val arbitraryCacheMap = Arbitrary {
-    Gen.zip(arbitrary[String], mapGen).map { case (k, m) => CacheMap(k, m) }
+  implicit val arbitraryCacheMap: Arbitrary[CacheMap] = Arbitrary {
+
+    import CacheMapLens._
+
+    def list[A]: Gen[A] => Gen[List[A]] = varListOf[A](5)
+
+    List(
+      declarantDetails.set(arbitrary[ImportExportParty]),
+      references.set(arbitrary[References]),
+      exporter.set(arbitrary[ImportExportParty]),
+      representative.set(arbitrary[Agent]),
+      importer.set(arbitrary[ImportExportParty]),
+      tradeTerms.set(arbitrary[TradeTerms]),
+      invoiceAndCurrency.set(arbitrary[InvoiceAndCurrency]),
+      seller.set(arbitrary[ImportExportParty]),
+      buyer.set(arbitrary[ImportExportParty]),
+      summaryOfGoods.set(arbitrary[SummaryOfGoods]),
+      transport.set(arbitrary[Transport]),
+      authorisationHolders.set(list(arbitrary[AuthorisationHolder])),
+      guaranteeReferences.set(list(arbitrary[ObligationGuarantee])),
+      previousDocuments.set(list(arbitrary[PreviousDocument])),
+      additionalDocuments.set(list(arbitrary[AdditionalDocument])),
+      additionalSupplyChainActors.set(list(arbitrary[RoleBasedParty])),
+      domesticDutyTaxParty.set(list(arbitrary[RoleBasedParty])),
+      additionsAndDeductions.set(list(arbitrary[ChargeDeduction])),
+      containerIdNos.set(list(arbitrary[TransportEquipment])),
+      guaranteeTypes.set(list(arbitrary[ObligationGuarantee])),
+      govAgencyGoodsItemsList.set(list(arbitrary[GovernmentAgencyGoodsItem])),
+      warehouseAndCustsoms.set(arbitrary[WarehouseAndCustoms]),
+      locationOfGoods.set(arbitrary[LocationOfGoods])
+    ).foldLeft(const(Monoid.empty[CacheMap])) { case (acc, f) => f(acc) }
   }
 
   implicit val arbitraryPayment: Arbitrary[Payment] = Arbitrary {

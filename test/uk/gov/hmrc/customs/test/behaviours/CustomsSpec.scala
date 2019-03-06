@@ -117,6 +117,15 @@ trait CustomsSpec extends PlaySpec
     test
   }
 
+  def withCacheMap(eori: EORI, cacheMap: Option[CacheMap])(test: => Unit): Unit = {
+    reset(mockCustomsCacheService)
+
+    when(mockCustomsCacheService.fetch(eqTo(eori.value))(any(), any()))
+      .thenReturn(Future.successful(cacheMap))
+
+    test
+  }
+
   // composite template method to be overridden by sub-types to customise the app
   // NB. when overriding, ALWAYS call super.customise(builder) and operate on the return value!
   protected def customise(builder: GuiceApplicationBuilder): GuiceApplicationBuilder = builder.overrides(

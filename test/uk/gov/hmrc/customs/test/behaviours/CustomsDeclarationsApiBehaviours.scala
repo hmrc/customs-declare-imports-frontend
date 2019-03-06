@@ -62,7 +62,7 @@ class MockCustomsDeclarationsConnector(mockConfig : AppConfig, mockhttpClient: H
   val cancellationSchemas: Seq[String] = Seq("/CANCEL_METADATA.xsd","/CANCEL.xsd")
 
   override def submitImportDeclaration(metaData: MetaData, localReferenceNumber: String)
-                                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] =
+                                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] =
     expectedSubmissions.getOrElse(metaData, throw new IllegalArgumentException("Unexpected API submission call"))
 
 

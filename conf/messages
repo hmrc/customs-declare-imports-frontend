@@ -163,6 +163,12 @@ confirmationpage.p.part3=for progress updates.
 
 lrn.missing=No reference provided
 
+#missing LRN page
+missingLrn.title=Your submission has been unsuccessful this time.
+missingLrn.heading=Your submission has been unsuccessful this time.
+missingLrn.info=Please {0}.
+missingLrn.link=start a new declaration
+
 ## cancel an import pages
 cancelpage.titleAndHeader=Cancel import declaration
 cancelpage.button.cancel=Cancel Declaration
@@ -702,6 +708,14 @@ dutytaxefee.total=Total
 dutytaxefee.totalcurrency=Total - currency
 dutytaxefee.paymentmethod=Method of payment
 dutytaxefee.quotaorder=Quota order number
+
+submitFailure.title=Your submission has been unsuccessful.
+submitFailure.heading=Your submission has been unsuccessful.
+submitFailure.listHeading=You can:
+submitFailure.listItem1=contact our Service Support Team on 0300 790 6802 if your second attempt is unsuccessful
+submitFailure.listItem2=return to the {0} page if you want to create a new declaration
+submitFailure.startDecLink=Start a declaration
+submitFailure.link=resubmit
 
 classifications.heading=Classifications
 classifications.table.heading=1 Classification added

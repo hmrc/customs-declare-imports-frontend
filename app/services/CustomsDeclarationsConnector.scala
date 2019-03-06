@@ -43,7 +43,7 @@ class CustomsDeclarationsConnector @Inject()(appConfig: AppConfig,
                                                  httpClient: HttpClient) {
 
   def submitImportDeclaration(metaData: MetaData, localReferenceNumber: String)
-                                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: SignedInUser): Future[CustomsDeclarationsResponse] = {
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CustomsDeclarationsResponse] = {
     postMetaData(appConfig.submitImportDeclarationUri, metaData, localReferenceNumber)
   }
 

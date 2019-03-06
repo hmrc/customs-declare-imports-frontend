@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import config.AppConfig
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+package views.helpers
 
-@contentHeader = {
-  <h1>@Html(heading)</h1>
+import play.twirl.api.Html
+
+object ViewUtils {
+
+  def link(text: String, href: String): Html =
+    Html(s"""<a href="$href">$text</a>""")
 }
-
-@mainContent = {
-  <p>@Html(message)</p>
-}
-
-
-
-@govuk_wrapper(appConfig = appConfig, title = pageTitle, contentHeader = Some(contentHeader), mainContent = mainContent)
