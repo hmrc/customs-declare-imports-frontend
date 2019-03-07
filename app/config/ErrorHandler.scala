@@ -18,7 +18,7 @@ package config
 
 import controllers.routes
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.MessagesApi
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.api.{Configuration, Environment}
 import play.twirl.api.Html
@@ -37,6 +37,16 @@ class ErrorHandler @Inject()(implicit val messagesApi: MessagesApi, val appConfi
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
     views.html.error_template(pageTitle, heading, message)
+
+  def missingLRNTemplate(implicit request: Request[_]): Html = {
+    val homePageLink =
+      views.helpers.ViewUtils.link(messagesApi("missingLrn.link"), routes.LandingController.displayLandingPage().url)
+
+    standardErrorTemplate(
+      messagesApi("missingLrn.title"),
+      messagesApi("missingLrn.heading"),
+      messagesApi("missingLrn.info", homePageLink))
+  }
 
   override def resolveError(rh: RequestHeader, ex: Throwable): Result = {
     implicit val req: Request[_] = Request(rh, "")

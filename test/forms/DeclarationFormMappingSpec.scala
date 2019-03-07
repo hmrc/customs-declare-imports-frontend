@@ -228,11 +228,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "valid values are bound" in {
 
-        forAll(arbitrary[AdditionalDocument]) { arbitraryAddAdditionalDocument =>
+        forAll(arbitrary[AdditionalDocument]) { additionalDocument =>
 
-          Form(additionalDocumentMapping).fillAndValidate(arbitraryAddAdditionalDocument).fold(
+          Form(additionalDocumentMapping).fillAndValidate(additionalDocument).fold(
             error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
-            result => result mustBe arbitraryAddAdditionalDocument
+            result => result mustBe additionalDocument
           )
         }
       }
@@ -242,10 +242,10 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "id length is greater than 7" in {
 
-        forAll(arbitrary[AdditionalDocument], intBetweenRange(9999999, Int.MaxValue)) { (arbitraryAdditionalDocument, invalidId) =>
+        forAll(arbitrary[AdditionalDocument], intBetweenRange(9999999, Int.MaxValue)) { (additionalDocument, invalidId) =>
 
-          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(id = Some(invalidId.toString))).fold(
-            error => error.error("id") must haveMessage("Deferred Payment ID should be less than or equal to 7 characters"),
+          Form(additionalDocumentMapping).fillAndValidate(additionalDocument.copy(id = Some(invalidId.toString))).fold(
+            _ must haveErrorMessage("Deferred Payment ID should be less than or equal to 7 characters"),
             _ => fail("Should not succeed")
           )
         }
@@ -253,10 +253,10 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "categoryCode length is greater than 1" in {
 
-        forAll(arbitrary[AdditionalDocument], minStringLength(2)) { (arbitraryAdditionalDocument, invalidCategoryCode) =>
+        forAll(arbitrary[AdditionalDocument], minStringLength(2)) { (additionalDocument, invalidCategoryCode) =>
 
-          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
-            error => error.error("categoryCode") must haveMessage("Deferred Payment Category should be less than or equal to 1 character"),
+          Form(additionalDocumentMapping).fillAndValidate(additionalDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
+            _ must haveErrorMessage("Deferred Payment Category should be less than or equal to 1 character"),
             _ => fail("Should not succeed")
           )
         }
@@ -264,10 +264,10 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "typeCode length is greater than 3" in {
 
-        forAll(arbitrary[AdditionalDocument], minStringLength(4)) { (arbitraryAdditionalDocument, invalidTypeCode) =>
+        forAll(arbitrary[AdditionalDocument], minStringLength(4)) { (additionalDocument, invalidTypeCode) =>
 
-          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(typeCode = Some(invalidTypeCode))).fold(
-            error => error.error("typeCode") must haveMessage("Deferred Payment Type should be less than or equal to 3 characters"),
+          Form(additionalDocumentMapping).fillAndValidate(additionalDocument.copy(typeCode = Some(invalidTypeCode))).fold(
+            _ must haveErrorMessage("Deferred Payment Type should be less than or equal to 3 characters"),
             _ => fail("Should not succeed")
           )
         }
@@ -1037,6 +1037,18 @@ class DeclarationFormMappingSpec extends WordSpec
             val data = references.copy(functionalReferenceId = refId)
             Form(referencesMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("LRN must be 22 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "functionalReferenceId is empty" in {
+
+        forAll { references: References =>
+
+            val data = references.copy(functionalReferenceId = "")
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("LRN is required"),
               _ => fail("form should not succeed")
             )
         }

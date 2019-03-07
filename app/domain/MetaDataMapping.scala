@@ -34,7 +34,7 @@ object MetaDataMapping {
     TypedIdentifier.values.foldLeft(Monoid.empty[MetaData])((z, a) => z |+| applied(a))
   }
 
-  def asMetaData(cache: CacheMap): TypedIdentifier[_] => MetaData = {
+  private def asMetaData(cache: CacheMap): TypedIdentifier[_] => MetaData = {
 
     case DeclarantDetailsId =>
       MetaData(declaration = Some(Declaration(declarant = cache.getEntry[ImportExportParty](declarantDetails.key))))
