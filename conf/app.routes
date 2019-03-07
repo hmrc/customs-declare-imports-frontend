@@ -71,11 +71,13 @@ POST        /submit-declaration/add-additions-and-deductions   controllers.Addit
 GET         /submit-declaration/add-container-identification-number   controllers.ContainerIdentificationNumberController.onPageLoad()
 POST        /submit-declaration/add-container-identification-number   controllers.ContainerIdentificationNumberController.onSubmit()
 
-GET         /submit-declaration/guarantee-type                  controllers.GuaranteeTypeController.onPageLoad()
+GET         /submit-declaration/guarantee-type                 controllers.GuaranteeTypeController.onPageLoad()
 GET         /submit-declaration/add-guarantee-type             controllers.GuaranteeTypeController.onPageLoad()
 POST        /submit-declaration/add-guarantee-type             controllers.GuaranteeTypeController.onSubmit()
 
-POST        /submit-declaration/submit                         controllers.DeclarationController.onSubmitComplete
+GET         /submit-declaration/submit                         controllers.SubmitController.onSubmit
+GET         /submit-declaration/failed                         controllers.SubmitController.onFailure
+
 POST        /submit-declaration/another                        controllers.DeclarationController.onSubmitComplete
 
 GET         /submit-declaration/success/:conversationId        controllers.DeclarationController.displaySubmitConfirmation(conversationId)
@@ -88,8 +90,9 @@ POST        /submit-declaration-goods/goods-item-value      controllers.Governme
 
 POST        /submit-declaration-goods/add-gov-agency-goods-item     controllers.GovernmentAgencyGoodsItemsController.showGoodsItemPage()
 
-GET       /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.display()
-POST      /submit-declaration-guarantees/add-guarantees     controllers.ObligationGuaranteeController.submit()
+GET         /submit-declaration-guarantees/add-guarantees      controllers.ObligationGuaranteeController.display()
+POST        /submit-declaration-guarantees/add-guarantees      controllers.ObligationGuaranteeController.submit()
 
 GET         /cancel-declaration/:mrn                           controllers.DeclarationController.displayCancelForm(mrn)
+GET         /cancel-declaration/:mrn/failed                    controllers.DeclarationController.displayCancelFailure(mrn)
 POST        /cancel-declaration/:mrn                           controllers.DeclarationController.handleCancelForm(mrn)

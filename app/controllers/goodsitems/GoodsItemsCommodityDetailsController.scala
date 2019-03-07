@@ -26,43 +26,33 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
-import uk.gov.hmrc.wco.dec.ImportExportParty
-import views.html.goodsitems.goods_items_buyer_details
-import config.AppConfig
-import controllers.{Actions, CustomsController}
-import domain.DeclarationFormats._
-import forms.DeclarationFormMapping._
-import javax.inject.Inject
-import play.api.data.Form
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
-import services.CustomsCacheService
-import services.cachekeys.CacheKey
-import uk.gov.hmrc.wco.dec.ImportExportParty
+import uk.gov.hmrc.wco.dec.Commodity
+import views.html.goodsitems.goods_items_commodity_details
+
 import scala.concurrent.{ExecutionContext, Future}
 
-class GoodsItemsBuyerDetailsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
-                                                (implicit appConfig: AppConfig,
-                                                 override val messagesApi: MessagesApi,
-                                                 ec: ExecutionContext) extends CustomsController {
-  val form = Form(importExportPartyMapping)
+class GoodsItemsCommodityDetailsController @Inject()(actions: Actions, cacheService: CustomsCacheService)
+                                                    (implicit appConfig: AppConfig, override val messagesApi: MessagesApi, ec: ExecutionContext)
+  extends CustomsController {
+
+  val form = Form(commodityMapping)
 
   def onPageLoad: Action[AnyContent] = (actions.auth andThen actions.eori andThen actions.goodsItem) { implicit req =>
 
-    val popForm = req.goodsItem.buyer.fold(form)(form.fill)
-    Ok(goods_items_buyer_details(popForm))
+    val popForm = req.goodsItem.commodity.fold(form)(form.fill)
+    Ok(goods_items_commodity_details(popForm))
   }
 
   def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori andThen actions.goodsItem).async {
     implicit request =>
       form.bindFromRequest().fold(
-        (formWithErrors: Form[ImportExportParty]) =>
-          Future.successful(BadRequest(goods_items_buyer_details(formWithErrors))),
-        buyerDetails => {
-          val updatedGoodsItem = request.goodsItem.copy(buyer = Some(buyerDetails))
+        (formWithErrors: Form[Commodity]) =>
+          Future.successful(BadRequest(goods_items_commodity_details(formWithErrors))),
+        commodity => {
+          val updatedGoodsItem = request.goodsItem.copy(commodity = Some(commodity))
 
           cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
-            Redirect(controllers.goodsitems.routes.GoodsItemsCommodityDetailsController.onSubmit())
+            Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
           }
         })
   }

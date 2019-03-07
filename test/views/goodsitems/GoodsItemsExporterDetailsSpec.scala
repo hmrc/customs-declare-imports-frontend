@@ -40,7 +40,7 @@ class GoodsItemsExporterDetailsSpec extends ViewBehaviours
 
   val simpleView: () => Html = () => view()
 
-  val messagePrefix = "exporterDetails"
+  val messagePrefix = "governmentAgencyGoodsItem.exporterDetails"
 
   "government agency goods items exporter details page" must {
 

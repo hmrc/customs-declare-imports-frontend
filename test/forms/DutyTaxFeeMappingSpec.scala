@@ -136,6 +136,17 @@ class DutyTaxFeeMappingSpec extends WordSpec
         }
       }
 
+      "Duty regime code is larger than 3 chars" in {
+
+        forAll(arbitrary[DutyTaxFee], minStringLength(4)) {
+          (taxFee, dutyRegimeCode) =>
+            val data = taxFee.copy(dutyRegimeCode = Some(dutyRegimeCode))
+            Form(dutyTaxFeeMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("Duty regime code should be less than or equal to 3 characters"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
     }
   }
 }

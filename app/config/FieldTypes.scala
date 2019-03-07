@@ -83,5 +83,5 @@ object RadioOption {
   )
 
   def fromTuples(xs: Seq[(String, String)]): Seq[RadioOption] =
-    xs.map { case (x, y) => RadioOption(x, y, y) }
+    xs.map { case (x, y) => RadioOption(x, x, y) }
 }

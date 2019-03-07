@@ -42,6 +42,9 @@ POST  /goods-item-buyer-details       controllers.goodsitems.GoodsItemsBuyerDeta
 GET   /goods-item-details       controllers.goodsitems.GoodsItemsDetailsController.onPageLoad()
 POST  /goods-item-details       controllers.goodsitems.GoodsItemsDetailsController.onSubmit()
 
+GET   /goods-item-commodity-details       controllers.goodsitems.GoodsItemsCommodityDetailsController.onPageLoad()
+POST  /goods-item-commodity-details       controllers.goodsitems.GoodsItemsCommodityDetailsController.onSubmit()
+
 GET   /add-charge-deductions    controllers.goodsitems.AdditionsAndDeductionsController.onPageLoad()
 POST  /add-charge-deductions    controllers.goodsitems.AdditionsAndDeductionsController.onSubmit()
 

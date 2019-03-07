@@ -30,7 +30,7 @@ class OptionMonoidLaws          extends MonoidLaws(option(arbitrary[String]))
 class RecursiveOptionMonoidLaws extends MonoidLaws(option(Generators.arbitraryAmount.arbitrary))
 class Tuple2MonoidLaws          extends MonoidLaws(zip(option(arbitrary[String]), option(arbitrary[Int])))
 class SeqMonoidLaws             extends MonoidLaws[Seq[String]](listOf(arbitrary[String]))
-class CacheMapMonoidLaws        extends MonoidLaws[CacheMap](Generators.arbitraryCacheMap.arbitrary)
+class CacheMapMonoidLaws        extends MonoidLaws[CacheMap](Generators.mapGen.map(CacheMap("", _)))
 class ProductLaws               extends MonoidLaws[RoleBasedParty](Generators.arbitraryRoleBasedParty.arbitrary)
 
 abstract class MonoidLaws[T: Monoid](gen: Gen[T]) extends WordSpec

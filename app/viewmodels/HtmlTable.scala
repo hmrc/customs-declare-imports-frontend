@@ -51,6 +51,13 @@ object HtmlTable {
     new HtmlTable(
       HtmlTableRow(header1, List(header2, header3, header4, header5, header6, header7, header8, header9, header10)),
       values.map { case (a, b, c, d, e, f,g,h,i, j) => HtmlTableRow(a, List(b, c, d, e, f,g,h,i, j)) }) {}
+
+  def apply[A, B](header1: A, header2: A, header3: A, header4: A, header5: A, header6: A, header7: A, header8: A, header9: A, header10: A, header11: A)
+                 (values: Seq[(B, B, B, B, B, B, B, B, B, B, B)]): HtmlTable[A, B] =
+    new HtmlTable(
+      HtmlTableRow(header1, List(header2, header3, header4, header5, header6, header7, header8, header9, header10, header11)),
+      values.map { case (a, b, c, d, e, f,g,h,i, j, k) => HtmlTableRow(a, List(b, c, d, e, f,g,h,i, j, k)) }) {}
+
 }
 
 sealed abstract case class HtmlTableRow[A](value: A, values: Seq[A]) {
