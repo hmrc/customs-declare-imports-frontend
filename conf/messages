@@ -459,16 +459,15 @@ obligationGuarantees.obligationGuaranteesAdded=obligation guarantees added.
 obligationGuarantees.addObligationGuarantees=Add obligation guarantees
 
 ## Authorisation Holder
-authorisationHolder.title=Authorisation Holders
-authorisationHolder.heading=Authorisation Holders
-authorisationHolder.table.heading=Authorisation Holder added
-authorisationHolder.table.multiple.heading=Authorisation Holders added
-authorisationHolder.table.empty=No Authorisation Holder available
-authorisationHolder.table.id=ID
-authorisationHolder.table.categoryCode=Category Code
-authorisationHolder.id=ID
-authorisationHolder.categoryCode=Category Code
-authorisationHolder.addAuthorisationHolderButton=Add Authorisation Holder
+authorisationHolder.title=Authorisation holders
+authorisationHolder.heading=3/39 Authorisation holders
+authorisationHolder.table.heading=Authorisation holder added
+authorisationHolder.table.multiple.heading=Authorisation holders added
+authorisationHolder.table.id=Authorisation holder ID
+authorisationHolder.table.categoryCode=Category code
+authorisationHolder.id=Authorisation holder ID
+authorisationHolder.categoryCode=Category code
+authorisationHolder.addAuthorisationHolderButton=Add authorisation holder
 
 ## Role based party
 roleBasedParty.id=Identifier
@@ -484,10 +483,9 @@ additionalSupplyChainActor.add=Add additional supply chain actor
 
 ## Domestic duty tax parties
 domesticDutyTaxParties.title=Additional fiscal references
-domesticDutyTaxParties.heading=Additional fiscal references
+domesticDutyTaxParties.heading=3/40 Additional fiscal references
 domesticDutyTaxParties.table.heading=1 Additional fiscal reference added
 domesticDutyTaxParties.table.multiple.heading={0} Additional fiscal references added
-domesticDutyTaxParties.table.empty=No additional fiscal references available
 domesticDutyTaxParties.add=Add additional fiscal reference
 
 ## Add Previous Documents
