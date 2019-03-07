@@ -29,26 +29,27 @@
     @components.back_link()
 
     @components.error_summary(form.errors)
-
-    <h1 class="heading-large">@messages("authorisationHolder.heading")</h1>
-
-    @if(authorisationHolders.isEmpty) {
-        <p>@messages("authorisationHolder.table.empty")</p>
-    } else {
-        @if(authorisationHolders.size == 1) {
-            <p>@authorisationHolders.size @messages("authorisationHolder.table.heading")</p>
-        } else {
-            <p>@authorisationHolders.size @messages("authorisationHolder.table.multiple.heading")</p>
-        }
-    }
-
-    @components.table.table(
-        HtmlTable(
-            messages("authorisationHolder.id"),
-            messages("authorisationHolder.categoryCode")
-        )(authorisationHolders.map(a => (a.id.getOrElse(""), a.categoryCode.getOrElse("")))))
-
     <fieldset>
+        <legend>
+            <h1 class="heading-large">@messages("authorisationHolder.heading")</h1>
+        </legend>
+
+        @if(!authorisationHolders.isEmpty) {
+            @if(authorisationHolders.size == 1) {
+                <p>@authorisationHolders.size @messages("authorisationHolder.table.heading")</p>
+            } else {
+                <p>@authorisationHolders.size @messages("authorisationHolder.table.multiple.heading")</p>
+            }
+
+            <div class="form-group">
+                @components.table.table(
+                HtmlTable(
+                    messages("authorisationHolder.id"),
+                    messages("authorisationHolder.categoryCode")
+                )(authorisationHolders.map(a => (a.id.getOrElse(""), a.categoryCode.getOrElse("")))))
+            </div>
+        }
+
         @components.input_text(form("id"), messages("authorisationHolder.id"))
         @components.input_text(form("categoryCode"), messages("authorisationHolder.categoryCode"))
     </fieldset>
