@@ -56,21 +56,14 @@ class AuthorisationHolderSpec
 
     "contain id field" in {
 
-      val input = input_text(form("id"), "ID")
+      val input = input_text(form("id"), "Authorisation holder ID")
       view() must include(input)
     }
 
     "contain category code field" in {
 
-      val input = input_text(form("categoryCode"), "Category Code")
+      val input = input_text(form("categoryCode"), "Category code")
       view() must include(input)
-    }
-
-    "not display authorisation holder table if authorisation holder is not available" in {
-
-      val doc = asDocument(view(form, emptyAuthorisationHolder))
-
-      assertContainsText(doc, messages("authorisationHolder.table.empty"))
     }
 
     "display authorisation holder table heading for single item if authorisation holder is available" in {
@@ -105,7 +98,7 @@ class AuthorisationHolderSpec
         whenever(authorisationHolders.nonEmpty) {
 
           val htmlTable =
-            HtmlTable("ID", "Category Code")(authorisationHolders.map(a => (a.id.getOrElse(""), a.categoryCode.getOrElse(""))))
+            HtmlTable("Authorisation holder ID", "Category code")(authorisationHolders.map(a => (a.id.getOrElse(""), a.categoryCode.getOrElse(""))))
           val tableComponent = table(htmlTable)
           val rendered = view(form, authorisationHolders)
 
