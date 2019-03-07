@@ -27,6 +27,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.{Commodity, GovernmentAgencyGoodsItem}
+import views.html.add_previous_documents
 import views.html.goodsitems.goods_items_details
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -49,10 +50,20 @@ class GoodsItemsDetailsController @Inject()(actions: Actions, cacheService: Cust
         (formWithErrors: Form[GovernmentAgencyGoodsItem]) =>
           Future.successful(BadRequest(goods_items_details(formWithErrors))),
         goodsItem => {
-          println("controller :::::::::::::::::")
-          println(goodsItem)
-          cacheService.insert(request.eori, CacheKey.goodsItem, goodsItem).map { _ =>
-            Redirect(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage())
+
+            val updatedGoodsItem = request.goodsItem.copy(
+              sequenceNumeric = goodsItem.sequenceNumeric,
+              statisticalValueAmount = goodsItem.statisticalValueAmount,
+              transactionNatureCode = goodsItem.transactionNatureCode,
+              customsValuation = goodsItem.customsValuation,
+              destination = goodsItem.destination,
+              exportCountry = goodsItem.exportCountry,
+              ucr = goodsItem.ucr,
+              valuationAdjustment = goodsItem.valuationAdjustment
+            )
+
+          cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
+            Redirect(controllers.goodsitems.routes.GoodsItemsExporterDetailsController.onPageLoad())
           }
         })
   }

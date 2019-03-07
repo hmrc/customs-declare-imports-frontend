@@ -109,7 +109,7 @@ class GoodsItemsDetailsControllerSpec extends CustomsSpec
           val result = controller(Some(user), Some(goodsItem)).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url)
+          redirectLocation(result) mustBe Some(controllers.goodsitems.routes.GoodsItemsExporterDetailsController.onPageLoad().url)
         }
       }
     }
@@ -153,17 +153,25 @@ class GoodsItemsDetailsControllerSpec extends CustomsSpec
 
       "valid data is provided" in {
 
-        forAll { (user: SignedInUser, goodsItem: GovernmentAgencyGoodsItem) =>
+        forAll { (user: SignedInUser, goodsItem: GoodsItemDetails, govGoodsItem: GovernmentAgencyGoodsItem) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(goodsItem)) {
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(goodsItem): _*)
-            await(controller(Some(user), Some(goodsItem)).onSubmit(request))
+          withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(govGoodsItem)) {
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(goodsItem.value): _*)
 
-            println("test::::::::::")
-            println(goodsItem)
+            await(controller(Some(user), Some(govGoodsItem)).onSubmit(request))
+
+            val expectedItem = govGoodsItem.copy(
+              sequenceNumeric = goodsItem.value.sequenceNumeric,
+              statisticalValueAmount = goodsItem.value.statisticalValueAmount,
+              transactionNatureCode = goodsItem.value.transactionNatureCode,
+              customsValuation = goodsItem.value.customsValuation,
+              destination = goodsItem.value.destination,
+              exportCountry = goodsItem.value.exportCountry,
+              ucr = goodsItem.value.ucr,
+              valuationAdjustment = goodsItem.value.valuationAdjustment)
 
             verify(mockCustomsCacheService, atLeastOnce())
-              .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem), eqTo(goodsItem))(any(), any(), any())
+              .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem), eqTo(expectedItem))(any(), any(), any())
           }
         }
       }
