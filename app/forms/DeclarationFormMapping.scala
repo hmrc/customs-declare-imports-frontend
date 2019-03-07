@@ -376,7 +376,7 @@ object DeclarationFormMapping extends Formatters {
   )(Agent.apply)(Agent.unapply)
 
   val invoiceLineMapping = mapping(
-    "itemChargeAmount" -> optional(amountMapping)
+    "itemChargeAmount" -> optional(of(amountFormatter()))
   )(InvoiceLine.apply)(InvoiceLine.unapply)
 
   val goodsMeasureMapping = mapping(
