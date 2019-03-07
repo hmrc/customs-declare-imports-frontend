@@ -160,10 +160,10 @@ class SubmitControllerSpec extends CustomsSpec
 
       "no cache map exists in cache" in {
 
-        forAll { (user: SignedInUser, lrn: String) =>
+        forAll { (user: SignedInUser, lrn: NonEmptyString) =>
 
           withCacheMap(EORI(user.eori.value), None) {
-            val result = controller(user, Some(lrn)).onSubmit(fakeRequest)
+            val result = controller(user, Some(lrn.value)).onSubmit(fakeRequest)
 
             status(result) mustBe SEE_OTHER
             redirectLocation(result) mustBe Some(routes.SubmitController.onFailure().url)

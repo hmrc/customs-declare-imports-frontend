@@ -36,6 +36,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
   implicit val dontShrinkInts: Shrink[Int] = Shrink.shrinkAny
 
   case class GuaranteeType(value: ObligationGuarantee)
+  case class NonEmptyString(value: String)
 
   def genIntersperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
 
@@ -137,6 +138,10 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
   private def maybeOptional[A](g: Gen[A], isOptional: Boolean): Gen[Option[A]] = {
     if (isOptional) option(g)
     else some(g)
+  }
+
+  implicit val arbitraryNonEmptyString: Arbitrary[NonEmptyString] = Arbitrary {
+    nonEmptyString.map(NonEmptyString)
   }
 
   implicit val arbitraryOffice: Arbitrary[Office] = Arbitrary {
