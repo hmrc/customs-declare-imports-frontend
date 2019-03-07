@@ -31,7 +31,7 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{CustomsCacheService, CustomsDeclarationsConnector}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream4xxResponse, Upstream5xxResponse}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, MetaData}
@@ -115,8 +115,20 @@ class DeclarationController @Inject()(actions: Actions, client: CustomsDeclarati
 
   def handleCancelForm(mrn: String): Action[AnyContent] = (actions.auth andThen actions.eori).async { implicit req =>
     cancelForm.bindFromRequest().fold(
-      errors => Future.successful(BadRequest(views.html.cancel_form(mrn, errors))), 
-      success => client.cancelDeclaration(Cancellation(mrn, success.changeReasonCode, success.description)).map(_ => Ok(views.html.cancel_confirmation())))
+      errors  => Future.successful(BadRequest(views.html.cancel_form(mrn, errors))),
+      success =>
+        client
+          .cancelDeclaration(Cancellation(mrn, success.changeReasonCode, success.description))
+          .map(_ => Ok(views.html.cancel_confirmation()))
+          .recover {
+            case Upstream4xxResponse(_, _, _, _) | Upstream5xxResponse(_, _, _) =>
+              Redirect(routes.DeclarationController.displayCancelFailure(mrn))
+          }
+      )
+  }
+
+  def displayCancelFailure(mrn: String): Action[AnyContent] = (actions.auth andThen actions.eori) { implicit req =>
+    Ok(views.html.cancel_failure(mrn))
   }
 
   private def invalid(name: String, data: Map[String, String])(implicit req: AuthenticatedRequest[AnyContent], errors: Map[String, Seq[ValidationError]]): Future[Result] = Future.successful(BadRequest(views.html.generic_view(name, data)))

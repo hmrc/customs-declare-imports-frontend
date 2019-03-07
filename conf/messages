@@ -746,3 +746,11 @@ containerDetails.title=Container details
 containerDetails.heading=Container details
 containerDetails.id=Container identification number
 containerDetails.add=Add container details
+
+cancelFailure.title=Your cancellation request has been unsuccessful.
+cancelFailure.heading=Your cancellation request has been unsuccessful.
+cancelFailure.listHeading=You can:
+cancelFailure.listItem1=go back and try again
+cancelFailure.listItem2=contact our Service Support Team on 0300 790 6802 if your second attempt is unsuccessful
+cancelFailure.listItem3=return to the {0} page if you want to create a new declaration
+cancelFailure.startDecLink=Start a declaration
