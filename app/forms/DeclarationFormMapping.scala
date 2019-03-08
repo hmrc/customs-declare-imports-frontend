@@ -46,7 +46,7 @@ object DeclarationFormMapping extends Formatters {
   val isAlpha: String => Boolean = _.matches("^[A-Za-z]*$")
   val isAlphaNum: String => Boolean = _.matches("^[A-Za-z0-9]*$")
   val isInt: String => Boolean = _.matches("^[0-9-]*$")
-  val notZero: String => Boolean = _.matches("^[1-9-]*$")
+  val notZero: Int => Boolean = _ != 0
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text.verifying("Issuing Authority must be less than 70 characters", _.length <= 70)),
@@ -490,8 +490,8 @@ object DeclarationFormMapping extends Formatters {
 
   val goodsItemDetailsMapping = mapping(
     "sequenceNumeric" -> (number.verifying("Goods item number must contain 3 digits or less", _.toString.length <= 3)
-      .verifying("Goods item number must not contain 0", x => notZero(x.toString))),
-    "statisticalValueAmount" -> optional(amountMapping),
+      .verifying("Goods item number must not be 0", notZero)),
+    "statisticalValueAmount" -> optional(of(amountFormatter())),
     "transactionNatureCode" -> optional(number.verifying("Transaction Nature Code must contain 2 digits or less", _.toString.length <= 2)),
     "customsValuation" -> optional(customsValuationMapping),
     "destination" -> optional(destinationMapping),

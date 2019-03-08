@@ -346,7 +346,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val arbitraryExportCountry: Arbitrary[ExportCountry] = Arbitrary {
     for {
-      id <- oneOf(config.Options.countryTypes.map(_._1)) // either "102" or "304"
+              id <- oneOf(config.Options.countryTypes.map(_._1)) // either "102" or "304"
     } yield ExportCountry(id)
   }
 
