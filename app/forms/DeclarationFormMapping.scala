@@ -52,21 +52,9 @@ object DeclarationFormMapping extends Formatters {
     "roleCode" -> optional(text.verifying("roleCode is only 3 characters", _.length <= 3))
   )(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.apply)(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.unapply)
 
-  val currencyExchangeMapping: Mapping[CurrencyExchange] = mapping(
-    "currencyTypeCode" -> optional(
-      text.verifying("CurrencyTypeCode is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
-    "rateNumeric" -> optional(
-      bigDecimal
-        .verifying("RateNumeric cannot be greater than 9999999.99999", _.precision <= 12)
-        .verifying("RateNumeric cannot have more than 5 decimal places", _.scale <= 5)
-        .verifying("RateNumeric must not be negative", _ >= 0))
-  )(CurrencyExchange.apply)(CurrencyExchange.unapply)
-    .verifying("Exchange rate is required when currency is provided", requireAllDependantFields[CurrencyExchange](_.currencyTypeCode)(_.rateNumeric))
-    .verifying("Currency ID is required when amount is provided", requireAllDependantFields[CurrencyExchange](_.rateNumeric)(_.currencyTypeCode))
-
   val invoiceAndCurrencyMapping = mapping(
     "invoice" -> optional(of(amountFormatter())),
-    "currency" -> optional(currencyExchangeMapping)
+    "currency" -> optional(of(currencyExchangeFormatter))
   )(InvoiceAndCurrency.apply)(InvoiceAndCurrency.unapply)
 
   val tradeTermsMapping = mapping(

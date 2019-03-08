@@ -23,8 +23,8 @@ import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
-import play.api.data._
 import play.api.data.Forms._
+import play.api.data._
 import uk.gov.hmrc.customs.test.FormMatchers
 import uk.gov.hmrc.customs.test.utils.FormHelpers
 import uk.gov.hmrc.wco.dec.{GovernmentProcedure, _}
@@ -538,12 +538,18 @@ class DeclarationFormMappingSpec extends WordSpec
 
   "currencyExchangeMapping" should {
 
+    case class Wrapper(value: CurrencyExchange)
+
+    val currencyGen = arbitrary[CurrencyExchange].map(Wrapper)
+    val currencyExchangeMapping =
+      mapping("value" -> Forms.of(Formatters.currencyExchangeFormatter))(Wrapper.apply)(Wrapper.unapply)
+
     "bind" when {
 
       "valid values are bound" in {
-        forAll { currencyExchange: CurrencyExchange =>
+        forAll(currencyGen) { currencyExchange =>
 
-          Form(currencyExchangeMapping).fillAndValidate(currencyExchange).fold(
+          Form(currencyExchangeMapping).bind(asFormParams(currencyExchange).toMap).fold(
             _ => fail("Should not fail"),
             _ mustBe currencyExchange
           )
@@ -559,7 +565,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll(arbitrary[CurrencyExchange], badData) { (currencyExchange, badData) =>
 
           val data = currencyExchange.copy(currencyTypeCode = Some(badData))
-          Form(currencyExchangeMapping).fillAndValidate(data).fold(
+          Form(currencyExchangeMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
             _ must haveErrorMessage("CurrencyTypeCode is not a valid currency"),
             _ => fail("Form should not succeed")
           )
@@ -573,7 +579,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             val data = currencyEnchange.copy(rateNumeric = Some(invalidRateNumeric))
 
-            Form(currencyExchangeMapping).fillAndValidate(data).fold(
+            Form(currencyExchangeMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("RateNumeric cannot be greater than 9999999.99999"),
               _ => fail("Form should not succeed")
             )
@@ -584,9 +590,10 @@ class DeclarationFormMappingSpec extends WordSpec
         val badData = choose(6, 16).flatMap(posDecimal(12, _))
         forAll(arbitrary[CurrencyExchange], badData) {
           (currencyExchange, invalidRateNumeric) =>
+
             val data = currencyExchange.copy(rateNumeric = Some(invalidRateNumeric))
 
-            Form(currencyExchangeMapping).fillAndValidate(data).fold(
+            Form(currencyExchangeMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("RateNumeric cannot have more than 5 decimal places"),
               _ => fail("Form should not fail")
             )
@@ -597,9 +604,10 @@ class DeclarationFormMappingSpec extends WordSpec
 
         forAll(arbitrary[CurrencyExchange], intLessThan(0)) {
           (currencyExchange, invalidRateNumeric) =>
+
             val data = currencyExchange.copy(rateNumeric = Some(BigDecimal(invalidRateNumeric)))
 
-            Form(currencyExchangeMapping).fillAndValidate(data).fold(
+            Form(currencyExchangeMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("RateNumeric must not be negative"),
               _ => fail("Form should not fail")
             )
@@ -612,7 +620,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           whenever(currencyExchange.currencyTypeCode.nonEmpty) {
 
-            Form(currencyExchangeMapping).bind(Map("currencyTypeCode" -> currencyExchange.currencyTypeCode.getOrElse(""))).fold(
+            Form(currencyExchangeMapping).bind(Map("value.currencyTypeCode" -> currencyExchange.currencyTypeCode.getOrElse(""))).fold(
               _ must haveErrorMessage("Exchange rate is required when currency is provided"),
               _ => fail("form should not succeed")
             )
@@ -626,7 +634,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           whenever(currencyExchange.rateNumeric.nonEmpty) {
 
-            Form(currencyExchangeMapping).bind(Map("rateNumeric" -> currencyExchange.rateNumeric.fold("")(_.toString))).fold(
+            Form(currencyExchangeMapping).bind(Map("value.rateNumeric" -> currencyExchange.rateNumeric.fold("")(_.toString))).fold(
               _ must haveErrorMessage("Currency ID is required when amount is provided"),
               _ => fail("form should not succeed")
             )

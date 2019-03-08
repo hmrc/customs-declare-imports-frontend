@@ -148,8 +148,9 @@ class InvoiceAndCurrencyControllerSpec extends CustomsSpec
         forAll(arbitrary[SignedInUser], badData) {
           (user, formData) =>
 
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
-            val popForm = form.fillAndValidate(formData)
+            val formParams = asFormParams(formData)
+            val request = fakeRequest.withFormUrlEncodedBody(formParams: _*)
+            val popForm = form.bind(formParams.toMap)
             val result  = controller(user).onSubmit(request)
 
             status(result) mustBe BAD_REQUEST

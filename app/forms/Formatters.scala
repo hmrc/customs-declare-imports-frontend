@@ -18,34 +18,32 @@ package forms
 
 import play.api.data._
 import play.api.data.format.Formatter
-import play.api.data.Forms._
-import uk.gov.hmrc.wco.dec.Amount
+import play.api.data.Forms.{mapping, _}
+import uk.gov.hmrc.wco.dec.{Amount, CurrencyExchange}
 
 
 trait Formatters {
 
+  private def amountMapping(valueKey: String = "Amount", currencyKey: String = "Currency"): Mapping[Amount] =
+    mapping(
+      "currencyId" -> optional(
+        text
+          .verifying(s"$currencyKey is not valid", x => config.Options.currencyTypes.exists(_._1 == x))),
+      "value" -> optional(
+        bigDecimal
+          .verifying(s"$valueKey cannot be greater than 99999999999999.99", _.precision <= 16)
+          .verifying(s"$valueKey cannot have more than 2 decimal places", _.scale <= 2)
+          .verifying(s"$valueKey must not be negative", _ >= 0))
+    )(Amount.apply)(Amount.unapply)
+
   def amountFormatter(valueKey: String = "Amount", currencyKey: String = "Currency"): Formatter[Amount] =
-    new Formatter[Amount] {
-
-      private case class Wrapper(value: Amount)
-
-      private val amountMapping: Mapping[Amount] = mapping(
-        "currencyId" -> optional(
-          text
-            .verifying(s"$currencyKey is not valid", x => config.Options.currencyTypes.exists(_._1 == x))),
-        "value" -> optional(
-          bigDecimal
-            .verifying(s"$valueKey cannot be greater than 99999999999999.99", _.precision <= 16)
-            .verifying(s"$valueKey cannot have more than 2 decimal places", _.scale <= 2)
-            .verifying(s"$valueKey must not be negative", _ >= 0))
-      )(Amount.apply)(Amount.unapply)
+    new MappingFormatter[Amount](amountMapping(valueKey, currencyKey)) {
 
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Amount] = {
 
-        mapping(key -> amountMapping)(Wrapper.apply)(Wrapper.unapply)
-          .bind(data)
-          .right.map(_.value)
+        super.bind(key, data)
           .right.flatMap { x: Amount =>
+
             if (x.currencyId.exists(_.nonEmpty) && x.value.isEmpty) {
               Left(List(FormError(s"$key.value", s"$valueKey is required when $currencyKey is provided")))
             } else if (!x.currencyId.exists(_.nonEmpty) && x.value.nonEmpty) {
@@ -55,13 +53,54 @@ trait Formatters {
             }
           }
       }
+    }
 
-      override def unbind(key: String, value: Amount): Map[String, String] = {
+  private val currencyExchangeMapping: Mapping[CurrencyExchange] = mapping(
+      "currencyTypeCode" -> optional(
+        text.verifying("CurrencyTypeCode is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
+      "rateNumeric" -> optional(
+        bigDecimal
+          .verifying("RateNumeric cannot be greater than 9999999.99999", _.precision <= 12)
+          .verifying("RateNumeric cannot have more than 5 decimal places", _.scale <= 5)
+          .verifying("RateNumeric must not be negative", _ >= 0))
+    )(CurrencyExchange.apply)(CurrencyExchange.unapply)
 
-        mapping(key -> amountMapping)(Wrapper.apply)(Wrapper.unapply)
-         .unbind(Wrapper(value))
+  val currencyExchangeFormatter: Formatter[CurrencyExchange] =
+    new MappingFormatter[CurrencyExchange](currencyExchangeMapping) {
+
+      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], CurrencyExchange] = {
+
+        super.bind(key, data)
+          .right.flatMap { x =>
+
+            if (x.currencyTypeCode.exists(_.nonEmpty) && x.rateNumeric.isEmpty) {
+              Left(Seq(FormError(s"$key.rateNumeric", "Exchange rate is required when currency is provided")))
+            } else if (x.rateNumeric.nonEmpty && !x.currencyTypeCode.exists(_.nonEmpty)) {
+              Left(Seq(FormError(s"$key.currencyTypeCode", "Currency ID is required when amount is provided")))
+            } else {
+              Right(x)
+            }
+          }
       }
     }
+
+  private class MappingFormatter[T](baseMapping: Mapping[T]) extends Formatter[T] {
+
+    private case class Wrapper(value: T)
+
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], T] = {
+
+      mapping(key -> baseMapping)(Wrapper.apply)(Wrapper.unapply)
+        .bind(data)
+        .right.map(_.value)
+    }
+
+    override def unbind(key: String, value: T): Map[String, String] = {
+
+      mapping(key -> baseMapping)(Wrapper.apply)(Wrapper.unapply)
+        .unbind(Wrapper(value))
+    }
+  }
 }
 
 object Formatters extends Formatters
