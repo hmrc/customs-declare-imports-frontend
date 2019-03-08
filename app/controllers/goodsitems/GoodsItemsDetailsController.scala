@@ -61,7 +61,9 @@ class GoodsItemsDetailsController @Inject()(actions: Actions, cacheService: Cust
               valuationAdjustment = goodsItem.valuationAdjustment
             )
 
-          cacheService.insert(request.eori, CacheKey.goodsItem, updatedGoodsItem).map { _ =>
+          cacheService
+            .upsert(request.eori, CacheKey.goodsItem)(() => goodsItem, _ => updatedGoodsItem)
+              .map { _ =>
             Redirect(controllers.goodsitems.routes.GoodsItemsExporterDetailsController.onPageLoad())
           }
         })
