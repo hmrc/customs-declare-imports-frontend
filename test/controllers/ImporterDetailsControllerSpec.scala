@@ -162,7 +162,7 @@ class ImporterDetailsControllerSpec extends CustomsSpec
       "valid data is submitted" in {
 
         forAll { (user: SignedInUser, formData: ImportExportParty) =>
-
+          
           val request = fakeRequest.withFormUrlEncodedBody(asFormParams(formData): _*)
           await(controller(user).onSubmit(request))
 

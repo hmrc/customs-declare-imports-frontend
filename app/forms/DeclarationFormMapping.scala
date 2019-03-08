@@ -32,7 +32,7 @@ import uk.gov.hmrc.wco.dec._
 import scala.util.Try
 import scala.util.control.Exception.allCatch
 
-object DeclarationFormMapping {
+object DeclarationFormMapping extends Formatters {
 
   def require1Field[T](fs: (T => Option[_])*): T => Boolean =
     t => fs.exists(f => f(t).nonEmpty)
@@ -52,35 +52,9 @@ object DeclarationFormMapping {
     "roleCode" -> optional(text.verifying("roleCode is only 3 characters", _.length <= 3))
   )(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.apply)(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.unapply)
 
-  val amountMapping: Mapping[Amount] = amountMapping()
-  private def amountMapping(valueKey:String = "Amount", currencyKey:String = "Currency"): Mapping[Amount] = mapping(
-    "currencyId" -> optional(
-      text
-        .verifying(s"$currencyKey is not valid", x => config.Options.currencyTypes.exists(_._1 == x))),
-    "value" -> optional(
-      bigDecimal
-        .verifying(s"$valueKey cannot be greater than 99999999999999.99", _.precision <= 16)
-        .verifying(s"$valueKey cannot have more than 2 decimal places", _.scale <= 2)
-        .verifying(s"$valueKey must not be negative", _ >= 0))
-  )(Amount.apply)(Amount.unapply)
-    .verifying(s"$valueKey is required when $currencyKey is provided", requireAllDependantFields[Amount](_.currencyId)(_.value))
-    .verifying(s"$currencyKey is required when $valueKey is provided", requireAllDependantFields[Amount](_.value)(_.currencyId))
-
-  val currencyExchangeMapping: Mapping[CurrencyExchange] = mapping(
-    "currencyTypeCode" -> optional(
-      text.verifying("CurrencyTypeCode is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
-    "rateNumeric" -> optional(
-      bigDecimal
-        .verifying("RateNumeric cannot be greater than 9999999.99999", _.precision <= 12)
-        .verifying("RateNumeric cannot have more than 5 decimal places", _.scale <= 5)
-        .verifying("RateNumeric must not be negative", _ >= 0))
-  )(CurrencyExchange.apply)(CurrencyExchange.unapply)
-    .verifying("Exchange rate is required when currency is provided", requireAllDependantFields[CurrencyExchange](_.currencyTypeCode)(_.rateNumeric))
-    .verifying("Currency ID is required when amount is provided", requireAllDependantFields[CurrencyExchange](_.rateNumeric)(_.currencyTypeCode))
-
   val invoiceAndCurrencyMapping = mapping(
-    "invoice" -> optional(amountMapping),
-    "currency" -> optional(currencyExchangeMapping)
+    "invoice" -> optional(of(amountFormatter())),
+    "currency" -> optional(of(currencyExchangeFormatter))
   )(InvoiceAndCurrency.apply)(InvoiceAndCurrency.unapply)
 
   val tradeTermsMapping = mapping(
@@ -103,7 +77,7 @@ object DeclarationFormMapping {
       .verifying(s"$valueKey cannot have more than 6 decimal places", _.scale <= 6)
       .verifying(s"$valueKey must not be negative", _ >= 0)))(Measure.apply)(Measure.unapply)
 
-  val writeOffMapping = mapping("quantity" -> optional(measureMapping), "amount" -> optional(amountMapping))(WriteOff.apply)(WriteOff.unapply)
+  val writeOffMapping = mapping("quantity" -> optional(measureMapping), "amount" -> optional(of(amountFormatter())))(WriteOff.apply)(WriteOff.unapply)
 
   case class Date(day: Int, month: Int, year: Int) {
 
@@ -189,7 +163,7 @@ object DeclarationFormMapping {
   val goodsItemValueInformationMapping = mapping(
     "customsValueAmount" -> optional(bigDecimal.verifying("customs Value Amount must not be negative", a => a > 0)),
     "sequenceNumeric" -> number(0, 99999),
-    "statisticalValueAmount" -> optional(amountMapping),
+    "statisticalValueAmount" -> optional(of(amountFormatter())),
     "transactionNatureCode" -> optional(number(0, 99999)),
     "destination" -> optional(destinationMapping),
     "ucr" -> optional(ucrMapping),
@@ -275,14 +249,14 @@ object DeclarationFormMapping {
   val chargeDeductionMapping = mapping(
     "chargesTypeCode" -> optional(text.verifying("Charges code should be less than or equal to 2 characters", _.length <= 2)
                                             .verifying("Charges code must contain only A-Z characters", isAlpha)),
-    "otherChargeDeductionAmount" -> optional(amountMapping("Value","Currency")) // Option[Amount] = None
+    "otherChargeDeductionAmount" -> optional(of(amountFormatter("Value","Currency"))) // Option[Amount] = None
   )(ChargeDeduction.apply)(ChargeDeduction.unapply)
     .verifying("Charges code, currency id or amount are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
 
   val goodsChargeDeductionMapping = mapping(
     "chargesTypeCode" -> optional(text.verifying("Type should be 2 characters", _.length == 2)
                                             .verifying("Type must contain only A-Z characters", isAlpha)),
-    "otherChargeDeductionAmount" -> optional(amountMapping("Value","Currency")) // Option[Amount] = None
+    "otherChargeDeductionAmount" -> optional(of(amountFormatter("Value","Currency"))) // Option[Amount] = None
   )(ChargeDeduction.apply)(ChargeDeduction.unapply)
     .verifying("Type or Currency and Value are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
 
@@ -390,7 +364,7 @@ object DeclarationFormMapping {
   )(Agent.apply)(Agent.unapply)
 
   val invoiceLineMapping = mapping(
-    "itemChargeAmount" -> optional(amountMapping)
+    "itemChargeAmount" -> optional(of(amountFormatter()))
   )(InvoiceLine.apply)(InvoiceLine.unapply)
 
   val goodsMeasureMapping = mapping(
@@ -466,8 +440,8 @@ object DeclarationFormMapping {
   val paymentMapping  = mapping(
     "methodCode" -> optional(text.verifying("Method of Payment must be a single character or less", _.length < 2)
                         .verifying("Method of Payment must contains only A-Z characters", isAlpha)), // alpha max 1 in tariff
-    "taxAssessedAmount" -> optional(amountMapping("Total","Total - Currency")),
-    "paymentAmount" -> optional(amountMapping("Payable Tax Amount", "Currency"))
+    "taxAssessedAmount" -> optional(of(amountFormatter("Total","Total - Currency"))),
+    "paymentAmount" -> optional(of(amountFormatter("Payable Tax Amount", "Currency")))
   )(Payment.apply)(Payment.unapply)
 
   val dutyTaxFeeMapping = mapping (

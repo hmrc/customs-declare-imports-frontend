@@ -24,6 +24,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
+import uk.gov.hmrc.customs.test.utils.FormHelpers
 import uk.gov.hmrc.wco.dec.{Amount, Payment}
 
 class PaymentMappingSpec extends WordSpec
@@ -31,7 +32,8 @@ class PaymentMappingSpec extends WordSpec
   with PropertyChecks
   with Generators
   with Lenses
-  with FormMatchers {
+  with FormMatchers
+  with FormHelpers {
 
   val form = Form(paymentMapping)
 
@@ -43,7 +45,7 @@ class PaymentMappingSpec extends WordSpec
 
         forAll { payment: Payment =>
 
-          Form(paymentMapping).fillAndValidate(payment).fold(
+          Form(paymentMapping).bind(asFormParams(payment).toMap).fold(
             e => fail(s"form should not fail: ${e.errors}"),
             success => success mustBe payment
           )
@@ -56,12 +58,12 @@ class PaymentMappingSpec extends WordSpec
       "Payable Tax Amount - Currency entered is not valid" in {
 
         val badData = stringsExceptSpecificValues(config.Options.currencyTypes.map(_._2).toSet)
-        forAll(arbitrary[Payment],arbitrary[Amount], badData) {
+        forAll(arbitrary[Payment], arbitrary[Amount], badData) {
           (payment, amount, currency) =>
 
             val invalidAmount = amount.copy(currencyId = Some(currency))
             val data = payment.copy(taxAssessedAmount = Some(invalidAmount))
-            Form(paymentMapping).fillAndValidate(data).fold(
+            Form(paymentMapping).bind(asFormParams(data).toMap).fold(
               _ must haveErrorMessage("Total - Currency is not valid"),
               _ => fail("form should not succeed")
             )
@@ -75,7 +77,7 @@ class PaymentMappingSpec extends WordSpec
 
             val invalidAmount = amount.copy(value = Some(deduction))
             val data = payment.copy(paymentAmount = Some(invalidAmount))
-            Form(paymentMapping).fillAndValidate(data).fold(
+            Form(paymentMapping).bind(asFormParams(data).toMap).fold(
               _ must haveErrorMessage("Payable Tax Amount cannot be greater than 99999999999999.99"),
               _ => fail("form should not succeed")
             )
@@ -90,7 +92,7 @@ class PaymentMappingSpec extends WordSpec
           (payment, amount, deduction) =>
             val invalidAmount = amount.copy(value = Some(deduction))
             val data = payment.copy(paymentAmount = Some(invalidAmount))
-            Form(paymentMapping).fillAndValidate(data).fold(
+            Form(paymentMapping).bind(asFormParams(data).toMap).fold(
               _ must haveErrorMessage("Payable Tax Amount cannot have more than 2 decimal places"),
               _ => fail("form should not succeed")
             )
@@ -103,7 +105,7 @@ class PaymentMappingSpec extends WordSpec
           (payment, amount, deduction) =>
             val invalidAmount = amount.copy(value = Some(BigDecimal(deduction)))
             val data = payment.copy(paymentAmount = Some(invalidAmount))
-            Form(paymentMapping).fillAndValidate(data).fold(
+            Form(paymentMapping).bind(asFormParams(data).toMap).fold(
               _ must haveErrorMessage("Payable Tax Amount must not be negative"),
               _ => fail("form should not succeed")
             )
