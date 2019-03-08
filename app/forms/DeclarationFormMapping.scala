@@ -67,7 +67,7 @@ object DeclarationFormMapping extends Formatters {
 
   val invoiceAndCurrencyMapping = mapping(
     "invoice" -> optional(of(amountFormatter())),
-    "currency" -> optional(currencyExchangeMapping)
+    "currency" -> optional(of(currencyExchangeFormatter))
   )(InvoiceAndCurrency.apply)(InvoiceAndCurrency.unapply)
 
   val tradeTermsMapping = mapping(
