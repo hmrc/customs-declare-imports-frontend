@@ -275,7 +275,9 @@ object DeclarationFormMapping extends Formatters {
 
 
   val customsValuationMapping = mapping(
-    "methodCode" -> optional(text.verifying(" Charges code should be less than or equal to 1 characters", _.length <= 1)), // max 3 chars; not valid outside GovernmentAgencyGoodsItem
+    "methodCode" -> optional(text.verifying(
+      "Charges code should be less than or equal to 1 characters", _.length <= 1)
+      .verifying("Charges code must be numeric character", isInt)), // max 3 chars; not valid outside GovernmentAgencyGoodsItem
     "freightChargeAmount" -> optional(bigDecimal), // default(bigDecimal, None),
     "chargeDeductions" -> seq(goodsChargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
 
