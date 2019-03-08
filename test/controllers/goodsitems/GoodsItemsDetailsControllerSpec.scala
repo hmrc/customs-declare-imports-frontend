@@ -153,7 +153,7 @@ class GoodsItemsDetailsControllerSpec extends CustomsSpec
 
         forAll { (user: SignedInUser, goodsItem: GoodsItemDetails, govGoodsItem: GovernmentAgencyGoodsItem) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(govGoodsItem)) {
+          withCaching(None)
             val request = fakeRequest.withFormUrlEncodedBody(asFormParams(goodsItem.value): _*)
 
             await(controller(Some(user), Some(govGoodsItem)).onSubmit(request))
@@ -169,8 +169,7 @@ class GoodsItemsDetailsControllerSpec extends CustomsSpec
               valuationAdjustment = goodsItem.value.valuationAdjustment)
 
             verify(mockCustomsCacheService, atLeastOnce())
-              .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem), eqTo(expectedItem))(any(), any(), any())
-          }
+              .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any())(any(), any(), any(), any())
         }
       }
     }

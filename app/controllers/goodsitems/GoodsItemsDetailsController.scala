@@ -43,29 +43,29 @@ class GoodsItemsDetailsController @Inject()(actions: Actions, cacheService: Cust
     Ok(goods_items_details(popForm))
   }
 
-  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori andThen actions.goodsItem).async {
+  def onSubmit: Action[AnyContent] = (actions.auth andThen actions.eori).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[GovernmentAgencyGoodsItem]) =>
           Future.successful(BadRequest(goods_items_details(formWithErrors))),
         goodsItem => {
 
-            val updatedGoodsItem = request.goodsItem.copy(
-              sequenceNumeric = goodsItem.sequenceNumeric,
-              statisticalValueAmount = goodsItem.statisticalValueAmount,
-              transactionNatureCode = goodsItem.transactionNatureCode,
-              customsValuation = goodsItem.customsValuation,
-              destination = goodsItem.destination,
-              exportCountry = goodsItem.exportCountry,
-              ucr = goodsItem.ucr,
-              valuationAdjustment = goodsItem.valuationAdjustment
-            )
-
           cacheService
-            .upsert(request.eori, CacheKey.goodsItem)(() => goodsItem, _ => updatedGoodsItem)
+            .upsert(request.eori, CacheKey.goodsItem)(
+              () => goodsItem,
+              _.copy(
+                sequenceNumeric = goodsItem.sequenceNumeric,
+                statisticalValueAmount = goodsItem.statisticalValueAmount,
+                transactionNatureCode = goodsItem.transactionNatureCode,
+                customsValuation = goodsItem.customsValuation,
+                destination = goodsItem.destination,
+                exportCountry = goodsItem.exportCountry,
+                ucr = goodsItem.ucr,
+                valuationAdjustment = goodsItem.valuationAdjustment
+              ))
               .map { _ =>
-            Redirect(controllers.goodsitems.routes.GoodsItemsExporterDetailsController.onPageLoad())
-          }
+                Redirect(controllers.goodsitems.routes.GoodsItemsExporterDetailsController.onPageLoad())
+              }
         })
   }
 }
