@@ -23,7 +23,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.data.Form
 import uk.gov.hmrc.customs.test.FormMatchers
-import uk.gov.hmrc.wco.dec.{Commodity, GovernmentAgencyGoodsItem, Warehouse}
+import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItem
 
 class GoodsItemDetailsMappingSpec extends WordSpec
   with MustMatchers
