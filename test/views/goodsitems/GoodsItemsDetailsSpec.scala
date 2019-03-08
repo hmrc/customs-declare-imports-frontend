@@ -107,7 +107,7 @@ class GoodsItemsDetailsSpec extends ViewBehaviours
         val input = input_select(
           popForm("exportCountry.id"),
           messages("governmentAgencyGoodsItem.goodsItemDetails.exportCountry"),
-          config.Options.countryTypes
+          config.Options.countryOptions
         )
         view(popForm) must include(input)
       }

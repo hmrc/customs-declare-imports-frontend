@@ -59,8 +59,21 @@ class GoodsItemDetailsMappingSpec extends WordSpec
             val badData = goodsItem.copy(sequenceNumeric = invalidSeqNum)
 
             Form(goodsItemDetailsMapping).fillAndValidate(badData).fold(
-
               _ must haveErrorMessage("Goods item number must contain 3 digits or less"),
+              e => fail("form should not succeed")
+            )
+        }
+      }
+
+      "transactionNatureCode is greater than 2 digits long" in {
+
+        forAll(arbitrary[GovernmentAgencyGoodsItem], intGreaterThan(99)) {
+          (goodsItem, invalidTransactionNatureCode) =>
+
+            val badData = goodsItem.copy(transactionNatureCode = Some(invalidTransactionNatureCode))
+
+            Form(goodsItemDetailsMapping).fillAndValidate(badData).fold(
+              _ must haveErrorMessage("Transaction Nature Code must contain 2 digits or less"),
               e => fail("form should not succeed")
             )
         }

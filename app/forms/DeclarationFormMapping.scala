@@ -46,6 +46,7 @@ object DeclarationFormMapping {
   val isAlpha: String => Boolean = _.matches("^[A-Za-z]*$")
   val isAlphaNum: String => Boolean = _.matches("^[A-Za-z0-9]*$")
   val isInt: String => Boolean = _.matches("^[0-9-]*$")
+  val notZero: String => Boolean = _.matches("^[1-9-]*$")
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text.verifying("Issuing Authority must be less than 70 characters", _.length <= 70)),
@@ -287,7 +288,8 @@ object DeclarationFormMapping {
     .verifying("Type or Currency and Value are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
 
 
-  val customsValuationMapping = mapping("methodCode" -> optional(text.verifying(" Charges code should be less than or equal to 3 characters", _.length <= 3)), // max 3 chars; not valid outside GovernmentAgencyGoodsItem
+  val customsValuationMapping = mapping(
+    "methodCode" -> optional(text.verifying(" Charges code should be less than or equal to 1 characters", _.length <= 1)), // max 3 chars; not valid outside GovernmentAgencyGoodsItem
     "freightChargeAmount" -> optional(bigDecimal), // default(bigDecimal, None),
     "chargeDeductions" -> seq(goodsChargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
 
@@ -501,9 +503,10 @@ object DeclarationFormMapping {
     .verifying("Id is required when Type is provided", requireAllDependantFields[Classification](_.identificationTypeCode)(_.id))
 
   val goodsItemDetailsMapping = mapping(
-    "sequenceNumeric" -> (number.verifying("Goods item number must contain 3 digits or less", _.toString.length <= 3)),
+    "sequenceNumeric" -> (number.verifying("Goods item number must contain 3 digits or less", _.toString.length <= 3)
+      .verifying("Goods item number must not contain 0", x => notZero(x.toString))),
     "statisticalValueAmount" -> optional(amountMapping),
-    "transactionNatureCode" -> optional(number.verifying("Goods item number must contain 2 digits or less", _.toString.length <= 2)),
+    "transactionNatureCode" -> optional(number.verifying("Transaction Nature Code must contain 2 digits or less", _.toString.length <= 2)),
     "customsValuation" -> optional(customsValuationMapping),
     "destination" -> optional(destinationMapping),
     "exportCountry" -> optional(exportCountryMapping),
