@@ -27,6 +27,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.CustomsCacheService
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.wco.dec.{NamedEntityWithAddress, _}
+import views.html.goodsitems.goods_items_details
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -48,7 +49,7 @@ extends CustomsController {
       cacheService.fetchAndGetEntry[GovernmentAgencyGoodsItem](req.eori.value,
         goodsItemValueInformationKey).map {
         case Some(form) => Ok(views.html.goods_item_value(governmentAgencyGoodsItemForm.fill(form)))
-        case _ => Ok(views.html.goods_item_value(governmentAgencyGoodsItemForm))
+        case _ => Ok(goods_items_details(governmentAgencyGoodsItemForm))
       }
   }
 

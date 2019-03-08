@@ -37,6 +37,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   case class GuaranteeType(value: ObligationGuarantee)
   case class NonEmptyString(value: String)
+  case class GoodsItemDetails(value: GovernmentAgencyGoodsItem)
 
   def genIntersperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
 
@@ -345,7 +346,7 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val arbitraryExportCountry: Arbitrary[ExportCountry] = Arbitrary {
     for {
-      id <- oneOf(config.Options.countryTypes.map(_._1)) // either "102" or "304"
+              id <- oneOf(config.Options.countryTypes.map(_._1)) // either "102" or "304"
     } yield ExportCountry(id)
   }
 
@@ -372,16 +373,16 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
 
   implicit val arbitraryValuationAdjustment: Arbitrary[ValuationAdjustment] = Arbitrary {
     for {
-      additionCode <- option(arbitrary[String].map(_.take(4))) // TODO : Set specfic values i.e. one of 145, 146, 147, 148, 149
+      additionCode <- option(nonEmptyString.map(_.take(4))) // TODO : Set specfic values i.e. one of 145, 146, 147, 148, 149
     } yield ValuationAdjustment(additionCode)
   }
 
   implicit val arbitraryGovernmentAgencyGoodsItem: Arbitrary[GovernmentAgencyGoodsItem] = Arbitrary {
     for {
       customsValueAmount <- option(arbitrary[BigDecimal].map(_.max(9999999999999999.99999)))
-      sequenceNumeric <- arbitrary[Int].map(_.max(99999))
+      sequenceNumeric <- intBetweenRange(1, 999)
       statisticalValueAmount <- option(arbitraryAmount.arbitrary)
-      transactionNatureCode <- option(arbitrary[Int].map(_.max(99)))
+      transactionNatureCode <- option(intBetweenRange(0, 99))
       destination <- option(arbitraryDestination.arbitrary)
       ucr <- option(arbitraryUcr.arbitrary)
       exportCountry <- option(arbitraryExportCountry.arbitrary)
@@ -416,6 +417,32 @@ trait Generators extends SignedInUserGen with ViewModelGenerators with Lenses {
         ucr = ucr,
         valuationAdjustment = valuationAdjustment,
         commodity =commodity
+      )
+    }
+  }
+
+  implicit val arbitraryGoodsItemDetails: Arbitrary[GoodsItemDetails] = Arbitrary {
+    for {
+      seqNum      <- intBetweenRange(1, 999)
+      statValAmnt <- arbitrary[Amount]
+      transactionNature <- intBetweenRange(0, 99)
+      customsVal  <- arbitrary[CustomsValuation]
+      des         <- arbitrary[Destination]
+      expCountry  <- arbitrary[ExportCountry]
+      ucr         <- arbitrary[Ucr]
+      valAdj      <- arbitrary[ValuationAdjustment]
+    } yield {
+      GoodsItemDetails(
+        GovernmentAgencyGoodsItem(
+          sequenceNumeric = seqNum,
+          statisticalValueAmount = statValAmnt.currencyId.orElse(statValAmnt.value).map(_ => statValAmnt),
+          transactionNatureCode = Some(transactionNature),
+          customsValuation = customsVal.methodCode.orElse(customsVal.freightChargeAmount).map(_ => customsVal),
+          destination = des.countryCode.orElse(des.regionId).map(_ => des),
+          exportCountry = Some(expCountry),
+          ucr = ucr.id.map(_=>ucr),
+          valuationAdjustment = valAdj.additionCode.map(_ => valAdj)
+        )
       )
     }
   }

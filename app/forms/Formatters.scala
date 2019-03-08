@@ -44,26 +44,26 @@ trait Formatters {
         super.bind(key, data)
           .right.flatMap { x: Amount =>
 
-            if (x.currencyId.exists(_.nonEmpty) && x.value.isEmpty) {
-              Left(List(FormError(s"$key.value", s"$valueKey is required when $currencyKey is provided")))
-            } else if (!x.currencyId.exists(_.nonEmpty) && x.value.nonEmpty) {
-              Left(List(FormError(s"$key.currencyId", s"$currencyKey is required when $valueKey is provided")))
-            } else {
-              Right(x)
-            }
+          if (x.currencyId.exists(_.nonEmpty) && x.value.isEmpty) {
+            Left(List(FormError(s"$key.value", s"$valueKey is required when $currencyKey is provided")))
+          } else if (!x.currencyId.exists(_.nonEmpty) && x.value.nonEmpty) {
+            Left(List(FormError(s"$key.currencyId", s"$currencyKey is required when $valueKey is provided")))
+          } else {
+            Right(x)
           }
+        }
       }
     }
 
   private val currencyExchangeMapping: Mapping[CurrencyExchange] = mapping(
-      "currencyTypeCode" -> optional(
-        text.verifying("CurrencyTypeCode is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
-      "rateNumeric" -> optional(
-        bigDecimal
-          .verifying("RateNumeric cannot be greater than 9999999.99999", _.precision <= 12)
-          .verifying("RateNumeric cannot have more than 5 decimal places", _.scale <= 5)
-          .verifying("RateNumeric must not be negative", _ >= 0))
-    )(CurrencyExchange.apply)(CurrencyExchange.unapply)
+    "currencyTypeCode" -> optional(
+      text.verifying("CurrencyTypeCode is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
+    "rateNumeric" -> optional(
+      bigDecimal
+        .verifying("RateNumeric cannot be greater than 9999999.99999", _.precision <= 12)
+        .verifying("RateNumeric cannot have more than 5 decimal places", _.scale <= 5)
+        .verifying("RateNumeric must not be negative", _ >= 0))
+  )(CurrencyExchange.apply)(CurrencyExchange.unapply)
 
   val currencyExchangeFormatter: Formatter[CurrencyExchange] =
     new MappingFormatter[CurrencyExchange](currencyExchangeMapping) {
@@ -73,14 +73,14 @@ trait Formatters {
         super.bind(key, data)
           .right.flatMap { x =>
 
-            if (x.currencyTypeCode.exists(_.nonEmpty) && x.rateNumeric.isEmpty) {
-              Left(Seq(FormError(s"$key.rateNumeric", "Exchange rate is required when currency is provided")))
-            } else if (x.rateNumeric.nonEmpty && !x.currencyTypeCode.exists(_.nonEmpty)) {
-              Left(Seq(FormError(s"$key.currencyTypeCode", "Currency ID is required when amount is provided")))
-            } else {
-              Right(x)
-            }
+          if (x.currencyTypeCode.exists(_.nonEmpty) && x.rateNumeric.isEmpty) {
+            Left(Seq(FormError(s"$key.rateNumeric", "Exchange rate is required when currency is provided")))
+          } else if (x.rateNumeric.nonEmpty && !x.currencyTypeCode.exists(_.nonEmpty)) {
+            Left(Seq(FormError(s"$key.currencyTypeCode", "Currency ID is required when amount is provided")))
+          } else {
+            Right(x)
           }
+        }
       }
     }
 

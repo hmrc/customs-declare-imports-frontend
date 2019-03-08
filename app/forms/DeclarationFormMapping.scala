@@ -46,11 +46,24 @@ object DeclarationFormMapping extends Formatters {
   val isAlpha: String => Boolean = _.matches("^[A-Za-z]*$")
   val isAlphaNum: String => Boolean = _.matches("^[A-Za-z0-9]*$")
   val isInt: String => Boolean = _.matches("^[0-9-]*$")
+  val notZero: Int => Boolean = _ != 0
 
   val govAgencyGoodsItemAddDocumentSubmitterMapping = mapping(
     "name" -> optional(text.verifying("Issuing Authority must be less than 70 characters", _.length <= 70)),
     "roleCode" -> optional(text.verifying("roleCode is only 3 characters", _.length <= 3))
   )(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.apply)(GovernmentAgencyGoodsItemAdditionalDocumentSubmitter.unapply)
+
+  val currencyExchangeMapping: Mapping[CurrencyExchange] = mapping(
+    "currencyTypeCode" -> optional(
+      text.verifying("CurrencyTypeCode is not a valid currency", x => config.Options.currencyTypes.exists(_._1 == x))),
+    "rateNumeric" -> optional(
+      bigDecimal
+        .verifying("RateNumeric cannot be greater than 9999999.99999", _.precision <= 12)
+        .verifying("RateNumeric cannot have more than 5 decimal places", _.scale <= 5)
+        .verifying("RateNumeric must not be negative", _ >= 0))
+  )(CurrencyExchange.apply)(CurrencyExchange.unapply)
+    .verifying("Exchange rate is required when currency is provided", requireAllDependantFields[CurrencyExchange](_.currencyTypeCode)(_.rateNumeric))
+    .verifying("Currency ID is required when amount is provided", requireAllDependantFields[CurrencyExchange](_.rateNumeric)(_.currencyTypeCode))
 
   val invoiceAndCurrencyMapping = mapping(
     "invoice" -> optional(of(amountFormatter())),
@@ -156,9 +169,9 @@ object DeclarationFormMapping extends Formatters {
     "id" -> optional(text.verifying("id should be less than or equal to 17 characters", _.length <= 17))
   )(LoadingLocation.apply)(LoadingLocation.unapply)
 
-  val valuationAdjustmentMapping = mapping("additionCode" -> optional(
-    text.verifying("valuationAdjustment should be less than or equal to 4 characters",
-      _.length <= 4)))(ValuationAdjustment.apply)(ValuationAdjustment.unapply)
+  val valuationAdjustmentMapping = mapping(
+    "additionCode" -> optional(text.verifying("valuationAdjustment should be less than or equal to 4 characters", _.length <= 4))
+  )(ValuationAdjustment.apply)(ValuationAdjustment.unapply)
 
   val goodsItemValueInformationMapping = mapping(
     "customsValueAmount" -> optional(bigDecimal.verifying("customs Value Amount must not be negative", a => a > 0)),
@@ -261,7 +274,10 @@ object DeclarationFormMapping extends Formatters {
     .verifying("Type or Currency and Value are required", require1Field[ChargeDeduction](_.chargesTypeCode, _.otherChargeDeductionAmount))
 
 
-  val customsValuationMapping = mapping("methodCode" -> optional(text.verifying(" Charges code should be less than or equal to 3 characters", _.length <= 3)), // max 3 chars; not valid outside GovernmentAgencyGoodsItem
+  val customsValuationMapping = mapping(
+    "methodCode" -> optional(text.verifying(
+      "Charges code should be less than or equal to 1 characters", _.length <= 1)
+      .verifying("Charges code must be numeric character", isInt)), // max 3 chars; not valid outside GovernmentAgencyGoodsItem
     "freightChargeAmount" -> optional(bigDecimal), // default(bigDecimal, None),
     "chargeDeductions" -> seq(goodsChargeDeductionMapping))(CustomsValuation.apply)(CustomsValuation.unapply)
 
@@ -473,6 +489,37 @@ object DeclarationFormMapping extends Formatters {
     .verifying("Id and Type is required to add classification", require1Field[Classification](_.id, _.identificationTypeCode))
     .verifying("Type is required when Id is provided", requireAllDependantFields[Classification](_.id)(_.identificationTypeCode))
     .verifying("Id is required when Type is provided", requireAllDependantFields[Classification](_.identificationTypeCode)(_.id))
+
+  val goodsItemDetailsMapping = mapping(
+    "sequenceNumeric" -> (number.verifying("Goods item number must contain 3 digits or less", _.toString.length <= 3)
+      .verifying("Goods item number must not be 0", notZero)),
+    "statisticalValueAmount" -> optional(of(amountFormatter())),
+    "transactionNatureCode" -> optional(number.verifying("Transaction Nature Code must contain 2 digits or less", _.toString.length <= 2)),
+    "customsValuation" -> optional(customsValuationMapping),
+    "destination" -> optional(destinationMapping),
+    "exportCountry" -> optional(exportCountryMapping),
+    "ucr" -> optional(ucrMapping),
+    "valuationAdjustment" -> optional(valuationAdjustmentMapping)
+  )((a, b, c, d, e, f, g, h) => GovernmentAgencyGoodsItem(
+    sequenceNumeric = a,
+    statisticalValueAmount = b,
+    transactionNatureCode = c,
+    customsValuation = d,
+    destination = e,
+    exportCountry = f,
+    ucr = g,
+    valuationAdjustment = h)) { item =>
+    Some(
+      (item.sequenceNumeric,
+        item.statisticalValueAmount,
+        item.transactionNatureCode,
+        item.customsValuation,
+        item.destination,
+        item.exportCountry,
+        item.ucr,
+        item.valuationAdjustment)
+    )
+  }
 
   val commodityMapping = mapping(
     "description" -> optional(text.verifying("Description should be less than equal to 512 characters", _.length <= 512)),
