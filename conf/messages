@@ -496,7 +496,7 @@ addPreviousDocument.goodsitem.title=Goods item previous documents
 
 ## Add Additions and Deductions
 addAdditionsAndDeductions.title=Additions and Deductions
-addAdditionsAndDeductions.heading=Additions and Deductions
+addAdditionsAndDeductions.heading=4/9 Additions and Deductions
 addAdditionsAndDeductions.type=Type
 addAdditionsAndDeductions.currency=Currency
 addAdditionsAndDeductions.value=Value
@@ -518,7 +518,7 @@ addGuaranteeReferences.addGuaranteeReference=Add guarantee reference
 
 ## Container Identification Number
 containerIdentificationNumber.title=Container identification number
-containerIdentificationNumber.heading=Container identification number
+containerIdentificationNumber.heading=7/10 Container identification number
 containerIdentificationNumber.id=Container identification number
 containerIdentificationNumber.table.heading=1 container identification number added
 containerIdentificationNumber.table.multiple.heading={0} container identification numbers added

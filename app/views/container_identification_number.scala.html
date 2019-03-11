@@ -37,18 +37,21 @@
   @components.back_link()
 
   @components.error_summary(form.errors)
-
-  <h1 class="heading-large">@messages("containerIdentificationNumber.heading")</h1>
-
-  @components.table.table(
-    HtmlTable(messages("containerIdentificationNumber.id"))(transports.map(_.id.getOrElse(""))),
-    Some(tableHeader))
-
   <fieldset>
+    <legend>
+      <h1 class="heading-large">@messages("containerIdentificationNumber.heading")</h1>
+    </legend>
+
+    <div class="form-group">
+      @components.table.table(
+        HtmlTable(messages("containerIdentificationNumber.id"))(transports.map(_.id.getOrElse(""))),
+        Some(tableHeader))
+    </div>
+
    @components.input_text(form("id"), messages("containerIdentificationNumber.id"))
   </fieldset>
 
-  <button id="Add" name="submit">
+  <button id="Add" name="submit" class="button">
    @messages("containerIdentificationNumber.add")
   </button>
 
