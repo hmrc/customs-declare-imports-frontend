@@ -363,14 +363,14 @@ object DeclarationFormMapping {
   )(TransportEquipment.apply)(TransportEquipment.unapply)
 
   val referencesMapping = mapping(
-    "typeCode" -> optional(
+    "typeCode" ->
       text
         .verifying("Declaration type must be 2 characters or less", _.length <= 2)
-        .verifying("Declaration type must contains only A-Z characters", isAlpha)),
-    "typerCode" -> optional(
+        .verifying("Declaration type must contains only A-Z characters", isAlpha),
+    "typerCode" ->
       text
         .verifying("Additional declaration type must be a single character", _.length <= 1)
-        .verifying("Additional declaration type must contains only A-Z characters", isAlpha)),
+        .verifying("Additional declaration type must contains only A-Z characters", isAlpha),
     "traderAssignedReferenceId" -> optional(
       text.verifying("Reference Number/UCR must be 35 characters or less", _.length <= 35)),
     "functionalReferenceId" ->

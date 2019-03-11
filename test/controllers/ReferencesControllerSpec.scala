@@ -143,7 +143,7 @@ class ReferencesControllerSpec extends CustomsSpec
             r <- arbitrary[References]
             s <- minStringLength(3)
           } yield {
-            r.copy(typeCode = Some(s))
+            r.copy(typeCode = s)
           }
 
         forAll(arbitrary[SignedInUser], badData) {

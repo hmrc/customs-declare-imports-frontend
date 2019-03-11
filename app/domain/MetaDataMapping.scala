@@ -33,7 +33,7 @@ object MetaDataMapping {
 
     TypedIdentifier.values.foldLeft(Monoid.empty[MetaData])((z, a) => z |+| applied(a))
   }
-
+  // (r => r.typeCode.flatMap(a => r.typerCode.map(b => a + b)))
   private def asMetaData(cache: CacheMap): TypedIdentifier[_] => MetaData = {
 
     case DeclarantDetailsId =>
@@ -42,7 +42,7 @@ object MetaDataMapping {
     case ReferencesId => {
       val refData = cache.getEntry[References](references.key)
       MetaData(declaration = Some(Declaration(
-        typeCode = refData.flatMap(r => r.typeCode.flatMap(a => r.typerCode.map(b => a + b))),
+        typeCode = refData.map(r => r.typeCode + r.typerCode),
         functionalReferenceId = refData.map(_.functionalReferenceId),
         goodsShipment = Some(GoodsShipment(
           transactionNatureCode = refData.flatMap(_.transactionNatureCode),

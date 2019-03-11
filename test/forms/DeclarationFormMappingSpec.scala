@@ -960,7 +960,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll(arbitrary[References], minStringLength(3)) {
           (references, typeCode) =>
 
-            val data = references.copy(typeCode = Some(typeCode))
+            val data = references.copy(typeCode = typeCode)
             Form(referencesMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("Declaration type must be 2 characters or less"),
               _ => fail("form should not succeed")
@@ -975,7 +975,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             whenever(typeCode.nonEmpty) {
 
-              val data = references.copy(typeCode = Some(typeCode.take(2)))
+              val data = references.copy(typeCode = typeCode.take(2))
               Form(referencesMapping).fillAndValidate(data).fold(
                 _ must haveErrorMessage("Declaration type must contains only A-Z characters"),
                 _ => fail("form should not succeed")
@@ -989,7 +989,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll(arbitrary[References], minStringLength(2)) {
           (references, typerCode) =>
 
-            val data = references.copy(typerCode = Some(typerCode))
+            val data = references.copy(typerCode = typerCode)
             Form(referencesMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("Additional declaration type must be a single character"),
               _ => fail("form should not succeed")
@@ -1004,7 +1004,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             whenever(typerCode.nonEmpty) {
 
-              val data = references.copy(typerCode = Some(typerCode.take(1)))
+              val data = references.copy(typerCode = typerCode.take(1))
               Form(referencesMapping).fillAndValidate(data).fold(
                 _ must haveErrorMessage("Additional declaration type must contains only A-Z characters"),
                 _ => fail("form should not succeed")
