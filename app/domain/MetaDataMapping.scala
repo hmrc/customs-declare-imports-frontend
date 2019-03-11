@@ -33,7 +33,7 @@ object MetaDataMapping {
 
     TypedIdentifier.values.foldLeft(Monoid.empty[MetaData])((z, a) => z |+| applied(a))
   }
-  // (r => r.typeCode.flatMap(a => r.typerCode.map(b => a + b)))
+
   private def asMetaData(cache: CacheMap): TypedIdentifier[_] => MetaData = {
 
     case DeclarantDetailsId =>
@@ -165,12 +165,16 @@ object MetaDataMapping {
         obligationGuarantees = cache.getEntry[Seq[ObligationGuarantee]](guaranteeTypes.key).getOrElse(Seq.empty)
       )))
 
-    case GovAgencyGoodsItemsListId =>
+    case GovAgencyGoodsItemsListId => {
+      val data = cache.getEntry[Seq[GovernmentAgencyGoodsItem]](govAgencyGoodsItemsList.key)
+
       MetaData(declaration = Some(Declaration(
+        goodsItemQuantity = data.map(_.size),
         goodsShipment = Some(GoodsShipment(
-          governmentAgencyGoodsItems = cache.getEntry[Seq[GovernmentAgencyGoodsItem]](govAgencyGoodsItemsList.key).getOrElse(Seq.empty)
+          governmentAgencyGoodsItems = data.getOrElse(Seq.empty)
         ))
       )))
+    }
 
     case WarehouseAndCustomsId => {
       val data = cache.getEntry[WarehouseAndCustoms](warehouseAndCustoms.key)
