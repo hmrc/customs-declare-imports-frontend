@@ -366,11 +366,13 @@ object DeclarationFormMapping {
     "typeCode" ->
       text
         .verifying("Declaration type must be 2 characters or less", _.length <= 2)
-        .verifying("Declaration type must contains only A-Z characters", isAlpha),
+        .verifying("Declaration type must contains only A-Z characters", isAlpha)
+        .verifying("Declaration type is required", _.nonEmpty),
     "typerCode" ->
       text
         .verifying("Additional declaration type must be a single character", _.length <= 1)
-        .verifying("Additional declaration type must contains only A-Z characters", isAlpha),
+        .verifying("Additional declaration type must contains only A-Z characters", isAlpha)
+        .verifying("Declaration type is required", _.nonEmpty),
     "traderAssignedReferenceId" -> optional(
       text.verifying("Reference Number/UCR must be 35 characters or less", _.length <= 35)),
     "functionalReferenceId" ->
@@ -380,7 +382,6 @@ object DeclarationFormMapping {
     "transactionNatureCode" -> optional(
       number.verifying("Nature of transaction must be contain 2 digits or less", _.toString.length <= 2))
   )(References.apply)(References.unapply)
-    .verifying("You must provide TypeCode and TyperCode", require1Field[References](_.typeCode, _.typerCode))
 
   val agentMapping = mapping(
     "name" -> optional(text.verifying("Name should have 70 characters or less", _.length <= 70)),
