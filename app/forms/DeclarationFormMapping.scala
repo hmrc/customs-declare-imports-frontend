@@ -372,7 +372,7 @@ object DeclarationFormMapping {
       text
         .verifying("Additional declaration type must be a single character", _.length <= 1)
         .verifying("Additional declaration type must contains only A-Z characters", isAlpha)
-        .verifying("Declaration type is required", _.nonEmpty),
+        .verifying("Additional declaration is required", _.nonEmpty),
     "traderAssignedReferenceId" -> optional(
       text.verifying("Reference Number/UCR must be 35 characters or less", _.length <= 35)),
     "functionalReferenceId" ->
