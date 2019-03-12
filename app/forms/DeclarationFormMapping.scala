@@ -380,6 +380,7 @@ object DeclarationFormMapping {
     "transactionNatureCode" -> optional(
       number.verifying("Nature of transaction must be contain 2 digits or less", _.toString.length <= 2))
   )(References.apply)(References.unapply)
+    .verifying("You must provide TypeCode and TyperCode", require1Field[References](_.typeCode, _.typerCode))
 
   val agentMapping = mapping(
     "name" -> optional(text.verifying("Name should have 70 characters or less", _.length <= 70)),
