@@ -353,14 +353,16 @@ object DeclarationFormMapping extends Formatters {
   )(TransportEquipment.apply)(TransportEquipment.unapply)
 
   val referencesMapping = mapping(
-    "typeCode" -> optional(
+    "typeCode" ->
       text
         .verifying("Declaration type must be 2 characters or less", _.length <= 2)
-        .verifying("Declaration type must contains only A-Z characters", isAlpha)),
-    "typerCode" -> optional(
+        .verifying("Declaration type must contains only A-Z characters", isAlpha)
+        .verifying("Declaration type is required", _.nonEmpty),
+    "typerCode" ->
       text
         .verifying("Additional declaration type must be a single character", _.length <= 1)
-        .verifying("Additional declaration type must contains only A-Z characters", isAlpha)),
+        .verifying("Additional declaration type must contains only A-Z characters", isAlpha)
+        .verifying("Additional declaration is required", _.nonEmpty),
     "traderAssignedReferenceId" -> optional(
       text.verifying("Reference Number/UCR must be 35 characters or less", _.length <= 35)),
     "functionalReferenceId" ->
@@ -483,7 +485,7 @@ object DeclarationFormMapping extends Formatters {
   )(Cancel.apply)(Cancel.unapply)
 
   val classificationMapping = mapping(
-    "id" -> optional(text.verifying("Id must be less than 5 characters", _.length <= 4)),
+    "id" -> optional(text.verifying("Id must be euqal to or less than 8 characters", _.length <= 8)),
     "identificationTypeCode" -> optional(text)
   )((id,typeCode) => Classification(id,None,typeCode,None))(Classification.unapply(_).map(c => (c._1,c._3)))
     .verifying("Id and Type is required to add classification", require1Field[Classification](_.id, _.identificationTypeCode))

@@ -42,7 +42,7 @@ object MetaDataMapping {
     case ReferencesId => {
       val refData = cache.getEntry[References](references.key)
       MetaData(declaration = Some(Declaration(
-        typeCode = refData.flatMap(r => r.typeCode.flatMap(a => r.typerCode.map(b => a + b))),
+        typeCode = refData.map(r => r.typeCode + r.typerCode),
         functionalReferenceId = refData.map(_.functionalReferenceId),
         goodsShipment = Some(GoodsShipment(
           transactionNatureCode = refData.flatMap(_.transactionNatureCode),
@@ -165,12 +165,16 @@ object MetaDataMapping {
         obligationGuarantees = cache.getEntry[Seq[ObligationGuarantee]](guaranteeTypes.key).getOrElse(Seq.empty)
       )))
 
-    case GovAgencyGoodsItemsListId =>
+    case GovAgencyGoodsItemsListId => {
+      val data = cache.getEntry[Seq[GovernmentAgencyGoodsItem]](govAgencyGoodsItemsList.key)
+
       MetaData(declaration = Some(Declaration(
+        goodsItemQuantity = data.map(_.size),
         goodsShipment = Some(GoodsShipment(
-          governmentAgencyGoodsItems = cache.getEntry[Seq[GovernmentAgencyGoodsItem]](govAgencyGoodsItemsList.key).getOrElse(Seq.empty)
+          governmentAgencyGoodsItems = data.getOrElse(Seq.empty)
         ))
       )))
+    }
 
     case WarehouseAndCustomsId => {
       val data = cache.getEntry[WarehouseAndCustoms](warehouseAndCustoms.key)

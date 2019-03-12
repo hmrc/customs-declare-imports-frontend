@@ -39,7 +39,7 @@ class FakeActions(signedInUser: Option[SignedInUser], item: Option[GovernmentAge
   private val mockCustomsCache = mock[CustomsCacheService]
 
   when(mockCustomsCache.getByKey(any(), eqTo(CacheKey.references))(any(), any(), any()))
-    .thenReturn(Future.successful(localReferenceNumber.map(References(None, None, None, _, None))))
+    .thenReturn(Future.successful(localReferenceNumber.map(References("", "", None, _, None))))
 
   when(mockCustomsCache.getByKey(any(), eqTo(CacheKey.goodsItem))(any(), any(), any()))
     .thenReturn(Future.successful(item))
