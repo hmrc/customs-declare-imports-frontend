@@ -38,27 +38,33 @@
         @components.back_link()
 
         @components.error_summary(form.errors)
-
-        <h1 class="heading-large">@messages("addAdditionsAndDeductions.heading")</h1>
-
-        @components.table.table(
-            HtmlTable(
-                messages("addAdditionsAndDeductions.type"),
-                messages("addAdditionsAndDeductions.currency"),
-                messages("addAdditionsAndDeductions.value")
-            )(charges.map { c => (
-                c.chargesTypeCode.getOrElse(""),
-                c.otherChargeDeductionAmount.flatMap(_.currencyId).getOrElse(""),
-                c.otherChargeDeductionAmount.flatMap(_.value).getOrElse(""))
-            }), Some(tableHeader))
-
         <fieldset>
+            <legend>
+                <h1 class="heading-large">@messages("addAdditionsAndDeductions.heading")</h1>
+            </legend>
+
+            @if(!charges.isEmpty) {
+                <div class="form-group">
+                    @components.table.table(
+                    HtmlTable(
+                        messages("addAdditionsAndDeductions.type"),
+                        messages("addAdditionsAndDeductions.currency"),
+                        messages("addAdditionsAndDeductions.value")
+                    )(charges.map { c => (
+                        c.chargesTypeCode.getOrElse(""),
+                        c.otherChargeDeductionAmount.flatMap(_.currencyId).getOrElse(""),
+                        c.otherChargeDeductionAmount.flatMap(_.value).getOrElse(""))
+                    }), Some(tableHeader))
+                </div>
+            }
+
+
             @components.input_text(form("chargesTypeCode"), messages("addAdditionsAndDeductions.type"))
             @components.input_select(form("otherChargeDeductionAmount.currencyId"), messages("addAdditionsAndDeductions.currency"), currencyTypes)
             @components.input_text(form("otherChargeDeductionAmount.value"), messages("addAdditionsAndDeductions.value"))
         </fieldset>
 
-        <button id="Add" name="submit">
+        <button id="Add" name="submit" class="button">
             @messages("addAdditionsAndDeductions.add")
         </button>
 
