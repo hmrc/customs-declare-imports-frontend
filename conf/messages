@@ -163,6 +163,12 @@ confirmationpage.p.part3=for progress updates.
 
 lrn.missing=No reference provided
 
+#missing LRN page
+missingLrn.title=Your submission has been unsuccessful this time.
+missingLrn.heading=Your submission has been unsuccessful this time.
+missingLrn.info=Please {0}.
+missingLrn.link=start a new declaration
+
 ## cancel an import pages
 cancelpage.titleAndHeader=Cancel import declaration
 cancelpage.button.cancel=Cancel Declaration
@@ -577,8 +583,35 @@ governmentAgencyGoodsItem.sellerDetails.address.postcode=Postcode
 governmentAgencyGoodsItem.sellerDetails.communication.id=Phone number
 governmentAgencyGoodsItem.sellerDetails.id=EORI number
 
+## Goods item goods item details
+
+governmentAgencyGoodsItem.goodsItemDetails.title=Goods item details
+governmentAgencyGoodsItem.goodsItemDetails.heading=Goods item details
+governmentAgencyGoodsItem.goodsItemDetails.sequenceNumeric=Goods item number
+governmentAgencyGoodsItem.goodsItemDetails.traderAssignedReferenceId=Reference number
+governmentAgencyGoodsItem.goodsItemDetails.additionCode=Valuation indicators
+governmentAgencyGoodsItem.goodsItemDetails.countryCode=Country of destination code
+governmentAgencyGoodsItem.goodsItemDetails.exportCountry=Country of dispatch
+governmentAgencyGoodsItem.goodsItemDetails.methodCode=Valuation method
+governmentAgencyGoodsItem.goodsItemDetails.transactionNatureCode=Nature of transaction
+governmentAgencyGoodsItem.goodsItemDetails.value=Statistical value
+governmentAgencyGoodsItem.goodsItemDetails.currencyId=Statistical value - currency
+
+## Goods item commodity details
+
+governmentAgencyGoodsItem.commodityDetails.title=Commodity details
+governmentAgencyGoodsItem.commodityDetails.heading=Commodity details
+governmentAgencyGoodsItem.commodityDetails.currencyId=Currency
+governmentAgencyGoodsItem.commodityDetails.value=Amount
+governmentAgencyGoodsItem.commodityDetails.dutyRegimeCode=Preference
+governmentAgencyGoodsItem.commodityDetails.netWeightMeasure=Net mass
+governmentAgencyGoodsItem.commodityDetails.tariffQuantity=Supplementary units
+governmentAgencyGoodsItem.commodityDetails.grossMassMeasure=Gross mass
+governmentAgencyGoodsItem.commodityDetails.description=Description of goods
+
 ## Government agency goods item
-governmentAgencyGoodsItem.title=Goods items
+governmentAgencyGoodsItem.title=Goods item information
+governmentAgencyGoodsItem.heading=Goods items information
 governmentAgencyGoodsItem.noGoodsShipment=No goods shipments available
 governmentAgencyGoodsItem.additionalDocuments=Additional documents
 governmentAgencyGoodsItem.additionalInformation=Additional information
@@ -690,6 +723,7 @@ dutytaxefee.heading=Commodity duty tax
 dutytaxefee.table.heading=1 Commodity duty tax added
 dutytaxefee.table.multiple.heading= {0} Commodity duty taxes added
 dutytaxefee.add=Add duty tax
+dutytaxefee.preference=Preference
 dutytaxefee.taxtype=Tax type
 dutytaxefee.unitqualifier=Tax base - unit & qualifier
 dutytaxefee.quantity=Tax base - quantity
@@ -700,6 +734,14 @@ dutytaxefee.total=Total
 dutytaxefee.totalcurrency=Total - currency
 dutytaxefee.paymentmethod=Method of payment
 dutytaxefee.quotaorder=Quota order number
+
+submitFailure.title=Your submission has been unsuccessful.
+submitFailure.heading=Your submission has been unsuccessful.
+submitFailure.listHeading=You can:
+submitFailure.listItem1=contact our Service Support Team on 0300 790 6802 if your second attempt is unsuccessful
+submitFailure.listItem2=return to the {0} page if you want to create a new declaration
+submitFailure.startDecLink=Start a declaration
+submitFailure.link=resubmit
 
 classifications.heading=Classifications
 classifications.table.heading=1 Classification added
@@ -716,3 +758,11 @@ containerDetails.title=Container details
 containerDetails.heading=Container details
 containerDetails.id=Container identification number
 containerDetails.add=Add container details
+
+cancelFailure.title=Your cancellation request has been unsuccessful.
+cancelFailure.heading=Your cancellation request has been unsuccessful.
+cancelFailure.listHeading=You can:
+cancelFailure.listItem1=go back and try again
+cancelFailure.listItem2=contact our Service Support Team on 0300 790 6802 if your second attempt is unsuccessful
+cancelFailure.listItem3=return to the {0} page if you want to create a new declaration
+cancelFailure.startDecLink=Start a declaration

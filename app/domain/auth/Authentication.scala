@@ -55,10 +55,15 @@ case class EORIRequest[A](request: AuthenticatedRequest[A], eori: EORI) extends 
   val user: SignedInUser = request.user
 }
 
+case class LRNRequest[A](request: EORIRequest[A], lrn: String) extends WrappedRequest(request) {
+
+  val user: SignedInUser = request.user
+  val eori: EORI = request.eori
+}
+
 case class GoodsItemRequest[A](request: EORIRequest[A], goodsItem: GovernmentAgencyGoodsItem) extends WrappedRequest(request) {
 
   val user: SignedInUser = request.user
 
   val eori: EORI = request.eori
 }
-

@@ -29,25 +29,24 @@ import play.api.data.Form
 import play.api.test.Helpers._
 import services.cachekeys.CacheKey
 import uk.gov.hmrc.customs.test.behaviours.{CustomsSpec, EndpointBehaviours}
-import uk.gov.hmrc.wco.dec.{GovernmentAgencyGoodsItem, ImportExportParty}
-import views.html.goodsitems.goods_items_buyer_details
+import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItem
+import views.html.goodsitems.goods_items_details
 
-class GoodsItemsBuyerDetailsControllerSpec extends CustomsSpec
+class GoodsItemsDetailsControllerSpec extends CustomsSpec
   with PropertyChecks
   with Generators
   with OptionValues
-  with EndpointBehaviours {
+  with EndpointBehaviours  {
 
-
-  val form = Form(importExportPartyMapping)
+  val form = Form(goodsItemDetailsMapping)
 
   def view(form: Form[_]): String =
-    goods_items_buyer_details(form)(fakeRequest, messages, appConfig).body
+    goods_items_details(form)(fakeRequest, messages, appConfig).body
 
   def controller(user: Option[SignedInUser], item: Option[GovernmentAgencyGoodsItem]) =
-    new GoodsItemsBuyerDetailsController(new FakeActions(user, item), mockCustomsCacheService)
+    new GoodsItemsDetailsController(new FakeActions(user, item), mockCustomsCacheService)
 
-  val uri = "/submit-declaration-goods/goods-item-buyer-details"
+  val uri = "/submit-declaration-goods/goods-item-details"
 
   "onPageLoad" should {
 
@@ -85,7 +84,7 @@ class GoodsItemsBuyerDetailsControllerSpec extends CustomsSpec
       forAll { (signedInUser: SignedInUser, goodsItem: GovernmentAgencyGoodsItem) =>
 
         val result = controller(Some(signedInUser), Some(goodsItem)).onPageLoad()(fakeRequest)
-        val popForm = goodsItem.buyer.fold(form)(form.fill)
+        val popForm = form.fillAndValidate(goodsItem)
 
         status(result) mustBe OK
         contentAsString(result) mustBe view(popForm)
@@ -102,14 +101,13 @@ class GoodsItemsBuyerDetailsControllerSpec extends CustomsSpec
 
       "user submits valid data" in {
 
-        forAll { (user: SignedInUser, importExportParty: ImportExportParty, goodsItem: GovernmentAgencyGoodsItem) =>
+        forAll { (user: SignedInUser, goodsItem: GovernmentAgencyGoodsItem) =>
 
-          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(importExportParty): _*)
+          val request = fakeRequest.withFormUrlEncodedBody(asFormParams(goodsItem): _*)
           val result = controller(Some(user), Some(goodsItem)).onSubmit(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(
-            controllers.goodsitems.routes.GoodsItemsCommodityDetailsController.onSubmit().url)
+          redirectLocation(result) mustBe Some(routes.GoodsItemsExporterDetailsController.onPageLoad().url)
         }
       }
     }
@@ -133,9 +131,9 @@ class GoodsItemsBuyerDetailsControllerSpec extends CustomsSpec
 
         val badData =
           for {
-            importExportParty <- arbitrary[ImportExportParty]
-            invalidId <- stringsLongerThan(18)
-          } yield importExportParty.copy(id = Some(invalidId))
+            goodsItem   <- arbitrary[GovernmentAgencyGoodsItem]
+            sequenceNum <- intGreaterThan(999)
+          } yield goodsItem.copy(sequenceNumeric = sequenceNum)
 
         forAll(arbitrary[SignedInUser], badData, arbitrary[GovernmentAgencyGoodsItem]) {
           case (user, formData, goodsItem) =>
@@ -153,17 +151,25 @@ class GoodsItemsBuyerDetailsControllerSpec extends CustomsSpec
 
       "valid data is provided" in {
 
-        forAll { (user: SignedInUser, importExportParty: ImportExportParty, goodsItem: GovernmentAgencyGoodsItem) =>
+        forAll { (user: SignedInUser, goodsItem: GoodsItemDetails, govGoodsItem: GovernmentAgencyGoodsItem) =>
 
-          withCleanCache(EORI(user.eori.value), CacheKey.goodsItem, Some(goodsItem)) {
-            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(importExportParty): _*)
-            await(controller(Some(user), Some(goodsItem)).onSubmit(request))
+          withCaching(None)
+            val request = fakeRequest.withFormUrlEncodedBody(asFormParams(goodsItem.value): _*)
 
-            val expected = goodsItem.copy(buyer = Some(importExportParty))
+            await(controller(Some(user), Some(govGoodsItem)).onSubmit(request))
+
+            val expectedItem = govGoodsItem.copy(
+              sequenceNumeric = goodsItem.value.sequenceNumeric,
+              statisticalValueAmount = goodsItem.value.statisticalValueAmount,
+              transactionNatureCode = goodsItem.value.transactionNatureCode,
+              customsValuation = goodsItem.value.customsValuation,
+              destination = goodsItem.value.destination,
+              exportCountry = goodsItem.value.exportCountry,
+              ucr = goodsItem.value.ucr,
+              valuationAdjustment = goodsItem.value.valuationAdjustment)
 
             verify(mockCustomsCacheService, atLeastOnce())
-              .insert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem), eqTo(expected))(any(), any(), any())
-          }
+              .upsert(eqTo(EORI(user.eori.value)), eqTo(CacheKey.goodsItem))(any(), any())(any(), any(), any(), any())
         }
       }
     }

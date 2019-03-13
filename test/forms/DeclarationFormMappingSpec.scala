@@ -23,15 +23,18 @@ import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
-import play.api.data.Form
+import play.api.data.Forms._
+import play.api.data._
 import uk.gov.hmrc.customs.test.FormMatchers
+import uk.gov.hmrc.customs.test.utils.FormHelpers
 import uk.gov.hmrc.wco.dec.{GovernmentProcedure, _}
 
 class DeclarationFormMappingSpec extends WordSpec
   with MustMatchers
   with PropertyChecks
   with Generators
-  with FormMatchers {
+  with FormMatchers
+  with FormHelpers {
 
   "additionalInformationForm" should {
 
@@ -225,11 +228,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "valid values are bound" in {
 
-        forAll(arbitrary[AdditionalDocument]) { arbitraryAddAdditionalDocument =>
+        forAll(arbitrary[AdditionalDocument]) { additionalDocument =>
 
-          Form(additionalDocumentMapping).fillAndValidate(arbitraryAddAdditionalDocument).fold(
+          Form(additionalDocumentMapping).fillAndValidate(additionalDocument).fold(
             error => fail(s"Failed with errors:\n${error.errors.map(_.message).mkString("\n")}"),
-            result => result mustBe arbitraryAddAdditionalDocument
+            result => result mustBe additionalDocument
           )
         }
       }
@@ -239,10 +242,10 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "id length is greater than 7" in {
 
-        forAll(arbitrary[AdditionalDocument], intBetweenRange(9999999, Int.MaxValue)) { (arbitraryAdditionalDocument, invalidId) =>
+        forAll(arbitrary[AdditionalDocument], intBetweenRange(9999999, Int.MaxValue)) { (additionalDocument, invalidId) =>
 
-          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(id = Some(invalidId.toString))).fold(
-            error => error.error("id") must haveMessage("Deferred Payment ID should be less than or equal to 7 characters"),
+          Form(additionalDocumentMapping).fillAndValidate(additionalDocument.copy(id = Some(invalidId.toString))).fold(
+            _ must haveErrorMessage("Deferred Payment ID should be less than or equal to 7 characters"),
             _ => fail("Should not succeed")
           )
         }
@@ -250,10 +253,10 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "categoryCode length is greater than 1" in {
 
-        forAll(arbitrary[AdditionalDocument], minStringLength(2)) { (arbitraryAdditionalDocument, invalidCategoryCode) =>
+        forAll(arbitrary[AdditionalDocument], minStringLength(2)) { (additionalDocument, invalidCategoryCode) =>
 
-          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
-            error => error.error("categoryCode") must haveMessage("Deferred Payment Category should be less than or equal to 1 character"),
+          Form(additionalDocumentMapping).fillAndValidate(additionalDocument.copy(categoryCode = Some(invalidCategoryCode))).fold(
+            _ must haveErrorMessage("Deferred Payment Category should be less than or equal to 1 character"),
             _ => fail("Should not succeed")
           )
         }
@@ -261,10 +264,10 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "typeCode length is greater than 3" in {
 
-        forAll(arbitrary[AdditionalDocument], minStringLength(4)) { (arbitraryAdditionalDocument, invalidTypeCode) =>
+        forAll(arbitrary[AdditionalDocument], minStringLength(4)) { (additionalDocument, invalidTypeCode) =>
 
-          Form(additionalDocumentMapping).fillAndValidate(arbitraryAdditionalDocument.copy(typeCode = Some(invalidTypeCode))).fold(
-            error => error.error("typeCode") must haveMessage("Deferred Payment Type should be less than or equal to 3 characters"),
+          Form(additionalDocumentMapping).fillAndValidate(additionalDocument.copy(typeCode = Some(invalidTypeCode))).fold(
+            _ must haveErrorMessage("Deferred Payment Type should be less than or equal to 3 characters"),
             _ => fail("Should not succeed")
           )
         }
@@ -535,12 +538,18 @@ class DeclarationFormMappingSpec extends WordSpec
 
   "currencyExchangeMapping" should {
 
+    case class Wrapper(value: CurrencyExchange)
+
+    val currencyGen = arbitrary[CurrencyExchange].map(Wrapper)
+    val currencyExchangeMapping =
+      mapping("value" -> Forms.of(Formatters.currencyExchangeFormatter))(Wrapper.apply)(Wrapper.unapply)
+
     "bind" when {
 
       "valid values are bound" in {
-        forAll { currencyExchange: CurrencyExchange =>
+        forAll(currencyGen) { currencyExchange =>
 
-          Form(currencyExchangeMapping).fillAndValidate(currencyExchange).fold(
+          Form(currencyExchangeMapping).bind(asFormParams(currencyExchange).toMap).fold(
             _ => fail("Should not fail"),
             _ mustBe currencyExchange
           )
@@ -556,7 +565,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll(arbitrary[CurrencyExchange], badData) { (currencyExchange, badData) =>
 
           val data = currencyExchange.copy(currencyTypeCode = Some(badData))
-          Form(currencyExchangeMapping).fillAndValidate(data).fold(
+          Form(currencyExchangeMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
             _ must haveErrorMessage("CurrencyTypeCode is not a valid currency"),
             _ => fail("Form should not succeed")
           )
@@ -570,7 +579,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             val data = currencyEnchange.copy(rateNumeric = Some(invalidRateNumeric))
 
-            Form(currencyExchangeMapping).fillAndValidate(data).fold(
+            Form(currencyExchangeMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("RateNumeric cannot be greater than 9999999.99999"),
               _ => fail("Form should not succeed")
             )
@@ -581,9 +590,10 @@ class DeclarationFormMappingSpec extends WordSpec
         val badData = choose(6, 16).flatMap(posDecimal(12, _))
         forAll(arbitrary[CurrencyExchange], badData) {
           (currencyExchange, invalidRateNumeric) =>
+
             val data = currencyExchange.copy(rateNumeric = Some(invalidRateNumeric))
 
-            Form(currencyExchangeMapping).fillAndValidate(data).fold(
+            Form(currencyExchangeMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("RateNumeric cannot have more than 5 decimal places"),
               _ => fail("Form should not fail")
             )
@@ -594,9 +604,10 @@ class DeclarationFormMappingSpec extends WordSpec
 
         forAll(arbitrary[CurrencyExchange], intLessThan(0)) {
           (currencyExchange, invalidRateNumeric) =>
+
             val data = currencyExchange.copy(rateNumeric = Some(BigDecimal(invalidRateNumeric)))
 
-            Form(currencyExchangeMapping).fillAndValidate(data).fold(
+            Form(currencyExchangeMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("RateNumeric must not be negative"),
               _ => fail("Form should not fail")
             )
@@ -609,7 +620,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           whenever(currencyExchange.currencyTypeCode.nonEmpty) {
 
-            Form(currencyExchangeMapping).bind(Map("currencyTypeCode" -> currencyExchange.currencyTypeCode.getOrElse(""))).fold(
+            Form(currencyExchangeMapping).bind(Map("value.currencyTypeCode" -> currencyExchange.currencyTypeCode.getOrElse(""))).fold(
               _ must haveErrorMessage("Exchange rate is required when currency is provided"),
               _ => fail("form should not succeed")
             )
@@ -623,7 +634,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
           whenever(currencyExchange.rateNumeric.nonEmpty) {
 
-            Form(currencyExchangeMapping).bind(Map("rateNumeric" -> currencyExchange.rateNumeric.fold("")(_.toString))).fold(
+            Form(currencyExchangeMapping).bind(Map("value.rateNumeric" -> currencyExchange.rateNumeric.fold("")(_.toString))).fold(
               _ must haveErrorMessage("Currency ID is required when amount is provided"),
               _ => fail("form should not succeed")
             )
@@ -960,7 +971,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll(arbitrary[References], minStringLength(3)) {
           (references, typeCode) =>
 
-            val data = references.copy(typeCode = Some(typeCode))
+            val data = references.copy(typeCode = typeCode)
             Form(referencesMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("Declaration type must be 2 characters or less"),
               _ => fail("form should not succeed")
@@ -975,7 +986,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             whenever(typeCode.nonEmpty) {
 
-              val data = references.copy(typeCode = Some(typeCode.take(2)))
+              val data = references.copy(typeCode = typeCode.take(2))
               Form(referencesMapping).fillAndValidate(data).fold(
                 _ must haveErrorMessage("Declaration type must contains only A-Z characters"),
                 _ => fail("form should not succeed")
@@ -989,7 +1000,7 @@ class DeclarationFormMappingSpec extends WordSpec
         forAll(arbitrary[References], minStringLength(2)) {
           (references, typerCode) =>
 
-            val data = references.copy(typerCode = Some(typerCode))
+            val data = references.copy(typerCode = typerCode)
             Form(referencesMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("Additional declaration type must be a single character"),
               _ => fail("form should not succeed")
@@ -1004,7 +1015,7 @@ class DeclarationFormMappingSpec extends WordSpec
 
             whenever(typerCode.nonEmpty) {
 
-              val data = references.copy(typerCode = Some(typerCode.take(1)))
+              val data = references.copy(typerCode = typerCode.take(1))
               Form(referencesMapping).fillAndValidate(data).fold(
                 _ must haveErrorMessage("Additional declaration type must contains only A-Z characters"),
                 _ => fail("form should not succeed")
@@ -1034,6 +1045,18 @@ class DeclarationFormMappingSpec extends WordSpec
             val data = references.copy(functionalReferenceId = refId)
             Form(referencesMapping).fillAndValidate(data).fold(
               _ must haveErrorMessage("LRN must be 22 characters or less"),
+              _ => fail("form should not succeed")
+            )
+        }
+      }
+
+      "functionalReferenceId is empty" in {
+
+        forAll { references: References =>
+
+            val data = references.copy(functionalReferenceId = "")
+            Form(referencesMapping).fillAndValidate(data).fold(
+              _ must haveErrorMessage("LRN is required"),
               _ => fail("form should not succeed")
             )
         }
@@ -1247,11 +1270,16 @@ class DeclarationFormMappingSpec extends WordSpec
 
   "amountMapping" should {
 
+    case class Wrapper(value: Amount)
+    val amountGen = arbitrary[Amount].map(Wrapper)
+    val amountMapping =
+      mapping("value" -> Forms.of(DeclarationFormMapping.amountFormatter()))(Wrapper.apply)(Wrapper.unapply)
+
     "bind" when {
 
       "valid values are passed" in {
 
-        forAll { amount: Amount =>
+        forAll(amountGen) { amount =>
 
           Form(amountMapping).fillAndValidate(amount).fold(
             e => fail(s"form should not fail: ${e.errors}"),
@@ -1266,24 +1294,24 @@ class DeclarationFormMappingSpec extends WordSpec
       "currencyId is not a currency" in {
 
         val badData = stringsExceptSpecificValues(config.Options.currencyTypes.map(_._2).toSet)
-        forAll(arbitrary[Amount], badData) {
+        forAll(amountGen, badData) {
           (amount, currency) =>
 
-            val data = amount.copy(currencyId = Some(currency))
-            Form(amountMapping).fillAndValidate(data).fold(
+            val data = amount.value.copy(currencyId = Some(currency))
+            Form(amountMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("Currency is not valid"),
-              _ => fail("form should not succeed")
+              s => fail("form should not succeed")
             )
         }
       }
 
       "value has a precision greater than 16" in {
 
-        forAll(arbitrary[Amount], decimal(17, 30, 0)) {
+        forAll(amountGen, decimal(17, 30, 0)) {
           (amount, deduction) =>
 
-            val data = amount.copy(value = Some(deduction))
-            Form(amountMapping).fillAndValidate(data).fold(
+            val data = amount.value.copy(value = Some(deduction))
+            Form(amountMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("Amount cannot be greater than 99999999999999.99"),
               _ => fail("form should not succeed")
             )
@@ -1294,11 +1322,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
         val badData = choose(3, 10).flatMap(posDecimal(16, _))
 
-        forAll(arbitrary[Amount], badData) {
+        forAll(amountGen, badData) {
           (amount, deduction) =>
 
-            val data = amount.copy(value = Some(deduction))
-            Form(amountMapping).fillAndValidate(data).fold(
+            val data = amount.value.copy(value = Some(deduction))
+            Form(amountMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("Amount cannot have more than 2 decimal places"),
               _ => fail("form should not succeed")
             )
@@ -1307,11 +1335,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "value is less than 0" in {
 
-        forAll(arbitrary[Amount], intLessThan(0)) {
+        forAll(amountGen, intLessThan(0)) {
           (amount, deduction) =>
 
-            val data = amount.copy(value = Some(BigDecimal(deduction)))
-            Form(amountMapping).fillAndValidate(data).fold(
+            val data = amount.value.copy(value = Some(BigDecimal(deduction)))
+            Form(amountMapping).bind(asFormParams(Wrapper(data)).toMap).fold(
               _ must haveErrorMessage("Amount must not be negative"),
               _ => fail("form should not succeed")
             )
@@ -1320,11 +1348,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "has a currency with no value" in {
 
-        forAll { amount: Amount =>
+        forAll(amountGen) { amount =>
 
-          whenever(amount.currencyId.nonEmpty) {
+          whenever(amount.value.currencyId.nonEmpty) {
 
-            Form(amountMapping).bind(Map("currencyId" -> amount.currencyId.getOrElse(""))).fold(
+            Form(amountMapping).bind(Map("value.currencyId" -> amount.value.currencyId.getOrElse(""))).fold(
               _ must haveErrorMessage("Amount is required when Currency is provided"),
               _ => fail("form should not succeed")
             )
@@ -1334,11 +1362,11 @@ class DeclarationFormMappingSpec extends WordSpec
 
       "has a value with no currency" in {
 
-        forAll { amount: Amount =>
+        forAll(amountGen) { amount =>
 
-          whenever(amount.value.nonEmpty) {
+          whenever(amount.value.value.nonEmpty) {
 
-            Form(amountMapping).bind(Map("value" -> amount.value.fold("")(_.toString))).fold(
+            Form(amountMapping).bind(Map("value.value" -> amount.value.value.fold("")(_.toString))).fold(
               _ must haveErrorMessage("Currency is required when Amount is provided"),
               _ => fail("form should not succeed")
             )

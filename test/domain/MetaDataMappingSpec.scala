@@ -34,36 +34,6 @@ class MetaDataMappingSpec extends WordSpec
   with Generators
   with Lenses {
 
-  override implicit val arbitraryCacheMap: Arbitrary[CacheMap] = Arbitrary {
-    def list[A]: Gen[A] => Gen[List[A]] = varListOf[A](5)
-
-    List(
-      CacheMapLens.declarantDetails.set(arbitrary[ImportExportParty]),
-      CacheMapLens.references.set(arbitrary[References]),
-      CacheMapLens.exporter.set(arbitrary[ImportExportParty]),
-      CacheMapLens.representative.set(arbitrary[Agent]),
-      CacheMapLens.importer.set(arbitrary[ImportExportParty]),
-      CacheMapLens.tradeTerms.set(arbitrary[TradeTerms]),
-      CacheMapLens.invoiceAndCurrency.set(arbitrary[InvoiceAndCurrency]),
-      CacheMapLens.seller.set(arbitrary[ImportExportParty]),
-      CacheMapLens.buyer.set(arbitrary[ImportExportParty]),
-      CacheMapLens.summaryOfGoods.set(arbitrary[SummaryOfGoods]),
-      CacheMapLens.transport.set(arbitrary[Transport]),
-      CacheMapLens.authorisationHolders.set(list(arbitrary[AuthorisationHolder])),
-      CacheMapLens.guaranteeReferences.set(list(arbitrary[ObligationGuarantee])),
-      CacheMapLens.previousDocuments.set(list(arbitrary[PreviousDocument])),
-      CacheMapLens.additionalDocuments.set(list(arbitrary[AdditionalDocument])),
-      CacheMapLens.additionalSupplyChainActors.set(list(arbitrary[RoleBasedParty])),
-      CacheMapLens.domesticDutyTaxParty.set(list(arbitrary[RoleBasedParty])),
-      CacheMapLens.additionsAndDeductions.set(list(arbitrary[ChargeDeduction])),
-      CacheMapLens.containerIdNos.set(list(arbitrary[TransportEquipment])),
-      CacheMapLens.guaranteeTypes.set(list(arbitrary[ObligationGuarantee])),
-      CacheMapLens.govAgencyGoodsItemsList.set(list(arbitrary[GovernmentAgencyGoodsItem])),
-      CacheMapLens.warehouseAndCustsoms.set(arbitrary[WarehouseAndCustoms]),
-      CacheMapLens.locationOfGoods.set(arbitrary[LocationOfGoods])
-    ).foldLeft(const(Monoid.empty[CacheMap])) { case (acc, f) => f(acc) }
-  }
-
   "asMetaData" should {
 
     "convert using DeclarantDetailsId" in {
@@ -87,7 +57,7 @@ class MetaDataMappingSpec extends WordSpec
 
         val dec = MetaDataMapping.produce(cacheMap).declaration
 
-        dec.flatMap(_.typeCode) mustBe data.flatMap(d => d.typeCode.flatMap(a => d.typerCode.map(b => a + b)))
+        dec.flatMap(_.typeCode) mustBe data.map(d => d.typeCode + d.typerCode)
         dec.flatMap(_.functionalReferenceId) mustBe data.map(_.functionalReferenceId)
         dec.flatMap(_.goodsShipment.flatMap(_.transactionNatureCode)) mustBe data.flatMap(_.transactionNatureCode)
         dec.flatMap(_.goodsShipment.flatMap(_.ucr.flatMap(_.traderAssignedReferenceId))) mustBe

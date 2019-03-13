@@ -19,8 +19,8 @@ package domain
 import play.api.libs.json.Json
 
 case class References(
-  typeCode: Option[String],
-  typerCode: Option[String],
+  typeCode: String,
+  typerCode: String,
   traderAssignedReferenceId: Option[String],
   functionalReferenceId: String,
   transactionNatureCode: Option[Int])

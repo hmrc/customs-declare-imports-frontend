@@ -64,13 +64,11 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
         withCaching(None)
         withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>
           val content = contentAsString(resp)
-          content must include("customsValueAmount")
+
           content must include("statisticalValueAmount.currencyId")
           content must include("statisticalValueAmount.value")
           content must include("transactionNatureCode")
           content must include("destination.countryCode")
-          content must include("destination.regionId")
-          content must include("ucr.id")
           content must include("ucr.traderAssignedReferenceId")
           content must include("exportCountry.id")
           content must include("valuationAdjustment.additionCode")
@@ -84,13 +82,11 @@ class GovernmentAgencyGoodsItemsControllerSpec extends CustomsSpec
         withCaching(None)
         withRequest(get, goodsItemsPageUri, headers, session, tags) { resp =>
           val content = contentAsString(resp)
-          content must include("customsValueAmount")
+
           content must include("statisticalValueAmount.currencyId")
           content must include("statisticalValueAmount.value")
           content must include("transactionNatureCode")
           content must include("destination.countryCode")
-          content must include("destination.regionId")
-          content must include("ucr.id")
           content must include("ucr.traderAssignedReferenceId")
           content must include("exportCountry.id")
           content must include("valuationAdjustment.additionCode")

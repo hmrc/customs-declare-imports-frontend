@@ -24,14 +24,18 @@ import forms.DeclarationFormMapping._
 import generators.Generators
 import models.Cancellation
 import org.mockito.ArgumentMatchers.{any, eq => meq}
-import org.mockito.Mockito.{never, verify}
+import org.mockito.Mockito._
 import org.scalacheck.Arbitrary._
+import org.scalacheck.Gen
 import org.scalatest.prop.PropertyChecks
 import play.api.data.Form
 import play.api.test.Helpers._
 import uk.gov.hmrc.customs.test.assertions.{HtmlAssertions, HttpAssertions}
 import uk.gov.hmrc.customs.test.behaviours._
-import views.html.cancel_form
+import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse}
+import views.html.{cancel_failure, cancel_form}
+
+import scala.concurrent.Future
 
 class DeclarationControllerSpec extends CustomsSpec
   with AuthenticationBehaviours
@@ -128,6 +132,28 @@ class DeclarationControllerSpec extends CustomsSpec
       }
     }
 
+    "return SEE_OTHER" when {
+
+      "backend fails" in {
+
+        val responseGen = Gen.oneOf(Upstream4xxResponse("", 400, 0), Upstream5xxResponse("", 500, 0))
+
+        forAll(arbitrary[SignedInUser], arbitrary[Cancel], arbitrary[String], responseGen) {
+          (user, formData, mrn, response) =>
+
+            when(mockCustomsDeclarationsConnector.cancelDeclaration(any())(any(), any()))
+              .thenReturn(Future.failed(response))
+
+            val params  = Seq("changeReasonCode" -> formData.changeReasonCode.entryName, "description" -> formData.description)
+            val request = fakeRequest.withFormUrlEncodedBody(params: _*)
+            val result  = controller(user).handleCancelForm(mrn)(request)
+
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result) mustBe Some(routes.DeclarationController.displayCancelFailure(mrn).url)
+        }
+      }
+    }
+
     "return BAD_REQUEST" when {
 
       "bad data is posted" in {
@@ -186,4 +212,41 @@ class DeclarationControllerSpec extends CustomsSpec
 
   }
 
+  "displayCancelFailure" should {
+
+    def view(mrn: String): String =
+      cancel_failure(mrn)(fakeRequest, messages, appConfig).body
+
+    val uri = "/cancel-declaration/1234/failed"
+
+    behave like okEndpoint(uri)
+    behave like authenticatedEndpoint(uri)
+
+    "return OK" when {
+
+      "user is signed in" in {
+
+        forAll { (user: SignedInUser, mrn: String) =>
+
+          val result = controller(user).displayCancelFailure(mrn)(fakeRequest)
+
+          status(result) mustBe OK
+          contentAsString(result) mustBe view(mrn)
+        }
+      }
+    }
+
+    "return UNAUTHORIZED" when {
+
+      "user doesn't have an eori" in {
+
+        forAll { user: UnauthenticatedUser =>
+
+          val result = controller(user.user).displayCancelFailure("")(fakeRequest)
+
+          status(result) mustBe UNAUTHORIZED
+        }
+      }
+    }
+  }
 }

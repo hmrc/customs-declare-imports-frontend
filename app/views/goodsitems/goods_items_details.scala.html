@@ -1,0 +1,66 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import config.Fields._
+@import controllers.routes._
+@import uk.gov.hmrc.play.views.html._
+@import controllers.routes._
+
+@(form: Form[_])(implicit req: Request[_], messages: Messages, cfg: AppConfig)
+
+@main_template(messages("governmentAgencyGoodsItem.goodsItemDetails.title")) {
+
+@helpers.form(action = controllers.goodsitems.routes.GoodsItemsDetailsController.onSubmit()) {
+
+@components.back_link()
+
+@components.error_summary(form.errors)
+
+    <fieldset>
+        <legend>
+            <h1 class="heading-large">@messages("governmentAgencyGoodsItem.goodsItemDetails.heading")</h1>
+        </legend>
+
+        @components.input_text(form("sequenceNumeric"),
+                               messages("governmentAgencyGoodsItem.goodsItemDetails.sequenceNumeric"))
+        @components.input_text(form("ucr.traderAssignedReferenceId"),
+                               messages("governmentAgencyGoodsItem.goodsItemDetails.traderAssignedReferenceId"))
+        @components.input_text(form("valuationAdjustment.additionCode"),
+                               messages("governmentAgencyGoodsItem.goodsItemDetails.additionCode"))
+        @components.input_select(form("destination.countryCode"),
+                                 messages("governmentAgencyGoodsItem.goodsItemDetails.countryCode"),
+                                 config.Options.countryOptions)
+        @components.input_select(form("exportCountry.id"),
+                                 messages("governmentAgencyGoodsItem.goodsItemDetails.exportCountry"),
+                                 config.Options.countryOptions)
+        @components.input_text(form("customsValuation.methodCode"),
+                               messages("governmentAgencyGoodsItem.goodsItemDetails.methodCode"))
+        @components.input_text(form("transactionNatureCode"),
+                               messages("governmentAgencyGoodsItem.goodsItemDetails.transactionNatureCode"))
+        @components.input_text(form("statisticalValueAmount.value"),
+                               messages("governmentAgencyGoodsItem.goodsItemDetails.value"))
+        @components.input_select(form("statisticalValueAmount.currencyId"),
+                               messages("governmentAgencyGoodsItem.goodsItemDetails.currencyId"),
+                               config.Options.currencyTypes)
+    </fieldset>
+
+    <button id="Add" name="submit">
+        @messages("common.button.continue")
+    </button>
+
+    }
+}

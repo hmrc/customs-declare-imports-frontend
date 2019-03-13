@@ -49,14 +49,14 @@ class ClassificationsMappingSpec extends WordSpec
 
     "fail" when {
 
-      "Id is longer than 4 characters" in {
+      "Id is longer than 8 characters" in {
 
-        forAll(arbitrary[Classification], stringsLongerThan(4)) {
+        forAll(arbitrary[Classification], stringsLongerThan(8)) {
           (classification, id) =>
 
             val data = classification.copy(id = Some(id))
             Form(classificationMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Id must be less than 5 characters"),
+              _ must haveErrorMessage("Id must be euqal to or less than 8 characters"),
               _ => fail("form should not succeed")
             )
         }

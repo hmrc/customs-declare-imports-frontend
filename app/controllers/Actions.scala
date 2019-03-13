@@ -23,7 +23,6 @@ import domain.DeclarationFormats._
 import domain.features.Feature.Feature
 import domain.features.FeatureStatus
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Reads
 import play.api.mvc.Results._
 import play.api.mvc._
 import play.api.{Configuration, Environment}
@@ -35,7 +34,6 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
-import uk.gov.hmrc.wco.dec.GovernmentAgencyGoodsItem
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -45,6 +43,8 @@ trait Actions {
   def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest]
 
   def eori: ActionRefiner[AuthenticatedRequest, EORIRequest]
+
+  def lrn: ActionRefiner[EORIRequest, LRNRequest]
 
   def goodsItem: ActionRefiner[EORIRequest, GoodsItemRequest]
 
@@ -58,6 +58,8 @@ class ActionsImpl @Inject()(authConnector: AuthConnector, errorHandler: ErrorHan
   def auth: ActionBuilder[AuthenticatedRequest] with ActionRefiner[Request, AuthenticatedRequest] = new AuthAction(authConnector)
 
   def eori: ActionRefiner[AuthenticatedRequest, EORIRequest] = new EORIAction(errorHandler)
+
+  def lrn: ActionRefiner[EORIRequest, LRNRequest] = new LRNAction(errorHandler, cache)
 
   def goodsItem: ActionRefiner[EORIRequest, GoodsItemRequest] = new GoodsItemAction(errorHandler, cache)
 
@@ -106,16 +108,30 @@ class EORIAction(errorHandler: ErrorHandler) extends ActionRefiner[Authenticated
         .toRight(Unauthorized(errorHandler.notFoundTemplate(request))))
 }
 
+class LRNAction(errorHandler: ErrorHandler, cache: CustomsCacheService)(implicit ec: ExecutionContext)
+  extends ActionRefiner[EORIRequest, LRNRequest] {
+
+  override protected def refine[A](request: EORIRequest[A]): Future[Either[Result, LRNRequest[A]]] = {
+    val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
+
+    cache.getByKey(request.eori, CacheKey.references)(hc, implicitly, implicitly)
+      .map {
+        _.filter(_.functionalReferenceId.nonEmpty)
+         .map(e => LRNRequest(request, e.functionalReferenceId))
+         .toRight(BadRequest(errorHandler.missingLRNTemplate(request)))
+    }
+  }
+}
+
 class GoodsItemAction(errorHandler: ErrorHandler, cache: CustomsCacheService)
                      (implicit ec: ExecutionContext) extends ActionRefiner[EORIRequest, GoodsItemRequest] {
 
   override protected def refine[A](request: EORIRequest[A]): Future[Either[Result, GoodsItemRequest[A]]] = {
     implicit val hc = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, Some(request.session), Some(request))
-    cache.getByKey(request.eori, CacheKey.goodsItem).map { goodsItem =>
-      goodsItem match {
-        case Some(good) => Right(GoodsItemRequest(request, good))
-        case None => Left(BadRequest(errorHandler.badRequestTemplate(request)))
-      }
+
+    cache.getByKey(request.eori, CacheKey.goodsItem).map {
+      case Some(good) => Right(GoodsItemRequest(request, good))
+      case None => Left(BadRequest(errorHandler.badRequestTemplate(request)))
     }
   }
 }
