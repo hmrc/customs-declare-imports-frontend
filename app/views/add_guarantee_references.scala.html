@@ -30,38 +30,46 @@
     }
 }
 
-@main_template(title = messages("addGuaranteeReferences.title")) {
+@main_template(title = messages("addGuaranteeReferences.title"), mainClass = Some("full-width")) {
 
 @helpers.form(action = AddGuaranteeReferencesController.onSubmit()) {
 
     @components.back_link()
 
     @components.error_summary(form.errors)
+    <fieldset>
+      <legend>
+        <h1 class="heading-large">@messages("addGuaranteeReferences.heading")</h1>
+      </legend>
 
-    <h1 class="heading-large">@messages("addGuaranteeReferences.heading")</h1>
+       <div class="form-group">
+        @components.table.table(
+           HtmlTable(
+                   messages("addGuaranteeReferences.referenceId"),
+                   messages("addGuaranteeReferences.id"),
+                   messages("addGuaranteeReferences.amountAmount"),
+                   messages("addGuaranteeReferences.accessCode"),
+                   messages("addGuaranteeReferences.officeId")
+           )(guaranteeReferences.map(a => (a.referenceId.getOrElse(""),
+                                         a.id.getOrElse(""),
+                                         a.amount.getOrElse(""),
+                                         a.accessCode.getOrElse(""),
+                                         a.guaranteeOffice.flatMap(_.id).getOrElse("")))), Some(tableHeader))
+      </div>
 
-               @components.table.table(
-                  HtmlTable(
-                          messages("addGuaranteeReferences.referenceId"),
-                          messages("addGuaranteeReferences.id"),
-                          messages("addGuaranteeReferences.amountAmount"),
-                          messages("addGuaranteeReferences.accessCode"),
-                          messages("addGuaranteeReferences.officeId")
-                  )(guaranteeReferences.map(a => (a.referenceId.getOrElse(""),
-                                                a.id.getOrElse(""),
-                                                a.amount.getOrElse(""),
-                                                a.accessCode.getOrElse(""),
-                                                a.guaranteeOffice.flatMap(_.id).getOrElse("")))), Some(tableHeader))
 
-           <fieldset>
-               @components.input_text(form("referenceId"), messages("addGuaranteeReferences.referenceId"))
+       <div class="grid-row">
+        <div class="column-two-thirds">
+         @components.input_text(form("referenceId"), messages("addGuaranteeReferences.referenceId"))
                @components.input_text(form("id"), messages("addGuaranteeReferences.id"))
                @components.input_text(form("amount"), messages("addGuaranteeReferences.amountAmount"))
                @components.input_text(form("accessCode"), messages("addGuaranteeReferences.accessCode"))
                @components.input_text(form("guaranteeOffice.id"), messages("addGuaranteeReferences.officeId"))
-           </fieldset>
+         </div>
+       </div>
+    </fieldset>
 
-          <button id="Add" name="submit">
+          <button id="Add" name="submit" class="button">
            @messages("addGuaranteeReferences.addGuaranteeReference")
           </button>
 
