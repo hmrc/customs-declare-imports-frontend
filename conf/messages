@@ -56,7 +56,7 @@ pages.seller.details.title=Seller'’s Details
 pages.seller.details.form.legend=Seller'’s details
 
 pages.buyer.details.title=Buyer'’s Details
-pages.buyer.details.form.legend=Buyer'’s details
+pages.buyer.details.form.legend=3/26 Buyer'’s details
 
 pages.additionalSupplyChainActors.title=Additional Supply Chain Actors
 pages.additionalSupplyChainActors.form.legend=Additional supply chain actors
@@ -511,10 +511,10 @@ addAdditionsAndDeductions.table.multiple.heading={0} Additions and deductions ad
 addAdditionsAndDeductions.add=Add additions and deduction
 
 ## Add Guarantee References
-addGuaranteeReferences.title=Guarantee References
-addGuaranteeReferences.heading=Guarantee References
-addGuaranteeReferences.referenceId=Reference Id
-addGuaranteeReferences.id=Id
+addGuaranteeReferences.title=Guarantee references
+addGuaranteeReferences.heading=8/3 Guarantee references
+addGuaranteeReferences.referenceId=Reference ID
+addGuaranteeReferences.id=ID
 addGuaranteeReferences.amountAmount=Amount of import duty and other charges
 addGuaranteeReferences.accessCode=Access Code
 addGuaranteeReferences.officeId=Customs office of guarantee
@@ -531,8 +531,8 @@ containerIdentificationNumber.table.multiple.heading={0} container identificatio
 containerIdentificationNumber.add=Add container identification number
 
 ## Guarantee Type
-guaranteeType.title=Guarantee Type
-guaranteeType.heading=Guarantee Type
+guaranteeType.title=Guarantee type
+guaranteeType.heading=8/2 Guarantee type
 guaranteeType.code=Security details code
 guaranteeType.table.heading=1 guarantee type added
 guaranteeType.table.multiple.heading={0} guarantee types added
@@ -562,7 +562,7 @@ governmentAgencyGoodsItem.exporterDetails.id=Exporter identification no.
 ## Goods item buyer details
 
 governmentAgencyGoodsItem.buyerDetails.title=Buyer'’s details
-governmentAgencyGoodsItem.buyerDetails.heading=Buyer'’s details
+governmentAgencyGoodsItem.buyerDetails.heading=3/26 Buyer'’s details
 governmentAgencyGoodsItem.buyerDetails.name=Name
 governmentAgencyGoodsItem.buyerDetails.address.line=Street and number
 governmentAgencyGoodsItem.buyerDetails.address.cityName=City
@@ -574,7 +574,7 @@ governmentAgencyGoodsItem.buyerDetails.id=EORI number
 ## Goods item seller details
 
 governmentAgencyGoodsItem.sellerDetails.title=Seller'’s details
-governmentAgencyGoodsItem.sellerDetails.heading=Seller'’s details
+governmentAgencyGoodsItem.sellerDetails.heading=3/24 Seller'’s details
 governmentAgencyGoodsItem.sellerDetails.name=Name
 governmentAgencyGoodsItem.sellerDetails.address.line=Street and number
 governmentAgencyGoodsItem.sellerDetails.address.cityName=City
@@ -662,17 +662,17 @@ governmentAgencyGoodsItemAdditionalInfo.noAdditionalInfo=No additional informati
 governmentAgencyGoodsItemAdditionalInfo.addAdditionalInformation=Add additional information
 
 governmentAgencyGoodsItemValue.title=Item value
-governmentAgencyGoodsItemValue.customsValueAmount=Customs value amount
-governmentAgencyGoodsItemValue.numericSequence=Numeric sequence
-governmentAgencyGoodsItemValue.currencyCode=Currency code
+governmentAgencyGoodsItemValue.customsValueAmount=4/14 Customs value amount
+governmentAgencyGoodsItemValue.numericSequence=1/6 Numeric sequence
+governmentAgencyGoodsItemValue.currencyCode=4/14 Currency code
 governmentAgencyGoodsItemValue.currencyValue=Currency value
-governmentAgencyGoodsItemValue.natureOfTransactionCode=Nature of transaction code
-governmentAgencyGoodsItemValue.destinationCountryCode=Destination country code
+governmentAgencyGoodsItemValue.natureOfTransactionCode=8/5 Nature of transaction code
+governmentAgencyGoodsItemValue.destinationCountryCode=5/8 Destination country code
 governmentAgencyGoodsItemValue.destinationRegionID=Destination region ID
-governmentAgencyGoodsItemValue.UCRID=Unique Consignment Reference (UCR) ID
-governmentAgencyGoodsItemValue.traderAssignedReferenceID=Trader assigned reference ID
-governmentAgencyGoodsItemValue.exportCountry=Export country
-governmentAgencyGoodsItemValue.valuationAdjustmentAdditionCode=Valuation adjustment addition code
+governmentAgencyGoodsItemValue.UCRID=2/4 Unique Consignment Reference (UCR) ID
+governmentAgencyGoodsItemValue.traderAssignedReferenceID=2/4 Trader assigned reference ID
+governmentAgencyGoodsItemValue.exportCountry=5/14 Export country
+governmentAgencyGoodsItemValue.valuationAdjustmentAdditionCode=4/13 Valuation adjustment addition code
 
 governmentAgencyGoodsItemMutual.title=Mutual recognition parties
 governmentAgencyGoodsItemMutual.mutualPartiesAdded=mutual recognition parties added

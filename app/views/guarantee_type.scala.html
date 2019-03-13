@@ -39,20 +39,24 @@
         @components.back_link()
 
         @components.error_summary(form.errors)
+        <fieldset>
+            <legend>
+                <h1 class="heading-large">@messages("guaranteeType.heading")</h1>
+            </legend>
 
-        <h1 class="heading-large">@messages("guaranteeType.heading")</h1>
+            <div class="form-group">
+                @components.table.table(
+                HtmlTable(
+                    messages("guaranteeType.code")
+                )(securityDetails.map(_.securityDetailsCode.getOrElse(""))), Some(tableHeader))
+            </div>
 
-        @components.table.table(
-            HtmlTable(
-                messages("guaranteeType.code")
-            )(securityDetails.map(_.securityDetailsCode.getOrElse(""))), Some(tableHeader))
+            @if(showForm) {
 
-        @if(showForm) {
-            <fieldset>
                 @components.input_text(form("securityDetailsCode"), messages("guaranteeType.code"))
-            </fieldset>
+        </fieldset>
 
-            <button id="Add" name="submit">
+            <button id="Add" name="submit" class="button">
                @messages("guaranteeType.add")
             </button>
         }
