@@ -587,27 +587,27 @@ governmentAgencyGoodsItem.sellerDetails.id=EORI number
 
 governmentAgencyGoodsItem.goodsItemDetails.title=Goods item details
 governmentAgencyGoodsItem.goodsItemDetails.heading=Goods item details
-governmentAgencyGoodsItem.goodsItemDetails.sequenceNumeric=Goods item number
-governmentAgencyGoodsItem.goodsItemDetails.traderAssignedReferenceId=Reference number
-governmentAgencyGoodsItem.goodsItemDetails.additionCode=Valuation indicators
-governmentAgencyGoodsItem.goodsItemDetails.countryCode=Country of destination code
-governmentAgencyGoodsItem.goodsItemDetails.exportCountry=Country of dispatch
-governmentAgencyGoodsItem.goodsItemDetails.methodCode=Valuation method
-governmentAgencyGoodsItem.goodsItemDetails.transactionNatureCode=Nature of transaction
-governmentAgencyGoodsItem.goodsItemDetails.value=Statistical value
-governmentAgencyGoodsItem.goodsItemDetails.currencyId=Statistical value - currency
+governmentAgencyGoodsItem.goodsItemDetails.sequenceNumeric=1/6 Goods item number
+governmentAgencyGoodsItem.goodsItemDetails.traderAssignedReferenceId=2/4 Reference number
+governmentAgencyGoodsItem.goodsItemDetails.additionCode=4/13 Valuation indicators
+governmentAgencyGoodsItem.goodsItemDetails.countryCode=5/8 Country of destination code
+governmentAgencyGoodsItem.goodsItemDetails.exportCountry=5/14 Country of dispatch
+governmentAgencyGoodsItem.goodsItemDetails.methodCode=4/16 Valuation method
+governmentAgencyGoodsItem.goodsItemDetails.transactionNatureCode=8/5 Nature of transaction
+governmentAgencyGoodsItem.goodsItemDetails.value=8/6 Statistical value
+governmentAgencyGoodsItem.goodsItemDetails.currencyId=8/6 Statistical value - currency
 
 ## Goods item commodity details
 
 governmentAgencyGoodsItem.commodityDetails.title=Commodity details
 governmentAgencyGoodsItem.commodityDetails.heading=Commodity details
-governmentAgencyGoodsItem.commodityDetails.currencyId=Currency
-governmentAgencyGoodsItem.commodityDetails.value=Amount
+governmentAgencyGoodsItem.commodityDetails.currencyId=4/14 Currency
+governmentAgencyGoodsItem.commodityDetails.value=4/14 Amount
 governmentAgencyGoodsItem.commodityDetails.dutyRegimeCode=Preference
-governmentAgencyGoodsItem.commodityDetails.netWeightMeasure=Net mass
-governmentAgencyGoodsItem.commodityDetails.tariffQuantity=Supplementary units
-governmentAgencyGoodsItem.commodityDetails.grossMassMeasure=Gross mass
-governmentAgencyGoodsItem.commodityDetails.description=Description of goods
+governmentAgencyGoodsItem.commodityDetails.netWeightMeasure=6/1 Net mass
+governmentAgencyGoodsItem.commodityDetails.tariffQuantity=6/2 Supplementary units
+governmentAgencyGoodsItem.commodityDetails.grossMassMeasure=6/5 Gross mass
+governmentAgencyGoodsItem.commodityDetails.description=6/8 Description of goods
 
 ## Government agency goods item
 governmentAgencyGoodsItem.title=Goods item information
