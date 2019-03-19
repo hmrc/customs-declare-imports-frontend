@@ -19,6 +19,7 @@ package controllers
 import com.google.inject.Inject
 import config.AppConfig
 import domain.MetaDataMapping
+import play.api.Logger
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.{CustomsCacheService, CustomsDeclarationsConnector, CustomsDeclarationsResponse}
@@ -49,7 +50,11 @@ class SubmitController @Inject()(actions: Actions, cache: CustomsCacheService, c
           _ => Redirect(routes.LandingController.displayLandingPage())
         }
         .recover {
-          case _ => Redirect(routes.SubmitController.onFailure())
+          case e: Exception => {
+            Logger.warn("[Submission failed]", e)
+
+            Redirect(routes.SubmitController.onFailure())
+          }
         }
   }
 }
