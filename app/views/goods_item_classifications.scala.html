@@ -39,31 +39,30 @@
         @components.back_link()
 
         @components.error_summary(form.errors)
-
         <h1 class="heading-large">@messages("classifications.heading")</h1>
 
-        @components.table.table(
-            HtmlTable(
-                messages("classifications.id"),
-                messages("classifications.identificationTypeCode")
-            )(classifications.map { c => (
-                c.id.getOrElse(""),
-                c.identificationTypeCode.getOrElse(""))
-            }), Some(tableHeader))
+        @if(!classifications.isEmpty) {
+            <div class="form-group">
+                @components.table.table(
+                    HtmlTable(
+                        messages("classifications.id"),
+                        messages("classifications.identificationTypeCode")
+                    )(classifications.map { c => (
+                        c.id.getOrElse(""),
+                        c.identificationTypeCode.getOrElse(""))
+                    }), Some(tableHeader))
+            </div>
+        }
 
-        <fieldset>
-            @components.input_text(form("id"), messages("classifications.id"))
-            @components.input_radio(
-            form("identificationTypeCode"),
-            messages("classifications.identificationTypeCode"),
-            hint = Some(messages("classifications.identificationTypeCode.hint")),
-            inputs = RadioOption.fromTuples(config.Options.commodityClassificationType)
-            )
-        </fieldset>
+        @components.input_text(form("id"), messages("classifications.id"))
+        @components.input_radio(
+        form("identificationTypeCode"),
+        messages("classifications.identificationTypeCode"),
+        hint = Some(messages("classifications.identificationTypeCode.hint")),
+        inputs = RadioOption.fromTuples(config.Options.commodityClassificationType)
+        )
 
-        <div class="section">
-            <button class="button" id="Add" value="Add" name = "submit">@messages("classifications.add")</button>
-            <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
-        </div>
+        <button class="button" id="Add" value="Add" name = "submit">@messages("classifications.add")</button>
+        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
     }
 }

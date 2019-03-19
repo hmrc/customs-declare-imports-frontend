@@ -37,51 +37,56 @@
 
     @components.error_summary(form.errors)
 
-        <h2 class="heading-medium">@messages("dutytaxefee.heading")</h2>
+        <fieldset>
+            <legend>
+                <h1 class="heading-large">@messages("dutytaxefee.heading")</h1>
+            </legend>
+            @if(!dutyTaxes.isEmpty) {
+                <div class="form-group">
+                    @components.table.table(
+                        HtmlTable(
+                            messages("dutytaxefee.taxtype"),
+                            messages("dutytaxefee.unitqualifier"),
+                            messages("dutytaxefee.quantity"),
+                            messages("dutytaxefee.preference"),
+                            messages("dutytaxefee.rate"),
+                            messages("dutytaxefee.payabletaxcurrency"),
+                            messages("dutytaxefee.payabletaxamount"),
+                            messages("dutytaxefee.quotaorder"),
+                            messages("dutytaxefee.totalcurrency"),
+                            messages("dutytaxefee.total"),
+                            messages("dutytaxefee.paymentmethod")
+                        )(dutyTaxes.map{
+                            d => (d.typeCode.getOrElse(""),
+                                d.specificTaxBaseQuantity.flatMap(_.unitCode).getOrElse(""),
+                                d.specificTaxBaseQuantity.flatMap(_.value).getOrElse(""),
+                                d.dutyRegimeCode.getOrElse(""),
+                                d.taxRateNumeric.getOrElse(""),
+                                d.payment.flatMap(_.paymentAmount.flatMap(_.currencyId)).getOrElse(""),
+                                d.payment.flatMap(_.paymentAmount.flatMap(_.value)).getOrElse(""),
+                                d.quotaOrderId.getOrElse(""),
+                                d.payment.flatMap(_.taxAssessedAmount.flatMap(_.currencyId)).getOrElse(""),
+                                d.payment.flatMap(_.taxAssessedAmount.flatMap(_.value)).getOrElse(""),
+                                d.payment.flatMap(_.methodCode).getOrElse(""))
+                        }), Some(tableHeader))
+                </div>
+            }
+    
+    
+            @components.input_text(field = form("typeCode"),label =  messages("dutytaxefee.taxtype"))
+            @components.input_text(field = form("specificTaxBaseQuantity.unitCode"),label = messages("dutytaxefee.unitqualifier"))
+            @components.input_text(field = form("specificTaxBaseQuantity.value"),label = messages("dutytaxefee.quantity"))
+            @components.input_text(field = form("dutyRegimeCode"),label = messages("dutytaxefee.preference"))
+            @components.input_text(field = form("taxRateNumeric"),label = messages("dutytaxefee.rate"))
+            @components.input_text(field = form("payment.paymentAmount.currencyId"),label = messages("dutytaxefee.payabletaxcurrency"))
+            @components.input_text(field = form("payment.paymentAmount.value"),label = messages("dutytaxefee.payabletaxamount"))
+            @components.input_text(field = form("quotaOrderId"),label =  messages("dutytaxefee.quotaorder"))
+            @components.input_text(field = form("payment.taxAssessedAmount.currencyId"),label = messages("dutytaxefee.totalcurrency"))
+            @components.input_text(field = form("payment.taxAssessedAmount.value"),label = messages("dutytaxefee.total"))
+            @components.input_text(field = form("payment.methodCode"),label = messages("dutytaxefee.paymentmethod"))
+        </fieldset>
 
-        @components.table.table(
-            HtmlTable(
-                messages("dutytaxefee.taxtype"),
-                messages("dutytaxefee.unitqualifier"),
-                messages("dutytaxefee.quantity"),
-                messages("dutytaxefee.preference"),
-                messages("dutytaxefee.rate"),
-                messages("dutytaxefee.payabletaxcurrency"),
-                messages("dutytaxefee.payabletaxamount"),
-                messages("dutytaxefee.quotaorder"),
-                messages("dutytaxefee.totalcurrency"),
-                messages("dutytaxefee.total"),
-                messages("dutytaxefee.paymentmethod")
-            )(dutyTaxes.map{
-                d => (d.typeCode.getOrElse(""),
-                    d.specificTaxBaseQuantity.flatMap(_.unitCode).getOrElse(""),
-                    d.specificTaxBaseQuantity.flatMap(_.value).getOrElse(""),
-                    d.dutyRegimeCode.getOrElse(""),
-                    d.taxRateNumeric.getOrElse(""),
-                    d.payment.flatMap(_.paymentAmount.flatMap(_.currencyId)).getOrElse(""),
-                    d.payment.flatMap(_.paymentAmount.flatMap(_.value)).getOrElse(""),
-                    d.quotaOrderId.getOrElse(""),
-                    d.payment.flatMap(_.taxAssessedAmount.flatMap(_.currencyId)).getOrElse(""),
-                    d.payment.flatMap(_.taxAssessedAmount.flatMap(_.value)).getOrElse(""),
-                    d.payment.flatMap(_.methodCode).getOrElse(""))
-            }), Some(tableHeader))
-
-
-        @components.input_text(field = form("typeCode"),label =  messages("dutytaxefee.taxtype"))
-        @components.input_text(field = form("specificTaxBaseQuantity.unitCode"),label = messages("dutytaxefee.unitqualifier"))
-        @components.input_text(field = form("specificTaxBaseQuantity.value"),label = messages("dutytaxefee.quantity"))
-        @components.input_text(field = form("dutyRegimeCode"),label = messages("dutytaxefee.preference"))
-        @components.input_text(field = form("taxRateNumeric"),label = messages("dutytaxefee.rate"))
-        @components.input_text(field = form("payment.paymentAmount.currencyId"),label = messages("dutytaxefee.payabletaxcurrency"))
-        @components.input_text(field = form("payment.paymentAmount.value"),label = messages("dutytaxefee.payabletaxamount"))
-        @components.input_text(field = form("quotaOrderId"),label =  messages("dutytaxefee.quotaorder"))
-        @components.input_text(field = form("payment.taxAssessedAmount.currencyId"),label = messages("dutytaxefee.totalcurrency"))
-        @components.input_text(field = form("payment.taxAssessedAmount.value"),label = messages("dutytaxefee.total"))
-        @components.input_text(field = form("payment.methodCode"),label = messages("dutytaxefee.paymentmethod"))
-
-        <div class="section">
-            <button class="button" id="Add" value="Add" name = "submit">@messages("dutytaxefee.add")</button>
-            <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
-        </div>
+        <button class="button" id="Add" value="Add" name = "submit">@messages("dutytaxefee.add")</button>
+        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
 }
 }
