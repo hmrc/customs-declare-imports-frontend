@@ -56,7 +56,7 @@ class ClassificationsMappingSpec extends WordSpec
 
             val data = classification.copy(id = Some(id))
             Form(classificationMapping).fillAndValidate(data).fold(
-              _ must haveErrorMessage("Id must be euqal to or less than 8 characters"),
+              _ must haveErrorMessage("Id must be equal to or less than 8 characters"),
               _ => fail("form should not succeed")
             )
         }

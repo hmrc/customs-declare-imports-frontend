@@ -62,6 +62,8 @@ class MetaDataMappingSpec extends WordSpec
         dec.flatMap(_.goodsShipment.flatMap(_.transactionNatureCode)) mustBe data.flatMap(_.transactionNatureCode)
         dec.flatMap(_.goodsShipment.flatMap(_.ucr.flatMap(_.traderAssignedReferenceId))) mustBe
           data.flatMap(_.traderAssignedReferenceId)
+        dec.flatMap(_.functionCode) mustBe Some(9)
+
       }
     }
 
