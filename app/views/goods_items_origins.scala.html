@@ -37,36 +37,41 @@
     @helpers.form(action = controllers.goodsitems.routes.OriginsController.onSubmit()) {
     @components.error_summary(form.errors)
 
-        <fieldset>
-            <legend>
-                <h1 class="heading-large">@messages("origin.heading")</h1>
-            </legend>
-                   @if(!origins.isEmpty) {
-                       <div class="form-group">
-                           @components.table.table(
-                               HtmlTable(
-                                   messages("origin.countryCode"),
-                                   messages("origin.typeCode"))(
-                                   origins.map(
-                                       a => (a.countryCode.getOrElse(""),
-                                       a.typeCode.getOrElse("")))), Some(tableHeader))
-                       </div>
-                   }
-           
-           @if(origins.isEmpty) {
-                   @components.input_text(field = form("countryCode"),label = messages("origin.countryCode"))
-                   @components.input_text(field = form("typeCode"),label = messages("origin.typeCode"))
-               </fieldset>
-               <button class="button" id="Add1" value="Add" name = "submit">@messages("origin.add")</button>
-           }
-           @if(origins.size == 1) {
-                   @components.input_text(field = form("countryCode"),label = messages("origin.countryCode"))
-                   @components.input_text(field = form("typeCode"),label = messages("origin.typeCode"))
-                </fieldset>
-       
-                <button class="button" id="Add2" value="Add" name = "submit">@messages("origin.addPref")</button>
-           }
+    <fieldset>
+      <legend>
+          <h1 class="heading-large">@messages("origin.heading")</h1>
+      </legend>
+             @if(!origins.isEmpty) {
+                 <div class="form-group">
+                     @components.table.table(
+                         HtmlTable(
+                             messages("origin.countryCode"),
+                             messages("origin.typeCode"))(
+                             origins.map(
+                                 a => (a.countryCode.getOrElse(""),
+                                 a.typeCode.getOrElse("")))), Some(tableHeader))
+                 </div>
+             }
 
+      @if(origins.isEmpty) {
+        @components.input_text(field = form("countryCode"),label = messages("origin.countryCode"))
+        @components.input_text(field = form("typeCode"),label = messages("origin.typeCode"))
+      }
+
+      @if(origins.size == 1) {
+        @components.input_text(field = form("countryCode"),label = messages("origin.countryCode"))
+        @components.input_text(field = form("typeCode"),label = messages("origin.typeCode"))
+      }
+
+    </fieldset>
+
+    @if(origins.isEmpty) {
+      <button class="button" id="Add1" value="Add" name = "submit">@messages("origin.add")</button>
+    }
+
+    @if(origins.size == 1) {
+      <button class="button" id="Add2" value="Add" name = "submit">@messages("origin.addPref")</button>
+    }
 
     <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
 }
