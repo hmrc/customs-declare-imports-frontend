@@ -30,44 +30,46 @@
     <h1 class="heading-large">@messages("governmentAgencyGoodsItem.title")</h1>
 
         @if(govAgencyGoodsItems.nonEmpty) {
-            <p>@govAgencyGoodsItems.size @messages("governmentAgencyGoodsItem.numberGovAgencyGoodsItems")</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.additionalDocuments")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.additionalInformation")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.mutualRecognitionParties")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.domesticDutyParties")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.governmentProcedures")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.originOfGoods")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.packagings")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.previousDocuments")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.dutyTaxFees")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.chargeDeductions")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.classifications")</th>
-                        <th scope="col">@messages("governmentAgencyGoodsItem.transportEquipments")</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @for(goodsItem <- govAgencyGoodsItems) {
-                    <tr>
-                        <td scope="row">@goodsItem.additionalDocuments.size</td>
-                        <td>@goodsItem.additionalInformations.size</td>
-                        <td>@goodsItem.aeoMutualRecognitionParties.size</td>
-                        <td>@goodsItem.domesticDutyTaxParties.size</td>
-                        <td>@goodsItem.governmentProcedures.size</td>
-                        <td>@goodsItem.origins.size</td>
-                        <td>@goodsItem.packagings.size</td>
-                        <td>@goodsItem.previousDocuments.size</td>
-                        <td>@goodsItem.commodity.fold(0)(_.dutyTaxFees.size)</td>
-                        <td>@goodsItem.customsValuation.fold(0)(_.chargeDeductions.size)</td>
-                        <td>@goodsItem.commodity.fold(0)(_.classifications.size)</td>
-                        <td>@goodsItem.commodity.fold(0)(_.transportEquipments.size)</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
+            <div class="form-group">
+                <p>@govAgencyGoodsItems.size @messages("governmentAgencyGoodsItem.numberGovAgencyGoodsItems")</p>
+            
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">@messages("governmentAgencyGoodsItem.additionalDocuments")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItem.additionalInformation")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItem.mutualRecognitionParties")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItem.domesticDutyParties")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItem.governmentProcedures")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItem.originOfGoods")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItem.packagings")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItem.previousDocuments")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItem.dutyTaxFees")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItem.chargeDeductions")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItem.classifications")</th>
+                            <th scope="col">@messages("governmentAgencyGoodsItem.transportEquipments")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for(goodsItem <- govAgencyGoodsItems) {
+                        <tr>
+                            <td scope="row">@goodsItem.additionalDocuments.size</td>
+                            <td>@goodsItem.additionalInformations.size</td>
+                            <td>@goodsItem.aeoMutualRecognitionParties.size</td>
+                            <td>@goodsItem.domesticDutyTaxParties.size</td>
+                            <td>@goodsItem.governmentProcedures.size</td>
+                            <td>@goodsItem.origins.size</td>
+                            <td>@goodsItem.packagings.size</td>
+                            <td>@goodsItem.previousDocuments.size</td>
+                            <td>@goodsItem.commodity.fold(0)(_.dutyTaxFees.size)</td>
+                            <td>@goodsItem.customsValuation.fold(0)(_.chargeDeductions.size)</td>
+                            <td>@goodsItem.commodity.fold(0)(_.classifications.size)</td>
+                            <td>@goodsItem.commodity.fold(0)(_.transportEquipments.size)</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
         }
 
         <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemValuePage().url" class="button" id="add">@messages("governmentAgencyGoodsItem.addGoodsItem")</a>

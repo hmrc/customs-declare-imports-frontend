@@ -30,36 +30,41 @@
 
     @components.error_summary(form.errors)
 
-    <h2 class="heading-medium">@messages("addPreviousDocument.goodsitem.title")</h2>
-    @if(previousDocuments.isEmpty) {
-    } else {
-        @if(previousDocuments.size == 1) {
-    <p>@previousDocuments.size @messages("addPreviousDocument.table.heading")</p>
-    } else {
-        <p>@previousDocuments.size @messages("addPreviousDocument.table.multiple.heading")</p>
-    }
-    }
-
-        @components.table.table(
-        HtmlTable(
-        messages("addPreviousDocument.categoryCode"),
-        messages("addPreviousDocument.id"),
-        messages("addPreviousDocument.typeCode"),
-        messages("addPreviousDocument.lineNumeric")
-        )(previousDocuments.map(a => (a.categoryCode.getOrElse(""),
-        a.id.getOrElse(""),
-        a.typeCode.getOrElse(""),
-        a.lineNumeric.getOrElse("")))))
-
+    <fieldset>
+        <legend>
+            <h1 class="heading-large">@messages("addPreviousDocument.goodsitem.title")</h1>
+        </legend>
+        @if(previousDocuments.isEmpty) {
+        } else {
+            @if(previousDocuments.size == 1) {
+        <p>@previousDocuments.size @messages("addPreviousDocument.table.heading")</p>
+        } else {
+            <p>@previousDocuments.size @messages("addPreviousDocument.table.multiple.heading")</p>
+        }
+        }
+        @if(!previousDocuments.isEmpty) {
+            <div class="form-group">
+                @components.table.table(
+                    HtmlTable(
+                    messages("addPreviousDocument.categoryCode"),
+                    messages("addPreviousDocument.id"),
+                    messages("addPreviousDocument.typeCode"),
+                    messages("addPreviousDocument.lineNumeric")
+                    )(previousDocuments.map(a => (a.categoryCode.getOrElse(""),
+                    a.id.getOrElse(""),
+                    a.typeCode.getOrElse(""),
+                    a.lineNumeric.getOrElse("")))))
+            </div>
+        }
+    
 
         @components.input_text(field = form("categoryCode"),label = messages("addPreviousDocument.categoryCode"))
         @components.input_text(field = form("id"),label = messages("addPreviousDocument.id"))
         @components.input_text(field = form("typeCode"),label = messages("addPreviousDocument.typeCode"))
         @components.input_text(field = form("lineNumeric"),label = messages("addPreviousDocument.lineNumeric"))
+    </fieldset>
 
-    <div class="section">
-        <button class="button" id="Add" value="Add" name = "submit">Add Previous Docs</button>
-        <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
-    </div>
+    <button class="button" id="Add" value="Add" name = "submit">Add Previous Docs</button>
+    <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
 }
 }

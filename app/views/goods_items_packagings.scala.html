@@ -39,20 +39,24 @@
     @components.error_summary(form.errors)
 
     <fieldset>
-
-        <h2 class="heading-medium">@messages("packaging.heading")</h2>
-
-        @components.table.table(
-            HtmlTable(
-                messages("packaging.typecode"),
-                messages("packaging.quantity"),
-                messages("packaging.marksNumbersId")
-                )(packagings.map{
-                a => (a.typeCode.getOrElse(""),
-                    a.quantity.getOrElse(""),
-                    a.marksNumbersId.getOrElse(""))
-                })
-                , Some(tableHeader))
+        <legend>
+            <h1 class="heading-large">@messages("packaging.heading")</h1>
+        </legend>
+        @if(!packagings.isEmpty) {
+            <div class="form-group">
+                @components.table.table(
+                    HtmlTable(
+                        messages("packaging.typecode"),
+                        messages("packaging.quantity"),
+                        messages("packaging.marksNumbersId")
+                        )(packagings.map{
+                        a => (a.typeCode.getOrElse(""),
+                            a.quantity.getOrElse(""),
+                            a.marksNumbersId.getOrElse(""))
+                        })
+                        , Some(tableHeader))
+            </div>
+        }
 
         @components.input_text(field = form("typeCode"),label =  messages("packaging.typecode"))
         @components.input_text(field = form("quantity"),label = messages("packaging.quantity"))

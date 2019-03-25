@@ -38,18 +38,19 @@
   @components.error_summary(form.errors)
 
   <h1 class="heading-large">@messages("containerDetails.heading")</h1>
+  
+  @if(!transports.isEmpty) {
+    <div class="form-group">
+      @components.table.table(
+        HtmlTable(messages("containerDetails.id"))(transports.map(_.id.getOrElse(""))),
+        Some(tableHeader))
+    </div>
+  }
+  
+  @components.input_text(form("id"), messages("containerDetails.id"))
 
-  @components.table.table(
-    HtmlTable(messages("containerDetails.id"))(transports.map(_.id.getOrElse(""))),
-    Some(tableHeader))
-
-  <fieldset>
-   @components.input_text(form("id"), messages("containerDetails.id"))
-  </fieldset>
-
-  <button id="Add" name="submit">@messages("containerDetails.add")</button>
-
- <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
+  <button id="Add" name="submit" class="button">@messages("containerDetails.add")</button>
+  <a href="@controllers.routes.GovernmentAgencyGoodsItemsController.showGoodsItemPage().url" class="button" id="next">@messages("common.button.continue")</a>
 
  }
 }
