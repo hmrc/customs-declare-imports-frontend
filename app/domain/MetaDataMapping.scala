@@ -42,6 +42,7 @@ object MetaDataMapping {
     case ReferencesId => {
       val refData = cache.getEntry[References](references.key)
       MetaData(declaration = Some(Declaration(
+        functionCode = Some(9),
         typeCode = refData.map(r => r.typeCode + r.typerCode),
         functionalReferenceId = refData.map(_.functionalReferenceId),
         goodsShipment = Some(GoodsShipment(

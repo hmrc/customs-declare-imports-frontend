@@ -485,7 +485,7 @@ object DeclarationFormMapping extends Formatters {
   )(Cancel.apply)(Cancel.unapply)
 
   val classificationMapping = mapping(
-    "id" -> optional(text.verifying("Id must be euqal to or less than 8 characters", _.length <= 8)),
+    "id" -> optional(text.verifying("Id must be equal to or less than 8 characters", _.length <= 8)),
     "identificationTypeCode" -> optional(text)
   )((id,typeCode) => Classification(id,None,typeCode,None))(Classification.unapply(_).map(c => (c._1,c._3)))
     .verifying("Id and Type is required to add classification", require1Field[Classification](_.id, _.identificationTypeCode))

@@ -2661,8 +2661,8 @@ val nonThirdCountries: Seq[(String, String)] = Seq(
     )
 
   val commodityClassificationType: Seq[(String, String)] = Seq(
-    "CV" ->"Customs article number ",
-    "GN" ->"National product group code",
+    "CV" ->"CUS code",
+    "GN" ->"National additional code(s)",
     "TSP" ->"Combined nomenclature code",
     "TRC" ->"TARIC code",
     "TRA" ->"TARIC additional code"
