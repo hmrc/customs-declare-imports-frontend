@@ -40,8 +40,6 @@ class GoodsItemDetailsMappingSpec extends WordSpec
       "valid values are bound" in {
 
         forAll { goodsItem: GovernmentAgencyGoodsItem =>
-          println("hiiiiii ::::")
-          println(goodsItem.sequenceNumeric)
 
           Form(goodsItemDetailsMapping).fillAndValidate(goodsItem).fold(
             e => fail("form should not fail" + e),
